@@ -21,3 +21,18 @@ export async function getAllProjects() {
 export async function getProject(slug) {
   return await client.fetch(`*[_type == "project" && slug.current == $slug][0]`, { slug })
 }
+
+export async function getAllTools() {
+  return await client.fetch(`*[_type == "tool"] | order(title asc) {
+    _id,
+    title,
+    slug,
+    category,
+    shortSummary,
+    heroImage
+  }`)
+}
+
+export async function getTool(slug) {
+  return await client.fetch(`*[_type == "tool" && slug.current == $slug][0]`, { slug })
+}

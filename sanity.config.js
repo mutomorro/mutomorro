@@ -1,6 +1,7 @@
 import { defineConfig } from 'sanity'
 import { structureTool } from 'sanity/structure'
 import project from './sanity/schemas/project'
+import tool from './sanity/schemas/tool'
 
 export default defineConfig({
   name: 'mutomorro',
@@ -10,6 +11,6 @@ export default defineConfig({
   dataset: 'production',
   plugins: [structureTool()],
   schema: {
-    types: [project],
+    types: [project, tool],
   },
 })

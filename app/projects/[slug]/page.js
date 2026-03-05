@@ -56,12 +56,10 @@ export default async function CaseStudy({ params }) {
               color: 'var(--color-purple)',
               marginBottom: '1rem',
             }}>The challenge</h2>
-            <p style={{ fontSize: '1.1rem', lineHeight: '1.8', color: '#333', fontWeight: '300' }}>
               <div className="portable-text">
               <PortableText value={project.challenge} />
           </div>
-            </p>
-          </div>
+       </div>
 
           <div style={{ marginBottom: '3rem' }}>
             <h2 style={{
@@ -72,11 +70,9 @@ export default async function CaseStudy({ params }) {
               color: 'var(--color-purple)',
               marginBottom: '1rem',
             }}>Our approach</h2>
-            <p style={{ fontSize: '1.1rem', lineHeight: '1.8', color: '#333', fontWeight: '300' }}>
             <div className="portable-text">
   <PortableText value={project.approach} />
 </div>
-            </p>
           </div>
 
           <div style={{ marginBottom: '3rem' }}>
@@ -88,11 +84,9 @@ export default async function CaseStudy({ params }) {
               color: 'var(--color-purple)',
               marginBottom: '1rem',
             }}>The outcome</h2>
-            <p style={{ fontSize: '1.1rem', lineHeight: '1.8', color: '#333', fontWeight: '300' }}>
               <div className="portable-text">
   <PortableText value={project.outcome} />
 </div>
-            </p>
           </div>
 
         </div>

@@ -1,58 +1,128 @@
 @import "tailwindcss";
 
+/* ============================================
+   MUTOMORRO DESIGN SYSTEM
+   Print-influenced. Typographically-led. Editorial restraint.
+   Test: does this look like a professional agency made it?
+   ============================================ */
+
 :root {
-  --color-dark: #221C2B;
+  /* Surfaces */
   --color-white: #FFFFFF;
   --color-warm: #FAF6F1;
+  --color-dark: #221C2B;
+
+  /* Accent - buttons, links, hover states, UI highlights */
+  --color-accent: #9B51E0;
+
+  /* Gradient colours - used individually as subtle accents */
   --color-purple: #80388F;
-  --color-coral: #FFA200;
   --color-pink: #FF4279;
+  --color-coral: #FFA200;
+
+  /* Gradient - H1 headings only, very occasional deliberate moments */
   --gradient-heading: linear-gradient(90deg, #80388F, #FF4279, #FFA200);
+
+  /* Dimension colours - ecosystem visual and dimension pages only */
+  --dimension-1: #d4735e;
+  --dimension-2: #4a9ad4;
+  --dimension-3: #7ab84e;
+  --dimension-4: #d4a830;
+  --dimension-5: #a06cc0;
+  --dimension-6: #3aaa9e;
+  --dimension-7: #d45a7a;
+  --dimension-8: #d48a3a;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+/* ============================================
+   BASE
+   ============================================ */
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-white);
+  color: var(--color-dark);
+  font-family: var(--font-source-sans), sans-serif;
+  font-weight: 300;
+  -webkit-font-smoothing: antialiased;
 }
+
+/* Remove dark mode override - we control colours explicitly */
+
+/* ============================================
+   TYPOGRAPHY SCALE
+   Expressiveness through size and spacing, not weight.
+   ============================================ */
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 400;
+  line-height: 1.15;
+  margin: 0;
+}
+
+p {
+  margin: 0;
+  line-height: 1.7;
+}
+
+a {
+  color: var(--color-accent);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* ============================================
+   SECTION LABELS
+   Small caps, uppercase, spaced - reusable pattern
+   ============================================ */
+
+.label {
+  font-size: 0.8rem;
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-coral);
+}
+
+.label--accent {
+  color: var(--color-accent);
+}
+
+.label--light {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* ============================================
+   PORTABLE TEXT
+   Rich text rendering for Sanity content
+   ============================================ */
 
 .portable-text p {
   font-size: 1.1rem;
   line-height: 1.8;
-  color: #333;
+  color: #444;
   font-weight: 300;
   margin: 0 0 1.25rem 0;
 }
 
 .portable-text h2 {
-  font-size: 1.5rem;
-  font-weight: 700;
+  font-size: 1.75rem;
+  font-weight: 400;
   color: var(--color-dark);
-  margin: 2rem 0 1rem 0;
+  margin: 2.5rem 0 1rem 0;
 }
 
 .portable-text h3 {
-  font-size: 1.2rem;
-  font-weight: 600;
+  font-size: 1.3rem;
+  font-weight: 400;
   color: var(--color-dark);
-  margin: 1.5rem 0 0.75rem 0;
+  margin: 2rem 0 0.75rem 0;
 }
 
-.portable-text ul, .portable-text ol {
+.portable-text ul,
+.portable-text ol {
   padding-left: 1.5rem;
   margin: 0 0 1.25rem 0;
 }
@@ -65,5 +135,48 @@ body {
 }
 
 .portable-text strong {
-  font-weight: 600;
+  font-weight: 400;
+  color: var(--color-dark);
+}
+
+.portable-text a {
+  color: var(--color-accent);
+}
+
+/* ============================================
+   BUTTONS
+   ============================================ */
+
+.btn {
+  display: inline-block;
+  padding: 0.85rem 2rem;
+  border-radius: 4px;
+  font-size: 0.95rem;
+  font-weight: 400;
+  text-decoration: none;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.btn:hover {
+  opacity: 0.85;
+  text-decoration: none;
+}
+
+.btn--primary {
+  background: var(--color-accent);
+  color: #ffffff;
+  border: none;
+}
+
+.btn--outline {
+  background: transparent;
+  color: var(--color-accent);
+  border: 1.5px solid var(--color-accent);
+}
+
+.btn--gradient {
+  background: var(--gradient-heading);
+  color: #ffffff;
+  border: none;
 }

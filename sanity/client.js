@@ -7,6 +7,10 @@ export const client = createClient({
   useCdn: false,
 })
 
+// ============================================
+// PROJECTS
+// ============================================
+
 export async function getAllProjects() {
   return await client.fetch(`*[_type == "project"] | order(_createdAt desc) {
     _id,
@@ -19,8 +23,15 @@ export async function getAllProjects() {
 }
 
 export async function getProject(slug) {
-  return await client.fetch(`*[_type == "project" && slug.current == $slug][0]`, { slug })
+  return await client.fetch(
+    `*[_type == "project" && slug.current == $slug][0]`,
+    { slug }
+  )
 }
+
+// ============================================
+// TOOLS
+// ============================================
 
 export async function getAllTools() {
   return await client.fetch(`*[_type == "tool"] | order(title asc) {
@@ -34,5 +45,75 @@ export async function getAllTools() {
 }
 
 export async function getTool(slug) {
-  return await client.fetch(`*[_type == "tool" && slug.current == $slug][0]`, { slug })
+  return await client.fetch(
+    `*[_type == "tool" && slug.current == $slug][0]`,
+    { slug }
+  )
+}
+
+// ============================================
+// EMERGENT DIMENSIONS
+// ============================================
+
+export async function getAllDimensions() {
+  return await client.fetch(`*[_type == "dimension"] | order(order asc) {
+    _id,
+    title,
+    anchor,
+    letter,
+    order,
+    slug,
+    colour,
+    tagline,
+    shortSummary
+  }`)
+}
+
+export async function getDimension(slug) {
+  return await client.fetch(
+    `*[_type == "dimension" && slug.current == $slug][0] {
+      ...,
+      relatedDimensions[]-> {
+        _id,
+        title,
+        anchor,
+        slug,
+        colour,
+        shortSummary
+      }
+    }`,
+    { slug }
+  )
+}
+
+// ============================================
+// DIMENSION ARTICLES
+// ============================================
+
+export async function getDimensionArticles(dimensionSlug) {
+  return await client.fetch(
+    `*[_type == "dimensionArticle" && dimension->slug.current == $dimensionSlug] | order(order asc) {
+      _id,
+      title,
+      slug,
+      order,
+      shortSummary
+    }`,
+    { dimensionSlug }
+  )
+}
+
+export async function getDimensionArticle(dimensionSlug, articleSlug) {
+  return await client.fetch(
+    `*[_type == "dimensionArticle" && dimension->slug.current == $dimensionSlug && slug.current == $articleSlug][0] {
+      ...,
+      dimension-> {
+        title,
+        anchor,
+        slug,
+        colour
+      }
+    }`,
+    { dimensionSlug, articleSlug }
+  )
 }

@@ -76,6 +76,10 @@ a {
 }
 
 a:hover {
+  text-decoration: none;
+}
+
+a:not(.btn):hover {
   text-decoration: underline;
 }
 
@@ -153,39 +157,68 @@ a:hover {
    BUTTONS
    ============================================ */
 
+.btn {
+  border-radius: 4px;
+  font-size: 0.95rem;
+  font-weight: 400;
+  text-decoration: none !important;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s, opacity 0.2s;
+}
+
 .btn--primary,
 a.btn--primary {
   background: var(--color-dark);
-  color: #ffffff;
+  color: #ffffff !important;
   border: none;
 }
 
 .btn--outline,
 a.btn--outline {
   background: transparent;
-  color: var(--color-dark);
+  color: var(--color-dark) !important;
   border: 1.5px solid var(--color-dark);
 }
 
 .btn--dark,
 a.btn--dark {
   background: var(--color-dark);
-  color: #ffffff;
+  color: #ffffff !important;
   border: none;
 }
 
 .btn--dark-outline,
 a.btn--dark-outline {
   background: transparent;
-  color: var(--color-dark);
+  color: var(--color-dark) !important;
   border: 1.5px solid var(--color-dark);
 }
 
 .btn--gradient,
 a.btn--gradient {
   background: var(--gradient-heading);
-  color: #ffffff;
+  color: #ffffff !important;
   border: none;
+}
+
+.btn--primary:hover,
+a.btn--primary:hover,
+.btn--dark:hover,
+a.btn--dark:hover {
+  background: #3a2f4a;
+}
+
+.btn--outline:hover,
+a.btn--outline:hover,
+.btn--dark-outline:hover,
+a.btn--dark-outline:hover {
+  background: var(--color-dark);
+  color: #ffffff !important;
+}
+
+.btn--gradient:hover,
+a.btn--gradient:hover {
+  opacity: 0.9;
 }
 
 /* ============================================

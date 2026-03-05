@@ -199,7 +199,7 @@ export default async function Home() {
             }}>
               Work that makes a difference
             </h2>
-            <Link href="/case-studies" style={{
+            <Link href="/projects" style={{
               textDecoration: 'none',
               fontSize: '0.9rem',
               fontWeight: '600',
@@ -217,7 +217,7 @@ export default async function Home() {
             {projects.slice(0, 3).map((project) => (
               <Link
                 key={project._id}
-                href={`/case-studies/${project.slug.current}`}
+                href={`/projects/${project.slug.current}`}
                 style={{ textDecoration: 'none' }}
               >
                 <div style={{

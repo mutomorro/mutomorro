@@ -52,7 +52,7 @@ export default function Footer() {
             <li><Link href="/how-we-help/structure-and-operations" style={footerLink}>Structure & Operations</Link></li>
             <li><Link href="/how-we-help/people-and-capability" style={footerLink}>People & Capability</Link></li>
             <li><Link href="/how-we-help/service-and-experience" style={footerLink}>Service & Experience</Link></li>
-            <li><Link href="/case-studies" style={footerLink}>Case Studies</Link></li>
+            <li><Link href="/projects" style={footerLink}>Case Studies</Link></li>
           </ul>
         </div>
 

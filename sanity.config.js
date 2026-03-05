@@ -4,6 +4,8 @@ import project from './sanity/schemas/project'
 import tool from './sanity/schemas/tool'
 import dimension from './sanity/schemas/dimension'
 import dimensionArticle from './sanity/schemas/dimensionArticle'
+import article from './sanity/schemas/article'
+import course from './sanity/schemas/course'
 
 export default defineConfig({
   name: 'mutomorro',
@@ -13,6 +15,6 @@ export default defineConfig({
   dataset: 'production',
   plugins: [structureTool()],
   schema: {
-    types: [project, tool, dimension, dimensionArticle],
+    types: [project, tool, dimension, dimensionArticle, article, course],
   },
 })

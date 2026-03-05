@@ -117,3 +117,68 @@ export async function getDimensionArticle(dimensionSlug, articleSlug) {
     { dimensionSlug, articleSlug }
   )
 }
+
+// ============================================
+// ARTICLES
+// ============================================
+
+export async function getAllArticles() {
+  return await client.fetch(`*[_type == "article"] | order(publishedAt desc) {
+    _id,
+    title,
+    slug,
+    publishedAt,
+    category,
+    shortSummary,
+    heroImage
+  }`)
+}
+
+export async function getArticle(slug) {
+  return await client.fetch(
+    `*[_type == "article" && slug.current == $slug][0] {
+      ...,
+      relatedDimensions[]-> {
+        _id,
+        title,
+        anchor,
+        slug,
+        colour
+      }
+    }`,
+    { slug }
+  )
+}
+
+// ============================================
+// COURSES
+// ============================================
+
+export async function getAllCourses() {
+  return await client.fetch(`*[_type == "course"] | order(title asc) {
+    _id,
+    title,
+    slug,
+    category,
+    format,
+    duration,
+    shortSummary,
+    heroImage
+  }`)
+}
+
+export async function getCourse(slug) {
+  return await client.fetch(
+    `*[_type == "course" && slug.current == $slug][0] {
+      ...,
+      relatedDimensions[]-> {
+        _id,
+        title,
+        anchor,
+        slug,
+        colour
+      }
+    }`,
+    { slug }
+  )
+}

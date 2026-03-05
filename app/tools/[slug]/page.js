@@ -9,69 +9,49 @@ export default async function ToolPage({ params }) {
   const tool = await getTool(slug)
 
   return (
-    <main style={{ fontFamily: 'var(--font-source-sans), sans-serif' }}>
+    <main>
 
       {/* Hero */}
-      <section style={{ backgroundColor: 'var(--color-warm)', padding: '5rem 2rem' }}>
-        <div style={{ maxWidth: '760px', margin: '0 auto' }}>
+      <section className="section section--warm">
+        <div className="wrap--narrow">
           <Link href="/tools" style={{
             fontSize: '0.85rem',
-            fontWeight: '600',
-            color: 'var(--color-purple)',
-            textDecoration: 'none',
+            fontWeight: '400',
+            color: 'var(--color-accent)',
             display: 'inline-block',
-            marginBottom: '1.5rem',
+            margin: '0 0 1.5rem',
           }}>← All tools</Link>
-          <p style={{
-            fontSize: '0.85rem',
-            fontWeight: '700',
-            letterSpacing: '0.1em',
-            textTransform: 'uppercase',
-            color: 'var(--color-coral)',
-            margin: '0 0 1rem 0',
-          }}>{tool.category}</p>
-          <h1 style={{
-            fontSize: 'clamp(2rem, 5vw, 3.25rem)',
-            fontWeight: '700',
-            lineHeight: '1.15',
-            margin: '0 0 1.5rem 0',
-            background: 'var(--gradient-heading)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-          }}>{tool.title}</h1>
+          <p className="label" style={{ margin: '0 0 1rem' }}>{tool.category}</p>
+          <h1 className="heading-gradient heading-large" style={{ margin: '0 0 1.5rem' }}>
+            {tool.title}
+          </h1>
           {tool.shortSummary && (
-            <p style={{ fontSize: '1.15rem', lineHeight: '1.7', color: '#555', fontWeight: '300' }}>
-              {tool.shortSummary}
-            </p>
+            <p className="lead">{tool.shortSummary}</p>
           )}
         </div>
       </section>
 
       {/* Body */}
-      <section style={{ padding: '4rem 2rem', backgroundColor: '#ffffff' }}>
-        <div style={{ maxWidth: '760px', margin: '0 auto' }}>
+      <section className="section section--white">
+        <div className="wrap--narrow">
           {tool.body && (
             <div className="portable-text">
-            <PortableText
-  value={tool.body}
-  components={{
-    types: {
-      image: ({ value }) => (
-        <div style={{ margin: '2rem 0' }}>
-          <img
-            src={urlFor(value).width(900).url()}
-            alt={value.alt || ''}
-            style={{
-              width: '100%',
-              height: 'auto',
-              borderRadius: '8px',
-            }}
-          />
-        </div>
-      ),
-    },
-  }}
-/>
+              <PortableText
+                value={tool.body}
+                components={{
+                  types: {
+                    image: ({ value }) => (
+                      <div style={{ margin: '2rem 0' }}>
+                        <img
+                          src={urlFor(value).width(900).url()}
+                          alt={value.alt || ''}
+                          style={{ width: '100%', height: 'auto', borderRadius: '8px' }}
+                        />
+                      </div>
+                    ),
+                  },
+                }}
+              />
             </div>
           )}
         </div>

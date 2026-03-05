@@ -3,15 +3,14 @@ import Link from 'next/link'
 export default function Footer() {
   return (
     <footer style={{
-      backgroundColor:'var(--color-dark)',
+      backgroundColor: 'var(--color-dark)',
       color: '#ffffff',
       padding: '4rem 2rem 2rem',
-      fontFamily: 'var(--font-source-sans), sans-serif',
     }}>
 
       {/* Main footer columns */}
       <div style={{
-        maxWidth: '1200px',
+        maxWidth: '1350px',
         margin: '0 auto',
         display: 'grid',
         gridTemplateColumns: 'repeat(4, 1fr)',
@@ -22,17 +21,19 @@ export default function Footer() {
 
         {/* Brand column */}
         <div>
-          <span style={{
-            fontSize: '1.25rem',
-            fontWeight: '700',
-            background: 'linear-gradient(90deg, #80388F, #FF4279, #FFA200)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            display: 'block',
-            marginBottom: '1rem',
-          }}>
-            Mutomorro
-          </span>
+<span style={{
+  fontSize: '1.25rem',
+  fontWeight: '400',
+  background: 'var(--gradient-heading)',
+  WebkitBackgroundClip: 'text',
+  WebkitTextFillColor: 'transparent',
+  backgroundClip: 'text',
+  color: 'transparent',
+  display: 'block',
+  marginBottom: '1rem',
+}}>
+  Mutomorro
+</span>
           <p style={{
             fontSize: '0.9rem',
             lineHeight: '1.7',
@@ -52,17 +53,17 @@ export default function Footer() {
             <li><Link href="/how-we-help/structure-and-operations" style={footerLink}>Structure & Operations</Link></li>
             <li><Link href="/how-we-help/people-and-capability" style={footerLink}>People & Capability</Link></li>
             <li><Link href="/how-we-help/service-and-experience" style={footerLink}>Service & Experience</Link></li>
-            <li><Link href="/projects" style={footerLink}>Case Studies</Link></li>
+            <li><Link href="/projects" style={footerLink}>Projects and experience</Link></li>
           </ul>
         </div>
 
-        {/* Learn */}
+        {/* Explore */}
         <div>
-          <p style={footerHeading}>Learn</p>
+          <p style={footerHeading}>Explore</p>
           <ul style={footerList}>
-            <li><Link href="/articles" style={footerLink}>Articles</Link></li>
-            <li><Link href="/sessions" style={footerLink}>Sessions</Link></li>
-            <li><Link href="/toolkit" style={footerLink}>Tools & Frameworks</Link></li>
+            <li><Link href="/article" style={footerLink}>Thinking</Link></li>
+            <li><Link href="/courses" style={footerLink}>Courses</Link></li>
+            <li><Link href="/tools" style={footerLink}>Tools of the Trade</Link></li>
             <li><Link href="/states-of-vitality" style={footerLink}>States of Vitality</Link></li>
           </ul>
         </div>
@@ -71,9 +72,10 @@ export default function Footer() {
         <div>
           <p style={footerHeading}>About</p>
           <ul style={footerList}>
-            <li><Link href="/about" style={footerLink}>Our Story</Link></li>
-            <li><Link href="/about/approach" style={footerLink}>Our Approach</Link></li>
-            <li><Link href="/contact" style={footerLink}>Get in Touch</Link></li>
+            <li><Link href="/about" style={footerLink}>About us</Link></li>
+            <li><Link href="/philosophy" style={footerLink}>Philosophy</Link></li>
+            <li><Link href="/emergent-framework" style={footerLink}>The EMERGENT Framework</Link></li>
+            <li><Link href="/contact" style={footerLink}>Talk to us</Link></li>
           </ul>
         </div>
 
@@ -81,7 +83,7 @@ export default function Footer() {
 
       {/* Bottom bar */}
       <div style={{
-        maxWidth: '1200px',
+        maxWidth: '1350px',
         margin: '0 auto',
         paddingTop: '1.5rem',
         display: 'flex',
@@ -104,10 +106,10 @@ export default function Footer() {
 
 const footerHeading = {
   fontSize: '0.75rem',
-  fontWeight: '700',
+  fontWeight: '400',
   letterSpacing: '0.1em',
   textTransform: 'uppercase',
-  color: '#FFA200',
+  color: 'var(--color-coral)',
   marginBottom: '1rem',
   marginTop: 0,
 }

@@ -8,34 +8,6 @@ export default async function CaseStudy({ params }) {
   return (
     <main style={{ fontFamily: 'var(--font-source-sans), sans-serif', color: '#1a1a1a' }}>
 
-      {/* Nav */}
-      <nav style={{
-        padding: '1.25rem 2rem',
-        borderBottom: '1px solid #f0ece6',
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        backgroundColor: '#ffffff',
-      }}>
-        <Link href="/" style={{ textDecoration: 'none' }}>
-          <span style={{
-            fontSize: '1.25rem',
-            fontWeight: '700',
-            background: 'linear-gradient(90deg, #80388F, #FF4279, #FFA200)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-          }}>Mutomorro</span>
-        </Link>
-        <Link href="/case-studies" style={{
-          textDecoration: 'none',
-          fontSize: '0.9rem',
-          color: '#666',
-          fontWeight: '600',
-        }}>
-          ← All case studies
-        </Link>
-      </nav>
-
       {/* Hero */}
       <section style={{
         backgroundColor: '#FAF6F1',

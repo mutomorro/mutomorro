@@ -1,9 +1,10 @@
 import { Source_Sans_3 } from 'next/font/google'
 import './globals.css'
+import Nav from '../components/Nav'
 
 const sourceSans = Source_Sans_3({
   subsets: ['latin'],
-  weight: ['300', '400', '600', '700'],
+  weight: ['300', '400', '600'],
   variable: '--font-source-sans',
 })
 
@@ -16,6 +17,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={`${sourceSans.variable} ${sourceSans.className}`}>
+        <Nav />
         {children}
       </body>
     </html>

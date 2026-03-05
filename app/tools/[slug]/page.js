@@ -2,6 +2,7 @@ import { getTool } from '../../../sanity/client'
 import { PortableText } from '@portabletext/react'
 import CTA from '../../../components/CTA'
 import Link from 'next/link'
+import { urlFor } from '../../../sanity/image'
 
 export default async function ToolPage({ params }) {
   const { slug } = await params
@@ -51,7 +52,26 @@ export default async function ToolPage({ params }) {
         <div style={{ maxWidth: '760px', margin: '0 auto' }}>
           {tool.body && (
             <div className="portable-text">
-              <PortableText value={tool.body} />
+            <PortableText
+  value={tool.body}
+  components={{
+    types: {
+      image: ({ value }) => (
+        <div style={{ margin: '2rem 0' }}>
+          <img
+            src={urlFor(value).width(900).url()}
+            alt={value.alt || ''}
+            style={{
+              width: '100%',
+              height: 'auto',
+              borderRadius: '8px',
+            }}
+          />
+        </div>
+      ),
+    },
+  }}
+/>
             </div>
           )}
         </div>

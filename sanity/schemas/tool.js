@@ -46,12 +46,17 @@ export default {
       description: 'The main diagram or visual for this tool.',
     },
     {
-      name: 'body',
-      title: 'Body',
-      type: 'array',
-      of: [{ type: 'block' }],
-      description: 'Main explanation of the tool.',
+  name: 'body',
+  title: 'Body',
+  type: 'array',
+  of: [
+    { type: 'block' },
+    { 
+      type: 'image',
+      options: { hotspot: true },
     },
+  ],
+},
     {
       name: 'breakdownImages',
       title: 'Breakdown Images',

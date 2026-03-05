@@ -1,65 +1,318 @@
-import Image from "next/image";
+import Link from 'next/link'
+import { getAllProjects } from '../sanity/client'
 
-export default function Home() {
+export default async function Home() {
+  const projects = await getAllProjects()
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            Magic soup.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+    <main style={{ fontFamily: 'var(--font-source-sans), sans-serif' }}>
+
+      {/* Hero */}
+      <section style={{
+        backgroundColor: 'var(--color-warm)',
+        padding: '7rem 2rem 6rem',
+      }}>
+        <div style={{ maxWidth: '860px', margin: '0 auto' }}>
+          <p style={{
+            fontSize: '0.85rem',
+            fontWeight: '700',
+            letterSpacing: '0.1em',
+            textTransform: 'uppercase',
+            color: 'var(--color-coral)',
+            marginBottom: '1.5rem',
+            margin: '0 0 1.5rem 0',
+          }}>
+            Organisational Development
           </p>
+          <h1 style={{
+            fontSize: 'clamp(2.5rem, 6vw, 4.5rem)',
+            fontWeight: '700',
+            lineHeight: '1.1',
+            marginBottom: '2rem',
+            margin: '0 0 2rem 0',
+            background: 'var(--gradient-heading)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+          }}>
+            Cultivating thriving organisations
+          </h1>
+          <p style={{
+            fontSize: 'clamp(1.1rem, 2.5vw, 1.35rem)',
+            lineHeight: '1.7',
+            color: '#444',
+            fontWeight: '300',
+            maxWidth: '640px',
+            margin: '0 0 3rem 0',
+          }}>
+            We partner with leaders to reimagine their organisations for a world of constant complexity - seeing beyond the surface to the systems, patterns, and interconnections beneath.
+          </p>
+          <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+            <Link href="/how-we-help" style={{
+              display: 'inline-block',
+              padding: '0.9rem 2rem',
+              background: 'var(--gradient-heading)',
+              color: '#ffffff',
+              textDecoration: 'none',
+              borderRadius: '4px',
+              fontWeight: '600',
+              fontSize: '1rem',
+            }}>
+              How we help
+            </Link>
+            <Link href="/states-of-vitality" style={{
+              display: 'inline-block',
+              padding: '0.9rem 2rem',
+              border: '2px solid var(--color-purple)',
+              color: 'var(--color-purple)',
+              textDecoration: 'none',
+              borderRadius: '4px',
+              fontWeight: '600',
+              fontSize: '1rem',
+            }}>
+              Take the assessment
+            </Link>
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+      </section>
+
+      {/* Intro */}
+      <section style={{
+        backgroundColor: '#ffffff',
+        padding: '6rem 2rem',
+      }}>
+        <div style={{
+          maxWidth: '1100px',
+          margin: '0 auto',
+          display: 'grid',
+          gridTemplateColumns: '1fr 1fr',
+          gap: '5rem',
+          alignItems: 'center',
+        }}>
+          <div>
+            <p style={{
+              fontSize: '0.8rem',
+              fontWeight: '700',
+              letterSpacing: '0.12em',
+              textTransform: 'uppercase',
+              color: 'var(--color-purple)',
+              margin: '0 0 1rem 0',
+            }}>Our approach</p>
+            <h2 style={{
+              fontSize: 'clamp(1.75rem, 3.5vw, 2.5rem)',
+              fontWeight: '700',
+              lineHeight: '1.2',
+              margin: '0 0 1.5rem 0',
+              color: '#1a1a1a',
+            }}>
+              Organisations as living systems
+            </h2>
+            <p style={{
+              fontSize: '1.05rem',
+              lineHeight: '1.8',
+              color: '#444',
+              fontWeight: '300',
+              margin: '0 0 1.5rem 0',
+            }}>
+              The world of work has fundamentally changed. Complexity isn't occasional - it's constant. The old approaches of control and predictability struggle with today's reality.
+            </p>
+            <p style={{
+              fontSize: '1.05rem',
+              lineHeight: '1.8',
+              color: '#444',
+              fontWeight: '300',
+              margin: '0 0 2rem 0',
+            }}>
+              We help leaders reimagine their organisations as intentional ecosystems - places where people and purpose thrive together.
+            </p>
+            <Link href="/about" style={{
+              textDecoration: 'none',
+              fontSize: '0.95rem',
+              fontWeight: '600',
+              color: 'var(--color-purple)',
+            }}>
+              Our story →
+            </Link>
+          </div>
+          <div style={{
+            backgroundColor: 'var(--color-warm)',
+            borderRadius: '8px',
+            padding: '3rem',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '1.5rem',
+          }}>
+            {[
+              { label: 'Unifying Purpose', desc: 'Direction everyone can follow' },
+              { label: 'Collective Capacity', desc: 'People growing together' },
+              { label: 'Cultural Vitality', desc: 'A culture that energises' },
+              { label: 'Change Fluency', desc: 'Adapting with confidence' },
+            ].map((item) => (
+              <div key={item.label} style={{
+                display: 'flex',
+                alignItems: 'flex-start',
+                gap: '1rem',
+              }}>
+                <div style={{
+                  width: '8px',
+                  height: '8px',
+                  borderRadius: '50%',
+                  background: 'var(--gradient-heading)',
+                  marginTop: '6px',
+                  flexShrink: 0,
+                }} />
+                <div>
+                  <p style={{ fontWeight: '600', margin: '0 0 0.25rem 0', fontSize: '0.95rem' }}>{item.label}</p>
+                  <p style={{ color: '#666', fontWeight: '300', margin: 0, fontSize: '0.9rem' }}>{item.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
-      </main>
-    </div>
-  );
+      </section>
+
+      {/* Case studies */}
+      <section style={{
+        backgroundColor: 'var(--color-warm)',
+        padding: '6rem 2rem',
+      }}>
+        <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
+          <p style={{
+            fontSize: '0.8rem',
+            fontWeight: '700',
+            letterSpacing: '0.12em',
+            textTransform: 'uppercase',
+            color: 'var(--color-purple)',
+            margin: '0 0 1rem 0',
+          }}>Our work</p>
+          <div style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'flex-end',
+            marginBottom: '3rem',
+          }}>
+            <h2 style={{
+              fontSize: 'clamp(1.75rem, 3.5vw, 2.5rem)',
+              fontWeight: '700',
+              margin: 0,
+              color: '#1a1a1a',
+            }}>
+              Work that makes a difference
+            </h2>
+            <Link href="/case-studies" style={{
+              textDecoration: 'none',
+              fontSize: '0.9rem',
+              fontWeight: '600',
+              color: 'var(--color-purple)',
+              whiteSpace: 'nowrap',
+            }}>
+              All case studies →
+            </Link>
+          </div>
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
+            gap: '1.5rem',
+          }}>
+            {projects.slice(0, 3).map((project) => (
+              <Link
+                key={project._id}
+                href={`/case-studies/${project.slug.current}`}
+                style={{ textDecoration: 'none' }}
+              >
+                <div style={{
+                  backgroundColor: '#ffffff',
+                  borderRadius: '8px',
+                  padding: '2rem',
+                  height: '100%',
+                  transition: 'transform 0.2s',
+                }}>
+                  <p style={{
+                    fontSize: '0.75rem',
+                    fontWeight: '700',
+                    letterSpacing: '0.1em',
+                    textTransform: 'uppercase',
+                    color: 'var(--color-coral)',
+                    margin: '0 0 0.75rem 0',
+                  }}>
+                    {project.clientSector}
+                  </p>
+                  <h3 style={{
+                    fontSize: '1.1rem',
+                    fontWeight: '600',
+                    lineHeight: '1.4',
+                    color: '#1a1a1a',
+                    margin: '0 0 1rem 0',
+                  }}>
+                    {project.title}
+                  </h3>
+                  <p style={{
+                    fontSize: '0.9rem',
+                    lineHeight: '1.7',
+                    color: '#666',
+                    fontWeight: '300',
+                    margin: 0,
+                    display: '-webkit-box',
+                    WebkitLineClamp: 3,
+                    WebkitBoxOrient: 'vertical',
+                    overflow: 'hidden',
+                  }}>
+                    {project.challenge}
+                  </p>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CTA */}
+      <section style={{
+        backgroundColor: 'var(--color-dark)',
+        padding: '6rem 2rem',
+        textAlign: 'center',
+      }}>
+        <div style={{ maxWidth: '600px', margin: '0 auto' }}>
+          <p style={{
+            fontSize: '0.85rem',
+            fontWeight: '700',
+            letterSpacing: '0.1em',
+            textTransform: 'uppercase',
+            color: 'var(--color-coral)',
+            margin: '0 0 1rem 0',
+          }}>Let's talk</p>
+          <h2 style={{
+            fontSize: 'clamp(1.75rem, 4vw, 2.75rem)',
+            fontWeight: '700',
+            color: '#ffffff',
+            lineHeight: '1.2',
+            margin: '0 0 1.5rem 0',
+          }}>
+            Ready to think differently about your organisation?
+          </h2>
+          <p style={{
+            fontSize: '1.05rem',
+            lineHeight: '1.7',
+            color: 'rgba(255,255,255,0.7)',
+            fontWeight: '300',
+            margin: '0 0 2.5rem 0',
+          }}>
+            Whether you're diagnosing root causes, redesigning for the future, or enhancing what already works well - we'd love to hear about your organisation.
+          </p>
+          <Link href="/contact" style={{
+            display: 'inline-block',
+            padding: '1rem 2.5rem',
+            background: 'var(--gradient-heading)',
+            color: '#ffffff',
+            textDecoration: 'none',
+            borderRadius: '4px',
+            fontWeight: '600',
+            fontSize: '1rem',
+          }}>
+            Get in touch
+          </Link>
+        </div>
+      </section>
+
+    </main>
+  )
 }

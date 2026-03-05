@@ -14,7 +14,6 @@ export default async function CaseStudies() {
               <h2>{project.title}</h2>
             </Link>
             <p>{project.clientSector}</p>
-            <p>{project.challenge}</p>
           </li>
         ))}
       </ul>

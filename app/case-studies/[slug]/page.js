@@ -10,7 +10,7 @@ export default async function CaseStudy({ params }) {
 
       {/* Hero */}
       <section style={{
-        backgroundColor: '#FAF6F1',
+        backgroundColor: 'var(--color-warm)',
         padding: '5rem 2rem',
       }}>
         <div style={{ maxWidth: '760px', margin: '0 auto' }}>
@@ -19,8 +19,8 @@ export default async function CaseStudy({ params }) {
             fontWeight: '700',
             letterSpacing: '0.1em',
             textTransform: 'uppercase',
-            color: '#FFA200',
-            marginBottom: '1rem',
+            color: 'var(--color-coral)',
+            margin: '0 0 1rem 0',
           }}>
             {project.clientSector}
           </p>
@@ -28,8 +28,8 @@ export default async function CaseStudy({ params }) {
             fontSize: 'clamp(2rem, 5vw, 3.25rem)',
             fontWeight: '700',
             lineHeight: '1.15',
-            marginBottom: '1.5rem',
-            background: 'linear-gradient(90deg, #80388F, #FF4279, #FFA200)',
+            margin: '0 0 1.5rem 0',
+            background: 'var(--gradient-heading)',
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
           }}>
@@ -51,10 +51,10 @@ export default async function CaseStudy({ params }) {
               fontWeight: '700',
               letterSpacing: '0.12em',
               textTransform: 'uppercase',
-              color: '#80388F',
+              color: 'var(--color-purple)',
               marginBottom: '1rem',
             }}>The challenge</h2>
-            <p style={{ fontSize: '1.1rem', lineHeight: '1.8', color: '#333' }}>
+            <p style={{ fontSize: '1.1rem', lineHeight: '1.8', color: '#333', fontWeight: '300' }}>
               {project.challenge}
             </p>
           </div>
@@ -65,10 +65,10 @@ export default async function CaseStudy({ params }) {
               fontWeight: '700',
               letterSpacing: '0.12em',
               textTransform: 'uppercase',
-              color: '#80388F',
+              color: 'var(--color-purple)',
               marginBottom: '1rem',
             }}>Our approach</h2>
-            <p style={{ fontSize: '1.1rem', lineHeight: '1.8', color: '#333' }}>
+            <p style={{ fontSize: '1.1rem', lineHeight: '1.8', color: '#333', fontWeight: '300' }}>
               {project.approach}
             </p>
           </div>
@@ -79,10 +79,10 @@ export default async function CaseStudy({ params }) {
               fontWeight: '700',
               letterSpacing: '0.12em',
               textTransform: 'uppercase',
-              color: '#80388F',
+              color: 'var(--color-purple)',
               marginBottom: '1rem',
             }}>The outcome</h2>
-            <p style={{ fontSize: '1.1rem', lineHeight: '1.8', color: '#333' }}>
+            <p style={{ fontSize: '1.1rem', lineHeight: '1.8', color: '#333', fontWeight: '300' }}>
               {project.outcome}
             </p>
           </div>
@@ -102,30 +102,30 @@ export default async function CaseStudy({ params }) {
             fontWeight: '700',
             letterSpacing: '0.1em',
             textTransform: 'uppercase',
-            color: '#FFA200',
-            marginBottom: '1rem',
+            color: 'var(--color-coral)',
+            margin: '0 0 1rem 0',
           }}>Work with us</p>
           <h2 style={{
             fontSize: 'clamp(1.75rem, 4vw, 2.5rem)',
             fontWeight: '700',
             color: '#ffffff',
             lineHeight: '1.2',
-            marginBottom: '2rem',
+            margin: '0 0 2rem 0',
           }}>
             Ready to think differently about your organisation?
           </h2>
-          <a href="/contact" style={{
+          <Link href="/contact" style={{
             display: 'inline-block',
             padding: '0.9rem 2.5rem',
-            background: 'linear-gradient(90deg, #80388F, #FF4279)',
+            background: 'var(--gradient-heading)',
             color: '#ffffff',
             textDecoration: 'none',
             borderRadius: '4px',
-            fontWeight: '700',
+            fontWeight: '600',
             fontSize: '1rem',
           }}>
             Get in touch
-          </a>
+          </Link>
         </div>
       </section>
 

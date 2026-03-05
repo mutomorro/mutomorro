@@ -1,4 +1,10 @@
 @import "tailwindcss";
+@layer base {
+  .btn {
+    display: inline-block !important;
+    padding: 0.75rem 1.7rem !important;
+  }
+}
 
 /* ============================================
    MUTOMORRO DESIGN SYSTEM
@@ -147,35 +153,36 @@ a:hover {
    BUTTONS
    ============================================ */
 
-.btn {
-  display: inline-block;
-  padding: 0.85rem 2rem;
-  border-radius: 4px;
-  font-size: 0.95rem;
-  font-weight: 400;
-  text-decoration: none;
-  cursor: pointer;
-  transition: opacity 0.2s;
-}
-
-.btn:hover {
-  opacity: 0.85;
-  text-decoration: none;
-}
-
-.btn--primary {
-  background: var(--color-accent);
+.btn--primary,
+a.btn--primary {
+  background: var(--color-dark);
   color: #ffffff;
   border: none;
 }
 
-.btn--outline {
+.btn--outline,
+a.btn--outline {
   background: transparent;
-  color: var(--color-accent);
-  border: 1.5px solid var(--color-accent);
+  color: var(--color-dark);
+  border: 1.5px solid var(--color-dark);
 }
 
-.btn--gradient {
+.btn--dark,
+a.btn--dark {
+  background: var(--color-dark);
+  color: #ffffff;
+  border: none;
+}
+
+.btn--dark-outline,
+a.btn--dark-outline {
+  background: transparent;
+  color: var(--color-dark);
+  border: 1.5px solid var(--color-dark);
+}
+
+.btn--gradient,
+a.btn--gradient {
   background: var(--gradient-heading);
   color: #ffffff;
   border: none;

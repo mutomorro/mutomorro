@@ -19,7 +19,7 @@ export default async function Home() {
             We partner with leaders to reimagine their organisations for a world of constant complexity - seeing beyond the surface to the systems, patterns, and interconnections beneath.
           </p>
           <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-            <Link href="/how-we-help" className="btn btn--gradient">How we help</Link>
+            <Link href="/how-we-help" className="btn btn--primary">How we help</Link>
             <Link href="/states-of-vitality" className="btn btn--outline">Take the assessment</Link>
           </div>
         </div>

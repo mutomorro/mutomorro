@@ -104,40 +104,50 @@ export default function Nav() {
 
       </nav>
 
-      {/* About Panel */}
-      <NavPanel isOpen={openPanel === 'about'} onClose={closePanel}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '4rem' }}>
+{/* About Panel */}
+<NavPanel isOpen={openPanel === 'about'} onClose={closePanel}>
+  <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '4rem' }}>
+    <div>
+      <p className="label" style={{ marginBottom: '1rem' }}>About</p>
+      <p style={{ fontSize: '1.1rem', fontWeight: '400', lineHeight: '1.7', color: '#555' }}>
+        Who we are, how we think, and what we believe about organisations.
+      </p>
+    </div>
+    <div>
+      {[
+        { label: 'About us', desc: 'Who we are and why we exist', href: '/about' },
+        { label: 'Philosophy', desc: 'Intentional Ecosystems - how we think about organisations', href: '/philosophy' },
+        { label: 'The EMERGENT Framework', desc: 'The eight dimensions of organisational health', href: '/emergent-framework' },
+        { label: 'How we work', desc: 'Our four-stage approach to working together', href: '/how-we-work' },
+        { label: 'Projects and experience', desc: 'What working with us leads to', href: '/projects' },
+      ].map((item) => (
+        <Link
+          key={item.href}
+          href={item.href}
+          onClick={closePanel}
+          style={{
+            textDecoration: 'none',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            padding: '1.25rem 0',
+            borderBottom: '1px solid #f0ece6',
+          }}
+        >
           <div>
-            <p className="label" style={{ marginBottom: '1rem' }}>About</p>
-            <p style={{ fontSize: '1.1rem', fontWeight: '300', lineHeight: '1.7', color: '#555' }}>
-              Who we are, how we think, and what we believe about organisations.
+            <p style={{ fontSize: '1.1rem', fontWeight: '400', color: 'var(--color-dark)', marginBottom: '0.2rem' }}>
+              {item.label}
+            </p>
+            <p style={{ fontSize: '0.875rem', fontWeight: '400', color: '#888', margin: 0 }}>
+              {item.desc}
             </p>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0' }}>
-            {[
-              { label: 'About us', desc: 'Who we are and why we exist', href: '/about' },
-              { label: 'Philosophy', desc: 'Intentional Ecosystems - how we think about organisations', href: '/philosophy' },
-              { label: 'The EMERGENT Framework', desc: 'The eight dimensions of organisational health', href: '/emergent-framework' },
-              { label: 'How we work', desc: 'Our four-stage approach to working together', href: '/how-we-work' },
-              { label: 'Projects and experience', desc: 'What working with us leads to', href: '/projects' },
-            ].map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                onClick={closePanel}
-                style={{ textDecoration: 'none', padding: '1.25rem 1.5rem 1.25rem 0', borderBottom: '1px solid #f0ece6' }}
-              >
-                <p style={{ fontSize: '1rem', fontWeight: '400', color: 'var(--color-dark)', marginBottom: '0.35rem' }}>
-                  {item.label}
-                </p>
-                <p style={{ fontSize: '0.875rem', fontWeight: '300', color: '#777', margin: 0 }}>
-                  {item.desc}
-                </p>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </NavPanel>
+          <span style={{ color: 'var(--color-accent)', fontSize: '1.2rem', opacity: 0.5 }}>→</span>
+        </Link>
+      ))}
+    </div>
+  </div>
+</NavPanel>
 
       {/* How We Help Panel */}
       <NavPanel isOpen={openPanel === 'how-we-help'} onClose={closePanel}>
@@ -176,7 +186,7 @@ export default function Nav() {
                 <p style={{ fontSize: '0.95rem', fontWeight: '400', color: 'var(--color-dark)', marginBottom: '0.35rem' }}>
                   {col.title}
                 </p>
-                <p style={{ fontSize: '0.8rem', fontWeight: '300', color: '#888', marginBottom: '1rem' }}>
+                <p style={{ fontSize: '0.8rem', fontWeight: '400', color: '#888', marginBottom: '1rem' }}>
                   {col.desc}
                 </p>
                 {col.links.map((link, i) => (
@@ -187,7 +197,7 @@ export default function Nav() {
                     style={{
                       display: 'block',
                       fontSize: '0.875rem',
-                      fontWeight: '300',
+                      fontWeight: '400',
                       color: '#555',
                       textDecoration: 'none',
                       padding: '0.3rem 0',
@@ -219,7 +229,7 @@ export default function Nav() {
                   key={link}
                   href={`/building-capability/${link.toLowerCase().replace(/ /g, '-')}`}
                   onClick={closePanel}
-                  style={{ display: 'block', fontSize: '0.875rem', fontWeight: '300', color: '#555', textDecoration: 'none', padding: '0.3rem 0' }}
+                  style={{ display: 'block', fontSize: '0.875rem', fontWeight: '400', color: '#555', textDecoration: 'none', padding: '0.3rem 0' }}
                 >
                   {link}
                 </Link>
@@ -234,7 +244,7 @@ export default function Nav() {
                   key={link}
                   href={`/building-capability/${link.toLowerCase().replace(/ /g, '-')}`}
                   onClick={closePanel}
-                  style={{ display: 'block', fontSize: '0.875rem', fontWeight: '300', color: '#555', textDecoration: 'none', padding: '0.3rem 0' }}
+                  style={{ display: 'block', fontSize: '0.875rem', fontWeight: '400', color: '#555', textDecoration: 'none', padding: '0.3rem 0' }}
                 >
                   {link}
                 </Link>
@@ -265,7 +275,7 @@ export default function Nav() {
                   <p style={{ fontSize: '1rem', fontWeight: '400', color: 'var(--color-dark)', marginBottom: '0.25rem' }}>
                     {item.label}
                   </p>
-                  <p style={{ fontSize: '0.875rem', fontWeight: '300', color: '#777', margin: 0 }}>
+                  <p style={{ fontSize: '0.875rem', fontWeight: '400', color: '#777', margin: 0 }}>
                     {item.desc}
                   </p>
                 </Link>
@@ -284,7 +294,7 @@ export default function Nav() {
               <p style={{ fontSize: '1rem', fontWeight: '400', color: 'var(--color-dark)', marginBottom: '0.25rem' }}>
                 Courses
               </p>
-              <p style={{ fontSize: '0.875rem', fontWeight: '300', color: '#777', margin: 0 }}>
+              <p style={{ fontSize: '0.875rem', fontWeight: '400', color: '#777', margin: 0 }}>
                 Ready-made courses on popular topics
               </p>
             </Link>

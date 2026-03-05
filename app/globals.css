@@ -42,7 +42,7 @@ body {
   background: var(--color-white);
   color: var(--color-dark);
   font-family: var(--font-source-sans), sans-serif;
-  font-weight: 300;
+  font-weight: 400;
   -webkit-font-smoothing: antialiased;
 }
 

@@ -24,7 +24,7 @@ export default function NavPanel({ isOpen, onClose, children }) {
         left: 0,
         right: 0,
         zIndex: 95,
-        backgroundColor: 'var(--color-white)',
+        backgroundColor: 'var(--color-warm)',
         borderBottom: '1px solid #f0ece6',
         padding: '4rem 4rem 5rem',
         boxShadow: '0 20px 60px rgba(34, 28, 43, 0.15)',

@@ -1,6 +1,7 @@
 import { getProject } from '../../../sanity/client'
 import Link from 'next/link'
 import CTA from '../../../components/CTA'
+import { PortableText } from '@portabletext/react'
 
 export default async function CaseStudy({ params }) {
   const { slug } = await params
@@ -56,7 +57,9 @@ export default async function CaseStudy({ params }) {
               marginBottom: '1rem',
             }}>The challenge</h2>
             <p style={{ fontSize: '1.1rem', lineHeight: '1.8', color: '#333', fontWeight: '300' }}>
-              {project.challenge}
+              <div className="portable-text">
+              <PortableText value={project.challenge} />
+          </div>
             </p>
           </div>
 
@@ -70,7 +73,9 @@ export default async function CaseStudy({ params }) {
               marginBottom: '1rem',
             }}>Our approach</h2>
             <p style={{ fontSize: '1.1rem', lineHeight: '1.8', color: '#333', fontWeight: '300' }}>
-              {project.approach}
+            <div className="portable-text">
+  <PortableText value={project.approach} />
+</div>
             </p>
           </div>
 
@@ -84,7 +89,9 @@ export default async function CaseStudy({ params }) {
               marginBottom: '1rem',
             }}>The outcome</h2>
             <p style={{ fontSize: '1.1rem', lineHeight: '1.8', color: '#333', fontWeight: '300' }}>
-              {project.outcome}
+              <div className="portable-text">
+  <PortableText value={project.outcome} />
+</div>
             </p>
           </div>
 

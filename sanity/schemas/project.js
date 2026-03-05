@@ -32,19 +32,22 @@ export default {
   rows: 3,
     },
     {
-      name: 'challenge',
-      title: 'Challenge',
-      type: 'text',
+  name: 'challenge',
+  title: 'Challenge',
+  type: 'array',
+  of: [{ type: 'block' }],
     },
     {
       name: 'approach',
       title: 'Approach',
-      type: 'text',
+      type: 'array',
+      of: [{ type: 'block' }],
     },
     {
       name: 'outcome',
       title: 'Outcome',
-      type: 'text',
+      type: 'array',
+      of: [{ type: 'block' }],
     },
   ],
 }   

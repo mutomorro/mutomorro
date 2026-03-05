@@ -6,130 +6,48 @@ export default async function Home() {
   const projects = await getAllProjects()
 
   return (
-    <main style={{ fontFamily: 'var(--font-source-sans), sans-serif' }}>
+    <main>
 
       {/* Hero */}
-      <section style={{
-        backgroundColor: 'var(--color-warm)',
-        padding: '7rem 2rem 6rem',
-      }}>
-        <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
-          <p style={{
-            fontSize: '0.85rem',
-            fontWeight: '700',
-            letterSpacing: '0.1em',
-            textTransform: 'uppercase',
-            color: 'var(--color-coral)',
-            marginBottom: '1.5rem',
-            margin: '0 0 1.5rem 0',
-          }}>
-            Organisational Development
-          </p>
-          <h1 style={{
-            fontSize: 'clamp(2.5rem, 6vw, 4.5rem)',
-            fontWeight: '700',
-            lineHeight: '1.1',
-            marginBottom: '2rem',
-            margin: '0 0 2rem 0',
-            background: 'var(--gradient-heading)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-          }}>
+      <section className="section section--warm" style={{ padding: '7rem 2rem 6rem' }}>
+        <div className="wrap">
+          <p className="label" style={{ margin: '0 0 1.5rem' }}>Organisational Development</p>
+          <h1 className="heading-gradient heading-display" style={{ margin: '0 0 2rem', fontSize: 'clamp(2.5rem, 6vw, 4.5rem)' }}>
             Cultivating thriving organisations
           </h1>
-          <p style={{
-            fontSize: 'clamp(1.1rem, 2.5vw, 1.35rem)',
-            lineHeight: '1.7',
-            color: '#444',
-            fontWeight: '300',
-            maxWidth: '640px',
-            margin: '0 0 3rem 0',
-          }}>
+          <p className="lead" style={{ maxWidth: '640px', fontSize: 'clamp(1.1rem, 2.5vw, 1.35rem)', margin: '0 0 3rem' }}>
             We partner with leaders to reimagine their organisations for a world of constant complexity - seeing beyond the surface to the systems, patterns, and interconnections beneath.
           </p>
           <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-            <Link href="/how-we-help" style={{
-              display: 'inline-block',
-              padding: '0.9rem 2rem',
-              background: 'var(--gradient-heading)',
-              color: '#ffffff',
-              textDecoration: 'none',
-              borderRadius: '4px',
-              fontWeight: '600',
-              fontSize: '1rem',
-            }}>
-              How we help
-            </Link>
-            <Link href="/states-of-vitality" style={{
-              display: 'inline-block',
-              padding: '0.9rem 2rem',
-              border: '2px solid var(--color-purple)',
-              color: 'var(--color-purple)',
-              textDecoration: 'none',
-              borderRadius: '4px',
-              fontWeight: '600',
-              fontSize: '1rem',
-            }}>
-              Take the assessment
-            </Link>
+            <Link href="/how-we-help" className="btn btn--gradient">How we help</Link>
+            <Link href="/states-of-vitality" className="btn btn--outline">Take the assessment</Link>
           </div>
         </div>
       </section>
 
       {/* Intro */}
-      <section style={{
-        backgroundColor: '#ffffff',
-        padding: '6rem 2rem',
-      }}>
-        <div style={{
-          maxWidth: '1100px',
-          margin: '0 auto',
+      <section className="section section--white">
+        <div className="wrap" style={{
           display: 'grid',
           gridTemplateColumns: '1fr 1fr',
           gap: '5rem',
           alignItems: 'center',
         }}>
           <div>
-            <p style={{
-              fontSize: '0.8rem',
-              fontWeight: '700',
-              letterSpacing: '0.12em',
-              textTransform: 'uppercase',
-              color: 'var(--color-purple)',
-              margin: '0 0 1rem 0',
-            }}>Our approach</p>
-            <h2 style={{
-              fontSize: 'clamp(1.75rem, 3.5vw, 2.5rem)',
-              fontWeight: '700',
-              lineHeight: '1.2',
-              margin: '0 0 1.5rem 0',
-              color: '#1a1a1a',
-            }}>
+            <p className="label label--accent" style={{ marginBottom: '1rem' }}>Our approach</p>
+            <h2 className="heading-medium" style={{ margin: '0 0 1.5rem', color: 'var(--color-dark)' }}>
               Organisations as living systems
             </h2>
-            <p style={{
-              fontSize: '1.05rem',
-              lineHeight: '1.8',
-              color: '#444',
-              fontWeight: '300',
-              margin: '0 0 1.5rem 0',
-            }}>
+            <p className="lead" style={{ margin: '0 0 1.5rem' }}>
               The world of work has fundamentally changed. Complexity isn't occasional - it's constant. The old approaches of control and predictability struggle with today's reality.
             </p>
-            <p style={{
-              fontSize: '1.05rem',
-              lineHeight: '1.8',
-              color: '#444',
-              fontWeight: '300',
-              margin: '0 0 2rem 0',
-            }}>
+            <p className="lead" style={{ margin: '0 0 2rem' }}>
               We help leaders reimagine their organisations as intentional ecosystems - places where people and purpose thrive together.
             </p>
             <Link href="/about" style={{
-              textDecoration: 'none',
               fontSize: '0.95rem',
-              fontWeight: '600',
-              color: 'var(--color-purple)',
+              fontWeight: '400',
+              color: 'var(--color-accent)',
             }}>
               Our story →
             </Link>
@@ -148,11 +66,7 @@ export default async function Home() {
               { label: 'Cultural Vitality', desc: 'A culture that energises' },
               { label: 'Change Fluency', desc: 'Adapting with confidence' },
             ].map((item) => (
-              <div key={item.label} style={{
-                display: 'flex',
-                alignItems: 'flex-start',
-                gap: '1rem',
-              }}>
+              <div key={item.label} style={{ display: 'flex', alignItems: 'flex-start', gap: '1rem' }}>
                 <div style={{
                   width: '8px',
                   height: '8px',
@@ -162,7 +76,7 @@ export default async function Home() {
                   flexShrink: 0,
                 }} />
                 <div>
-                  <p style={{ fontWeight: '600', margin: '0 0 0.25rem 0', fontSize: '0.95rem' }}>{item.label}</p>
+                  <p className="body-text" style={{ margin: '0 0 0.25rem', fontSize: '0.95rem' }}>{item.label}</p>
                   <p style={{ color: '#666', fontWeight: '300', margin: 0, fontSize: '0.9rem' }}>{item.desc}</p>
                 </div>
               </div>
@@ -171,102 +85,52 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Case studies */}
-      <section style={{
-        backgroundColor: 'var(--color-warm)',
-        padding: '6rem 2rem',
-      }}>
-        <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
-          <p style={{
-            fontSize: '0.8rem',
-            fontWeight: '700',
-            letterSpacing: '0.12em',
-            textTransform: 'uppercase',
-            color: 'var(--color-purple)',
-            margin: '0 0 1rem 0',
-          }}>Our work</p>
+      {/* Projects */}
+      <section className="section section--warm">
+        <div className="wrap">
+          <p className="label label--accent" style={{ marginBottom: '1rem' }}>Our work</p>
           <div style={{
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'flex-end',
             marginBottom: '3rem',
           }}>
-            <h2 style={{
-              fontSize: 'clamp(1.75rem, 3.5vw, 2.5rem)',
-              fontWeight: '700',
-              margin: 0,
-              color: '#1a1a1a',
-            }}>
+            <h2 className="heading-medium" style={{ color: 'var(--color-dark)' }}>
               Work that makes a difference
             </h2>
             <Link href="/projects" style={{
-              textDecoration: 'none',
               fontSize: '0.9rem',
-              fontWeight: '600',
-              color: 'var(--color-purple)',
+              fontWeight: '400',
+              color: 'var(--color-accent)',
               whiteSpace: 'nowrap',
             }}>
-              All case studies →
+              All projects →
             </Link>
           </div>
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
-            gap: '1.5rem',
-          }}>
+          <div className="card-grid">
             {projects.slice(0, 3).map((project) => (
               <Link
                 key={project._id}
                 href={`/projects/${project.slug.current}`}
-                style={{ textDecoration: 'none' }}
+                className="card"
               >
-                <div style={{
-                  backgroundColor: '#ffffff',
-                  borderRadius: '8px',
-                  padding: '2rem',
-                  height: '100%',
-                  transition: 'transform 0.2s',
+                <p className="card-label">{project.clientSector}</p>
+                <h3 className="card-title">{project.title}</h3>
+                <p className="card-body" style={{
+                  display: '-webkit-box',
+                  WebkitLineClamp: 3,
+                  WebkitBoxOrient: 'vertical',
+                  overflow: 'hidden',
                 }}>
-                  <p style={{
-                    fontSize: '0.75rem',
-                    fontWeight: '700',
-                    letterSpacing: '0.1em',
-                    textTransform: 'uppercase',
-                    color: 'var(--color-coral)',
-                    margin: '0 0 0.75rem 0',
-                  }}>
-                    {project.clientSector}
-                  </p>
-                  <h3 style={{
-                    fontSize: '1.1rem',
-                    fontWeight: '600',
-                    lineHeight: '1.4',
-                    color: '#1a1a1a',
-                    margin: '0 0 1rem 0',
-                  }}>
-                    {project.title}
-                  </h3>
-                  <p style={{
-                    fontSize: '0.9rem',
-                    lineHeight: '1.7',
-                    color: '#666',
-                    fontWeight: '300',
-                    margin: 0,
-                    display: '-webkit-box',
-                    WebkitLineClamp: 3,
-                    WebkitBoxOrient: 'vertical',
-                    overflow: 'hidden',
-                  }}>
-                    {project.shortSummary || project.challenge}
-                  </p>
-                </div>
+                  {project.shortSummary || project.challenge}
+                </p>
               </Link>
             ))}
           </div>
         </div>
       </section>
 
-<CTA />
+      <CTA />
 
     </main>
   )

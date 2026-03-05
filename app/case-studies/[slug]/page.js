@@ -92,7 +92,7 @@ export default async function CaseStudy({ params }) {
 
       {/* CTA */}
       <section style={{
-        backgroundColor: '#2D1B3D',
+        backgroundColor: 'var(--color-dark)',
         padding: '5rem 2rem',
         textAlign: 'center',
       }}>

@@ -1,6 +1,7 @@
 import { Source_Sans_3 } from 'next/font/google'
 import './globals.css'
 import Nav from '../components/Nav'
+import Footer from '../components/Footer'
 
 const sourceSans = Source_Sans_3({
   subsets: ['latin'],
@@ -19,6 +20,7 @@ export default function RootLayout({ children }) {
       <body className={`${sourceSans.variable} ${sourceSans.className}`}>
         <Nav />
         {children}
+        <Footer />
       </body>
     </html>
   )

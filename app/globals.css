@@ -1,8 +1,13 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --color-dark: #221C2B;
+  --color-white: #FFFFFF;
+  --color-warm: #FAF6F1;
+  --color-purple: #80388F;
+  --color-coral: #FFA200;
+  --color-pink: #FF4279;
+  --gradient-heading: linear-gradient(90deg, #80388F, #FF4279, #FFA200);
 }
 
 @theme inline {

@@ -51,56 +51,64 @@ export default function Nav() {
           </span>
         </Link>
 
-        {/* Nav links */}
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '2rem',
-        }}>
-          {['About', 'How We Help', 'Explore'].map((item) => {
-            const key = item.toLowerCase().replace(/ /g, '-')
-            const isActive = openPanel === key
-            return (
-              <button
-                key={key}
-                onClick={() => togglePanel(key)}
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  cursor: 'pointer',
-                  fontSize: '0.95rem',
-                  fontWeight: isActive ? '400' : '300',
-                  color: isActive ? 'var(--color-accent)' : 'var(--color-dark)',
-                  letterSpacing: '-0.01em',
-                  padding: 0,
-                  borderBottom: isActive ? '1.5px solid var(--color-accent)' : '1.5px solid transparent',
-                  paddingBottom: '2px',
-                  transition: 'color 0.15s',
-                }}
-              >
-                {item}
-              </button>
-            )
-          })}
+{/* Nav links - left group */}
+<div style={{
+  display: 'flex',
+  alignItems: 'center',
+  gap: '2rem',
+  marginLeft: '3rem',
+}}>
+  {['About', 'How We Help', 'Explore'].map((item) => {
+    const key = item.toLowerCase().replace(/ /g, '-')
+    const isActive = openPanel === key
+    return (
+      <button
+        key={key}
+        onClick={() => togglePanel(key)}
+        style={{
+          background: 'none',
+          border: 'none',
+          cursor: 'pointer',
+          fontSize: '0.95rem',
+          fontWeight: isActive ? '600' : '400',
+          color: isActive ? 'var(--color-accent)' : 'var(--color-dark)',
+          letterSpacing: '-0.01em',
+          padding: 0,
+          borderBottom: isActive ? '1.5px solid var(--color-accent)' : '1.5px solid transparent',
+          paddingBottom: '2px',
+          transition: 'color 0.15s',
+        }}
+      >
+        {item}
+      </button>
+    )
+  })}
+</div>
 
-          {/* CTA buttons */}
-          <Link
-            href="/states-of-vitality"
-            onClick={closePanel}
-            className="btn btn--outline"
-            style={{ fontSize: '0.85rem', padding: '0.55rem 1.1rem' }}
-          >
-            States of Vitality
-          </Link>
-          <Link
-            href="/contact"
-            onClick={closePanel}
-            className="btn btn--primary"
-            style={{ fontSize: '0.85rem', padding: '0.55rem 1.1rem' }}
-          >
-            Talk to us
-          </Link>
-        </div>
+{/* CTAs - right group */}
+<div style={{
+  display: 'flex',
+  alignItems: 'center',
+  gap: '1rem',
+  marginLeft: 'auto',
+}}>
+  <Link
+    href="/states-of-vitality"
+    onClick={closePanel}
+    className="btn btn--outline"
+    style={{ fontSize: '0.85rem', padding: '0.55rem 1.1rem' }}
+  >
+    States of Vitality
+  </Link>
+  <Link
+    href="/contact"
+    onClick={closePanel}
+    className="btn btn--primary"
+    style={{ fontSize: '0.85rem', padding: '0.55rem 1.1rem' }}
+  >
+    Talk to us
+  </Link>
+</div>
 
       </nav>
 

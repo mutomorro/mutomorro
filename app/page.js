@@ -13,7 +13,7 @@ export default async function Home() {
         backgroundColor: 'var(--color-warm)',
         padding: '7rem 2rem 6rem',
       }}>
-        <div style={{ maxWidth: '860px', margin: '0 auto' }}>
+        <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
           <p style={{
             fontSize: '0.85rem',
             fontWeight: '700',

@@ -266,30 +266,31 @@ export default function Nav() {
       <NavPanel isOpen={openPanel === 'explore'} onClose={closePanel}>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4rem' }}>
 
-          {/* Read and think */}
-          <div>
-            <p className="label" style={{ marginBottom: '1.5rem' }}>Read and think</p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-              {[
-                { label: 'Tools of the Trade', desc: 'Practical models, frameworks and concepts', href: '/tools' },
-                { label: 'Thinking', desc: 'Articles, perspectives and ideas', href: '/article' },
-              ].map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  onClick={closePanel}
-                  style={{ textDecoration: 'none' }}
-                >
-                  <p style={{ fontSize: '1rem', fontWeight: '400', color: 'var(--color-dark)', marginBottom: '0.25rem' }}>
-                    {item.label}
-                  </p>
-                  <p style={{ fontSize: '0.875rem', fontWeight: '400', color: '#777', margin: 0 }}>
-                    {item.desc}
-                  </p>
-                </Link>
-              ))}
-            </div>
-          </div>
+{/* Read and think */}
+<div>
+  <p className="label" style={{ margin: '0 0 1.5rem' }}>Read and think</p>
+  <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+    {[
+      { label: 'The EMERGENT Framework', desc: 'The eight dimensions of organisational health', href: '/emergent-framework' },
+      { label: 'Tools of the Trade', desc: 'Practical models, frameworks and concepts', href: '/tools' },
+      { label: 'Thinking', desc: 'Articles, perspectives and ideas', href: '/article' },
+    ].map((item) => (
+      <Link
+        key={item.href}
+        href={item.href}
+        onClick={closePanel}
+        style={{ textDecoration: 'none' }}
+      >
+        <p style={{ fontSize: '1rem', fontWeight: '400', color: 'var(--color-dark)', margin: '0 0 0.25rem' }}>
+          {item.label}
+        </p>
+        <p style={{ fontSize: '0.875rem', fontWeight: '300', color: '#777', margin: 0 }}>
+          {item.desc}
+        </p>
+      </Link>
+    ))}
+  </div>
+</div>
 
           {/* Learn and develop */}
           <div>

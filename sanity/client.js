@@ -13,7 +13,8 @@ export async function getAllProjects() {
     title,
     slug,
     clientSector,
-    challenge
+    challenge,
+    shortSummary
   }`)
 }
 

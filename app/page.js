@@ -257,7 +257,7 @@ export default async function Home() {
                     WebkitBoxOrient: 'vertical',
                     overflow: 'hidden',
                   }}>
-                    {project.challenge}
+                    {project.shortSummary || project.challenge}
                   </p>
                 </div>
               </Link>

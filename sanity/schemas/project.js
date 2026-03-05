@@ -25,6 +25,13 @@ export default {
       type: 'string',
     },
     {
+  name: 'shortSummary',
+  title: 'Short Summary',
+  type: 'text',
+  description: 'A short 1-2 sentence summary for cards and previews. Keep it under 150 characters.',
+  rows: 3,
+    },
+    {
       name: 'challenge',
       title: 'Challenge',
       type: 'text',
@@ -40,4 +47,4 @@ export default {
       type: 'text',
     },
   ],
-}
+}   

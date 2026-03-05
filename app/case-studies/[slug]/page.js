@@ -1,5 +1,6 @@
 import { getProject } from '../../../sanity/client'
 import Link from 'next/link'
+import CTA from '../../../components/CTA'
 
 export default async function CaseStudy({ params }) {
   const { slug } = await params
@@ -90,44 +91,7 @@ export default async function CaseStudy({ params }) {
         </div>
       </section>
 
-      {/* CTA */}
-      <section style={{
-        backgroundColor: 'var(--color-dark)',
-        padding: '5rem 2rem',
-        textAlign: 'center',
-      }}>
-        <div style={{ maxWidth: '600px', margin: '0 auto' }}>
-          <p style={{
-            fontSize: '0.85rem',
-            fontWeight: '700',
-            letterSpacing: '0.1em',
-            textTransform: 'uppercase',
-            color: 'var(--color-coral)',
-            margin: '0 0 1rem 0',
-          }}>Work with us</p>
-          <h2 style={{
-            fontSize: 'clamp(1.75rem, 4vw, 2.5rem)',
-            fontWeight: '700',
-            color: '#ffffff',
-            lineHeight: '1.2',
-            margin: '0 0 2rem 0',
-          }}>
-            Ready to think differently about your organisation?
-          </h2>
-          <Link href="/contact" style={{
-            display: 'inline-block',
-            padding: '0.9rem 2.5rem',
-            background: 'var(--gradient-heading)',
-            color: '#ffffff',
-            textDecoration: 'none',
-            borderRadius: '4px',
-            fontWeight: '600',
-            fontSize: '1rem',
-          }}>
-            Get in touch
-          </Link>
-        </div>
-      </section>
+<CTA />
 
     </main>
   )

@@ -344,6 +344,11 @@ a.btn--gradient:hover {
   box-shadow: 0 4px 20px rgba(34, 28, 43, 0.08);
   border-color: #ddd;
   text-decoration: none;
+  .card p,
+.card h2,
+.card h3 {
+  text-decoration: none !important;
+}
 }
 
 .card-label {

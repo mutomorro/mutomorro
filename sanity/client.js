@@ -183,7 +183,11 @@ export async function getCourse(slug) {
   )
 }
 
-// Get all services grouped by category
+// ============================================
+// SERVICES
+// ============================================
+
+// Get all services (for listings)
 export async function getAllServices() {
   return client.fetch(`
     *[_type == "service"] | order(category asc, order asc) {
@@ -191,16 +195,12 @@ export async function getAllServices() {
       title,
       slug,
       category,
+      categoryLabel,
       order,
-      tagline,
-      shortSummary,
+      heroTagline,
     }
   `)
 }
-
-// ============================================
-// SERVICES
-// ============================================
 
 // Get all services in a category
 export async function getServicesByCategory(category) {
@@ -210,13 +210,13 @@ export async function getServicesByCategory(category) {
       title,
       slug,
       category,
-      tagline,
-      shortSummary,
+      categoryLabel,
+      heroTagline,
     }
   `, { category })
 }
 
-// Get single service
+// Get single service - full page content
 export async function getService(category, slug) {
   return client.fetch(`
     *[_type == "service" && category == $category && slug.current == $slug][0] {
@@ -224,21 +224,93 @@ export async function getService(category, slug) {
       title,
       slug,
       category,
-      tagline,
-      shortSummary,
-      intro,
-      body,
+      categoryLabel,
+
+      // Hero
+      heroHeading,
+      heroTagline,
+
+      // Context
+      contextHeading,
+      contextBody,
+      "propositionImageUrl": propositionImage.asset->url,
+      propositionCaption,
+
+      // Recognition
+      recognitionHeading,
+      recognitionIntro,
+      recognitionItems,
+      recognitionBridge,
+
+      // Stats
+      stats,
+
+      // Perspective
+      perspectiveHeading,
+      perspectiveBody,
+      "perspectiveImageUrl": perspectiveImage.asset->url,
+      perspectiveLinkLabel,
+      perspectiveLinkUrl,
+
+      // Approach
+      approachIntro,
+      stages[] {
+        stageNumber,
+        stageTitle,
+        stageSummary,
+        stageHeading,
+        stageBody,
+        stageInPractice,
+        stageOutcome,
+        "stageImageUrl": stageImage.asset->url,
+      },
+
+      // Outcomes
+      outcomesHeading,
+      outcomesIntro,
+      outcomes,
+      outcomesClosing,
+
+      // Examples
+      relatedProjects[]-> {
+        _id,
+        title,
+        slug,
+        clientSector,
+        shortSummary,
+      },
+      testimonialQuote,
+      testimonialAttribution,
+
+      // CTA
+      ctaHeading,
+      ctaBody,
+      ctaButtonLabel,
+      ctaButtonUrl,
+
+      // Logo strip
+      showLogoStrip,
+      logoStripPosition,
+
+      // SEO
+      seoTitle,
+      seoDescription,
+
+      // Related
       relatedDimensions[]-> {
+        _id,
         title,
         slug,
         colour,
         anchor,
       },
       relatedServices[]-> {
+        _id,
         title,
         slug,
         category,
-        shortSummary,
+        categoryLabel,
+        heroTagline,
       },
     }
   `, { category, slug })

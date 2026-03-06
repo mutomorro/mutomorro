@@ -182,3 +182,64 @@ export async function getCourse(slug) {
     { slug }
   )
 }
+
+// Get all services grouped by category
+export async function getAllServices() {
+  return client.fetch(`
+    *[_type == "service"] | order(category asc, order asc) {
+      _id,
+      title,
+      slug,
+      category,
+      order,
+      tagline,
+      shortSummary,
+    }
+  `)
+}
+
+// ============================================
+// SERVICES
+// ============================================
+
+// Get all services in a category
+export async function getServicesByCategory(category) {
+  return client.fetch(`
+    *[_type == "service" && category == $category] | order(order asc) {
+      _id,
+      title,
+      slug,
+      category,
+      tagline,
+      shortSummary,
+    }
+  `, { category })
+}
+
+// Get single service
+export async function getService(category, slug) {
+  return client.fetch(`
+    *[_type == "service" && category == $category && slug.current == $slug][0] {
+      _id,
+      title,
+      slug,
+      category,
+      tagline,
+      shortSummary,
+      intro,
+      body,
+      relatedDimensions[]-> {
+        title,
+        slug,
+        colour,
+        anchor,
+      },
+      relatedServices[]-> {
+        title,
+        slug,
+        category,
+        shortSummary,
+      },
+    }
+  `, { category, slug })
+}

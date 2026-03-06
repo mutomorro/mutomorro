@@ -566,10 +566,28 @@ export default defineType({
     // ===========================
 
     defineField({
+      name: 'primaryKeyword',
+      title: 'Primary Keyword',
+      type: 'string',
+      description: 'The main search term this page targets - e.g. "organisational culture change". This guides the content, not shown on the page.',
+      group: 'seo',
+      validation: (rule) => rule.required(),
+    }),
+
+    defineField({
+      name: 'secondaryKeywords',
+      title: 'Secondary Keywords',
+      type: 'array',
+      description: 'Supporting search terms - e.g. "culture change consultancy", "workplace culture transformation"',
+      group: 'seo',
+      of: [{ type: 'string' }],
+    }),
+
+    defineField({
       name: 'seoTitle',
       title: 'SEO Title',
       type: 'string',
-      description: 'Custom page title for search engines. Leave blank to use the Hero Heading.',
+      description: 'Custom page title for search engines. Should include the primary keyword. Leave blank to use the Hero Heading.',
       group: 'seo',
     }),
 
@@ -577,7 +595,7 @@ export default defineType({
       name: 'seoDescription',
       title: 'SEO Description',
       type: 'text',
-      description: 'Meta description for search results. Leave blank to use the Hero Tagline.',
+      description: 'Meta description for search results. Should include the primary keyword naturally. Leave blank to use the Hero Tagline.',
       group: 'seo',
       rows: 3,
     }),

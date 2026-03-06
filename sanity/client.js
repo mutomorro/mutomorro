@@ -217,9 +217,9 @@ export async function getServicesByCategory(category) {
 }
 
 // Get single service - full page content
-export async function getService(category, slug) {
+export async function getService(slug) {
   return client.fetch(`
-    *[_type == "service" && category == $category && slug.current == $slug][0] {
+    *[_type == "service" && slug.current == $slug][0] {
       _id,
       title,
       slug,
@@ -313,5 +313,5 @@ export async function getService(category, slug) {
         heroTagline,
       },
     }
-  `, { category, slug })
+  `, { slug })
 }

@@ -1,16 +1,16 @@
 import Link from 'next/link'
-import { getService } from '../../../../sanity/client'
+import { getService } from '../../../sanity/client'
 import { PortableText } from '@portabletext/react'
 import { notFound } from 'next/navigation'
-import CTA from '../../../../components/CTA'
+import CTA from '../../../components/CTA'
 
 // ============================================
 // SEO METADATA
 // ============================================
 
 export async function generateMetadata({ params }) {
-  const { category, slug } = await params
-  const service = await getService(category, slug)
+  const { slug } = await params
+  const service = await getService(slug)
   if (!service) return {}
 
   return {
@@ -24,8 +24,8 @@ export async function generateMetadata({ params }) {
 // ============================================
 
 export default async function ServicePage({ params }) {
-  const { category, slug } = await params
-  const service = await getService(category, slug)
+  const { slug } = await params
+  const service = await getService(slug)
 
   if (!service) notFound()
 
@@ -58,7 +58,7 @@ export default async function ServicePage({ params }) {
             </Link>
             <span style={{ color: 'rgba(255,255,255,0.3)', fontSize: '0.875rem' }}>→</span>
             <Link
-              href={`/services/${category}`}
+              href={`/services/${service.category}`}
               style={{
                 fontSize: '0.875rem',
                 fontWeight: '400',
@@ -748,7 +748,7 @@ export default async function ServicePage({ params }) {
               {service.relatedServices.map((related) => (
                 <Link
                   key={related._id}
-                  href={`/services/${related.category}/${related.slug.current}`}
+                  href={`/services/${related.slug.current}`}
                   className="card"
                 >
                   <p className="card-label">{related.categoryLabel}</p>

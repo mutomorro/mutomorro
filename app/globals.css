@@ -335,7 +335,7 @@ a.btn--gradient:hover {
   border: 1px solid #eee;
   border-radius: 8px;
   padding: 1.75rem;
-  text-decoration: none;
+  text-decoration: none !important;
   display: block;
   transition: box-shadow 0.2s, border-color 0.2s;
 }
@@ -343,12 +343,19 @@ a.btn--gradient:hover {
 .card:hover {
   box-shadow: 0 4px 20px rgba(34, 28, 43, 0.08);
   border-color: #ddd;
-  text-decoration: none;
-  .card p,
+  text-decoration: none !important;
+}
+
+.card p,
 .card h2,
 .card h3 {
   text-decoration: none !important;
 }
+
+.card:hover p,
+.card:hover h2,
+.card:hover h3 {
+  text-decoration: none !important;
 }
 
 .card-label {

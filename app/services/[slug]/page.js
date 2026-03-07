@@ -57,17 +57,15 @@ export default async function ServicePage({ params }) {
               How we help
             </Link>
             <span style={{ color: 'rgba(255,255,255,0.3)', fontSize: '0.875rem' }}>→</span>
-            <Link
-              href={`/services/${service.category}`}
+            <span
               style={{
                 fontSize: '0.875rem',
                 fontWeight: '400',
-                color: 'var(--color-accent)',
-                textDecoration: 'none',
+                color: 'rgba(255,255,255,0.5)',
               }}
             >
               {service.categoryLabel}
-            </Link>
+            </span>
           </div>
 
           <p className="label label--light" style={{ margin: '0 0 1rem' }}>

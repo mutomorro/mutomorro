@@ -170,9 +170,9 @@ export default function Nav() {
                 desc: 'Who we are and where we are going',
                 links: ['Organisational Purpose', 'Strategic Alignment', 'Culture Change'],
                 hrefs: [
-                  '/services/purpose-direction/organisational-purpose',
-                  '/services/purpose-direction/strategic-alignment',
-                  '/services/purpose-direction/culture-change',
+                  '/services/organisational-purpose',
+                  '/services/strategic-alignment',
+                  '/services/culture-change',
                 ],
               },
               {
@@ -180,9 +180,9 @@ export default function Nav() {
                 desc: 'How we\'re organised and how work flows',
                 links: ['Merger Integration', 'Organisational Restructures', 'Operational Effectiveness'],
                 hrefs: [
-                  '/services/structure-operations/merger-integration',
-                  '/services/structure-operations/organisational-restructures',
-                  '/services/structure-operations/operational-effectiveness',
+                  '/services/merger-integration',
+                  '/services/organisational-restructures',
+                  '/services/operational-effectiveness',
                 ],
               },
               {
@@ -190,10 +190,10 @@ export default function Nav() {
                 desc: 'How we develop our collective abilities',
                 links: ['Change Management', 'Employee Experience', 'Capacity Development', 'Continuous Learning'],
                 hrefs: [
-                  '/services/people-capability/change-management',
-                  '/services/people-capability/employee-experience',
-                  '/services/people-capability/capacity-development',
-                  '/services/people-capability/continuous-learning',
+                  '/services/change-management',
+                  '/services/employee-experience',
+                  '/services/capacity-development',
+                  '/services/continuous-learning',
                 ],
               },
               {
@@ -201,9 +201,9 @@ export default function Nav() {
                 desc: 'How we deliver value to customers',
                 links: ['Customer Experience', 'Service Design', 'Scaling Operations'],
                 hrefs: [
-                  '/services/service-experience/customer-experience',
-                  '/services/service-experience/service-design',
-                  '/services/service-experience/scaling-operations',
+                  '/services/customer-experience',
+                  '/services/service-design',
+                  '/services/scaling-operations',
                 ],
               },
             ].map((col) => (
@@ -250,9 +250,9 @@ export default function Nav() {
                 For Leaders
               </p>
               {[
-                { label: 'Leadership Programme', href: '/services/people-capability/leadership-programme' },
-                { label: 'Executive Coaching', href: '/services/people-capability/executive-coaching' },
-                { label: 'Leadership Facilitation', href: '/services/people-capability/leadership-facilitation' },
+                { label: 'Leadership Programme', href: '/services/leadership-programme' },
+                { label: 'Executive Coaching', href: '/services/executive-coaching' },
+                { label: 'Leadership Facilitation', href: '/services/leadership-facilitation' },
               ].map((item) => (
                 <Link
                   key={item.label}
@@ -269,9 +269,9 @@ export default function Nav() {
                 For Teams
               </p>
               {[
-                { label: 'Bespoke Training', href: '/services/people-capability/bespoke-training' },
-                { label: 'Problem Solving Workshops', href: '/services/people-capability/problem-solving-workshops' },
-                { label: 'Manager Coaching', href: '/services/people-capability/manager-coaching' },
+                { label: 'Bespoke Training', href: '/services/bespoke-training' },
+                { label: 'Problem Solving Workshops', href: '/services/problem-solving-workshops' },
+                { label: 'Manager Coaching', href: '/services/manager-coaching' },
                 { label: 'Prebuilt Courses', href: '/courses' },
               ].map((item) => (
                 <Link

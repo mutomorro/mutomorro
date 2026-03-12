@@ -14,13 +14,13 @@ export default function Footer() {
                 maxWidth: '1350px',
                 margin: '0 auto',
                 display: 'grid',
-                gridTemplateColumns: 'repeat(5, 1fr)',
+                gridTemplateColumns: 'repeat(4, 1fr)',
                 gap: '3rem',
                 paddingBottom: '3rem',
                 borderBottom: '1px solid rgba(255,255,255,0.1)',
             }}>
 
-                {/* Brand column */}
+                {/* Brand + Newsletter column */}
                 <div>
                     <span style={{
                         fontSize: '1.25rem',
@@ -40,13 +40,12 @@ export default function Footer() {
                         lineHeight: '1.7',
                         color: 'rgba(255,255,255,0.6)',
                         fontWeight: '300',
-                        margin: 0,
+                        margin: '0 0 2rem',
                     }}>
                         Helping organisations become intentional ecosystems - places where people and purpose thrive together.
                     </p>
+                    <NewsletterSignup variant="footer" />
                 </div>
-
-                <NewsletterSignup variant="footer" />
 
                 {/* How We Help */}
                 <div>
@@ -57,7 +56,7 @@ export default function Footer() {
                         <li><Link href="/how-we-help/people-and-capability" style={footerLink}>People & Capability</Link></li>
                         <li><Link href="/how-we-help/service-and-experience" style={footerLink}>Service & Experience</Link></li>
                         <li><Link href="/projects" style={footerLink}>Projects and experience</Link></li>
-                         </ul>
+                    </ul>
                 </div>
 
                 {/* Explore */}

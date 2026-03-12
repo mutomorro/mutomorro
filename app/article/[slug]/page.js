@@ -55,11 +55,7 @@ export default async function ArticlePage({ params }) {
             />
           </div>
 
-          <section className="section section--white">
-  <div className="wrap--narrow">
-    <NewsletterSignup variant="inline" />
-  </div>
-</section>
+          <NewsletterSignup variant="inline" />
 
           {/* Related dimensions */}
           {article.relatedDimensions?.length > 0 && (

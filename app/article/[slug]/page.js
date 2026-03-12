@@ -3,6 +3,7 @@ import { PortableText } from '@portabletext/react'
 import Link from 'next/link'
 import CTA from '../../../components/CTA'
 import { urlFor } from '../../../sanity/image'
+import NewsletterSignup from '../../../components/NewsletterSignup'
 
 export default async function ArticlePage({ params }) {
   const { slug } = await params
@@ -53,6 +54,12 @@ export default async function ArticlePage({ params }) {
               }}
             />
           </div>
+
+          <section className="section section--white">
+  <div className="wrap--narrow">
+    <NewsletterSignup variant="inline" />
+  </div>
+</section>
 
           {/* Related dimensions */}
           {article.relatedDimensions?.length > 0 && (

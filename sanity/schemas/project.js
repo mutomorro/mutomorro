@@ -83,6 +83,13 @@ export default {
       description: 'One or two sentences — shown on the case study listing page.',
     },
     {
+      name: 'subtitle',
+      title: 'Subtitle',
+      type: 'string',
+      group: 'core',
+      description: 'One-line tagline — shown below the title on the case study page.',
+    },
+    {
       name: 'clientSector',
       title: 'Client sector',
       type: 'string',
@@ -174,6 +181,13 @@ export default {
       group: 'seo',
       description: 'Meta description shown in search results. Aim for 150-160 characters.',
       validation: Rule => Rule.max(160).warning('Keep under 160 characters for best SEO results'),
+    },
+    {
+      name: 'focusKeyword',
+      title: 'Focus keyword',
+      type: 'string',
+      group: 'seo',
+      description: 'Primary keyword or phrase for this case study. Comma-separated if multiple.',
     },
   ],
 

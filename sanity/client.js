@@ -46,10 +46,14 @@ export async function getAllTools() {
 
 export async function getTool(slug) {
   return await client.fetch(
-    `*[_type == "tool" && slug.current == $slug][0]`,
+    `*[_type == "tool" && slug.current == $slug][0] {
+      ...,
+      "toolkitFileUrl": toolkitFile.asset->url
+    }`,
     { slug }
   )
 }
+
 
 // ============================================
 // EMERGENT DIMENSIONS

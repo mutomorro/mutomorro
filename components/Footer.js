@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import NewsletterSignup from './NewsletterSignup'
 
 export default function Footer() {
     return (
@@ -13,7 +14,7 @@ export default function Footer() {
                 maxWidth: '1350px',
                 margin: '0 auto',
                 display: 'grid',
-                gridTemplateColumns: 'repeat(4, 1fr)',
+                gridTemplateColumns: 'repeat(5, 1fr)',
                 gap: '3rem',
                 paddingBottom: '3rem',
                 borderBottom: '1px solid rgba(255,255,255,0.1)',
@@ -45,6 +46,8 @@ export default function Footer() {
                     </p>
                 </div>
 
+                <NewsletterSignup variant="footer" />
+
                 {/* How We Help */}
                 <div>
                     <p style={footerHeading}>How We Help</p>
@@ -54,7 +57,7 @@ export default function Footer() {
                         <li><Link href="/how-we-help/people-and-capability" style={footerLink}>People & Capability</Link></li>
                         <li><Link href="/how-we-help/service-and-experience" style={footerLink}>Service & Experience</Link></li>
                         <li><Link href="/projects" style={footerLink}>Projects and experience</Link></li>
-                    </ul>
+                         </ul>
                 </div>
 
                 {/* Explore */}

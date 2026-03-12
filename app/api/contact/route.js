@@ -1,6 +1,11 @@
 import { Resend } from 'resend'
+import { createClient } from '@supabase/supabase-js'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_ROLE_KEY
+)
 
 export async function POST(request) {
   try {
@@ -13,6 +18,12 @@ export async function POST(request) {
       )
     }
 
+    // Split name into first/last for Supabase
+    const nameParts = name.trim().split(/\s+/)
+    const firstName = nameParts[0]
+    const lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : null
+
+    // 1. Send the email via Resend (existing behaviour)
     await resend.emails.send({
       from: 'Mutomorro Website <hello@mutomorro.com>',
       to: 'hello@mutomorro.com',
@@ -47,6 +58,49 @@ export async function POST(request) {
         </div>
       `,
     })
+
+    // 2. Upsert contact in Supabase
+    const { data: contact, error: contactError } = await supabase
+      .from('contacts')
+      .upsert(
+        {
+          signup_email: email.toLowerCase().trim(),
+          first_name: firstName,
+          last_name: lastName,
+          organisation_name: organisation || null,
+          sources: ['contact-form'],
+          first_source: 'contact-form',
+          tags: ['inbound-enquiry'],
+        },
+        {
+          onConflict: 'signup_email',
+          // If they already exist, merge rather than overwrite
+          ignoreDuplicates: false,
+        }
+      )
+      .select('id')
+      .single()
+
+    if (contactError) {
+      console.error('Supabase contact upsert error:', contactError)
+      // Don't fail the request - the email already sent successfully
+    }
+
+    // 3. Log a high-strength signal
+    if (contact?.id) {
+      const { error: signalError } = await supabase
+        .from('signals')
+        .insert({
+          contact_id: contact.id,
+          type: 'inbound-enquiry',
+          detail: message.substring(0, 500),
+          strength: 'high',
+        })
+
+      if (signalError) {
+        console.error('Supabase signal insert error:', signalError)
+      }
+    }
 
     return Response.json({ success: true })
 

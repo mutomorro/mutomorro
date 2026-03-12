@@ -1,12 +1,27 @@
 import { getTool } from '../../../sanity/client'
 import { PortableText } from '@portabletext/react'
 import CTA from '../../../components/CTA'
+import ToolDownloadForm from '../../../components/ToolDownloadForm'
 import Link from 'next/link'
 import { urlFor } from '../../../sanity/image'
+
+export async function generateMetadata({ params }) {
+  const { slug } = await params
+  const tool = await getTool(slug)
+  if (!tool) return {}
+
+  return {
+    title: tool.seoTitle || `${tool.title} - Mutomorro`,
+    description: tool.seoDescription || tool.shortSummary,
+  }
+}
 
 export default async function ToolPage({ params }) {
   const { slug } = await params
   const tool = await getTool(slug)
+
+  // Get the PDF URL from Sanity file asset if it exists
+  const pdfUrl = tool.toolkitFileUrl || null
 
   return (
     <main>
@@ -18,6 +33,7 @@ export default async function ToolPage({ params }) {
             fontSize: '0.85rem',
             fontWeight: '400',
             color: 'var(--color-accent)',
+            textDecoration: 'none',
             display: 'inline-block',
             margin: '0 0 1.5rem',
           }}>← All tools</Link>
@@ -27,6 +43,32 @@ export default async function ToolPage({ params }) {
           </h1>
           {tool.shortSummary && (
             <p className="lead">{tool.shortSummary}</p>
+          )}
+
+          {/* Quick download button - scrolls to form */}
+          {pdfUrl && (
+            <a
+              href="#get-template"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontFamily: 'inherit',
+                fontWeight: '400',
+                fontSize: '0.9375rem',
+                letterSpacing: '0.06em',
+                textDecoration: 'none',
+                padding: '1rem 2.25rem',
+                borderRadius: '0',
+                color: '#fff',
+                background: '#000',
+                marginTop: '1.5rem',
+                position: 'relative',
+                overflow: 'hidden',
+              }}
+            >
+              Get the template
+            </a>
           )}
         </div>
       </section>
@@ -56,6 +98,19 @@ export default async function ToolPage({ params }) {
           )}
         </div>
       </section>
+
+      {/* Download form - only if there's a toolkit PDF */}
+      {pdfUrl && (
+        <section id="get-template" className="section section--warm">
+          <div className="wrap--narrow">
+            <ToolDownloadForm
+              toolTitle={tool.title}
+              toolSlug={slug}
+              pdfUrl={pdfUrl}
+            />
+          </div>
+        </section>
+      )}
 
       <CTA label="Work with us" heading="Want to put these ideas into practice?" />
 

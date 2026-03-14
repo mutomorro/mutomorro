@@ -55,6 +55,12 @@ export default defineType({
       validation: Rule => Rule.required(),
     }),
     defineField({
+      name: 'lensQuestion',
+      title: 'Lens question',
+      type: 'string',
+      description: 'The distinctive question this dimension asks',
+    }),
+    defineField({
       name: 'intro',
       title: 'Intro',
       type: 'text',

@@ -13,12 +13,32 @@ export default defineType({
       validation: Rule => Rule.required(),
     }),
     defineField({
-      name: 'slug',
-      title: 'Slug',
-      type: 'slug',
-      options: { source: 'title', maxLength: 96 },
-      validation: Rule => Rule.required(),
-    }),
+  name: 'slug',
+  title: 'Slug',
+  type: 'slug',
+  options: {
+    source: 'title',
+    maxLength: 96,
+    isUnique: async (value, context) => {
+      const { document, getClient } = context
+      const client = getClient({ apiVersion: '2024-01-01' })
+      const id = document._id.replace(/^drafts\./, '')
+      const params = {
+        slug: value,
+        dimension: document.dimension?._ref,
+        id
+      }
+      const query = `!defined(*[
+        _type == "dimensionArticle" &&
+        slug.current == $slug &&
+        dimension._ref == $dimension &&
+        !(_id in [$id, "drafts." + $id])
+      ][0]._id)`
+      return await client.fetch(query, params)
+    }
+  },
+  validation: Rule => Rule.required(),
+}),
     defineField({
       name: 'dimension',
       title: 'Parent dimension',
@@ -26,6 +46,20 @@ export default defineType({
       to: [{ type: 'dimension' }],
       description: 'Which dimension does this article belong to?',
       validation: Rule => Rule.required(),
+    }),
+    defineField({
+      name: 'sectionType',
+      title: 'Section type',
+      type: 'string',
+      options: {
+        list: [
+          { title: 'What it means', value: 'what-it-means' },
+          { title: 'Recognising patterns', value: 'recognising-patterns' },
+          { title: 'The wider effect', value: 'the-wider-effect' },
+          { title: 'Cultivating conditions', value: 'cultivating-conditions' },
+          { title: 'Explore it yourself', value: 'explore-it-yourself' },
+        ],
+      },
     }),
     defineField({
       name: 'order',

@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import CTA from '@/components/CTA'
+import CTA from '../../components/CTA'
 
 export const metadata = {
   title: 'Our Philosophy - Mutomorro',
@@ -90,66 +90,95 @@ const outcomes = [
 
 export default function PhilosophyPage() {
   return (
-    <>
+    <main>
+
       {/* Hero */}
-      <section className="section section--dark">
-        <div className="wrap wrap--narrow">
-          <p className="label label--light" style={{ marginBottom: '1.5rem' }}>Philosophy</p>
-          <h1 className="heading-display heading-gradient" style={{ marginBottom: '1.5rem' }}>
+      <section className="section--full dark-bg" style={{ padding: '80px 48px' }}>
+        <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
+          <span className="kicker" style={{ marginBottom: '20px' }}>Philosophy</span>
+          <h1 className="heading-display heading-gradient" style={{ maxWidth: '900px' }}>
             Designing intentional ecosystems
           </h1>
-          <p className="lead lead--light" style={{ maxWidth: '680px' }}>
+          <p className="lead-text" style={{ color: 'rgba(255,255,255,0.6)', maxWidth: '680px' }}>
             Every organisation is a living ecosystem. We help you see it clearly, design it intentionally, and build the capability to lead change from within.
           </p>
         </div>
       </section>
 
       {/* Opening - the shift */}
-      <section className="section section--white">
-        <div className="wrap wrap--narrow">
-          <p className="label label--accent" style={{ marginBottom: '1.5rem' }}>The new world of work</p>
-          <h2 className="heading-large" style={{ marginBottom: '1.5rem', maxWidth: '700px' }}>
-            Most organisations are being led by ideas designed for a different time
-          </h2>
-          <div className="body-text" style={{ maxWidth: '680px', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-            <p>
-              Complexity isn't an exception anymore - it's the constant. Change doesn't happen in waves we can plan around - it's continuous. The challenges leaders face today require something different from what worked even a decade ago.
-            </p>
-            <p>
-              Yet most approaches to organisational development assume predictability we no longer have. They treat organisations as machines to control rather than living systems to cultivate. They optimise parts when we need to understand wholes.
-            </p>
-            <p>
-              The leaders we work with are asking different questions: How do we navigate constant complexity whilst creating environments where people bring their best? How do we build organisations that adapt continuously rather than resist change? How do we move from reactive firefighting to intentional design?
-            </p>
-            <p style={{ fontWeight: '400', fontSize: '1.1rem' }}>
-              This is where intentional ecosystem thinking comes in.
-            </p>
+      <section className="section--full" style={{ padding: '80px 48px', background: 'var(--white)' }}>
+        <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
+          <div className="scroll-in" style={{ maxWidth: '720px' }}>
+            <span className="kicker" style={{ color: 'var(--accent)', marginBottom: '20px' }}>
+              The new world of work
+            </span>
+            <h2 className="heading-h2" style={{ margin: '0 0 24px', maxWidth: '700px' }}>
+              Most organisations are being led by ideas designed for a different time
+            </h2>
+            <div className="body-text" style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+              <p>
+                Complexity isn't an exception anymore - it's the constant. Change doesn't happen in waves we can plan around - it's continuous. The challenges leaders face today require something different from what worked even a decade ago.
+              </p>
+              <p>
+                Yet most approaches to organisational development assume predictability we no longer have. They treat organisations as machines to control rather than living systems to cultivate. They optimise parts when we need to understand wholes.
+              </p>
+              <p>
+                The leaders we work with are asking different questions: How do we navigate constant complexity whilst creating environments where people bring their best? How do we build organisations that adapt continuously rather than resist change? How do we move from reactive firefighting to intentional design?
+              </p>
+              <p style={{ fontWeight: '400', fontSize: '1.1rem' }}>
+                This is where intentional ecosystem thinking comes in.
+              </p>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* What it means */}
-      <section className="section section--warm">
-        <div className="wrap">
-          <p className="label label--accent" style={{ marginBottom: '1.5rem' }}>The approach</p>
-          <h2 className="heading-large" style={{ marginBottom: '3rem', maxWidth: '600px' }}>
-            Two words that change everything
-          </h2>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem', maxWidth: '900px' }}>
-            <div className="card" style={{ padding: '2rem' }}>
-              <p className="label label--accent" style={{ marginBottom: '1rem' }}>Intentional</p>
-              <p className="body-text">
+      {/* What it means - two cards */}
+      <section className="section--full warm-bg" style={{ padding: '80px 48px' }}>
+        <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
+          <div className="scroll-in">
+            <span className="kicker" style={{ color: 'var(--accent)', marginBottom: '20px' }}>
+              The approach
+            </span>
+            <h2 className="heading-h2" style={{ margin: '0 0 3rem', maxWidth: '600px' }}>
+              Two words that change everything
+            </h2>
+          </div>
+
+          <div className="scroll-in" style={{
+            display: 'grid',
+            gridTemplateColumns: '1fr 1fr',
+            gap: '2rem',
+            maxWidth: '900px',
+            marginBottom: '3rem',
+          }}>
+            <div style={{
+              padding: '2rem',
+              border: '1px solid rgba(0,0,0,0.08)',
+              background: 'var(--white)',
+            }}>
+              <span className="kicker" style={{ color: 'var(--accent)', marginBottom: '16px' }}>
+                Intentional
+              </span>
+              <p className="body-text" style={{ margin: 0 }}>
                 Conscious, strategic design of how your organisation works. Not just reacting to what emerges, but deliberately creating the conditions where thriving happens naturally. Being thoughtful and systems-aware in your choices about structure, culture, processes, and development.
               </p>
             </div>
-            <div className="card" style={{ padding: '2rem' }}>
-              <p className="label label--accent" style={{ marginBottom: '1rem' }}>Ecosystems</p>
-              <p className="body-text">
+            <div style={{
+              padding: '2rem',
+              border: '1px solid rgba(0,0,0,0.08)',
+              background: 'var(--white)',
+            }}>
+              <span className="kicker" style={{ color: 'var(--accent)', marginBottom: '16px' }}>
+                Ecosystems
+              </span>
+              <p className="body-text" style={{ margin: 0 }}>
                 Recognising your organisation as a living, interconnected, adaptive system. Not a machine with parts to fix, but a dynamic environment where everything influences everything else. Where health emerges from relationships and patterns, not just individual components.
               </p>
             </div>
           </div>
-          <div style={{ marginTop: '2.5rem', maxWidth: '680px' }}>
+
+          <div className="scroll-in" style={{ maxWidth: '720px' }}>
             <p className="body-text" style={{ fontSize: '1.1rem' }}>
               Together, intentional ecosystems thinking means <strong style={{ fontWeight: '400' }}>strategically cultivating the conditions where your organisation continuously adapts and flourishes.</strong> You understand patterns rather than endlessly addressing symptoms. You design for emergence rather than imposing rigid solutions. You strengthen the whole system rather than optimising parts.
             </p>
@@ -158,24 +187,57 @@ export default function PhilosophyPage() {
       </section>
 
       {/* Six perspective shifts */}
-      <section className="section section--white">
-        <div className="wrap">
-          <p className="label label--accent" style={{ marginBottom: '1.5rem' }}>Shifting perspectives</p>
-          <h2 className="heading-large" style={{ marginBottom: '1rem', maxWidth: '600px' }}>
-            Six shifts that change how you see your organisation
-          </h2>
-          <p className="body-text" style={{ maxWidth: '620px', marginBottom: '3rem' }}>
-            Systems thinking isn't just another framework - it's a fundamentally different way of seeing. Here are the shifts that change what you notice, and what becomes possible.
-          </p>
-          <div className="card-grid">
-            {perspectives.map((p) => (
-              <div key={p.from} className="card" style={{ padding: '1.75rem' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1rem' }}>
-                  <span style={{ fontSize: '0.8rem', color: '#999', textDecoration: 'line-through' }}>{p.from}</span>
-                  <span style={{ color: 'var(--color-accent)', fontSize: '0.9rem' }}>→</span>
-                  <span className="label label--accent" style={{ margin: 0 }}>{p.to}</span>
+      <section className="section--full" style={{ padding: '80px 48px', background: 'var(--white)' }}>
+        <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
+          <div className="scroll-in" style={{ marginBottom: '3rem' }}>
+            <span className="kicker" style={{ color: 'var(--accent)', marginBottom: '20px' }}>
+              Shifting perspectives
+            </span>
+            <h2 className="heading-h2" style={{ margin: '0 0 16px', maxWidth: '600px' }}>
+              Six shifts that change how you see your organisation
+            </h2>
+            <p className="body-text" style={{ maxWidth: '620px', margin: 0 }}>
+              Systems thinking isn't just another framework - it's a fundamentally different way of seeing. Here are the shifts that change what you notice, and what becomes possible.
+            </p>
+          </div>
+
+          <div className="grid-3">
+            {perspectives.map((p, index) => (
+              <div
+                key={p.from}
+                className="scroll-in"
+                style={{
+                  padding: '2rem',
+                  border: '1px solid rgba(0,0,0,0.08)',
+                  background: 'var(--white)',
+                  animationDelay: `${index * 0.1}s`,
+                }}
+              >
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '10px',
+                  marginBottom: '16px',
+                }}>
+                  <span style={{ fontSize: '14px', color: 'rgba(0,0,0,0.3)', textDecoration: 'line-through' }}>
+                    {p.from}
+                  </span>
+                  <span style={{ color: 'var(--accent)', fontSize: '14px' }}>→</span>
+                  <span style={{
+                    fontSize: '11px',
+                    fontWeight: '400',
+                    letterSpacing: '0.12em',
+                    textTransform: 'uppercase',
+                    color: 'var(--accent)',
+                    background: 'rgba(155, 81, 224, 0.06)',
+                    padding: '5px 12px',
+                  }}>
+                    {p.to}
+                  </span>
                 </div>
-                <p className="body-text" style={{ margin: 0 }}>{p.body}</p>
+                <p className="body-small" style={{ margin: 0, color: 'rgba(0,0,0,0.6)' }}>
+                  {p.body}
+                </p>
               </div>
             ))}
           </div>
@@ -183,35 +245,45 @@ export default function PhilosophyPage() {
       </section>
 
       {/* Three systems concepts */}
-      <section className="section section--dark">
-        <div className="wrap">
-          <p className="label label--light" style={{ marginBottom: '1.5rem' }}>Systems concepts</p>
-          <h2 className="heading-large" style={{ color: '#fff', marginBottom: '1rem', maxWidth: '600px' }}>
-            Three ideas that explain almost everything
-          </h2>
-          <p className="body-text" style={{ color: 'rgba(255,255,255,0.65)', maxWidth: '620px', marginBottom: '3rem' }}>
-            Once you start seeing systems, these concepts become essential for understanding organisations and creating lasting change.
-          </p>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+      <section className="section--full dark-bg" style={{ padding: '80px 48px' }}>
+        <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
+          <div className="scroll-in" style={{ marginBottom: '3rem' }}>
+            <span className="kicker" style={{ marginBottom: '20px' }}>Systems concepts</span>
+            <h2 className="heading-h2" style={{ color: '#ffffff', margin: '0 0 16px', maxWidth: '600px' }}>
+              Three ideas that explain almost everything
+            </h2>
+            <p className="body-text" style={{ color: 'rgba(255,255,255,0.6)', maxWidth: '620px', margin: 0 }}>
+              Once you start seeing systems, these concepts become essential for understanding organisations and creating lasting change.
+            </p>
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
             {concepts.map((c, i) => (
               <div
                 key={c.title}
+                className="scroll-in"
                 style={{
                   display: 'grid',
                   gridTemplateColumns: '1fr 2fr',
-                  gap: '3rem',
+                  gap: '4rem',
                   padding: '2.5rem 0',
                   borderBottom: i < concepts.length - 1 ? '1px solid rgba(255,255,255,0.1)' : 'none',
                   alignItems: 'start',
                 }}
               >
                 <div>
-                  <p className="label label--light" style={{ marginBottom: '0.75rem' }}>{c.title}</p>
-                  <p style={{ fontSize: '1.05rem', fontWeight: '400', color: '#fff', lineHeight: '1.5', margin: 0 }}>
+                  <span className="kicker" style={{ marginBottom: '12px' }}>{c.title}</span>
+                  <p style={{
+                    fontSize: '18px',
+                    fontWeight: '400',
+                    color: '#fff',
+                    lineHeight: '1.5',
+                    margin: 0,
+                  }}>
                     {c.headline}
                   </p>
                 </div>
-                <p className="body-text" style={{ color: 'rgba(255,255,255,0.65)', margin: 0 }}>
+                <p className="body-text" style={{ color: 'rgba(255,255,255,0.6)', margin: 0 }}>
                   {c.body}
                 </p>
               </div>
@@ -221,23 +293,40 @@ export default function PhilosophyPage() {
       </section>
 
       {/* What becomes possible */}
-      <section className="section section--warm">
-        <div className="wrap">
-          <p className="label label--accent" style={{ marginBottom: '1.5rem' }}>What becomes possible</p>
-          <h2 className="heading-large" style={{ marginBottom: '1rem', maxWidth: '600px' }}>
-            When you work with how organisations actually function
-          </h2>
-          <p className="body-text" style={{ maxWidth: '620px', marginBottom: '3rem' }}>
-            The shift to intentional ecosystem thinking doesn't mean working harder. It means working with reality rather than fighting it.
-          </p>
-          <div className="card-grid">
-            {outcomes.map((o) => (
-              <div key={o.title} style={{ padding: '0.25rem 0' }}>
-                <div style={{ width: '2rem', height: '2px', background: 'var(--color-accent)', marginBottom: '1rem' }} />
-                <p style={{ fontSize: '1rem', fontWeight: '400', color: 'var(--color-dark)', marginBottom: '0.5rem' }}>
-                  {o.title}
+      <section className="section--full warm-bg" style={{ padding: '80px 48px' }}>
+        <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
+          <div className="scroll-in" style={{ marginBottom: '3rem' }}>
+            <span className="kicker" style={{ color: 'var(--accent)', marginBottom: '20px' }}>
+              What becomes possible
+            </span>
+            <h2 className="heading-h2" style={{ margin: '0 0 16px', maxWidth: '600px' }}>
+              When you work with how organisations actually function
+            </h2>
+            <p className="body-text" style={{ maxWidth: '620px', margin: 0 }}>
+              The shift to intentional ecosystem thinking doesn't mean working harder. It means working with reality rather than fighting it.
+            </p>
+          </div>
+
+          <div className="grid-3">
+            {outcomes.map((o, index) => (
+              <div
+                key={o.title}
+                className="scroll-in"
+                style={{
+                  padding: '0.25rem 0',
+                  animationDelay: `${index * 0.05}s`,
+                }}
+              >
+                <div style={{
+                  width: '2rem',
+                  height: '2px',
+                  background: 'var(--accent)',
+                  marginBottom: '1rem',
+                }} />
+                <h3 className="heading-h4" style={{ margin: '0 0 8px' }}>{o.title}</h3>
+                <p className="body-small" style={{ margin: 0, color: 'rgba(0,0,0,0.6)' }}>
+                  {o.body}
                 </p>
-                <p className="body-text" style={{ margin: 0 }}>{o.body}</p>
               </div>
             ))}
           </div>
@@ -245,21 +334,30 @@ export default function PhilosophyPage() {
       </section>
 
       {/* Link to EMERGENT */}
-      <section className="section section--white">
-        <div className="wrap wrap--narrow" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4rem', alignItems: 'center' }}>
-          <div>
-            <p className="label label--accent" style={{ marginBottom: '1.5rem' }}>Putting it into practice</p>
-            <h2 className="heading-large" style={{ marginBottom: '1.25rem' }}>
+      <section className="section--full" style={{ padding: '80px 48px', background: 'var(--white)' }}>
+        <div style={{
+          maxWidth: '1350px',
+          margin: '0 auto',
+          display: 'grid',
+          gridTemplateColumns: '1fr 1fr',
+          gap: '5rem',
+          alignItems: 'center',
+        }}>
+          <div className="scroll-in">
+            <span className="kicker" style={{ color: 'var(--accent)', marginBottom: '20px' }}>
+              Putting it into practice
+            </span>
+            <h2 className="heading-h2" style={{ margin: '0 0 20px' }}>
               The EMERGENT Framework
             </h2>
-            <p className="body-text" style={{ marginBottom: '2rem' }}>
+            <p className="body-text" style={{ margin: '0 0 2rem' }}>
               Systems thinking needs practical application. The EMERGENT Framework gives you eight lenses for observing, understanding, and strengthening your organisational ecosystem - from Resonant Purpose through to Energy from Culture.
             </p>
-            <Link href="/emergent-framework" className="btn btn--primary">
+            <Link href="/emergent-framework" className="btn-primary">
               Explore the framework
             </Link>
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+          <div className="scroll-in delay-1">
             {[
               'Resonant Purpose',
               'Embedded Strategy',
@@ -276,14 +374,16 @@ export default function PhilosophyPage() {
                   display: 'flex',
                   alignItems: 'center',
                   gap: '1rem',
-                  padding: '0.75rem 0',
-                  borderBottom: '1px solid #f0ece6',
+                  padding: '12px 0',
+                  borderBottom: '1px solid rgba(0,0,0,0.06)',
                 }}
               >
-                <span style={{ fontSize: '0.75rem', color: '#bbb', fontWeight: '300', minWidth: '1.5rem' }}>
+                <span className="caption-text" style={{ minWidth: '1.5rem' }}>
                   0{i + 1}
                 </span>
-                <span style={{ fontSize: '0.95rem', color: 'var(--color-dark)' }}>{d}</span>
+                <span style={{ fontSize: '16px', fontWeight: '400', color: 'var(--black)' }}>
+                  {d}
+                </span>
               </div>
             ))}
           </div>
@@ -293,11 +393,9 @@ export default function PhilosophyPage() {
       <CTA
         heading="Ready to see your organisation differently?"
         body="Let's explore what intentional ecosystem thinking could unlock for you."
-        primaryLabel="Talk to us"
-        primaryHref="/contact"
-        secondaryLabel="How we work"
-        secondaryHref="/how-we-work"
+        secondaryText="How we work"
+        secondaryLink="/how-we-work"
       />
-    </>
+    </main>
   )
 }

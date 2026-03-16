@@ -8,99 +8,90 @@ export default async function EmergentFramework() {
     <main>
 
       {/* Hero */}
-      <section className="section section--dark">
-        <div className="wrap">
-          <p className="label label--light" style={{ margin: '0 0 1rem' }}>
+      <section className="section--full dark-bg" style={{ padding: '80px 48px' }}>
+        <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
+          <span className="kicker" style={{ marginBottom: '20px' }}>
             The EMERGENT Framework
-          </p>
-          <h1 className="heading-display" style={{
-            color: '#ffffff',
+          </span>
+          <h1 className="heading-display heading-gradient" style={{
             margin: '0 0 2rem',
             maxWidth: '800px',
           }}>
             Eight dimensions of organisational health
           </h1>
-          <p className="lead lead--light" style={{ maxWidth: '600px', margin: '0 0 3rem' }}>
+          <p className="lead-text" style={{
+            color: 'rgba(255,255,255,0.6)',
+            maxWidth: '600px',
+            margin: '0 0 3rem',
+          }}>
             Healthy organisations aren't built from a single initiative or a strategy document. They emerge from eight interconnected dimensions - each one distinct, all of them interdependent.
           </p>
-          <Link href="/states-of-vitality" className="btn btn--gradient">
+          <Link href="/states-of-vitality" className="btn-primary btn-primary--dark btn-primary--lg">
             Take the assessment
           </Link>
         </div>
       </section>
 
-      {/* EMERGENT acronym + dimension cards */}
-      <section className="section section--white">
-        <div className="wrap">
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0' }}>
+      {/* Dimension cards grid */}
+      <section className="section--full" style={{ padding: '80px 48px', background: 'var(--white)' }}>
+        <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
+
+          {/* Intro two-column */}
+          <div className="scroll-in" style={{
+            display: 'grid',
+            gridTemplateColumns: '1fr 1fr',
+            gap: '4rem',
+            marginBottom: '5rem',
+          }}>
+            <div>
+              <span className="kicker" style={{ color: 'var(--accent)', marginBottom: '16px' }}>
+                The model
+              </span>
+              <h2 className="heading-h2" style={{ margin: 0 }}>
+                What makes an organisation healthy?
+              </h2>
+            </div>
+            <div>
+              <p className="body-text" style={{ margin: 0 }}>
+                Each letter in EMERGENT stands for a dimension of organisational life. Together, they form a diagnostic lens - a way of seeing the whole system, not just its parts. Click any dimension to explore its articles and insights.
+              </p>
+            </div>
+          </div>
+
+          {/* Dimension card grid */}
+          <div className="grid-2">
             {dimensions.map((dimension, index) => (
               <Link
                 key={dimension._id}
                 href={`/emergent-framework/${dimension.slug.current}`}
-                style={{ textDecoration: 'none' }}
+                className="card-d scroll-in"
+                style={{ animationDelay: `${index * 0.05}s` }}
               >
-                <div style={{
-                  display: 'grid',
-                  gridTemplateColumns: '80px 1fr auto',
-                  alignItems: 'center',
-                  gap: '2rem',
-                  padding: '2rem 0',
-                  borderBottom: '1px solid #f0ece6',
-                  transition: 'background 0.15s',
-                }}>
+                {/* Badge with dimension colour */}
+                <div className="card-d__badge" style={{ background: dimension.colour }}>
+                  {dimension.letter}
+                </div>
 
-                  {/* Letter */}
-                  <div style={{
-                    fontSize: 'clamp(3rem, 5vw, 4rem)',
-                    fontWeight: '300',
+                <div className="card-d__body" style={{ paddingTop: '48px' }}>
+                  <p style={{
+                    fontSize: '13px',
+                    fontWeight: '400',
+                    letterSpacing: '0.15em',
+                    textTransform: 'uppercase',
                     color: dimension.colour,
-                    lineHeight: 1,
-                    fontFamily: 'var(--font-source-sans), sans-serif',
+                    margin: '0 0 8px',
                   }}>
-                    {dimension.letter}
-                  </div>
+                    {dimension.anchor}
+                  </p>
+                  <div className="card-d__title">{dimension.tagline || dimension.title}</div>
+                  <p className="card-d__text">{dimension.shortSummary}</p>
+                </div>
 
-                  {/* Content */}
-                  <div>
-                    <p style={{
-                      fontSize: '0.75rem',
-                      fontWeight: '400',
-                      letterSpacing: '0.1em',
-                      textTransform: 'uppercase',
-                      color: dimension.colour,
-                      margin: '0 0 0.35rem',
-                    }}>
-                      {dimension.anchor}
-                    </p>
-                    <h2 style={{
-                      fontSize: 'clamp(1.1rem, 2vw, 1.35rem)',
-                      fontWeight: '400',
-                      color: 'var(--color-dark)',
-                      margin: '0 0 0.5rem',
-                      lineHeight: '1.2',
-                    }}>
-                      {dimension.title}
-                    </h2>
-                    <p style={{
-                      fontSize: '0.95rem',
-                      fontWeight: '300',
-                      color: '#666',
-                      margin: 0,
-                      maxWidth: '600px',
-                    }}>
-                      {dimension.shortSummary}
-                    </p>
+                <div className="card-d__footer">
+                  <div className="card-d__footer-fill" />
+                  <div className="card-d__action">
+                    Explore dimension <span className="arrow">→</span>
                   </div>
-
-                  {/* Arrow */}
-                  <div style={{
-                    fontSize: '1.25rem',
-                    color: dimension.colour,
-                    opacity: 0.5,
-                  }}>
-                    →
-                  </div>
-
                 </div>
               </Link>
             ))}

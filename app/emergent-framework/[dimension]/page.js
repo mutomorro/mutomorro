@@ -9,67 +9,71 @@ export default async function DimensionPage({ params }) {
   const dimension = await getDimension(dimensionSlug)
   const articles = await getDimensionArticles(dimensionSlug)
 
+  const portableTextComponents = {
+    types: {
+      image: ({ value }) => (
+        <div className="img-mat" style={{ margin: '2.5rem 0' }}>
+          <img
+            src={urlFor(value).width(900).url()}
+            alt={value.alt || ''}
+            style={{ width: '100%', height: 'auto', display: 'block' }}
+          />
+        </div>
+      ),
+    },
+    marks: {
+      link: ({ value, children }) => (
+        <a href={value.href} className="inline-link">{children}</a>
+      ),
+    },
+    block: {
+      blockquote: ({ children }) => (
+        <blockquote className="pull-quote">{children}</blockquote>
+      ),
+    },
+  }
+
   return (
     <main>
 
       {/* Hero */}
-      <section className="section" style={{
-        backgroundColor: dimension.colour + '15',
-        borderBottom: `3px solid ${dimension.colour}`,
-      }}>
-        <div className="wrap--narrow">
-          <Link href="/emergent-framework" style={{
-            fontSize: '0.85rem',
-            fontWeight: '400',
-            color: dimension.colour,
-            display: 'inline-block',
-            margin: '0 0 1.5rem',
-          }}>← The EMERGENT Framework</Link>
-          <p style={{
-            fontSize: '0.75rem',
-            fontWeight: '400',
-            letterSpacing: '0.1em',
-            textTransform: 'uppercase',
-            color: dimension.colour,
-            margin: '0 0 1rem',
-          }}>
+      <section className="section--full dark-bg" style={{ padding: '80px 48px' }}>
+        <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
+          {/* Breadcrumb */}
+          <div className="breadcrumb">
+            <Link href="/emergent-framework" className="breadcrumb__link">EMERGENT</Link>
+            <span className="breadcrumb__sep">/</span>
+            <span className="breadcrumb__current" style={{ color: dimension.colour }}>
+              {dimension.anchor}
+            </span>
+          </div>
+
+          <span className="kicker" style={{ marginBottom: '16px', color: dimension.colour }}>
             {dimension.anchor}
-          </p>
-          <h1 style={{
-            fontSize: 'clamp(2rem, 5vw, 3.5rem)',
-            fontWeight: '400',
-            lineHeight: '1.15',
-            color: 'var(--color-dark)',
-            margin: '0 0 1.5rem',
+          </span>
+          <h1 className="heading-h1" style={{
+            color: '#ffffff',
+            margin: '0 0 24px',
+            maxWidth: '800px',
           }}>
             {dimension.tagline}
           </h1>
-          <p className="lead" style={{ maxWidth: '600px' }}>
-            {dimension.intro}
-          </p>
+          {dimension.intro && (
+            <p className="lead-text" style={{ color: 'rgba(255,255,255,0.6)', maxWidth: '600px' }}>
+              {dimension.intro}
+            </p>
+          )}
         </div>
       </section>
 
       {/* Body content */}
       {dimension.body && (
-        <section className="section section--white">
-          <div className="wrap--narrow">
-            <div className="portable-text">
+        <section className="section--full" style={{ padding: '80px 48px', background: 'var(--white)' }}>
+          <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
+            <div className="portable-text scroll-in" style={{ maxWidth: '800px' }}>
               <PortableText
                 value={dimension.body}
-                components={{
-                  types: {
-                    image: ({ value }) => (
-                      <div style={{ margin: '2rem 0' }}>
-                        <img
-                          src={urlFor(value).width(900).url()}
-                          alt={value.alt || ''}
-                          style={{ width: '100%', height: 'auto', borderRadius: '8px' }}
-                        />
-                      </div>
-                    ),
-                  },
-                }}
+                components={portableTextComponents}
               />
             </div>
           </div>
@@ -78,45 +82,53 @@ export default async function DimensionPage({ params }) {
 
       {/* Articles in this dimension */}
       {articles.length > 0 && (
-        <section className="section section--warm">
-          <div className="wrap--narrow">
-            <p className="label" style={{ margin: '0 0 2rem', color: dimension.colour }}>
+        <section className="section--full warm-bg" style={{ padding: '80px 48px' }}>
+          <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
+            <span className="kicker" style={{ color: dimension.colour, marginBottom: '32px' }}>
               Go deeper
-            </p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0' }}>
-              {articles.map((article) => (
+            </span>
+
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
+              {articles.map((article, index) => (
                 <Link
                   key={article._id}
                   href={`/emergent-framework/${dimensionSlug}/${article.slug.current}`}
-                  style={{ textDecoration: 'none' }}
-                >
-                  <div style={{
+                  className="scroll-in"
+                  style={{
+                    textDecoration: 'none',
                     display: 'flex',
                     justifyContent: 'space-between',
                     alignItems: 'center',
-                    padding: '1.25rem 0',
-                    borderBottom: '1px solid #f0ece6',
-                  }}>
-                    <div>
-                      <p style={{
-                        fontSize: '1rem',
-                        fontWeight: '400',
-                        color: 'var(--color-dark)',
-                        margin: '0 0 0.25rem',
-                      }}>
-                        {article.title}
-                      </p>
-                      <p style={{
-                        fontSize: '0.875rem',
-                        fontWeight: '300',
-                        color: '#888',
+                    padding: '1.5rem 0',
+                    borderBottom: '1px solid rgba(0,0,0,0.06)',
+                    transition: 'padding-left 0.2s',
+                  }}
+                >
+                  <div>
+                    <p style={{
+                      fontSize: '18px',
+                      fontWeight: '400',
+                      color: 'var(--black)',
+                      margin: '0 0 4px',
+                    }}>
+                      {article.title}
+                    </p>
+                    {article.shortSummary && (
+                      <p className="body-small" style={{
+                        color: 'rgba(0,0,0,0.5)',
                         margin: 0,
+                        maxWidth: '600px',
                       }}>
                         {article.shortSummary}
                       </p>
-                    </div>
-                    <span style={{ color: dimension.colour, fontSize: '1.2rem', opacity: 0.6 }}>→</span>
+                    )}
                   </div>
+                  <span style={{
+                    color: dimension.colour,
+                    fontSize: '18px',
+                    flexShrink: 0,
+                    marginLeft: '2rem',
+                  }}>→</span>
                 </Link>
               ))}
             </div>
@@ -126,30 +138,32 @@ export default async function DimensionPage({ params }) {
 
       {/* Related dimensions */}
       {dimension.relatedDimensions?.length > 0 && (
-        <section className="section section--white">
-          <div className="wrap--narrow">
-            <p className="label label--accent" style={{ margin: '0 0 2rem' }}>
+        <section className="section--full" style={{ padding: '80px 48px', background: 'var(--white)' }}>
+          <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
+            <span className="kicker" style={{ color: 'var(--accent)', marginBottom: '32px' }}>
               Connected dimensions
-            </p>
-            <div className="card-grid">
-              {dimension.relatedDimensions.map((related) => (
+            </span>
+            <div className="grid-3">
+              {dimension.relatedDimensions.map((related, index) => (
                 <Link
                   key={related._id}
                   href={`/emergent-framework/${related.slug.current}`}
-                  className="card"
+                  className="card-d scroll-in"
+                  style={{ animationDelay: `${index * 0.1}s` }}
                 >
-                  <p style={{
-                    fontSize: '0.75rem',
-                    fontWeight: '400',
-                    letterSpacing: '0.1em',
-                    textTransform: 'uppercase',
-                    color: related.colour,
-                    margin: '0 0 0.5rem',
-                  }}>
+                  <div className="card-d__badge" style={{ background: related.colour }}>
                     {related.anchor}
-                  </p>
-                  <h3 className="card-title">{related.title}</h3>
-                  <p className="card-body">{related.shortSummary}</p>
+                  </div>
+                  <div className="card-d__body" style={{ paddingTop: '48px' }}>
+                    <div className="card-d__title">{related.title}</div>
+                    <p className="card-d__text">{related.shortSummary}</p>
+                  </div>
+                  <div className="card-d__footer">
+                    <div className="card-d__footer-fill" />
+                    <div className="card-d__action">
+                      Explore <span className="arrow">→</span>
+                    </div>
+                  </div>
                 </Link>
               ))}
             </div>

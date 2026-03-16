@@ -28,9 +28,9 @@ export default function Nav() {
         position: 'sticky',
         top: 0,
         zIndex: 100,
-        backgroundColor: 'var(--color-white)',
-        borderBottom: '1px solid #f0ece6',
-        padding: '0 2rem',
+        backgroundColor: 'var(--white)',
+        borderBottom: '1px solid rgba(0,0,0,0.06)',
+        padding: '0 48px',
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
@@ -39,12 +39,9 @@ export default function Nav() {
 
         {/* Logo */}
         <Link href="/" onClick={closePanel} style={{ textDecoration: 'none' }}>
-          <span style={{
+          <span className="heading-gradient" style={{
             fontSize: '1.35rem',
             fontWeight: '400',
-            background: 'var(--gradient-heading)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
             letterSpacing: '-0.01em',
           }}>
             Mutomorro
@@ -55,7 +52,7 @@ export default function Nav() {
         <div style={{
           display: 'flex',
           alignItems: 'center',
-          gap: '2rem',
+          gap: '4px',
           marginLeft: '3rem',
         }}>
           {['About', 'How We Help', 'Explore'].map((item) => {
@@ -65,19 +62,7 @@ export default function Nav() {
               <button
                 key={key}
                 onClick={() => togglePanel(key)}
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  cursor: 'pointer',
-                  fontSize: '0.95rem',
-                  fontWeight: isActive ? '600' : '400',
-                  color: isActive ? 'var(--color-accent)' : 'var(--color-dark)',
-                  letterSpacing: '-0.01em',
-                  padding: 0,
-                  borderBottom: isActive ? '1.5px solid var(--color-accent)' : '1.5px solid transparent',
-                  paddingBottom: '2px',
-                  transition: 'color 0.15s',
-                }}
+                className={`nav-link${isActive ? ' nav-link--active' : ''}`}
               >
                 {item}
               </button>
@@ -89,22 +74,22 @@ export default function Nav() {
         <div style={{
           display: 'flex',
           alignItems: 'center',
-          gap: '1rem',
+          gap: '12px',
           marginLeft: 'auto',
         }}>
           <Link
             href="/states-of-vitality"
             onClick={closePanel}
-            className="btn btn--outline"
-            style={{ fontSize: '0.85rem', padding: '0.55rem 1.1rem' }}
+            className="btn-sec"
+            style={{ fontSize: '14px', padding: '8px 0' }}
           >
             States of Vitality
           </Link>
           <Link
             href="/contact"
             onClick={closePanel}
-            className="btn btn--primary"
-            style={{ fontSize: '0.85rem', padding: '0.55rem 1.1rem' }}
+            className="btn-primary"
+            style={{ fontSize: '14px', padding: '10px 24px' }}
           >
             Talk to us
           </Link>
@@ -116,8 +101,8 @@ export default function Nav() {
       <NavPanel isOpen={openPanel === 'about'} onClose={closePanel}>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '4rem' }}>
           <div>
-            <p className="label" style={{ marginBottom: '1rem' }}>About</p>
-            <p style={{ fontSize: '1.1rem', fontWeight: '400', lineHeight: '1.7', color: '#555' }}>
+            <span className="kicker">About</span>
+            <p className="body-text" style={{ color: 'rgba(0,0,0,0.55)' }}>
               Who we are, how we think, and what we believe about organisations.
             </p>
           </div>
@@ -133,24 +118,13 @@ export default function Nav() {
                 key={item.href}
                 href={item.href}
                 onClick={closePanel}
-                style={{
-                  textDecoration: 'none',
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  padding: '1.25rem 0',
-                  borderBottom: '1px solid #f0ece6',
-                }}
+                className="nav-panel-link"
               >
                 <div>
-                  <p style={{ fontSize: '1.1rem', fontWeight: '400', color: 'var(--color-dark)', marginBottom: '0.2rem' }}>
-                    {item.label}
-                  </p>
-                  <p style={{ fontSize: '0.875rem', fontWeight: '400', color: '#888', margin: 0 }}>
-                    {item.desc}
-                  </p>
+                  <p className="nav-panel-link__title">{item.label}</p>
+                  <p className="nav-panel-link__desc">{item.desc}</p>
                 </div>
-                <span style={{ color: 'var(--color-accent)', fontSize: '1.2rem', opacity: 0.5 }}>→</span>
+                <span className="nav-panel-link__arrow">→</span>
               </Link>
             ))}
           </div>
@@ -160,7 +134,7 @@ export default function Nav() {
       {/* How We Help Panel */}
       <NavPanel isOpen={openPanel === 'how-we-help'} onClose={closePanel}>
         <div>
-          <p className="label" style={{ marginBottom: '2rem' }}>How We Help</p>
+          <span className="kicker" style={{ marginBottom: '2rem' }}>How We Help</span>
 
           {/* Four application categories */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '2rem', marginBottom: '3rem' }}>
@@ -209,10 +183,10 @@ export default function Nav() {
               },
             ].map((col) => (
               <div key={col.title}>
-                <p style={{ fontSize: '0.95rem', fontWeight: '400', color: 'var(--color-dark)', marginBottom: '0.35rem' }}>
+                <p style={{ fontSize: '15px', fontWeight: '400', color: 'var(--dark)', marginBottom: '4px' }}>
                   {col.title}
                 </p>
-                <p style={{ fontSize: '0.8rem', fontWeight: '400', color: '#888', marginBottom: '1rem' }}>
+                <p style={{ fontSize: '13px', fontWeight: '300', color: 'rgba(0,0,0,0.4)', marginBottom: '16px' }}>
                   {col.desc}
                 </p>
                 {col.links.map((link, i) => (
@@ -220,14 +194,13 @@ export default function Nav() {
                     key={link}
                     href={col.hrefs[i]}
                     onClick={closePanel}
+                    className="inline-link"
                     style={{
                       display: 'block',
-                      fontSize: '0.875rem',
-                      fontWeight: '400',
-                      color: '#555',
-                      textDecoration: 'none',
-                      padding: '0.3rem 0',
-                      transition: 'color 0.15s',
+                      fontSize: '14px',
+                      fontWeight: '300',
+                      color: 'rgba(0,0,0,0.6)',
+                      padding: '5px 0',
                     }}
                   >
                     {link}
@@ -239,7 +212,7 @@ export default function Nav() {
 
           {/* Building Capability - visually distinct lower section */}
           <div style={{
-            borderTop: '1px solid #f0ece6',
+            borderTop: '1px solid rgba(0,0,0,0.06)',
             paddingTop: '2rem',
             display: 'grid',
             gridTemplateColumns: 'repeat(2, 1fr)',
@@ -247,7 +220,7 @@ export default function Nav() {
             maxWidth: '50%',
           }}>
             <div>
-              <p style={{ fontSize: '0.95rem', fontWeight: '400', color: 'var(--color-dark)', marginBottom: '0.35rem' }}>
+              <p style={{ fontSize: '15px', fontWeight: '400', color: 'var(--dark)', marginBottom: '4px' }}>
                 For Leaders
               </p>
               {[
@@ -259,14 +232,15 @@ export default function Nav() {
                   key={item.label}
                   href={item.href}
                   onClick={closePanel}
-                  style={{ display: 'block', fontSize: '0.875rem', fontWeight: '400', color: '#555', textDecoration: 'none', padding: '0.3rem 0' }}
+                  className="inline-link"
+                  style={{ display: 'block', fontSize: '14px', fontWeight: '300', color: 'rgba(0,0,0,0.6)', padding: '5px 0' }}
                 >
                   {item.label}
                 </Link>
               ))}
             </div>
             <div>
-              <p style={{ fontSize: '0.95rem', fontWeight: '400', color: 'var(--color-dark)', marginBottom: '0.35rem' }}>
+              <p style={{ fontSize: '15px', fontWeight: '400', color: 'var(--dark)', marginBottom: '4px' }}>
                 For Teams
               </p>
               {[
@@ -279,7 +253,8 @@ export default function Nav() {
                   key={item.label}
                   href={item.href}
                   onClick={closePanel}
-                  style={{ display: 'block', fontSize: '0.875rem', fontWeight: '400', color: '#555', textDecoration: 'none', padding: '0.3rem 0' }}
+                  className="inline-link"
+                  style={{ display: 'block', fontSize: '14px', fontWeight: '300', color: 'rgba(0,0,0,0.6)', padding: '5px 0' }}
                 >
                   {item.label}
                 </Link>
@@ -295,8 +270,8 @@ export default function Nav() {
 
           {/* Read and think */}
           <div>
-            <p className="label" style={{ margin: '0 0 1.5rem' }}>Read and think</p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+            <span className="kicker" style={{ marginBottom: '24px' }}>Read and think</span>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0' }}>
               {[
                 { label: 'The EMERGENT Framework', desc: 'The eight dimensions of organisational health', href: '/emergent-framework' },
                 { label: 'Tools of the Trade', desc: 'Practical models, frameworks and concepts', href: '/tools' },
@@ -306,14 +281,13 @@ export default function Nav() {
                   key={item.href}
                   href={item.href}
                   onClick={closePanel}
-                  style={{ textDecoration: 'none' }}
+                  className="nav-panel-link"
                 >
-                  <p style={{ fontSize: '1rem', fontWeight: '400', color: 'var(--color-dark)', margin: '0 0 0.25rem' }}>
-                    {item.label}
-                  </p>
-                  <p style={{ fontSize: '0.875rem', fontWeight: '300', color: '#777', margin: 0 }}>
-                    {item.desc}
-                  </p>
+                  <div>
+                    <p className="nav-panel-link__title">{item.label}</p>
+                    <p className="nav-panel-link__desc">{item.desc}</p>
+                  </div>
+                  <span className="nav-panel-link__arrow">→</span>
                 </Link>
               ))}
             </div>
@@ -321,18 +295,17 @@ export default function Nav() {
 
           {/* Learn and develop */}
           <div>
-            <p className="label" style={{ marginBottom: '1.5rem' }}>Learn and develop</p>
+            <span className="kicker" style={{ marginBottom: '24px' }}>Learn and develop</span>
             <Link
               href="/courses"
               onClick={closePanel}
-              style={{ textDecoration: 'none' }}
+              className="nav-panel-link"
             >
-              <p style={{ fontSize: '1rem', fontWeight: '400', color: 'var(--color-dark)', marginBottom: '0.25rem' }}>
-                Courses
-              </p>
-              <p style={{ fontSize: '0.875rem', fontWeight: '400', color: '#777', margin: 0 }}>
-                Ready-made courses on popular topics
-              </p>
+              <div>
+                <p className="nav-panel-link__title">Courses</p>
+                <p className="nav-panel-link__desc">Ready-made courses on popular topics</p>
+              </div>
+              <span className="nav-panel-link__arrow">→</span>
             </Link>
           </div>
 

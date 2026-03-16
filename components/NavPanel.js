@@ -24,9 +24,9 @@ export default function NavPanel({ isOpen, onClose, children }) {
         left: 0,
         right: 0,
         zIndex: 95,
-        backgroundColor: 'var(--color-warm)',
-        borderBottom: '1px solid #f0ece6',
-        padding: '4rem 4rem 5rem',
+        backgroundColor: 'var(--warm)',
+        borderBottom: '1px solid rgba(0,0,0,0.06)',
+        padding: '4rem 48px 5rem',
         boxShadow: '0 20px 60px rgba(34, 28, 43, 0.15)',
       }}>
         {/* Close button */}
@@ -40,8 +40,8 @@ export default function NavPanel({ isOpen, onClose, children }) {
             border: 'none',
             fontSize: '1.5rem',
             cursor: 'pointer',
-            color: 'var(--color-dark)',
-            opacity: 0.4,
+            color: 'var(--dark)',
+            opacity: 0.35,
             lineHeight: 1,
             padding: '0.25rem',
           }}
@@ -49,7 +49,7 @@ export default function NavPanel({ isOpen, onClose, children }) {
           ✕
         </button>
 
-        <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
+        <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
           {children}
         </div>
       </div>

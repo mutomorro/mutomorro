@@ -14,27 +14,21 @@ export default function About() {
     <main>
 
       {/* Hero */}
-      <section className="section section--dark">
-        <div className="wrap">
-          <p className="label label--light" style={{ margin: '0 0 1rem' }}>
-            About Mutomorro
-          </p>
-          <h1 className="heading-display" style={{
-            color: '#ffffff',
-            margin: '0 0 1.5rem',
-            maxWidth: '800px',
-          }}>
+      <section className="section--full dark-bg" style={{ padding: '80px 48px' }}>
+        <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
+          <span className="kicker" style={{ marginBottom: '20px' }}>About Mutomorro</span>
+          <h1 className="heading-display heading-gradient" style={{ maxWidth: '900px' }}>
             Designing thriving organisations for the new world of work
           </h1>
-          <p className="lead lead--light" style={{ maxWidth: '560px' }}>
+          <p className="lead-text" style={{ color: 'rgba(255,255,255,0.6)', maxWidth: '680px' }}>
             We partner with leaders who want to build something better.
           </p>
         </div>
       </section>
 
       {/* The world leaders are navigating */}
-      <section className="section section--warm">
-        <div className="wrap">
+      <section className="section--full warm-bg" style={{ padding: '80px 48px' }}>
+        <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
           <div style={{
             display: 'grid',
             gridTemplateColumns: '1fr 1fr',
@@ -43,25 +37,18 @@ export default function About() {
           }}>
 
             {/* Pull quote - left */}
-            <div>
-              <p style={{
-                fontSize: 'clamp(1.25rem, 2.5vw, 1.65rem)',
-                fontWeight: '300',
-                lineHeight: '1.5',
-                color: 'var(--color-dark)',
-                margin: 0,
-                fontStyle: 'italic',
-              }}>
-                "The leaders we work with aren't asking how to fix what's broken.
+            <div className="scroll-in">
+              <blockquote className="pull-quote" style={{ margin: 0 }}>
+                The leaders we work with aren't asking how to fix what's broken.
                 They're asking how to build something that works better - for their
-                people, their customers, and the world they're operating in."
-              </p>
+                people, their customers, and the world they're operating in.
+              </blockquote>
               <p style={{
-                fontSize: '0.8rem',
+                fontSize: '13px',
                 fontWeight: '400',
                 letterSpacing: '0.08em',
                 textTransform: 'uppercase',
-                color: 'var(--color-coral)',
+                color: 'var(--coral)',
                 marginTop: '1.5rem',
               }}>
                 James Freeman-Gray, Founder
@@ -69,7 +56,7 @@ export default function About() {
             </div>
 
             {/* Body - right */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+            <div className="scroll-in delay-1" style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
               <p className="body-text">
                 The world of work has fundamentally changed. Complexity isn't occasional
                 - it's constant. Expectations from people and customers are higher.
@@ -86,68 +73,53 @@ export default function About() {
                 taking seriously.
               </p>
             </div>
-
           </div>
         </div>
       </section>
 
       {/* A different way of thinking */}
-      <section className="section section--white">
-        <div className="wrap--narrow">
-          <p className="label label--accent" style={{ margin: '0 0 1rem' }}>
-            A different way of thinking
-          </p>
-          <h2 className="heading-large" style={{
-            color: 'var(--color-dark)',
-            margin: '0 0 2rem',
-          }}>
-            Organisations aren't machines.<br />They're living systems.
-          </h2>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', marginBottom: '2.5rem' }}>
-            <p className="body-text">
-              Most approaches to organisational development were designed for a different
-              era - one where organisations were predictable, change was episodic, and
-              the right answer could be found by the right expert.
-            </p>
-            <p className="body-text" style={{ fontWeight: '400', fontSize: '1.05rem' }}>
-              That world no longer exists.
-            </p>
-            <p className="body-text">
-              We work with organisations as living ecosystems. Complex, adaptive,
-              interconnected. Health comes from relationships and patterns, not just
-              individual components. Change happens through cultivating the right
-              conditions - not forcing the right outcomes.
-            </p>
-          </div>
+      <section className="section--full" style={{ padding: '80px 48px', background: 'var(--white)' }}>
+        <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
+          <div className="scroll-in" style={{ maxWidth: '720px' }}>
+            <span className="kicker" style={{ color: 'var(--accent)', marginBottom: '20px' }}>
+              A different way of thinking
+            </span>
+            <h2 className="heading-h2" style={{ margin: '0 0 24px' }}>
+              Organisations aren't machines. They're living systems.
+            </h2>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', marginBottom: '2.5rem' }}>
+              <p className="body-text">
+                Most approaches to organisational development were designed for a different
+                era - one where organisations were predictable, change was episodic, and
+                the right answer could be found by the right expert.
+              </p>
+              <p className="body-text" style={{ fontWeight: '400', fontSize: '1.05rem' }}>
+                That world no longer exists.
+              </p>
+              <p className="body-text">
+                We work with organisations as living ecosystems. Complex, adaptive,
+                interconnected. Health comes from relationships and patterns, not just
+                individual components. Change happens through cultivating the right
+                conditions - not forcing the right outcomes.
+              </p>
+            </div>
 
-          {/* Pull statement */}
-          <div style={{
-            borderLeft: '3px solid var(--color-accent)',
-            paddingLeft: '1.5rem',
-            margin: '2.5rem 0',
-          }}>
-            <p style={{
-              fontSize: 'clamp(1.1rem, 2vw, 1.35rem)',
-              fontWeight: '300',
-              lineHeight: '1.6',
-              color: 'var(--color-dark)',
-              margin: 0,
-            }}>
+            <blockquote className="pull-quote">
               When you understand the patterns beneath the surface, transformation
               becomes possible in a way it never could be from the outside.
+            </blockquote>
+
+            <p className="body-text" style={{ color: 'rgba(0,0,0,0.5)', marginTop: '2rem' }}>
+              This isn't a methodology. It's a fundamentally different way of seeing
+              - and once you see it, you can't unsee it.
             </p>
           </div>
-
-          <p className="body-text" style={{ color: '#666' }}>
-            This isn't a methodology. It's a fundamentally different way of seeing
-            - and once you see it, you can't unsee it.
-          </p>
         </div>
       </section>
 
       {/* Logo strip */}
-      <section style={{ padding: '4rem 2rem', backgroundColor: 'var(--color-warm)' }}>
-        <div className="wrap">
+      <section className="section--full warm-bg" style={{ padding: '4rem 48px' }}>
+        <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
           <div style={{
             display: 'flex',
             flexWrap: 'wrap',
@@ -159,18 +131,12 @@ export default function About() {
               <div key={logo} style={{
                 width: '120px',
                 height: '60px',
-                backgroundColor: 'rgba(0,0,0,0.06)',
-                borderRadius: '4px',
+                backgroundColor: 'rgba(0,0,0,0.04)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
               }}>
-                <span style={{
-                  fontSize: '0.7rem',
-                  color: 'rgba(0,0,0,0.3)',
-                  textAlign: 'center',
-                  padding: '0 0.5rem',
-                }}>
+                <span className="caption-text" style={{ textAlign: 'center', padding: '0 8px' }}>
                   {logo}
                 </span>
               </div>
@@ -180,24 +146,19 @@ export default function About() {
       </section>
 
       {/* Who we are */}
-      <section className="section section--white">
-        <div className="wrap">
+      <section className="section--full" style={{ padding: '80px 48px', background: 'var(--white)' }}>
+        <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
           <div style={{
             display: 'grid',
             gridTemplateColumns: '1fr 1fr',
             gap: '5rem',
             alignItems: 'center',
           }}>
-
-            {/* Text */}
-            <div>
-              <p className="label label--accent" style={{ margin: '0 0 1rem' }}>
+            <div className="scroll-in">
+              <span className="kicker" style={{ color: 'var(--accent)', marginBottom: '20px' }}>
                 Who we are
-              </p>
-              <h2 className="heading-medium" style={{
-                color: 'var(--color-dark)',
-                margin: '0 0 2rem',
-              }}>
+              </span>
+              <h2 className="heading-h2" style={{ margin: '0 0 24px' }}>
                 Founded on a belief that organisations can be better
               </h2>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
@@ -218,47 +179,35 @@ export default function About() {
             </div>
 
             {/* Photo placeholder */}
-            <div style={{
-              width: '100%',
-              aspectRatio: '4/5',
-              backgroundColor: '#e8e3dc',
-              borderRadius: '8px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}>
-              <p style={{
-                fontSize: '0.85rem',
-                color: '#999',
-                fontWeight: '400',
+            <div className="scroll-in delay-1">
+              <div className="img-offset" style={{
+                width: '100%',
+                aspectRatio: '4/5',
+                backgroundColor: '#e8e3dc',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
               }}>
-                Photo coming soon
-              </p>
+                <p className="caption-text">Photo coming soon</p>
+              </div>
             </div>
-
           </div>
         </div>
       </section>
 
-      {/* What we work on */}
-      <section className="section section--warm">
-        <div className="wrap">
-          <p className="label" style={{ margin: '0 0 1rem' }}>
-            Where we work
-          </p>
-          <h2 className="heading-large" style={{
-            color: 'var(--color-dark)',
-            margin: '0 0 3rem',
-            maxWidth: '600px',
-          }}>
-            Four interconnected areas of organisational life
-          </h2>
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(4, 1fr)',
-            gap: '2rem',
-            marginBottom: '2rem',
-          }}>
+      {/* What we work on - four areas */}
+      <section className="section--full warm-bg" style={{ padding: '80px 48px' }}>
+        <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
+          <div className="scroll-in" style={{ marginBottom: '3rem' }}>
+            <span className="kicker" style={{ color: 'var(--accent)', marginBottom: '20px' }}>
+              Where we work
+            </span>
+            <h2 className="heading-h2" style={{ margin: '0 0 16px', maxWidth: '600px' }}>
+              Four interconnected areas of organisational life
+            </h2>
+          </div>
+
+          <div className="grid-4">
             {[
               {
                 title: 'Purpose & Direction',
@@ -276,36 +225,28 @@ export default function About() {
                 title: 'Service & Experience',
                 body: 'How value is created and delivered - for customers, service users, and communities. Improving what organisations do for the people they exist to serve.',
               },
-            ].map((item) => (
-              <div key={item.title} style={{
-                borderTop: '2px solid var(--color-coral)',
-                paddingTop: '1.25rem',
-              }}>
-                <h3 style={{
-                  fontSize: '1rem',
-                  fontWeight: '400',
-                  color: 'var(--color-dark)',
-                  margin: '0 0 0.75rem',
-                }}>
-                  {item.title}
-                </h3>
-                <p style={{
-                  fontSize: '0.9rem',
-                  fontWeight: '300',
-                  lineHeight: '1.6',
-                  color: '#555',
-                  margin: 0,
-                }}>
+            ].map((item, index) => (
+              <div
+                key={item.title}
+                className="scroll-in"
+                style={{
+                  borderTop: '2px solid var(--coral)',
+                  paddingTop: '1.25rem',
+                  animationDelay: `${index * 0.1}s`,
+                }}
+              >
+                <h3 className="heading-h4" style={{ margin: '0 0 10px' }}>{item.title}</h3>
+                <p className="body-small" style={{ margin: 0, color: 'rgba(0,0,0,0.55)' }}>
                   {item.body}
                 </p>
               </div>
             ))}
           </div>
-          <p style={{
-            fontSize: '0.875rem',
-            fontWeight: '300',
-            color: '#888',
+
+          <p className="body-small" style={{
+            color: 'rgba(0,0,0,0.4)',
             fontStyle: 'italic',
+            marginTop: '2rem',
           }}>
             We rarely work in just one area. Organisations are systems - and real
             change touches all four.
@@ -314,24 +255,16 @@ export default function About() {
       </section>
 
       {/* How we partner */}
-      <section className="section section--dark">
-        <div className="wrap">
-          <p className="label label--light" style={{ margin: '0 0 1rem' }}>
-            How we work together
-          </p>
-          <h2 style={{
-            fontSize: 'clamp(1.75rem, 3vw, 2.5rem)',
-            fontWeight: '400',
-            color: '#ffffff',
-            margin: '0 0 3rem',
-          }}>
-            Partners. Not consultants.
-          </h2>
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(2, 1fr)',
-            gap: '3rem',
-          }}>
+      <section className="section--full dark-bg" style={{ padding: '80px 48px' }}>
+        <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
+          <div className="scroll-in" style={{ marginBottom: '3rem' }}>
+            <span className="kicker" style={{ marginBottom: '20px' }}>How we work together</span>
+            <h2 className="heading-h2" style={{ color: '#ffffff', margin: 0 }}>
+              Partners. Not consultants.
+            </h2>
+          </div>
+
+          <div className="grid-2">
             {[
               {
                 title: "We'll help you see the full picture",
@@ -349,26 +282,25 @@ export default function About() {
                 title: "We'll work ourselves out of a job",
                 body: "Success looks like you not needing us. When your people are facilitating their own conversations and designing their own interventions - that's the outcome we're working towards.",
               },
-            ].map((item) => (
-              <div key={item.title} style={{
-                borderTop: '1px solid rgba(255,255,255,0.15)',
-                paddingTop: '1.5rem',
-              }}>
+            ].map((item, index) => (
+              <div
+                key={item.title}
+                className="scroll-in"
+                style={{
+                  borderTop: '1px solid rgba(255,255,255,0.12)',
+                  paddingTop: '1.5rem',
+                  animationDelay: `${index * 0.1}s`,
+                }}
+              >
                 <h3 style={{
-                  fontSize: '1.1rem',
+                  fontSize: '18px',
                   fontWeight: '400',
                   color: '#ffffff',
-                  margin: '0 0 0.75rem',
+                  margin: '0 0 10px',
                 }}>
                   {item.title}
                 </h3>
-                <p style={{
-                  fontSize: '0.95rem',
-                  fontWeight: '300',
-                  lineHeight: '1.7',
-                  color: 'rgba(255,255,255,0.65)',
-                  margin: 0,
-                }}>
+                <p className="body-text" style={{ color: 'rgba(255,255,255,0.6)', margin: 0 }}>
                   {item.body}
                 </p>
               </div>
@@ -378,13 +310,9 @@ export default function About() {
       </section>
 
       {/* Explore further */}
-      <section className="section section--warm">
-        <div className="wrap">
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(3, 1fr)',
-            gap: '2rem',
-          }}>
+      <section className="section--full warm-bg" style={{ padding: '80px 48px' }}>
+        <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
+          <div className="grid-3">
             {[
               {
                 label: 'Our thinking',
@@ -407,23 +335,25 @@ export default function About() {
                 href: '/how-we-work',
                 cta: 'See how we work',
               },
-            ].map((card) => (
+            ].map((card, index) => (
               <Link
                 key={card.href}
                 href={card.href}
-                className="card"
+                className="card-a scroll-in"
+                style={{ animationDelay: `${index * 0.1}s` }}
               >
-                <p className="card-label">{card.label}</p>
-                <h3 className="card-title">{card.title}</h3>
-                <p className="card-body">{card.body}</p>
-                <p style={{
-                  fontSize: '0.875rem',
-                  fontWeight: '400',
-                  color: 'var(--color-accent)',
-                  margin: '1rem 0 0',
-                }}>
-                  {card.cta} →
-                </p>
+                <div className="card-a__corner" />
+                <div className="card-a__body">
+                  <span className="card-a__tag">{card.label}</span>
+                  <div className="card-a__title">{card.title}</div>
+                  <p className="card-a__text">{card.body}</p>
+                </div>
+                <div className="card-a__footer">
+                  <div className="card-a__footer-bg" />
+                  <div className="card-a__action">
+                    {card.cta} <span className="arrow">→</span>
+                  </div>
+                </div>
               </Link>
             ))}
           </div>
@@ -433,8 +363,6 @@ export default function About() {
       <CTA
         label="Ready to explore?"
         heading="Start with a conversation"
-        buttonText="Talk to us"
-        buttonLink="/contact"
       />
 
     </main>

@@ -13,42 +13,56 @@ export default async function ArticlePage({ params }) {
     <main>
 
       {/* Hero */}
-      <section className="section section--warm">
+      <section className="section--full dark-bg" style={{ padding: '80px 48px' }}>
         <div className="wrap--narrow">
-          <Link href="/article" style={{
-            fontSize: '0.85rem',
-            fontWeight: '400',
-            color: 'var(--color-accent)',
-            display: 'inline-block',
-            margin: '0 0 1.5rem',
-          }}>← All articles</Link>
-          <p className="label" style={{ margin: '0 0 1rem' }}>{article.category}</p>
-          <h1 className="heading-large" style={{
-            color: 'var(--color-dark)',
-            margin: '0 0 1.5rem',
+          {/* Breadcrumb */}
+          <div className="breadcrumb">
+            <Link href="/article" className="breadcrumb__link">Thinking</Link>
+            <span className="breadcrumb__sep">/</span>
+            <span className="breadcrumb__current">{article.category}</span>
+          </div>
+
+          <span className="kicker" style={{ marginBottom: '16px' }}>{article.category}</span>
+          <h1 className="heading-h1" style={{
+            color: '#ffffff',
+            margin: '0 0 24px',
           }}>
             {article.title}
           </h1>
-          <p className="lead">{article.shortSummary}</p>
+          {article.shortSummary && (
+            <p className="lead-text" style={{ color: 'rgba(255,255,255,0.6)' }}>
+              {article.shortSummary}
+            </p>
+          )}
         </div>
       </section>
 
       {/* Body */}
-      <section className="section section--white">
+      <section className="section--full" style={{ padding: '80px 48px', background: 'var(--white)' }}>
         <div className="wrap--narrow">
-          <div className="portable-text">
+          <div className="portable-text scroll-in">
             <PortableText
               value={article.body}
               components={{
                 types: {
                   image: ({ value }) => (
-                    <div style={{ margin: '2rem 0' }}>
+                    <div className="img-mat" style={{ margin: '2.5rem 0' }}>
                       <img
                         src={urlFor(value).width(900).url()}
                         alt={value.alt || ''}
-                        style={{ width: '100%', height: 'auto', borderRadius: '8px' }}
+                        style={{ width: '100%', height: 'auto', display: 'block' }}
                       />
                     </div>
+                  ),
+                },
+                marks: {
+                  link: ({ value, children }) => (
+                    <a href={value.href} className="inline-link">{children}</a>
+                  ),
+                },
+                block: {
+                  blockquote: ({ children }) => (
+                    <blockquote className="pull-quote">{children}</blockquote>
                   ),
                 },
               }}
@@ -59,23 +73,23 @@ export default async function ArticlePage({ params }) {
 
           {/* Related dimensions */}
           {article.relatedDimensions?.length > 0 && (
-            <div style={{ marginTop: '4rem', paddingTop: '3rem', borderTop: '1px solid #f0ece6' }}>
-              <p className="label label--accent" style={{ margin: '0 0 1.5rem' }}>
+            <div className="scroll-in" style={{ marginTop: '4rem', paddingTop: '3rem', borderTop: '1px solid rgba(0,0,0,0.08)' }}>
+              <span className="kicker" style={{ color: 'var(--accent)', marginBottom: '20px' }}>
                 Related dimensions
-              </p>
-              <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+              </span>
+              <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
                 {article.relatedDimensions.map((dimension) => (
                   <Link
                     key={dimension._id}
                     href={`/emergent-framework/${dimension.slug.current}`}
                     style={{
-                      fontSize: '0.875rem',
+                      fontSize: '14px',
                       fontWeight: '400',
                       color: dimension.colour,
-                      border: `1px solid ${dimension.colour}`,
-                      borderRadius: '4px',
-                      padding: '0.4rem 0.85rem',
+                      border: `1.5px solid ${dimension.colour}`,
+                      padding: '8px 16px',
                       textDecoration: 'none',
+                      transition: 'background 0.2s, color 0.2s',
                     }}
                   >
                     {dimension.anchor}

@@ -34,15 +34,12 @@ export default function NewsletterSignup({ variant = 'inline' }) {
   // ── Success state ──
   if (status === 'success') {
     return (
-      <div style={{
-        borderLeft: isFooter ? '3px solid var(--color-accent, #9B51E0)' : '3px solid var(--color-accent, #9B51E0)',
-        padding: '1rem 1.25rem',
-      }}>
+      <div className="feedback-success" style={isFooter ? { borderLeftColor: 'var(--accent)' } : undefined}>
         <p style={{
-          fontSize: isFooter ? '0.9375rem' : '1.0625rem',
+          fontSize: isFooter ? '15px' : '17px',
           fontWeight: '400',
           lineHeight: '1.5',
-          color: isFooter ? 'rgba(255,255,255,0.9)' : 'var(--color-dark, #221C2B)',
+          color: isFooter ? 'rgba(255,255,255,0.9)' : 'var(--dark)',
           margin: 0,
         }}>
           You're in. We'll be in touch.
@@ -55,29 +52,20 @@ export default function NewsletterSignup({ variant = 'inline' }) {
   if (isFooter) {
     return (
       <div>
+        <p className="footer-heading">Stay in the loop</p>
         <p style={{
-          fontSize: '0.8125rem',
-          fontWeight: '400',
-          letterSpacing: '0.15em',
-          textTransform: 'uppercase',
-          color: 'rgba(255,255,255,0.4)',
-          margin: '0 0 1rem',
-        }}>
-          Stay in the loop
-        </p>
-        <p style={{
-          fontSize: '0.9375rem',
+          fontSize: '15px',
           fontWeight: '300',
           lineHeight: '1.6',
           color: 'rgba(255,255,255,0.6)',
-          margin: '0 0 1.25rem',
+          margin: '0 0 20px',
           maxWidth: '320px',
         }}>
           Occasional insights on organisational development and change. No spam.
         </p>
         <form onSubmit={handleSubmit} style={{
           display: 'flex',
-          gap: '0.5rem',
+          gap: '8px',
           flexWrap: 'wrap',
           maxWidth: '400px',
         }}>
@@ -87,21 +75,8 @@ export default function NewsletterSignup({ variant = 'inline' }) {
             value={formData.firstName}
             onChange={handleChange}
             placeholder="First name"
-            style={{
-              fontFamily: 'inherit',
-              fontSize: '0.875rem',
-              fontWeight: '300',
-              padding: '0.75rem 0.875rem',
-              border: '1px solid rgba(255,255,255,0.12)',
-              borderRadius: '0',
-              background: 'transparent',
-              color: '#fff',
-              outline: 'none',
-              width: '120px',
-              WebkitAppearance: 'none',
-            }}
-            onFocus={e => { e.target.style.borderColor = 'var(--color-accent, #9B51E0)' }}
-            onBlur={e => { e.target.style.borderColor = 'rgba(255,255,255,0.12)' }}
+            className="form-input form-input--dark"
+            style={{ width: '120px', fontSize: '14px', padding: '12px 14px' }}
           />
           <input
             type="email"
@@ -110,37 +85,17 @@ export default function NewsletterSignup({ variant = 'inline' }) {
             value={formData.email}
             onChange={handleChange}
             placeholder="Email address"
-            style={{
-              fontFamily: 'inherit',
-              fontSize: '0.875rem',
-              fontWeight: '300',
-              padding: '0.75rem 0.875rem',
-              border: '1px solid rgba(255,255,255,0.12)',
-              borderRadius: '0',
-              background: 'transparent',
-              color: '#fff',
-              outline: 'none',
-              flex: '1',
-              minWidth: '160px',
-              WebkitAppearance: 'none',
-            }}
-            onFocus={e => { e.target.style.borderColor = 'var(--color-accent, #9B51E0)' }}
-            onBlur={e => { e.target.style.borderColor = 'rgba(255,255,255,0.12)' }}
+            className="form-input form-input--dark"
+            style={{ flex: '1', minWidth: '160px', fontSize: '14px', padding: '12px 14px' }}
           />
           <button
             type="submit"
             disabled={status === 'sending'}
+            className="btn-primary btn-primary--dark"
             style={{
-              fontFamily: 'inherit',
-              fontWeight: '400',
-              fontSize: '0.875rem',
-              letterSpacing: '0.06em',
-              padding: '0.75rem 1.5rem',
-              border: 'none',
-              borderRadius: '0',
-              color: 'var(--color-dark, #221C2B)',
-              background: status === 'sending' ? 'rgba(255,255,255,0.5)' : '#fff',
-              cursor: status === 'sending' ? 'default' : 'pointer',
+              fontSize: '14px',
+              padding: '12px 24px',
+              ...(status === 'sending' ? { background: 'rgba(255,255,255,0.5)', cursor: 'default' } : {}),
             }}
           >
             {status === 'sending' ? '...' : 'Subscribe'}
@@ -148,9 +103,9 @@ export default function NewsletterSignup({ variant = 'inline' }) {
         </form>
         {status === 'error' && (
           <p style={{
-            fontSize: '0.8125rem',
-            color: '#FF4279',
-            margin: '0.75rem 0 0',
+            fontSize: '13px',
+            color: 'var(--pink)',
+            margin: '12px 0 0',
           }}>
             Something went wrong - please try again.
           </p>
@@ -166,37 +121,16 @@ export default function NewsletterSignup({ variant = 'inline' }) {
       paddingTop: '2.5rem',
       marginTop: '3rem',
     }}>
-      <p style={{
-        fontSize: '0.8125rem',
-        fontWeight: '400',
-        letterSpacing: '0.15em',
-        textTransform: 'uppercase',
-        color: 'var(--color-accent, #9B51E0)',
-        margin: '0 0 0.75rem',
-      }}>
-        Stay in the loop
-      </p>
-      <h3 style={{
-        fontSize: 'clamp(1.25rem, 2.5vw, 1.5rem)',
-        fontWeight: '400',
-        lineHeight: '1.3',
-        margin: '0 0 0.75rem',
-      }}>
+      <span className="kicker">Stay in the loop</span>
+      <h3 className="heading-h4" style={{ margin: '0 0 12px' }}>
         Enjoyed this? Get more like it.
       </h3>
-      <p style={{
-        fontSize: '1rem',
-        fontWeight: '300',
-        lineHeight: '1.6',
-        color: 'rgba(0,0,0,0.55)',
-        margin: '0 0 1.5rem',
-        maxWidth: '480px',
-      }}>
+      <p className="lead-text" style={{ margin: '0 0 1.5rem', maxWidth: '480px' }}>
         Occasional insights on organisational development, change, and making work work better. No spam, easy unsubscribe.
       </p>
       <form onSubmit={handleSubmit} style={{
         display: 'flex',
-        gap: '0.75rem',
+        gap: '12px',
         flexWrap: 'wrap',
         maxWidth: '520px',
       }}>
@@ -206,27 +140,8 @@ export default function NewsletterSignup({ variant = 'inline' }) {
           value={formData.firstName}
           onChange={handleChange}
           placeholder="First name"
-          style={{
-            fontFamily: 'inherit',
-            fontSize: '1rem',
-            fontWeight: '300',
-            padding: '0.875rem 1rem',
-            border: '1px solid rgba(0,0,0,0.12)',
-            borderRadius: '0',
-            background: 'transparent',
-            width: '140px',
-            color: 'var(--color-dark, #221C2B)',
-            outline: 'none',
-            WebkitAppearance: 'none',
-          }}
-          onFocus={e => {
-            e.target.style.borderColor = 'var(--color-accent, #9B51E0)'
-            e.target.style.borderBottomWidth = '2px'
-          }}
-          onBlur={e => {
-            e.target.style.borderColor = 'rgba(0,0,0,0.12)'
-            e.target.style.borderBottomWidth = '1px'
-          }}
+          className="form-input"
+          style={{ width: '140px' }}
         />
         <input
           type="email"
@@ -235,53 +150,23 @@ export default function NewsletterSignup({ variant = 'inline' }) {
           value={formData.email}
           onChange={handleChange}
           placeholder="Email address"
-          style={{
-            fontFamily: 'inherit',
-            fontSize: '1rem',
-            fontWeight: '300',
-            padding: '0.875rem 1rem',
-            border: '1px solid rgba(0,0,0,0.12)',
-            borderRadius: '0',
-            background: 'transparent',
-            flex: '1',
-            minWidth: '180px',
-            color: 'var(--color-dark, #221C2B)',
-            outline: 'none',
-            WebkitAppearance: 'none',
-          }}
-          onFocus={e => {
-            e.target.style.borderColor = 'var(--color-accent, #9B51E0)'
-            e.target.style.borderBottomWidth = '2px'
-          }}
-          onBlur={e => {
-            e.target.style.borderColor = 'rgba(0,0,0,0.12)'
-            e.target.style.borderBottomWidth = '1px'
-          }}
+          className="form-input"
+          style={{ flex: '1', minWidth: '180px' }}
         />
         <button
           type="submit"
           disabled={status === 'sending'}
-          style={{
-            fontFamily: 'inherit',
-            fontWeight: '400',
-            fontSize: '0.9375rem',
-            letterSpacing: '0.06em',
-            padding: '0.875rem 2rem',
-            border: 'none',
-            borderRadius: '0',
-            color: '#fff',
-            background: status === 'sending' ? 'rgba(0,0,0,0.4)' : '#000',
-            cursor: status === 'sending' ? 'default' : 'pointer',
-          }}
+          className="btn-primary"
+          style={status === 'sending' ? { background: 'rgba(0,0,0,0.4)', cursor: 'default' } : undefined}
         >
           {status === 'sending' ? '...' : 'Subscribe'}
         </button>
       </form>
       {status === 'error' && (
         <p style={{
-          fontSize: '0.875rem',
-          color: '#FF4279',
-          margin: '0.75rem 0 0',
+          fontSize: '14px',
+          color: 'var(--pink)',
+          margin: '12px 0 0',
         }}>
           Something went wrong - please try again.
         </p>

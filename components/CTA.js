@@ -6,30 +6,37 @@ export default function CTA({
   body = 'Whether you\'re diagnosing root causes, redesigning for the future, or building on what already works well - we\'d love to hear about your organisation.',
   buttonText = 'Talk to us',
   buttonLink = '/contact',
+  secondaryText,
+  secondaryLink,
 }) {
   return (
-    <section style={{
-      backgroundColor: 'var(--color-dark)',
-      padding: '7rem 2rem',
+    <section className="section--full dark-bg" style={{
+      padding: '7rem 48px',
       textAlign: 'center',
     }}>
-      <div style={{ maxWidth: '580px', margin: '0 auto' }}>
-        <p className="label label--light" style={{ marginBottom: '1.5rem' }}>{label}</p>
-        <h2 style={{
-          fontSize: 'clamp(1.75rem, 4vw, 2.75rem)',
-          fontWeight: '400',
+      <div style={{ maxWidth: '620px', margin: '0 auto' }}>
+        <span className="kicker" style={{ marginBottom: '20px' }}>{label}</span>
+        <h2 className="heading-h2" style={{
           color: '#ffffff',
-          lineHeight: '1.2',
-          margin: '0 0 1.5rem 0',
+          margin: '0 0 1.5rem',
         }}>{heading}</h2>
         <p style={{
-          fontSize: '1.05rem',
+          fontSize: '18px',
           lineHeight: '1.7',
           color: 'rgba(255,255,255,0.6)',
           fontWeight: '300',
-          margin: '0 0 2.5rem 0',
+          margin: '0 0 2.5rem',
         }}>{body}</p>
-        <Link href={buttonLink} className="btn btn--gradient">{buttonText}</Link>
+        <div className="button-row" style={{ justifyContent: 'center' }}>
+          <Link href={buttonLink} className="btn-primary btn-primary--dark btn-primary--lg">
+            {buttonText}
+          </Link>
+          {secondaryText && secondaryLink && (
+            <Link href={secondaryLink} className="btn-sec btn-sec--dark">
+              {secondaryText}
+            </Link>
+          )}
+        </div>
       </div>
     </section>
   )

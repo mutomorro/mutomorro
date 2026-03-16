@@ -56,22 +56,18 @@ export default function ToolDownloadForm({ toolTitle, toolSlug, pdfUrl, heroImag
     return (
       <div>
         {/* Success message */}
-        <div style={{
-          borderLeft: '3px solid var(--color-accent, #9B51E0)',
-          padding: '1.25rem 1.5rem',
-          marginBottom: '2rem',
-        }}>
+        <div className="feedback-success" style={{ marginBottom: '2rem' }}>
           <p style={{
-            fontSize: '1.125rem',
+            fontSize: '18px',
             fontWeight: '400',
             lineHeight: '1.5',
-            color: 'var(--color-dark, #221C2B)',
-            margin: '0 0 0.25rem',
+            color: 'var(--dark)',
+            margin: '0 0 4px',
           }}>
             Here's your {toolTitle} template
           </p>
           <p style={{
-            fontSize: '0.9375rem',
+            fontSize: '15px',
             fontWeight: '300',
             lineHeight: '1.5',
             color: 'rgba(0,0,0,0.55)',
@@ -107,31 +103,17 @@ export default function ToolDownloadForm({ toolTitle, toolSlug, pdfUrl, heroImag
           )}
           <div>
             <p style={{
-              fontSize: '1.0625rem',
+              fontSize: '17px',
               fontWeight: '400',
               margin: '0 0 1rem',
-              color: 'var(--color-dark, #221C2B)',
+              color: 'var(--dark)',
             }}>
               {toolTitle}
             </p>
             <a
               href={pdfUrl + '?dl='}
               download
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontFamily: 'inherit',
-                fontWeight: '400',
-                fontSize: '0.9375rem',
-                letterSpacing: '0.06em',
-                textDecoration: 'none',
-                padding: '1rem 2.25rem',
-                borderRadius: '0',
-                color: '#fff',
-                background: '#000',
-                cursor: 'pointer',
-              }}
+              className="btn-primary"
             >
               Download PDF
             </a>
@@ -145,36 +127,16 @@ export default function ToolDownloadForm({ toolTitle, toolSlug, pdfUrl, heroImag
   return (
     <div>
       <div style={{ marginBottom: '2rem' }}>
-        <h3 style={{
-          fontSize: 'clamp(1.25rem, 2.5vw, 1.75rem)',
-          fontWeight: '400',
-          lineHeight: '1.2',
-          margin: '0 0 0.75rem',
-        }}>
+        <h3 className="heading-h4" style={{ margin: '0 0 12px' }}>
           Get the template
         </h3>
-        <p style={{
-          fontSize: '1rem',
-          fontWeight: '300',
-          lineHeight: '1.6',
-          color: 'rgba(0,0,0,0.55)',
-          margin: 0,
-          maxWidth: '480px',
-        }}>
+        <p className="lead-text" style={{ margin: 0, maxWidth: '480px', fontSize: '16px' }}>
           Fill in your details and the PDF will appear right here - no email, no waiting.
         </p>
       </div>
 
       {status === 'error' && (
-        <div style={{
-          borderLeft: '3px solid #FF4279',
-          padding: '1rem 1.25rem',
-          marginBottom: '1.5rem',
-          fontSize: '0.9375rem',
-          fontWeight: '300',
-          lineHeight: '1.6',
-          color: 'var(--color-dark, #221C2B)',
-        }}>
+        <div className="feedback-error" style={{ marginBottom: '1.5rem' }}>
           {errorMessage}
         </div>
       )}
@@ -186,23 +148,10 @@ export default function ToolDownloadForm({ toolTitle, toolSlug, pdfUrl, heroImag
           display: 'grid',
           gridTemplateColumns: '1fr 1fr',
           gap: '1rem',
-          marginBottom: '1.5rem',
+          marginBottom: '24px',
         }}>
           <div>
-            <label
-              htmlFor="firstName"
-              style={{
-                display: 'block',
-                fontSize: '0.8125rem',
-                fontWeight: '400',
-                letterSpacing: '0.15em',
-                textTransform: 'uppercase',
-                color: 'rgba(0,0,0,0.5)',
-                marginBottom: '0.5rem',
-              }}
-            >
-              First name
-            </label>
+            <label htmlFor="firstName" className="form-label">First name</label>
             <input
               type="text"
               id="firstName"
@@ -211,44 +160,11 @@ export default function ToolDownloadForm({ toolTitle, toolSlug, pdfUrl, heroImag
               value={formData.firstName}
               onChange={handleChange}
               placeholder="First name"
-              style={{
-                fontFamily: 'inherit',
-                fontSize: '1rem',
-                fontWeight: '300',
-                padding: '0.875rem 1rem',
-                border: '1px solid rgba(0,0,0,0.12)',
-                borderRadius: '0',
-                background: 'transparent',
-                width: '100%',
-                color: 'var(--color-dark, #221C2B)',
-                outline: 'none',
-                WebkitAppearance: 'none',
-              }}
-              onFocus={e => {
-                e.target.style.borderColor = 'var(--color-accent, #9B51E0)'
-                e.target.style.borderBottomWidth = '2px'
-              }}
-              onBlur={e => {
-                e.target.style.borderColor = 'rgba(0,0,0,0.12)'
-                e.target.style.borderBottomWidth = '1px'
-              }}
+              className="form-input"
             />
           </div>
           <div>
-            <label
-              htmlFor="lastName"
-              style={{
-                display: 'block',
-                fontSize: '0.8125rem',
-                fontWeight: '400',
-                letterSpacing: '0.15em',
-                textTransform: 'uppercase',
-                color: 'rgba(0,0,0,0.5)',
-                marginBottom: '0.5rem',
-              }}
-            >
-              Last name
-            </label>
+            <label htmlFor="lastName" className="form-label">Last name</label>
             <input
               type="text"
               id="lastName"
@@ -256,47 +172,14 @@ export default function ToolDownloadForm({ toolTitle, toolSlug, pdfUrl, heroImag
               value={formData.lastName}
               onChange={handleChange}
               placeholder="Last name"
-              style={{
-                fontFamily: 'inherit',
-                fontSize: '1rem',
-                fontWeight: '300',
-                padding: '0.875rem 1rem',
-                border: '1px solid rgba(0,0,0,0.12)',
-                borderRadius: '0',
-                background: 'transparent',
-                width: '100%',
-                color: 'var(--color-dark, #221C2B)',
-                outline: 'none',
-                WebkitAppearance: 'none',
-              }}
-              onFocus={e => {
-                e.target.style.borderColor = 'var(--color-accent, #9B51E0)'
-                e.target.style.borderBottomWidth = '2px'
-              }}
-              onBlur={e => {
-                e.target.style.borderColor = 'rgba(0,0,0,0.12)'
-                e.target.style.borderBottomWidth = '1px'
-              }}
+              className="form-input"
             />
           </div>
         </div>
 
         {/* Email */}
-        <div style={{ marginBottom: '1.5rem' }}>
-          <label
-            htmlFor="email"
-            style={{
-              display: 'block',
-              fontSize: '0.8125rem',
-              fontWeight: '400',
-              letterSpacing: '0.15em',
-              textTransform: 'uppercase',
-              color: 'rgba(0,0,0,0.5)',
-              marginBottom: '0.5rem',
-            }}
-          >
-            Work email
-          </label>
+        <div className="form-group">
+          <label htmlFor="email" className="form-label">Work email</label>
           <input
             type="email"
             id="email"
@@ -305,27 +188,7 @@ export default function ToolDownloadForm({ toolTitle, toolSlug, pdfUrl, heroImag
             value={formData.email}
             onChange={handleChange}
             placeholder="you@company.com"
-            style={{
-              fontFamily: 'inherit',
-              fontSize: '1rem',
-              fontWeight: '300',
-              padding: '0.875rem 1rem',
-              border: '1px solid rgba(0,0,0,0.12)',
-              borderRadius: '0',
-              background: 'transparent',
-              width: '100%',
-              color: 'var(--color-dark, #221C2B)',
-              outline: 'none',
-              WebkitAppearance: 'none',
-            }}
-            onFocus={e => {
-              e.target.style.borderColor = 'var(--color-accent, #9B51E0)'
-              e.target.style.borderBottomWidth = '2px'
-            }}
-            onBlur={e => {
-              e.target.style.borderColor = 'rgba(0,0,0,0.12)'
-              e.target.style.borderBottomWidth = '1px'
-            }}
+            className="form-input"
           />
         </div>
 
@@ -336,7 +199,7 @@ export default function ToolDownloadForm({ toolTitle, toolSlug, pdfUrl, heroImag
             style={{
               display: 'flex',
               alignItems: 'flex-start',
-              gap: '0.75rem',
+              gap: '12px',
               cursor: 'pointer',
             }}
           >
@@ -350,13 +213,13 @@ export default function ToolDownloadForm({ toolTitle, toolSlug, pdfUrl, heroImag
                 width: '18px',
                 height: '18px',
                 marginTop: '2px',
-                accentColor: 'var(--color-accent, #9B51E0)',
+                accentColor: 'var(--accent)',
                 cursor: 'pointer',
                 flexShrink: 0,
               }}
             />
             <span style={{
-              fontSize: '0.9375rem',
+              fontSize: '15px',
               fontWeight: '300',
               lineHeight: '1.5',
               color: 'rgba(0,0,0,0.6)',
@@ -370,23 +233,8 @@ export default function ToolDownloadForm({ toolTitle, toolSlug, pdfUrl, heroImag
         <button
           type="submit"
           disabled={status === 'sending'}
-          style={{
-            fontFamily: 'inherit',
-            fontWeight: '400',
-            fontSize: '0.9375rem',
-            letterSpacing: '0.06em',
-            padding: '1rem 2.25rem',
-            border: 'none',
-            borderRadius: '0',
-            color: '#fff',
-            background: status === 'sending' ? 'rgba(0,0,0,0.4)' : '#000000',
-            cursor: status === 'sending' ? 'default' : 'pointer',
-            position: 'relative',
-            overflow: 'hidden',
-            display: 'inline-flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
+          className="btn-primary"
+          style={status === 'sending' ? { background: 'rgba(0,0,0,0.4)', cursor: 'default' } : undefined}
         >
           {status === 'sending' ? 'Getting your template...' : 'Get the template'}
         </button>

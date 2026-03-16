@@ -1,40 +1,102 @@
 import Link from 'next/link'
 import { getAllProjects } from '../../sanity/client'
+import CTA from '../../components/CTA'
 
 export default async function Projects() {
   const projects = await getAllProjects()
 
+  // First project is featured, rest are standard cards
+  const featured = projects[0]
+  const remaining = projects.slice(1)
+
   return (
     <main>
-      <section className="section section--warm">
-        <div className="wrap">
-          <p className="label" style={{ margin: '0 0 1rem' }}>Projects and experience</p>
-          <h1 className="heading-gradient heading-large" style={{ margin: '0 0 1.5rem' }}>
+
+      {/* Hero */}
+      <section className="section--full dark-bg" style={{ padding: '80px 48px' }}>
+        <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
+          <span className="kicker" style={{ marginBottom: '20px' }}>Projects and experience</span>
+          <h1 className="heading-h1 heading-gradient" style={{
+            margin: '0 0 24px',
+            maxWidth: '800px',
+          }}>
             Work that makes a difference
           </h1>
-          <p className="lead" style={{ maxWidth: '600px' }}>
+          <p className="lead-text" style={{ color: 'rgba(255,255,255,0.6)', maxWidth: '600px' }}>
             A selection of projects and experiences that show our approach in action.
           </p>
         </div>
       </section>
 
-      <section className="section section--white">
-        <div className="wrap">
-          <div className="card-grid">
-            {projects.map((project) => (
-              <Link
-                key={project._id}
-                href={`/projects/${project.slug.current}`}
-                className="card"
-              >
-                <p className="card-label">{project.clientSector}</p>
-                <h2 className="card-title">{project.title}</h2>
-                <p className="card-body">{project.shortSummary || project.challenge}</p>
-              </Link>
-            ))}
+      {/* Featured project */}
+      {featured && (
+        <section className="section--full" style={{ padding: '80px 48px', background: 'var(--white)' }}>
+          <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
+            <Link
+              href={`/projects/${featured.slug.current}`}
+              className="card-c scroll-in"
+              style={{ maxWidth: '800px' }}
+            >
+              <div className="card-c__fill" />
+              <div className="card-c__body">
+                {featured.clientSector && (
+                  <span className="card-c__tag">{featured.clientSector}</span>
+                )}
+                <div className="card-c__title" style={{ fontSize: '28px' }}>
+                  {featured.title}
+                </div>
+                <p className="card-c__text">
+                  {featured.shortSummary || featured.challenge}
+                </p>
+                <div className="card-c__action">
+                  Read case study <span className="arrow">→</span>
+                </div>
+              </div>
+            </Link>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
+
+      {/* Remaining projects */}
+      {remaining.length > 0 && (
+        <section className="section--full" style={{
+          padding: featured ? '0 48px 80px' : '80px 48px',
+          background: 'var(--white)',
+        }}>
+          <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
+            <div className="grid-3">
+              {remaining.map((project, index) => (
+                <Link
+                  key={project._id}
+                  href={`/projects/${project.slug.current}`}
+                  className="card-a scroll-in"
+                  style={{ animationDelay: `${index * 0.1}s` }}
+                >
+                  <div className="card-a__corner" />
+                  <div className="card-a__body">
+                    {project.clientSector && (
+                      <span className="card-a__tag">{project.clientSector}</span>
+                    )}
+                    <div className="card-a__title">{project.title}</div>
+                    <p className="card-a__text">
+                      {project.shortSummary || project.challenge}
+                    </p>
+                  </div>
+                  <div className="card-a__footer">
+                    <div className="card-a__footer-bg" />
+                    <div className="card-a__action">
+                      Read case study <span className="arrow">→</span>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      <CTA />
+
     </main>
   )
 }

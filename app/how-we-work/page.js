@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import CTA from '@/components/CTA'
+import CTA from '../../components/CTA'
 
 export const metadata = {
   title: 'How We Work - Mutomorro',
@@ -64,26 +64,32 @@ const stages = [
 
 export default function HowWeWorkPage() {
   return (
-    <>
+    <main>
+
       {/* Hero */}
-      <section className="section section--dark">
-        <div className="wrap wrap--narrow">
-          <p className="label label--light" style={{ marginBottom: '1.5rem' }}>How we work</p>
-          <h1 className="heading-display heading-gradient" style={{ marginBottom: '1.5rem' }}>
+      <section className="section--full dark-bg" style={{ padding: '80px 48px' }}>
+        <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
+          <span className="kicker" style={{ marginBottom: '20px' }}>How we work</span>
+          <h1 className="heading-display heading-gradient" style={{ maxWidth: '900px' }}>
             A partner, not a programme
           </h1>
-          <p className="lead lead--light" style={{ maxWidth: '640px' }}>
+          <p className="lead-text" style={{ color: 'rgba(255,255,255,0.6)', maxWidth: '680px' }}>
             We work alongside you through the complete journey - from understanding where you are now, through collaborative design, to embedded change and lasting internal capability.
           </p>
         </div>
       </section>
 
       {/* Intro */}
-      <section className="section section--white">
-        <div className="wrap wrap--narrow">
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4rem', alignItems: 'start' }}>
+      <section className="section--full" style={{ padding: '80px 48px', background: 'var(--white)' }}>
+        <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
+          <div className="scroll-in" style={{
+            display: 'grid',
+            gridTemplateColumns: '1fr 1fr',
+            gap: '5rem',
+            alignItems: 'start',
+          }}>
             <div>
-              <h2 className="heading-large" style={{ marginBottom: '1.25rem' }}>
+              <h2 className="heading-h2" style={{ margin: 0 }}>
                 Not a consultant. A capability-building partner.
               </h2>
             </div>
@@ -100,56 +106,87 @@ export default function HowWeWorkPage() {
       </section>
 
       {/* Four stages */}
-      <section className="section section--warm">
-        <div className="wrap">
-          <p className="label label--accent" style={{ marginBottom: '1.5rem' }}>The four stages</p>
-          <h2 className="heading-large" style={{ marginBottom: '0.75rem', maxWidth: '560px' }}>
-            Assess. Co-Design. Transform. Sustain.
-          </h2>
-          <p className="body-text" style={{ maxWidth: '620px', marginBottom: '3.5rem' }}>
-            Four stages that build toward organisations where people and purpose flourish.
-          </p>
+      <section className="section--full warm-bg" style={{ padding: '80px 48px' }}>
+        <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
+          <div className="scroll-in" style={{ marginBottom: '3rem' }}>
+            <span className="kicker" style={{ color: 'var(--accent)', marginBottom: '20px' }}>
+              The four stages
+            </span>
+            <h2 className="heading-h2" style={{ margin: '0 0 16px', maxWidth: '560px' }}>
+              Assess. Co-Design. Transform. Sustain.
+            </h2>
+            <p className="body-text" style={{ maxWidth: '620px', margin: 0 }}>
+              Four stages that build toward organisations where people and purpose flourish.
+            </p>
+          </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             {stages.map((stage, i) => (
               <div
                 key={stage.name}
+                className="card-a scroll-in"
                 style={{
-                  background: '#fff',
-                  borderRadius: '8px',
-                  padding: '2.5rem',
-                  marginBottom: i < stages.length - 1 ? '1rem' : 0,
+                  cursor: 'default',
+                  animationDelay: `${i * 0.1}s`,
                 }}
               >
-                <div style={{ display: 'grid', gridTemplateColumns: '220px 1fr', gap: '3rem', alignItems: 'start' }}>
+                <div className="card-a__body" style={{
+                  display: 'grid',
+                  gridTemplateColumns: '220px 1fr',
+                  gap: '3rem',
+                  alignItems: 'start',
+                  padding: '2.5rem 32px',
+                }}>
                   {/* Stage label */}
                   <div>
-                    <span style={{ fontSize: '0.75rem', color: '#ccc', fontWeight: '300', display: 'block', marginBottom: '0.5rem' }}>
+                    <span className="caption-text" style={{ display: 'block', marginBottom: '8px' }}>
                       {stage.number}
                     </span>
-                    <p style={{ fontSize: '1.4rem', fontWeight: '400', color: 'var(--color-dark)', marginBottom: '0.35rem' }}>
+                    <h3 className="heading-h3" style={{ margin: '0 0 6px' }}>
                       {stage.name}
-                    </p>
-                    <p className="label label--accent" style={{ margin: 0 }}>{stage.tagline}</p>
+                    </h3>
+                    <span className="kicker" style={{ color: 'var(--accent)' }}>
+                      {stage.tagline}
+                    </span>
                   </div>
 
                   {/* Stage content */}
                   <div>
-                    <p className="body-text" style={{ marginBottom: '1rem' }}>{stage.body}</p>
-                    <p style={{ fontSize: '0.9rem', fontWeight: '400', color: 'var(--color-accent)', fontStyle: 'italic', marginBottom: '1.5rem' }}>
+                    <p className="body-text" style={{ margin: '0 0 1rem' }}>{stage.body}</p>
+                    <p style={{
+                      fontSize: '15px',
+                      fontWeight: '400',
+                      color: 'var(--accent)',
+                      fontStyle: 'italic',
+                      margin: '0 0 1.5rem',
+                    }}>
                       {stage.detail}
                     </p>
                     <div>
-                      <p style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#aaa', marginBottom: '0.75rem' }}>
+                      <span className="kicker" style={{
+                        color: 'rgba(0,0,0,0.3)',
+                        marginBottom: '12px',
+                      }}>
                         Works well when
-                      </p>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-                        {stage.perfect.map((item) => (
-                          <div key={item} style={{ display: 'flex', gap: '0.75rem', alignItems: 'flex-start' }}>
-                            <span style={{ color: 'var(--color-accent)', marginTop: '2px', flexShrink: 0 }}>→</span>
-                            <span style={{ fontSize: '0.875rem', color: '#666' }}>{item}</span>
-                          </div>
-                        ))}
+                      </span>
+                      <div className="practice-list">
+                        <ul style={{ margin: 0, padding: 0, listStyle: 'none' }}>
+                          {stage.perfect.map((item) => (
+                            <li
+                              key={item}
+                              style={{
+                                position: 'relative',
+                                paddingLeft: '18px',
+                                marginBottom: '6px',
+                                fontSize: '15px',
+                                fontWeight: '300',
+                                color: 'rgba(0,0,0,0.6)',
+                              }}
+                            >
+                              {item}
+                            </li>
+                          ))}
+                        </ul>
                       </div>
                     </div>
                   </div>
@@ -160,53 +197,69 @@ export default function HowWeWorkPage() {
         </div>
       </section>
 
-      {/* Flexible entry note */}
-      <section className="section section--white">
-        <div className="wrap wrap--narrow">
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4rem', alignItems: 'center' }}>
-            <div>
-              <p className="label label--accent" style={{ marginBottom: '1.5rem' }}>Worth knowing</p>
-              <h2 className="heading-medium" style={{ marginBottom: '1.25rem' }}>
-                You don't have to start at the beginning
-              </h2>
-              <p className="body-text">
-                Whilst the four stages represent a natural progression, organisations enter at different points depending on where they are. Some begin with Co-Design when they already understand their challenges. Others start with Transform when solutions exist but implementation needs support. Some come to us just for Sustain - building the internal capability to keep evolving independently.
-              </p>
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              {[
-                { label: 'Assess →  Co-Design → Transform → Sustain', note: 'Starting from scratch or planning major change' },
-                { label: 'Co-Design → Transform → Sustain', note: 'Clear on the problem, need collaborative solutions' },
-                { label: 'Transform → Sustain', note: 'Solutions in hand, need embedded implementation' },
-                { label: 'Sustain', note: 'Building ongoing internal capability' },
-              ].map((path) => (
-                <div
-                  key={path.label}
-                  style={{
-                    padding: '1.25rem',
-                    border: '1px solid #f0ece6',
-                    borderRadius: '6px',
-                  }}
-                >
-                  <p style={{ fontSize: '0.875rem', fontWeight: '400', color: 'var(--color-dark)', marginBottom: '0.25rem' }}>
-                    {path.label}
-                  </p>
-                  <p style={{ fontSize: '0.8rem', color: '#999', margin: 0 }}>{path.note}</p>
-                </div>
-              ))}
-            </div>
+      {/* Flexible entry */}
+      <section className="section--full" style={{ padding: '80px 48px', background: 'var(--white)' }}>
+        <div style={{
+          maxWidth: '1350px',
+          margin: '0 auto',
+          display: 'grid',
+          gridTemplateColumns: '1fr 1fr',
+          gap: '5rem',
+          alignItems: 'center',
+        }}>
+          <div className="scroll-in">
+            <span className="kicker" style={{ color: 'var(--accent)', marginBottom: '20px' }}>
+              Worth knowing
+            </span>
+            <h2 className="heading-h2" style={{ margin: '0 0 20px' }}>
+              You don't have to start at the beginning
+            </h2>
+            <p className="body-text" style={{ margin: 0 }}>
+              Whilst the four stages represent a natural progression, organisations enter at different points depending on where they are. Some begin with Co-Design when they already understand their challenges. Others start with Transform when solutions exist but implementation needs support. Some come to us just for Sustain - building the internal capability to keep evolving independently.
+            </p>
+          </div>
+
+          <div className="scroll-in delay-1" style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            {[
+              { label: 'Assess → Co-Design → Transform → Sustain', note: 'Starting from scratch or planning major change' },
+              { label: 'Co-Design → Transform → Sustain', note: 'Clear on the problem, need collaborative solutions' },
+              { label: 'Transform → Sustain', note: 'Solutions in hand, need embedded implementation' },
+              { label: 'Sustain', note: 'Building ongoing internal capability' },
+            ].map((path) => (
+              <div
+                key={path.label}
+                style={{
+                  padding: '1.25rem',
+                  border: '1px solid rgba(0,0,0,0.08)',
+                  background: 'var(--white)',
+                }}
+              >
+                <p style={{
+                  fontSize: '15px',
+                  fontWeight: '400',
+                  color: 'var(--black)',
+                  margin: '0 0 4px',
+                }}>
+                  {path.label}
+                </p>
+                <p className="caption-text" style={{ margin: 0 }}>{path.note}</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
       {/* Principles */}
-      <section className="section section--dark">
-        <div className="wrap">
-          <p className="label label--light" style={{ marginBottom: '1.5rem' }}>How we show up</p>
-          <h2 className="heading-large" style={{ color: '#fff', marginBottom: '3rem', maxWidth: '560px' }}>
-            The principles behind everything we do
-          </h2>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '2rem' }}>
+      <section className="section--full dark-bg" style={{ padding: '80px 48px' }}>
+        <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
+          <div className="scroll-in" style={{ marginBottom: '3rem' }}>
+            <span className="kicker" style={{ marginBottom: '20px' }}>How we show up</span>
+            <h2 className="heading-h2" style={{ color: '#ffffff', margin: 0, maxWidth: '560px' }}>
+              The principles behind everything we do
+            </h2>
+          </div>
+
+          <div className="grid-3">
             {[
               {
                 title: 'Your people hold the answers',
@@ -232,17 +285,24 @@ export default function HowWeWorkPage() {
                 title: 'Honest about complexity',
                 body: "We won't oversimplify. Organisations are genuinely complex. We help you work with that complexity rather than pretending it away.",
               },
-            ].map((p) => (
+            ].map((p, index) => (
               <div
                 key={p.title}
+                className="scroll-in"
                 style={{
-                  padding: '1.75rem 0',
-                  borderTop: '1px solid rgba(255,255,255,0.15)',
+                  paddingTop: '1.5rem',
+                  borderTop: '1px solid rgba(255,255,255,0.12)',
+                  animationDelay: `${index * 0.1}s`,
                 }}
               >
-                <p style={{ fontSize: '1rem', fontWeight: '400', color: '#fff', marginBottom: '0.75rem' }}>
+                <h3 style={{
+                  fontSize: '18px',
+                  fontWeight: '400',
+                  color: '#ffffff',
+                  margin: '0 0 10px',
+                }}>
                   {p.title}
-                </p>
+                </h3>
                 <p className="body-text" style={{ color: 'rgba(255,255,255,0.6)', margin: 0 }}>
                   {p.body}
                 </p>
@@ -255,11 +315,9 @@ export default function HowWeWorkPage() {
       <CTA
         heading="Let's talk about where you are"
         body="Tell us what's happening in your organisation and we'll explore what working together could look like."
-        primaryLabel="Talk to us"
-        primaryHref="/contact"
-        secondaryLabel="See our services"
-        secondaryHref="/services"
+        secondaryText="See our services"
+        secondaryLink="/services"
       />
-    </>
+    </main>
   )
 }

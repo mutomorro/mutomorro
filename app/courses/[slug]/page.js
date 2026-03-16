@@ -12,49 +12,76 @@ export default async function CoursePage({ params }) {
     <main>
 
       {/* Hero */}
-      <section className="section section--warm">
+      <section className="section--full dark-bg" style={{ padding: '80px 48px' }}>
         <div className="wrap--narrow">
-          <Link href="/courses" style={{
-            fontSize: '0.85rem',
-            fontWeight: '400',
-            color: 'var(--color-accent)',
-            display: 'inline-block',
-            margin: '0 0 1.5rem',
-          }}>← All courses</Link>
-          <p className="label" style={{ margin: '0 0 1rem' }}>{course.category}</p>
-          <h1 className="heading-gradient heading-large" style={{ margin: '0 0 1.5rem' }}>
+          {/* Breadcrumb */}
+          <div className="breadcrumb">
+            <Link href="/courses" className="breadcrumb__link">Courses</Link>
+            {course.category && (
+              <>
+                <span className="breadcrumb__sep">/</span>
+                <span className="breadcrumb__current">{course.category}</span>
+              </>
+            )}
+          </div>
+
+          {course.category && (
+            <span className="kicker" style={{ marginBottom: '16px' }}>{course.category}</span>
+          )}
+          <h1 className="heading-h1" style={{
+            color: '#ffffff',
+            margin: '0 0 24px',
+          }}>
             {course.title}
           </h1>
+
+          {/* Duration / format metadata */}
           {(course.duration || course.format) && (
             <p style={{
-              fontSize: '0.9rem',
+              fontSize: '15px',
               fontWeight: '400',
-              color: 'var(--color-accent)',
-              margin: '0 0 1.5rem',
+              color: 'var(--accent)',
+              margin: '0 0 20px',
+              letterSpacing: '0.02em',
             }}>
               {course.duration}{course.duration && course.format ? ' · ' : ''}{course.format}
             </p>
           )}
-          <p className="lead">{course.shortSummary}</p>
+
+          {course.shortSummary && (
+            <p className="lead-text" style={{ color: 'rgba(255,255,255,0.6)' }}>
+              {course.shortSummary}
+            </p>
+          )}
         </div>
       </section>
 
       {/* Body */}
-      <section className="section section--white">
+      <section className="section--full" style={{ padding: '80px 48px', background: 'var(--white)' }}>
         <div className="wrap--narrow">
-          <div className="portable-text">
+          <div className="portable-text scroll-in">
             <PortableText
               value={course.body}
               components={{
                 types: {
                   image: ({ value }) => (
-                    <div style={{ margin: '2rem 0' }}>
+                    <div className="img-mat" style={{ margin: '2.5rem 0' }}>
                       <img
                         src={urlFor(value).width(900).url()}
                         alt={value.alt || ''}
-                        style={{ width: '100%', height: 'auto', borderRadius: '8px' }}
+                        style={{ width: '100%', height: 'auto', display: 'block' }}
                       />
                     </div>
+                  ),
+                },
+                marks: {
+                  link: ({ value, children }) => (
+                    <a href={value.href} className="inline-link">{children}</a>
+                  ),
+                },
+                block: {
+                  blockquote: ({ children }) => (
+                    <blockquote className="pull-quote">{children}</blockquote>
                   ),
                 },
               }}
@@ -63,23 +90,27 @@ export default async function CoursePage({ params }) {
 
           {/* Related dimensions */}
           {course.relatedDimensions?.length > 0 && (
-            <div style={{ marginTop: '4rem', paddingTop: '3rem', borderTop: '1px solid #f0ece6' }}>
-              <p className="label label--accent" style={{ margin: '0 0 1.5rem' }}>
+            <div className="scroll-in" style={{
+              marginTop: '4rem',
+              paddingTop: '3rem',
+              borderTop: '1px solid rgba(0,0,0,0.08)',
+            }}>
+              <span className="kicker" style={{ color: 'var(--accent)', marginBottom: '20px' }}>
                 Related dimensions
-              </p>
-              <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+              </span>
+              <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
                 {course.relatedDimensions.map((dimension) => (
                   <Link
                     key={dimension._id}
                     href={`/emergent-framework/${dimension.slug.current}`}
                     style={{
-                      fontSize: '0.875rem',
+                      fontSize: '14px',
                       fontWeight: '400',
                       color: dimension.colour,
-                      border: `1px solid ${dimension.colour}`,
-                      borderRadius: '4px',
-                      padding: '0.4rem 0.85rem',
+                      border: `1.5px solid ${dimension.colour}`,
+                      padding: '8px 16px',
                       textDecoration: 'none',
+                      transition: 'background 0.2s, color 0.2s',
                     }}
                   >
                     {dimension.anchor}

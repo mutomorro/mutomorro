@@ -9,32 +9,25 @@ export default function ContactPage() {
   return (
     <main>
 
-      {/* ==========================================
-          HERO (dark)
-          ========================================== */}
-      <section className="section section--dark">
-        <div className="wrap">
-          <p className="label label--light" style={{ margin: '0 0 1rem' }}>
-            Get in touch
-          </p>
-          <h1
-            className="heading-gradient heading-display"
-            style={{ margin: '0 0 1.5rem', maxWidth: '680px' }}
-          >
+      {/* Hero */}
+      <section className="section--full dark-bg" style={{ padding: '80px 48px' }}>
+        <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
+          <span className="kicker" style={{ marginBottom: '20px' }}>Get in touch</span>
+          <h1 className="heading-display heading-gradient" style={{ maxWidth: '900px' }}>
             Let's start with a conversation
           </h1>
-          <p className="lead lead--light" style={{ maxWidth: '600px' }}>
+          <p className="lead-text" style={{ color: 'rgba(255,255,255,0.6)', maxWidth: '680px' }}>
             Every conversation starts with listening. Tell us what you're working on
             and we'll explore it together.
           </p>
         </div>
       </section>
 
-      {/* ==========================================
-          FORM (white)
-          ========================================== */}
-      <section className="section section--white">
-        <div className="wrap" style={{
+      {/* Form section */}
+      <section className="section--full" style={{ padding: '80px 48px', background: 'var(--white)' }}>
+        <div style={{
+          maxWidth: '1350px',
+          margin: '0 auto',
           display: 'grid',
           gridTemplateColumns: '1fr 380px',
           gap: '5rem',
@@ -42,22 +35,14 @@ export default function ContactPage() {
         }}>
 
           {/* Left: form */}
-          <div>
-            <h2 style={{
-              fontSize: 'clamp(1.5rem, 3vw, 2rem)',
-              fontWeight: '400',
-              lineHeight: '1.2',
-              margin: '0 0 0.75rem',
-            }}>
+          <div className="scroll-in">
+            <h2 className="heading-h3" style={{ margin: '0 0 12px' }}>
               What are you working on?
             </h2>
-            <p style={{
-              fontSize: '1.125rem',
-              fontWeight: '300',
-              lineHeight: '1.6',
-              color: 'rgba(0,0,0,0.55)',
+            <p className="lead-text" style={{
               margin: '0 0 2.5rem',
               maxWidth: '480px',
+              fontSize: '18px',
             }}>
               No pitch, no obligation - just an honest discussion about
               where you are and whether our approach feels right.
@@ -66,28 +51,20 @@ export default function ContactPage() {
           </div>
 
           {/* Right: sidebar */}
-          <div style={{ paddingTop: '0.5rem' }}>
+          <div className="scroll-in delay-1" style={{ paddingTop: '0.5rem' }}>
 
             {/* Direct email */}
             <div style={{ marginBottom: '2.5rem' }}>
-              <p style={{
-                fontSize: '0.8125rem',
-                fontWeight: '400',
-                letterSpacing: '0.15em',
-                textTransform: 'uppercase',
-                color: 'rgba(0,0,0,0.5)',
-                margin: '0 0 0.5rem',
+              <span className="kicker" style={{
+                color: 'rgba(0,0,0,0.4)',
+                marginBottom: '8px',
               }}>
                 Prefer email?
-              </p>
+              </span>
               <a
                 href="mailto:hello@mutomorro.com"
-                style={{
-                  fontSize: '1.0625rem',
-                  fontWeight: '400',
-                  color: 'var(--color-accent, #9B51E0)',
-                  textDecoration: 'none',
-                }}
+                className="inline-link"
+                style={{ fontSize: '17px' }}
               >
                 hello@mutomorro.com
               </a>
@@ -99,22 +76,13 @@ export default function ContactPage() {
               paddingTop: '2rem',
               marginBottom: '2.5rem',
             }}>
-              <p style={{
-                fontSize: '0.8125rem',
-                fontWeight: '400',
-                letterSpacing: '0.15em',
-                textTransform: 'uppercase',
-                color: 'rgba(0,0,0,0.5)',
-                margin: '0 0 1rem',
+              <span className="kicker" style={{
+                color: 'rgba(0,0,0,0.4)',
+                marginBottom: '16px',
               }}>
                 What to expect
-              </p>
-              <div style={{
-                fontSize: '0.9375rem',
-                fontWeight: '300',
-                lineHeight: '1.7',
-                color: 'rgba(0,0,0,0.6)',
-              }}>
+              </span>
+              <div className="body-small" style={{ color: 'rgba(0,0,0,0.6)' }}>
                 <p style={{ margin: '0 0 1rem' }}>
                   I'll reply within 48 hours, usually sooner.
                 </p>
@@ -134,26 +102,18 @@ export default function ContactPage() {
               borderTop: '1px solid rgba(0,0,0,0.08)',
               paddingTop: '2rem',
             }}>
-              <p style={{
-                fontSize: '0.8125rem',
-                fontWeight: '400',
-                letterSpacing: '0.15em',
-                textTransform: 'uppercase',
-                color: 'rgba(0,0,0,0.5)',
-                margin: '0 0 0.5rem',
+              <span className="kicker" style={{
+                color: 'rgba(0,0,0,0.4)',
+                marginBottom: '8px',
               }}>
                 Connect
-              </p>
+              </span>
               <a
                 href="https://www.linkedin.com/in/jamesfreemanuk/"
                 target="_blank"
                 rel="noopener noreferrer"
-                style={{
-                  fontSize: '1.0625rem',
-                  fontWeight: '400',
-                  color: 'var(--color-accent, #9B51E0)',
-                  textDecoration: 'none',
-                }}
+                className="inline-link"
+                style={{ fontSize: '17px' }}
               >
                 LinkedIn
               </a>

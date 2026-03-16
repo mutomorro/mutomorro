@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { getAllServices } from '../../sanity/client'
+import CTA from '../../components/CTA'
 
 const categories = [
   {
@@ -31,7 +32,6 @@ const categories = [
 export default async function Services() {
   const allServices = await getAllServices()
 
-  // Group services by category
   const servicesByCategory = categories.reduce((acc, cat) => {
     acc[cat.slug] = allServices.filter(s => s.category === cat.slug)
     return acc
@@ -41,160 +41,87 @@ export default async function Services() {
     <main>
 
       {/* Hero */}
-      <section className="section section--dark">
-        <div className="wrap">
-          <p className="label label--light" style={{ margin: '0 0 1rem' }}>
-            How we help
-          </p>
-          <h1 className="heading-display" style={{
-            color: '#ffffff',
-            margin: '0 0 1.5rem',
+      <section className="section--full dark-bg" style={{ padding: '80px 48px' }}>
+        <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
+          <span className="kicker" style={{ marginBottom: '20px' }}>How we help</span>
+          <h1 className="heading-h1 heading-gradient" style={{
+            margin: '0 0 24px',
             maxWidth: '800px',
           }}>
             Where we work with organisations
           </h1>
-          <p className="lead lead--light" style={{ maxWidth: '560px' }}>
+          <p className="lead-text" style={{ color: 'rgba(255,255,255,0.6)', maxWidth: '560px' }}>
             We work across four interconnected areas of organisational life.
             Real change rarely stays in just one.
           </p>
         </div>
       </section>
 
-      {/* Four categories */}
-      {categories.map((cat, index) => (
+      {/* Category groups */}
+      {categories.map((cat, catIndex) => (
         <section
           key={cat.slug}
-          className={`section ${index % 2 === 0 ? 'section--white' : 'section--warm'}`}
+          className="section--full"
+          style={{
+            padding: '80px 48px',
+            background: catIndex % 2 === 0 ? 'var(--white)' : 'var(--warm)',
+          }}
         >
-          <div className="wrap">
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: '1fr 1fr',
-              gap: '5rem',
-              alignItems: 'start',
-            }}>
+          <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
 
-              {/* Category info */}
-              <div>
-                <p className="label label--accent" style={{ margin: '0 0 1rem' }}>
-                  {cat.title}
-                </p>
-                <h2 className="heading-large" style={{
-                  color: 'var(--color-dark)',
-                  margin: '0 0 1rem',
-                }}>
-                  {cat.question}
-                </h2>
-                <p className="body-text" style={{ marginBottom: '2rem' }}>
-                  {cat.description}
-                </p>
-                <Link
-                  href={`/services/${cat.slug}`}
-                  className="btn btn--outline"
-                >
-                  Explore {cat.title}
-                </Link>
-              </div>
-
-              {/* Services list */}
-              <div style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '0',
-              }}>
-                {servicesByCategory[cat.slug].length > 0 ? (
-                  servicesByCategory[cat.slug].map((service) => (
-                    <Link
-                      key={service._id}
-                      href={`/services/${cat.slug}/${service.slug.current}`}
-                      style={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        padding: '1.25rem 0',
-                        borderBottom: '1px solid #f0ece6',
-                        textDecoration: 'none',
-                        gap: '1rem',
-                      }}
-                    >
-                      <div>
-                        <p style={{
-                          fontSize: '1rem',
-                          fontWeight: '400',
-                          color: 'var(--color-dark)',
-                          margin: '0 0 0.25rem',
-                        }}>
-                          {service.title}
-                        </p>
-                        {service.shortSummary && (
-                          <p style={{
-                            fontSize: '0.875rem',
-                            fontWeight: '300',
-                            color: '#888',
-                            margin: 0,
-                          }}>
-                            {service.shortSummary}
-                          </p>
-                        )}
-                      </div>
-                      <span style={{
-                        color: 'var(--color-accent)',
-                        fontSize: '1.1rem',
-                        flexShrink: 0,
-                      }}>
-                        →
-                      </span>
-                    </Link>
-                  ))
-                ) : (
-                  <p style={{
-                    fontSize: '0.875rem',
-                    fontWeight: '300',
-                    color: '#aaa',
-                    fontStyle: 'italic',
-                    paddingTop: '1rem',
-                  }}>
-                    Services coming soon
-                  </p>
-                )}
-              </div>
-
+            {/* Category heading */}
+            <div className="scroll-in" style={{ marginBottom: '3rem' }}>
+              <span className="kicker" style={{ color: 'var(--accent)', marginBottom: '16px' }}>
+                {cat.title}
+              </span>
+              <h2 className="heading-h2" style={{ margin: '0 0 16px', maxWidth: '600px' }}>
+                {cat.question}
+              </h2>
+              <p className="body-text" style={{ margin: 0, maxWidth: '560px' }}>
+                {cat.description}
+              </p>
             </div>
+
+            {/* Service cards */}
+            {servicesByCategory[cat.slug].length > 0 ? (
+              <div className="grid-3">
+                {servicesByCategory[cat.slug].map((service, index) => (
+                  <Link
+                    key={service._id}
+                    href={`/services/${service.slug.current}`}
+                    className="card-a scroll-in"
+                    style={{ animationDelay: `${index * 0.1}s` }}
+                  >
+                    <div className="card-a__corner" />
+                    <div className="card-a__body">
+                      <div className="card-a__title">{service.title}</div>
+                      {service.heroTagline && (
+                        <p className="card-a__text">{service.heroTagline}</p>
+                      )}
+                    </div>
+                    <div className="card-a__footer">
+                      <div className="card-a__footer-bg" />
+                      <div className="card-a__action">
+                        Learn more <span className="arrow">→</span>
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            ) : (
+              <p className="body-small" style={{ color: 'rgba(0,0,0,0.4)', fontStyle: 'italic' }}>
+                Services coming soon
+              </p>
+            )}
           </div>
         </section>
       ))}
 
-      {/* CTA */}
-      <section className="section section--dark">
-        <div className="wrap" style={{ textAlign: 'center' }}>
-          <p className="label label--light" style={{ margin: '0 0 1rem' }}>
-            Not sure where to start?
-          </p>
-          <h2 style={{
-            fontSize: 'clamp(1.75rem, 3vw, 2.5rem)',
-            fontWeight: '400',
-            color: '#ffffff',
-            margin: '0 0 1rem',
-            maxWidth: '600px',
-            marginLeft: 'auto',
-            marginRight: 'auto',
-          }}>
-            Start with a conversation
-          </h2>
-          <p style={{
-            fontSize: '1rem',
-            fontWeight: '300',
-            color: 'rgba(255,255,255,0.65)',
-            margin: '0 0 2rem',
-          }}>
-            Most organisations we work with span more than one area.
-            We'll help you work out where to focus.
-          </p>
-          <Link href="/contact" className="btn btn--gradient">
-            Talk to us
-          </Link>
-        </div>
-      </section>
+      <CTA
+        label="Not sure where to start?"
+        heading="Start with a conversation"
+        secondaryText="Most organisations we work with span more than one area. We'll help you work out where to focus."
+      />
 
     </main>
   )

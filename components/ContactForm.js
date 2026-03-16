@@ -43,25 +43,21 @@ export default function ContactForm() {
 
   if (status === 'success') {
     return (
-      <div style={{
-        borderLeft: '3px solid var(--color-accent, #9B51E0)',
-        padding: '1.5rem 2rem',
-        maxWidth: '540px',
-      }}>
+      <div className="feedback-success" style={{ maxWidth: '540px' }}>
         <p style={{
-          fontSize: '1.125rem',
+          fontSize: '18px',
           fontWeight: '400',
           lineHeight: '1.6',
-          color: 'var(--color-dark, #221C2B)',
+          color: 'var(--dark)',
           margin: '0 0 0.5rem',
         }}>
           Thanks for getting in touch.
         </p>
         <p style={{
-          fontSize: '1rem',
+          fontSize: '16px',
           fontWeight: '300',
           lineHeight: '1.6',
-          color: 'var(--color-dark, #221C2B)',
+          color: 'var(--dark)',
           opacity: 0.6,
           margin: 0,
         }}>
@@ -75,35 +71,14 @@ export default function ContactForm() {
     <form onSubmit={handleSubmit} style={{ maxWidth: '540px' }}>
 
       {status === 'error' && (
-        <div style={{
-          borderLeft: '3px solid #FF4279',
-          padding: '1rem 1.25rem',
-          marginBottom: '2rem',
-          fontSize: '0.9375rem',
-          fontWeight: '300',
-          lineHeight: '1.6',
-          color: 'var(--color-dark, #221C2B)',
-        }}>
+        <div className="feedback-error" style={{ marginBottom: '2rem' }}>
           {errorMessage}
         </div>
       )}
 
       {/* Name */}
-      <div style={{ marginBottom: '1.5rem' }}>
-        <label
-          htmlFor="name"
-          style={{
-            display: 'block',
-            fontSize: '0.8125rem',
-            fontWeight: '400',
-            letterSpacing: '0.15em',
-            textTransform: 'uppercase',
-            color: 'rgba(0,0,0,0.5)',
-            marginBottom: '0.5rem',
-          }}
-        >
-          Your name
-        </label>
+      <div className="form-group">
+        <label htmlFor="name" className="form-label">Your name</label>
         <input
           type="text"
           id="name"
@@ -112,46 +87,13 @@ export default function ContactForm() {
           value={formData.name}
           onChange={handleChange}
           placeholder="Full name"
-          style={{
-            fontFamily: 'inherit',
-            fontSize: '1rem',
-            fontWeight: '300',
-            padding: '0.875rem 1rem',
-            border: '1px solid rgba(0,0,0,0.12)',
-            borderRadius: '0',
-            background: 'transparent',
-            width: '100%',
-            color: 'var(--color-dark, #221C2B)',
-            outline: 'none',
-            WebkitAppearance: 'none',
-          }}
-          onFocus={e => {
-            e.target.style.borderColor = 'var(--color-accent, #9B51E0)'
-            e.target.style.borderBottomWidth = '2px'
-          }}
-          onBlur={e => {
-            e.target.style.borderColor = 'rgba(0,0,0,0.12)'
-            e.target.style.borderBottomWidth = '1px'
-          }}
+          className="form-input"
         />
       </div>
 
       {/* Email */}
-      <div style={{ marginBottom: '1.5rem' }}>
-        <label
-          htmlFor="email"
-          style={{
-            display: 'block',
-            fontSize: '0.8125rem',
-            fontWeight: '400',
-            letterSpacing: '0.15em',
-            textTransform: 'uppercase',
-            color: 'rgba(0,0,0,0.5)',
-            marginBottom: '0.5rem',
-          }}
-        >
-          Email address
-        </label>
+      <div className="form-group">
+        <label htmlFor="email" className="form-label">Email address</label>
         <input
           type="email"
           id="email"
@@ -160,44 +102,13 @@ export default function ContactForm() {
           value={formData.email}
           onChange={handleChange}
           placeholder="you@company.com"
-          style={{
-            fontFamily: 'inherit',
-            fontSize: '1rem',
-            fontWeight: '300',
-            padding: '0.875rem 1rem',
-            border: '1px solid rgba(0,0,0,0.12)',
-            borderRadius: '0',
-            background: 'transparent',
-            width: '100%',
-            color: 'var(--color-dark, #221C2B)',
-            outline: 'none',
-            WebkitAppearance: 'none',
-          }}
-          onFocus={e => {
-            e.target.style.borderColor = 'var(--color-accent, #9B51E0)'
-            e.target.style.borderBottomWidth = '2px'
-          }}
-          onBlur={e => {
-            e.target.style.borderColor = 'rgba(0,0,0,0.12)'
-            e.target.style.borderBottomWidth = '1px'
-          }}
+          className="form-input"
         />
       </div>
 
       {/* Organisation */}
-      <div style={{ marginBottom: '1.5rem' }}>
-        <label
-          htmlFor="organisation"
-          style={{
-            display: 'block',
-            fontSize: '0.8125rem',
-            fontWeight: '400',
-            letterSpacing: '0.15em',
-            textTransform: 'uppercase',
-            color: 'rgba(0,0,0,0.5)',
-            marginBottom: '0.5rem',
-          }}
-        >
+      <div className="form-group">
+        <label htmlFor="organisation" className="form-label">
           Organisation <span style={{ opacity: 0.5, textTransform: 'none', letterSpacing: 'normal' }}>(optional)</span>
         </label>
         <input
@@ -207,46 +118,13 @@ export default function ContactForm() {
           value={formData.organisation}
           onChange={handleChange}
           placeholder="Where you work"
-          style={{
-            fontFamily: 'inherit',
-            fontSize: '1rem',
-            fontWeight: '300',
-            padding: '0.875rem 1rem',
-            border: '1px solid rgba(0,0,0,0.12)',
-            borderRadius: '0',
-            background: 'transparent',
-            width: '100%',
-            color: 'var(--color-dark, #221C2B)',
-            outline: 'none',
-            WebkitAppearance: 'none',
-          }}
-          onFocus={e => {
-            e.target.style.borderColor = 'var(--color-accent, #9B51E0)'
-            e.target.style.borderBottomWidth = '2px'
-          }}
-          onBlur={e => {
-            e.target.style.borderColor = 'rgba(0,0,0,0.12)'
-            e.target.style.borderBottomWidth = '1px'
-          }}
+          className="form-input"
         />
       </div>
 
       {/* Message */}
-      <div style={{ marginBottom: '2rem' }}>
-        <label
-          htmlFor="message"
-          style={{
-            display: 'block',
-            fontSize: '0.8125rem',
-            fontWeight: '400',
-            letterSpacing: '0.15em',
-            textTransform: 'uppercase',
-            color: 'rgba(0,0,0,0.5)',
-            marginBottom: '0.5rem',
-          }}
-        >
-          What are you working on?
-        </label>
+      <div className="form-group" style={{ marginBottom: '2rem' }}>
+        <label htmlFor="message" className="form-label">What are you working on?</label>
         <textarea
           id="message"
           name="message"
@@ -255,29 +133,7 @@ export default function ContactForm() {
           value={formData.message}
           onChange={handleChange}
           placeholder="Tell us about your situation..."
-          style={{
-            fontFamily: 'inherit',
-            fontSize: '1rem',
-            fontWeight: '300',
-            padding: '0.875rem 1rem',
-            border: '1px solid rgba(0,0,0,0.12)',
-            borderRadius: '0',
-            background: 'transparent',
-            width: '100%',
-            color: 'var(--color-dark, #221C2B)',
-            outline: 'none',
-            resize: 'vertical',
-            minHeight: '140px',
-            WebkitAppearance: 'none',
-          }}
-          onFocus={e => {
-            e.target.style.borderColor = 'var(--color-accent, #9B51E0)'
-            e.target.style.borderBottomWidth = '2px'
-          }}
-          onBlur={e => {
-            e.target.style.borderColor = 'rgba(0,0,0,0.12)'
-            e.target.style.borderBottomWidth = '1px'
-          }}
+          className="form-input form-textarea"
         />
       </div>
 
@@ -286,23 +142,7 @@ export default function ContactForm() {
         type="submit"
         disabled={status === 'sending'}
         className="btn-primary"
-        style={{
-          fontFamily: 'inherit',
-          fontWeight: '400',
-          fontSize: '0.9375rem',
-          letterSpacing: '0.06em',
-          padding: '1rem 2.25rem',
-          border: 'none',
-          borderRadius: '0',
-          color: '#fff',
-          background: status === 'sending' ? 'rgba(0,0,0,0.4)' : '#000000',
-          cursor: status === 'sending' ? 'default' : 'pointer',
-          position: 'relative',
-          overflow: 'hidden',
-          display: 'inline-flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
+        style={status === 'sending' ? { background: 'rgba(0,0,0,0.4)', cursor: 'default' } : undefined}
       >
         {status === 'sending' ? 'Sending...' : 'Send message'}
       </button>

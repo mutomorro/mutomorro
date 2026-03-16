@@ -2,27 +2,35 @@ import Link from 'next/link'
 
 export default function NotFound() {
   return (
-    <section className="section section--white" style={{ minHeight: '70vh', display: 'flex', alignItems: 'center' }}>
-      <div className="wrap wrap--narrow" style={{ textAlign: 'center' }}>
+    <section className="section--full" style={{
+      padding: '80px 48px',
+      background: 'var(--white)',
+      minHeight: '70vh',
+      display: 'flex',
+      alignItems: 'center',
+    }}>
+      <div style={{ maxWidth: '540px', margin: '0 auto', textAlign: 'center' }}>
 
-        <p className="label label--accent" style={{ marginBottom: '1.5rem' }}>404</p>
+        <span className="kicker" style={{ color: 'var(--accent)', marginBottom: '20px' }}>
+          404
+        </span>
 
-        <h1 className="heading-large" style={{ marginBottom: '1.25rem' }}>
+        <h1 className="heading-h1" style={{ margin: '0 0 20px' }}>
           This page has gone dormant
         </h1>
 
-        <p className="body-text" style={{ maxWidth: '480px', margin: '0 auto 2.5rem' }}>
+        <p className="body-text" style={{ margin: '0 auto 2.5rem', maxWidth: '480px' }}>
           Even the healthiest ecosystems have the occasional dead end. The page you're looking for doesn't exist - but plenty of good things do.
         </p>
 
-        <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-          <Link href="/" className="btn btn--primary">
+        <div className="button-row" style={{ justifyContent: 'center' }}>
+          <Link href="/" className="btn-primary">
             Back to home
           </Link>
-          <Link href="/services" className="btn btn--outline">
+          <Link href="/services" className="btn-sec">
             How we help
           </Link>
-          <Link href="/contact" className="btn btn--outline">
+          <Link href="/contact" className="btn-sec">
             Talk to us
           </Link>
         </div>

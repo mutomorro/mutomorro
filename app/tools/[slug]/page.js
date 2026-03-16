@@ -20,52 +20,47 @@ export default async function ToolPage({ params }) {
   const { slug } = await params
   const tool = await getTool(slug)
 
-  // Get the PDF URL from Sanity file asset if it exists
   const pdfUrl = tool.toolkitFileUrl || null
+  const heroImageUrl = tool.heroImage ? urlFor(tool.heroImage).width(600).url() : null
 
   return (
     <main>
 
       {/* Hero */}
-      <section className="section section--warm">
+      <section className="section--full dark-bg" style={{ padding: '80px 48px' }}>
         <div className="wrap--narrow">
-          <Link href="/tools" style={{
-            fontSize: '0.85rem',
-            fontWeight: '400',
-            color: 'var(--color-accent)',
-            textDecoration: 'none',
-            display: 'inline-block',
-            margin: '0 0 1.5rem',
-          }}>← All tools</Link>
-          <p className="label" style={{ margin: '0 0 1rem' }}>{tool.category}</p>
-          <h1 className="heading-gradient heading-large" style={{ margin: '0 0 1.5rem' }}>
+          {/* Breadcrumb */}
+          <div className="breadcrumb">
+            <Link href="/tools" className="breadcrumb__link">Tools</Link>
+            {tool.category && (
+              <>
+                <span className="breadcrumb__sep">/</span>
+                <span className="breadcrumb__current">{tool.category}</span>
+              </>
+            )}
+          </div>
+
+          {tool.category && (
+            <span className="kicker" style={{ marginBottom: '16px' }}>{tool.category}</span>
+          )}
+          <h1 className="heading-h1" style={{
+            color: '#ffffff',
+            margin: '0 0 24px',
+          }}>
             {tool.title}
           </h1>
           {tool.shortSummary && (
-            <p className="lead">{tool.shortSummary}</p>
+            <p className="lead-text" style={{ color: 'rgba(255,255,255,0.6)' }}>
+              {tool.shortSummary}
+            </p>
           )}
 
           {/* Quick download button - scrolls to form */}
           {pdfUrl && (
             <a
               href="#get-template"
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontFamily: 'inherit',
-                fontWeight: '400',
-                fontSize: '0.9375rem',
-                letterSpacing: '0.06em',
-                textDecoration: 'none',
-                padding: '1rem 2.25rem',
-                borderRadius: '0',
-                color: '#fff',
-                background: '#000',
-                marginTop: '1.5rem',
-                position: 'relative',
-                overflow: 'hidden',
-              }}
+              className="btn-primary btn-primary--dark"
+              style={{ marginTop: '2rem', display: 'inline-flex' }}
             >
               Get the template
             </a>
@@ -74,22 +69,32 @@ export default async function ToolPage({ params }) {
       </section>
 
       {/* Body */}
-      <section className="section section--white">
+      <section className="section--full" style={{ padding: '80px 48px', background: 'var(--white)' }}>
         <div className="wrap--narrow">
           {tool.body && (
-            <div className="portable-text">
+            <div className="portable-text scroll-in">
               <PortableText
                 value={tool.body}
                 components={{
                   types: {
                     image: ({ value }) => (
-                      <div style={{ margin: '2rem 0' }}>
+                      <div className="img-mat" style={{ margin: '2.5rem 0' }}>
                         <img
                           src={urlFor(value).width(900).url()}
                           alt={value.alt || ''}
-                          style={{ width: '100%', height: 'auto', borderRadius: '8px' }}
+                          style={{ width: '100%', height: 'auto', display: 'block' }}
                         />
                       </div>
+                    ),
+                  },
+                  marks: {
+                    link: ({ value, children }) => (
+                      <a href={value.href} className="inline-link">{children}</a>
+                    ),
+                  },
+                  block: {
+                    blockquote: ({ children }) => (
+                      <blockquote className="pull-quote">{children}</blockquote>
                     ),
                   },
                 }}
@@ -99,14 +104,19 @@ export default async function ToolPage({ params }) {
         </div>
       </section>
 
-      {/* Download form - only if there's a toolkit PDF */}
+      {/* Download form */}
       {pdfUrl && (
-        <section id="get-template" className="section section--warm">
+        <section
+          id="get-template"
+          className="section--full warm-bg scroll-in"
+          style={{ padding: '80px 48px' }}
+        >
           <div className="wrap--narrow">
             <ToolDownloadForm
               toolTitle={tool.title}
               toolSlug={slug}
               pdfUrl={pdfUrl}
+              heroImageUrl={heroImageUrl}
             />
           </div>
         </section>

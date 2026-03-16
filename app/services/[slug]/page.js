@@ -35,46 +35,20 @@ export default async function ServicePage({ params }) {
       {/* ==========================================
           SECTION 1: HERO (dark)
           ========================================== */}
-      <section className="section section--dark">
-        <div className="wrap">
+      <section className="section--full dark-bg" style={{ padding: '80px 48px' }}>
+        <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
           {/* Breadcrumb */}
-          <div style={{
-            display: 'flex',
-            gap: '0.5rem',
-            alignItems: 'center',
-            marginBottom: '2rem',
-            flexWrap: 'wrap',
-          }}>
-            <Link
-              href="/services"
-              style={{
-                fontSize: '0.875rem',
-                fontWeight: '400',
-                color: 'var(--color-accent)',
-                textDecoration: 'none',
-              }}
-            >
-              How we help
-            </Link>
-            <span style={{ color: 'rgba(255,255,255,0.3)', fontSize: '0.875rem' }}>→</span>
-            <span
-              style={{
-                fontSize: '0.875rem',
-                fontWeight: '400',
-                color: 'rgba(255,255,255,0.5)',
-              }}
-            >
-              {service.categoryLabel}
-            </span>
+          <div className="breadcrumb">
+            <Link href="/services" className="breadcrumb__link">How we help</Link>
+            <span className="breadcrumb__sep">/</span>
+            <span className="breadcrumb__current">{service.categoryLabel}</span>
           </div>
 
-          <p className="label label--light" style={{ margin: '0 0 1rem' }}>
-            {service.categoryLabel}
-          </p>
-          <h1 className="heading-gradient heading-display" style={{ margin: '0 0 1.5rem' }}>
+          <span className="kicker" style={{ marginBottom: '16px' }}>{service.categoryLabel}</span>
+          <h1 className="heading-gradient heading-display" style={{ margin: '0 0 24px', maxWidth: '900px' }}>
             {service.heroHeading}
           </h1>
-          <p className="lead lead--light" style={{ maxWidth: '680px' }}>
+          <p className="lead-text" style={{ color: 'rgba(255,255,255,0.6)', maxWidth: '680px' }}>
             {service.heroTagline}
           </p>
         </div>
@@ -83,32 +57,13 @@ export default async function ServicePage({ params }) {
       {/* ==========================================
           ANCHOR NAV
           ========================================== */}
-      <nav style={{
-        position: 'sticky',
-        top: 0,
-        zIndex: 50,
-        background: '#ffffff',
-        borderBottom: '1px solid #eee',
-      }}>
-        <div className="wrap" style={{
-          display: 'flex',
-          gap: '2rem',
-          padding: '0.875rem 0',
-          overflowX: 'auto',
-        }}>
+      <nav className="anchor-nav">
+        <div className="anchor-nav__inner">
           {['Context', 'Perspective', 'Approach', 'Outcomes', 'Examples'].map((label) => (
             <a
               key={label}
               href={`#${label.toLowerCase()}`}
-              style={{
-                fontSize: '0.875rem',
-                fontWeight: '400',
-                color: 'var(--color-dark)',
-                textDecoration: 'none',
-                whiteSpace: 'nowrap',
-                opacity: 0.6,
-                transition: 'opacity 0.2s',
-              }}
+              className="anchor-nav__link"
             >
               {label}
             </a>
@@ -119,49 +74,41 @@ export default async function ServicePage({ params }) {
       {/* ==========================================
           SECTION 2: CONTEXT (dark)
           ========================================== */}
-      <section id="context" className="section section--dark">
-        <div className="wrap" style={{
+      <section id="context" className="section--full dark-bg" style={{ padding: '80px 48px' }}>
+        <div style={{
+          maxWidth: '1350px',
+          margin: '0 auto',
           display: 'grid',
           gridTemplateColumns: service.propositionImageUrl ? '1fr 1fr' : '1fr',
           gap: '4rem',
           alignItems: 'start',
         }}>
           {/* Left: heading + body */}
-          <div>
-            <p className="label label--light" style={{ margin: '0 0 1rem' }}>
-              Context
-            </p>
-            <h2 style={{
-              fontSize: 'clamp(1.75rem, 3.5vw, 2.75rem)',
-              fontWeight: '300',
-              lineHeight: '1.2',
+          <div className="scroll-in">
+            <span className="kicker" style={{ marginBottom: '16px' }}>Context</span>
+            <h2 className="heading-h2" style={{
               color: '#ffffff',
               margin: '0 0 2rem',
             }}>
               {service.contextHeading}
             </h2>
-            <div className="body-text" style={{ color: 'rgba(255,255,255,0.75)' }}>
+            <div className="portable-text" style={{ color: 'rgba(255,255,255,0.85)' }}>
               <PortableText value={service.contextBody} />
             </div>
           </div>
 
           {/* Right: proposition diagram */}
           {service.propositionImageUrl && (
-            <div>
+            <div className="scroll-in delay-1">
               <img
                 src={service.propositionImageUrl}
                 alt={service.propositionCaption || 'Proposition diagram'}
-                style={{
-                  width: '100%',
-                  height: 'auto',
-                  borderRadius: '8px',
-                }}
+                style={{ width: '100%', height: 'auto' }}
               />
               {service.propositionCaption && (
-                <p style={{
-                  fontSize: '0.8125rem',
-                  color: 'rgba(255,255,255,0.5)',
-                  marginTop: '0.75rem',
+                <p className="caption-text" style={{
+                  color: 'rgba(255,255,255,0.4)',
+                  marginTop: '12px',
                   textAlign: 'center',
                 }}>
                   {service.propositionCaption}
@@ -175,37 +122,41 @@ export default async function ServicePage({ params }) {
       {/* ==========================================
           SECTION 3: RECOGNITION (white)
           ========================================== */}
-      <section className="section section--white">
-        <div className="wrap">
-          <p className="label label--accent" style={{ margin: '0 0 1rem' }}>
-            Recognition
-          </p>
-          <h2 className="heading-large" style={{ margin: '0 0 1.5rem' }}>
-            {service.recognitionHeading}
-          </h2>
-          <p className="lead" style={{ maxWidth: '720px', marginBottom: '2rem' }}>
-            {service.recognitionIntro}
-          </p>
+      <section className="section--full" style={{ padding: '80px 48px', background: 'var(--white)' }}>
+        <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
+          <div className="scroll-in">
+            <span className="kicker" style={{ color: 'var(--accent)', marginBottom: '16px' }}>Recognition</span>
+            <h2 className="heading-h2" style={{ margin: '0 0 20px' }}>
+              {service.recognitionHeading}
+            </h2>
+            <p className="lead-text" style={{ maxWidth: '720px', marginBottom: '2.5rem' }}>
+              {service.recognitionIntro}
+            </p>
+          </div>
 
-          {/* Recognition items as cards */}
+          {/* Recognition items */}
           {service.recognitionItems?.length > 0 && (
             <div style={{
               display: 'grid',
               gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-              gap: '1.25rem',
+              gap: '20px',
               marginBottom: '2.5rem',
             }}>
               {service.recognitionItems.map((item, i) => (
                 <div
                   key={item._key || i}
-                  className="card"
-                  style={{ padding: '1.5rem' }}
+                  className="scroll-in"
+                  style={{
+                    transitionDelay: `${Math.min(i, 4) * 0.1}s`,
+                    border: '1px solid rgba(0,0,0,0.12)',
+                    padding: '24px 28px',
+                  }}
                 >
                   <p style={{
-                    fontSize: '1.05rem',
+                    fontSize: '16px',
                     fontWeight: '400',
                     lineHeight: '1.55',
-                    color: 'var(--color-dark)',
+                    color: 'var(--dark)',
                     margin: 0,
                   }}>
                     {item.text}
@@ -217,14 +168,14 @@ export default async function ServicePage({ params }) {
 
           {/* Bridge text */}
           {service.recognitionBridge && (
-            <div style={{
+            <div className="scroll-in" style={{
               maxWidth: '720px',
-              paddingTop: '1.5rem',
-              borderTop: '1px solid #eee',
-              color: 'var(--color-dark)',
-              opacity: 0.7,
+              paddingTop: '24px',
+              borderTop: '1px solid rgba(0,0,0,0.08)',
             }}>
-              <PortableText value={service.recognitionBridge} />
+              <div className="portable-text">
+                <PortableText value={service.recognitionBridge} />
+              </div>
             </div>
           )}
         </div>
@@ -234,41 +185,33 @@ export default async function ServicePage({ params }) {
           STATS STRIP
           ========================================== */}
       {service.stats?.length > 0 && (
-        <section className="section section--white" style={{ paddingTop: 0 }}>
-          <div className="wrap">
+        <section className="section--full" style={{ padding: '0 48px 80px', background: 'var(--white)' }}>
+          <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
             <div style={{
               display: 'grid',
               gridTemplateColumns: `repeat(${service.stats.length}, 1fr)`,
               gap: '2rem',
-              padding: '2rem 0',
-              borderTop: '1px solid #eee',
-              borderBottom: '1px solid #eee',
+              padding: '3rem 0',
+              borderTop: '1px solid rgba(0,0,0,0.08)',
+              borderBottom: '1px solid rgba(0,0,0,0.08)',
             }}>
               {service.stats.map((stat, i) => (
-                <div key={stat._key || i} style={{ textAlign: 'center' }}>
-                  <p style={{
-                    fontSize: 'clamp(1.75rem, 3vw, 2.5rem)',
-                    fontWeight: '300',
-                    color: 'var(--color-accent)',
-                    margin: '0 0 0.25rem',
-                    lineHeight: 1,
-                  }}>
+                <div key={stat._key || i} className="scroll-in" style={{
+                  textAlign: 'center',
+                  transitionDelay: `${i * 0.1}s`,
+                }}>
+                  <p className="stat-number heading-gradient" style={{ margin: '0 0 8px' }}>
                     {stat.statValue}
                   </p>
                   <p style={{
-                    fontSize: '0.9375rem',
+                    fontSize: '15px',
                     fontWeight: '400',
-                    color: 'var(--color-dark)',
-                    margin: '0 0 0.25rem',
+                    color: 'var(--dark)',
+                    margin: '0 0 4px',
                   }}>
                     {stat.statLabel}
                   </p>
-                  <p style={{
-                    fontSize: '0.75rem',
-                    color: 'var(--color-dark)',
-                    opacity: 0.4,
-                    margin: 0,
-                  }}>
+                  <p className="caption-text">
                     {stat.statSource}
                   </p>
                 </div>
@@ -281,35 +224,32 @@ export default async function ServicePage({ params }) {
       {/* ==========================================
           SECTION 4: PERSPECTIVE (warm)
           ========================================== */}
-      <section id="perspective" className="section section--warm">
-        <div className="wrap" style={{
+      <section id="perspective" className="section--full warm-bg" style={{ padding: '80px 48px' }}>
+        <div style={{
+          maxWidth: '1350px',
+          margin: '0 auto',
           display: 'grid',
           gridTemplateColumns: service.perspectiveImageUrl ? '1fr 380px' : '1fr',
           gap: '4rem',
           alignItems: 'start',
         }}>
-          <div>
-            <p className="label label--accent" style={{ margin: '0 0 1rem' }}>
-              Perspective
-            </p>
-            <h2 className="heading-large" style={{ margin: '0 0 1.5rem' }}>
+          <div className="scroll-in">
+            <span className="kicker" style={{ color: 'var(--accent)', marginBottom: '16px' }}>Perspective</span>
+            <h2 className="heading-h2" style={{ margin: '0 0 24px' }}>
               {service.perspectiveHeading}
             </h2>
-            <div className="body-text">
+            <div className="portable-text">
               <PortableText value={service.perspectiveBody} />
             </div>
             {service.perspectiveLinkLabel && service.perspectiveLinkUrl && (
               <Link
                 href={service.perspectiveLinkUrl}
+                className="inline-link"
                 style={{
                   display: 'inline-block',
-                  marginTop: '1.5rem',
-                  fontSize: '0.9375rem',
+                  marginTop: '24px',
+                  fontSize: '15px',
                   fontWeight: '400',
-                  color: 'var(--color-accent)',
-                  textDecoration: 'none',
-                  borderBottom: '1px solid var(--color-accent)',
-                  paddingBottom: '2px',
                 }}
               >
                 {service.perspectiveLinkLabel} →
@@ -318,14 +258,11 @@ export default async function ServicePage({ params }) {
           </div>
 
           {service.perspectiveImageUrl && (
-            <div style={{
-              borderRadius: '8px',
-              overflow: 'hidden',
-            }}>
+            <div className="scroll-in delay-1 img-offset">
               <img
                 src={service.perspectiveImageUrl}
                 alt={service.perspectiveHeading}
-                style={{ width: '100%', height: 'auto' }}
+                style={{ width: '100%', height: 'auto', display: 'block' }}
               />
             </div>
           )}
@@ -335,16 +272,16 @@ export default async function ServicePage({ params }) {
       {/* ==========================================
           SECTION 5: APPROACH OVERVIEW (white)
           ========================================== */}
-      <section id="approach" className="section section--white">
-        <div className="wrap">
-          <p className="label label--accent" style={{ margin: '0 0 1rem' }}>
-            Approach
-          </p>
-          <h2 className="heading-large" style={{ margin: '0 0 1.5rem' }}>
-            Approach
-          </h2>
-          <div className="body-text" style={{ maxWidth: '720px', marginBottom: '2.5rem' }}>
-            <PortableText value={service.approachIntro} />
+      <section id="approach" className="section--full" style={{ padding: '80px 48px', background: 'var(--white)' }}>
+        <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
+          <div className="scroll-in">
+            <span className="kicker" style={{ color: 'var(--accent)', marginBottom: '16px' }}>Approach</span>
+            <h2 className="heading-h2" style={{ margin: '0 0 24px' }}>
+              Approach
+            </h2>
+            <div className="portable-text" style={{ maxWidth: '720px', marginBottom: '3rem' }}>
+              <PortableText value={service.approachIntro} />
+            </div>
           </div>
 
           {/* Journey cards - overview of the four stages */}
@@ -352,47 +289,40 @@ export default async function ServicePage({ params }) {
             <div style={{
               display: 'grid',
               gridTemplateColumns: `repeat(${service.stages.length}, 1fr)`,
-              gap: '1.25rem',
+              gap: '20px',
               marginBottom: '1rem',
             }}>
               {service.stages.map((stage, i) => (
                 <div
                   key={stage._key || i}
+                  className="card-a scroll-in"
                   style={{
-                    background: '#ffffff',
-                    border: '1px solid #eee',
-                    borderRadius: '8px',
-                    padding: '1.5rem',
                     textAlign: 'center',
+                    transitionDelay: `${i * 0.1}s`,
                   }}
                 >
-                  <p style={{
-                    fontSize: '0.75rem',
-                    fontWeight: '400',
-                    textTransform: 'uppercase',
-                    letterSpacing: '1.5px',
-                    opacity: 0.4,
-                    margin: '0 0 0.5rem',
-                  }}>
-                    {stage.stageNumber}
-                  </p>
-                  <p style={{
-                    fontSize: '1.125rem',
-                    fontWeight: '400',
-                    color: 'var(--color-dark)',
-                    margin: '0 0 0.5rem',
-                  }}>
-                    {stage.stageTitle}
-                  </p>
-                  <p style={{
-                    fontSize: '0.875rem',
-                    color: 'var(--color-dark)',
-                    opacity: 0.6,
-                    margin: 0,
-                    lineHeight: 1.45,
-                  }}>
-                    {stage.stageSummary}
-                  </p>
+                  <div className="card-a__corner"></div>
+                  <div className="card-a__body">
+                    <p className="caption-text" style={{
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.1em',
+                      marginBottom: '8px',
+                    }}>
+                      {stage.stageNumber}
+                    </p>
+                    <p className="card-a__title" style={{ fontSize: '18px' }}>
+                      {stage.stageTitle}
+                    </p>
+                    <p className="card-a__text">
+                      {stage.stageSummary}
+                    </p>
+                  </div>
+                  <div className="card-a__footer">
+                    <div className="card-a__footer-bg"></div>
+                    <div className="card-a__action">
+                      Details <span className="arrow">→</span>
+                    </div>
+                  </div>
                 </div>
               ))}
             </div>
@@ -406,13 +336,16 @@ export default async function ServicePage({ params }) {
       {service.stages?.map((stage, i) => (
         <section
           key={stage._key || i}
-          className="section section--white"
+          className="section--full"
           style={{
-            paddingTop: '3rem',
-            borderTop: '1px solid #eee',
+            padding: '60px 48px 80px',
+            background: 'var(--white)',
+            borderTop: '1px solid rgba(0,0,0,0.08)',
           }}
         >
-          <div className="wrap" style={{
+          <div style={{
+            maxWidth: '1350px',
+            margin: '0 auto',
             display: 'grid',
             gridTemplateColumns: stage.stageImageUrl ? (i % 2 === 0 ? '380px 1fr' : '1fr 380px') : '1fr',
             gap: '4rem',
@@ -420,76 +353,48 @@ export default async function ServicePage({ params }) {
           }}>
             {/* Image - left on even stages, right on odd */}
             {stage.stageImageUrl && i % 2 === 0 && (
-              <div style={{
-                borderRadius: '8px',
-                overflow: 'hidden',
+              <div className="scroll-in img-offset" style={{
                 position: 'sticky',
-                top: '80px',
+                top: '140px',
               }}>
                 <img
                   src={stage.stageImageUrl}
                   alt={stage.stageHeading}
-                  style={{ width: '100%', height: 'auto' }}
+                  style={{ width: '100%', height: 'auto', display: 'block' }}
                 />
               </div>
             )}
 
             {/* Content */}
-            <div>
-              <p className="label label--accent" style={{ margin: '0 0 0.75rem' }}>
+            <div className="scroll-in">
+              <span className="kicker" style={{ color: 'var(--accent)', marginBottom: '12px' }}>
                 {stage.stageNumber}
-              </p>
-              <h2 className="heading-medium" style={{ margin: '0 0 1.5rem' }}>
+              </span>
+              <h2 className="heading-h3" style={{ margin: '0 0 24px' }}>
                 {stage.stageHeading}
               </h2>
-              <div className="body-text">
+              <div className="portable-text">
                 <PortableText value={stage.stageBody} />
               </div>
 
               {/* What this looks like in practice */}
               {stage.stageInPractice?.length > 0 && (
                 <div style={{
-                  marginTop: '1.5rem',
-                  paddingTop: '1.5rem',
-                  borderTop: '1px solid #eee',
+                  marginTop: '24px',
+                  paddingTop: '24px',
+                  borderTop: '1px solid rgba(0,0,0,0.08)',
                 }}>
                   <p style={{
-                    fontSize: '0.9375rem',
-                    fontWeight: '600',
-                    color: 'var(--color-dark)',
-                    margin: '0 0 1rem',
+                    fontSize: '15px',
+                    fontWeight: '400',
+                    color: 'var(--dark)',
+                    margin: '0 0 16px',
                   }}>
                     What this looks like in practice
                   </p>
-                  <ul style={{
-                    listStyle: 'none',
-                    padding: 0,
-                    margin: 0,
-                  }}>
+                  <ul className="practice-list">
                     {stage.stageInPractice.map((item, j) => (
-                      <li
-                        key={j}
-                        style={{
-                          position: 'relative',
-                          paddingLeft: '1.25rem',
-                          marginBottom: '0.75rem',
-                          fontSize: '0.9375rem',
-                          lineHeight: '1.55',
-                          color: 'var(--color-dark)',
-                          opacity: 0.7,
-                        }}
-                      >
-                        <span style={{
-                          position: 'absolute',
-                          left: 0,
-                          top: '0.5rem',
-                          width: '6px',
-                          height: '6px',
-                          background: 'var(--color-accent)',
-                          borderRadius: '50%',
-                        }} />
-                        {item}
-                      </li>
+                      <li key={j}>{item}</li>
                     ))}
                   </ul>
                 </div>
@@ -498,25 +403,25 @@ export default async function ServicePage({ params }) {
               {/* What you get */}
               {stage.stageOutcome && (
                 <div style={{
-                  marginTop: '1.5rem',
-                  paddingTop: '1.5rem',
-                  borderTop: '1px solid #eee',
+                  marginTop: '24px',
+                  paddingTop: '24px',
+                  borderTop: '1px solid rgba(0,0,0,0.08)',
                 }}>
                   <p style={{
-                    fontSize: '0.9375rem',
-                    fontWeight: '600',
-                    color: 'var(--color-dark)',
-                    margin: '0 0 0.75rem',
+                    fontSize: '15px',
+                    fontWeight: '400',
+                    color: 'var(--dark)',
+                    margin: '0 0 12px',
                   }}>
                     What you get
                   </p>
                   <div style={{
-                    background: 'var(--color-warm)',
-                    padding: '1.25rem 1.5rem',
-                    borderRadius: '6px',
-                    fontSize: '0.9375rem',
-                    lineHeight: '1.55',
-                    color: 'var(--color-dark)',
+                    background: 'var(--warm)',
+                    padding: '20px 24px',
+                    fontSize: '15px',
+                    lineHeight: '1.6',
+                    fontWeight: '300',
+                    color: 'var(--dark)',
                   }}>
                     {stage.stageOutcome}
                   </div>
@@ -526,16 +431,14 @@ export default async function ServicePage({ params }) {
 
             {/* Image - right on odd stages */}
             {stage.stageImageUrl && i % 2 !== 0 && (
-              <div style={{
-                borderRadius: '8px',
-                overflow: 'hidden',
+              <div className="scroll-in delay-1 img-offset" style={{
                 position: 'sticky',
-                top: '80px',
+                top: '140px',
               }}>
                 <img
                   src={stage.stageImageUrl}
                   alt={stage.stageHeading}
-                  style={{ width: '100%', height: 'auto' }}
+                  style={{ width: '100%', height: 'auto', display: 'block' }}
                 />
               </div>
             )}
@@ -546,43 +449,46 @@ export default async function ServicePage({ params }) {
       {/* ==========================================
           SECTION 6: OUTCOMES (warm)
           ========================================== */}
-      <section id="outcomes" className="section section--warm">
-        <div className="wrap">
-          <p className="label label--accent" style={{ margin: '0 0 1rem' }}>
-            Outcomes
-          </p>
-          <h2 className="heading-large" style={{ margin: '0 0 1.5rem' }}>
-            {service.outcomesHeading}
-          </h2>
-          {service.outcomesIntro && (
-            <p className="body-text" style={{ maxWidth: '720px', marginBottom: '2rem' }}>
-              {service.outcomesIntro}
-            </p>
-          )}
+      <section id="outcomes" className="section--full warm-bg" style={{ padding: '80px 48px' }}>
+        <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
+          <div className="scroll-in">
+            <span className="kicker" style={{ color: 'var(--accent)', marginBottom: '16px' }}>Outcomes</span>
+            <h2 className="heading-h2" style={{ margin: '0 0 20px' }}>
+              {service.outcomesHeading}
+            </h2>
+            {service.outcomesIntro && (
+              <p className="lead-text" style={{ maxWidth: '720px', marginBottom: '2.5rem' }}>
+                {service.outcomesIntro}
+              </p>
+            )}
+          </div>
 
           {service.outcomes?.length > 0 && (
-            <div style={{ margin: '0 0 2rem' }}>
+            <div style={{ margin: '0 0 2.5rem' }}>
               {service.outcomes.map((outcome, i) => (
                 <div
                   key={outcome._key || i}
+                  className="scroll-in"
                   style={{
-                    padding: '1.25rem 0',
+                    padding: '20px 0',
                     borderBottom: i < service.outcomes.length - 1 ? '1px solid rgba(0,0,0,0.08)' : 'none',
+                    transitionDelay: `${Math.min(i, 4) * 0.1}s`,
                   }}
                 >
                   <p style={{
-                    fontSize: '1.125rem',
+                    fontSize: '18px',
                     fontWeight: '400',
-                    color: 'var(--color-dark)',
-                    margin: '0 0 0.25rem',
+                    color: 'var(--dark)',
+                    margin: '0 0 4px',
                   }}>
                     {outcome.outcomeTitle}
                   </p>
                   <p style={{
-                    fontSize: '0.9375rem',
-                    color: 'var(--color-dark)',
-                    opacity: 0.6,
+                    fontSize: '15px',
+                    fontWeight: '300',
+                    color: 'rgba(0,0,0,0.55)',
                     margin: 0,
+                    lineHeight: '1.6',
                   }}>
                     {outcome.outcomeDescription}
                   </p>
@@ -592,9 +498,9 @@ export default async function ServicePage({ params }) {
           )}
 
           {service.outcomesClosing && (
-            <p className="body-text" style={{ maxWidth: '720px' }}>
-              {service.outcomesClosing}
-            </p>
+            <div className="scroll-in portable-text" style={{ maxWidth: '720px' }}>
+              <p>{service.outcomesClosing}</p>
+            </div>
           )}
         </div>
       </section>
@@ -603,44 +509,66 @@ export default async function ServicePage({ params }) {
           SECTION 7: EXAMPLES (white)
           ========================================== */}
       {(service.relatedProjects?.length > 0 || service.testimonialQuote) && (
-        <section id="examples" className="section section--white">
-          <div className="wrap">
-            <p className="label label--accent" style={{ margin: '0 0 1rem' }}>
-              Examples
-            </p>
-            <h2 className="heading-large" style={{ margin: '0 0 2rem' }}>
-              Examples
-            </h2>
+        <section id="examples" className="section--full" style={{ padding: '80px 48px', background: 'var(--white)' }}>
+          <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
+            <div className="scroll-in">
+              <span className="kicker" style={{ color: 'var(--accent)', marginBottom: '16px' }}>Examples</span>
+              <h2 className="heading-h2" style={{ margin: '0 0 2rem' }}>
+                Examples
+              </h2>
+            </div>
 
             {/* Related projects */}
             {service.relatedProjects?.length > 0 && (
               <div style={{
                 display: 'grid',
                 gridTemplateColumns: service.relatedProjects.length > 1 ? '1fr 1fr' : '1fr',
-                gap: '1.5rem',
-                marginBottom: service.testimonialQuote ? '2.5rem' : 0,
+                gap: '24px',
+                marginBottom: service.testimonialQuote ? '3rem' : 0,
               }}>
-                {service.relatedProjects.map((project) => (
+                {service.relatedProjects.map((project, i) => (
                   <Link
                     key={project._id}
                     href={`/projects/${project.slug.current}`}
-                    className="card"
+                    className={`${i === 0 && service.relatedProjects.length > 1 ? 'card-c' : 'card-a'} scroll-in`}
+                    style={{ transitionDelay: `${i * 0.1}s` }}
                   >
-                    {project.clientSector && (
-                      <p className="card-label">{project.clientSector}</p>
+                    {i === 0 && service.relatedProjects.length > 1 ? (
+                      <>
+                        <div className="card-c__fill"></div>
+                        <div className="card-c__body">
+                          {project.clientSector && (
+                            <span className="card-c__tag">{project.clientSector}</span>
+                          )}
+                          <p className="card-c__title">{project.title}</p>
+                          {project.shortSummary && (
+                            <p className="card-c__text">{project.shortSummary}</p>
+                          )}
+                          <p className="card-c__action">
+                            Read the full story <span className="arrow">→</span>
+                          </p>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <div className="card-a__corner"></div>
+                        <div className="card-a__body">
+                          {project.clientSector && (
+                            <span className="card-a__tag">{project.clientSector}</span>
+                          )}
+                          <p className="card-a__title">{project.title}</p>
+                          {project.shortSummary && (
+                            <p className="card-a__text">{project.shortSummary}</p>
+                          )}
+                        </div>
+                        <div className="card-a__footer">
+                          <div className="card-a__footer-bg"></div>
+                          <div className="card-a__action">
+                            Read the full story <span className="arrow">→</span>
+                          </div>
+                        </div>
+                      </>
                     )}
-                    <p className="card-title">{project.title}</p>
-                    {project.shortSummary && (
-                      <p className="card-body">{project.shortSummary}</p>
-                    )}
-                    <p style={{
-                      fontSize: '0.875rem',
-                      fontWeight: '400',
-                      color: 'var(--color-accent)',
-                      margin: '1rem 0 0',
-                    }}>
-                      Read the full story →
-                    </p>
                   </Link>
                 ))}
               </div>
@@ -648,30 +576,17 @@ export default async function ServicePage({ params }) {
 
             {/* Testimonial */}
             {service.testimonialQuote && (
-              <div style={{
-                borderLeft: '3px solid var(--color-accent)',
-                padding: '1.5rem 2rem',
-                background: 'var(--color-warm)',
-                borderRadius: '0 8px 8px 0',
-              }}>
-                <blockquote style={{
-                  fontSize: '1.1875rem',
-                  fontWeight: '300',
-                  lineHeight: '1.6',
-                  color: 'var(--color-dark)',
-                  fontStyle: 'italic',
-                  margin: 0,
-                }}>
+              <div className="scroll-in pull-quote">
+                <blockquote style={{ margin: 0, fontStyle: 'italic' }}>
                   "{service.testimonialQuote}"
                 </blockquote>
                 {service.testimonialAttribution && (
                   <cite style={{
                     display: 'block',
-                    marginTop: '0.75rem',
-                    fontSize: '0.875rem',
+                    marginTop: '12px',
+                    fontSize: '14px',
                     fontStyle: 'normal',
-                    color: 'var(--color-dark)',
-                    opacity: 0.6,
+                    color: 'rgba(0,0,0,0.45)',
                   }}>
                     — {service.testimonialAttribution}
                   </cite>
@@ -686,15 +601,15 @@ export default async function ServicePage({ params }) {
           RELATED DIMENSIONS
           ========================================== */}
       {service.relatedDimensions?.length > 0 && (
-        <section className="section section--warm">
-          <div className="wrap">
-            <p className="label" style={{ margin: '0 0 1.5rem' }}>
+        <section className="section--full warm-bg" style={{ padding: '60px 48px' }}>
+          <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
+            <span className="kicker" style={{ marginBottom: '24px' }}>
               EMERGENT dimensions this connects to
-            </p>
+            </span>
             <div style={{
               display: 'flex',
               flexWrap: 'wrap',
-              gap: '0.75rem',
+              gap: '12px',
             }}>
               {service.relatedDimensions.map((dim) => (
                 <Link
@@ -703,20 +618,19 @@ export default async function ServicePage({ params }) {
                   style={{
                     display: 'inline-flex',
                     alignItems: 'center',
-                    gap: '0.5rem',
-                    padding: '0.5rem 1rem',
-                    borderRadius: '100px',
+                    gap: '8px',
+                    padding: '8px 16px',
                     border: `1.5px solid ${dim.colour}`,
                     color: dim.colour,
-                    fontSize: '0.875rem',
+                    fontSize: '14px',
                     fontWeight: '400',
                     textDecoration: 'none',
-                    transition: 'background 0.2s',
+                    transition: 'background 0.2s, color 0.2s',
                   }}
                 >
                   <span style={{
                     fontWeight: '400',
-                    fontSize: '0.8rem',
+                    fontSize: '13px',
                     opacity: 0.7,
                   }}>
                     {dim.anchor}
@@ -733,35 +647,37 @@ export default async function ServicePage({ params }) {
           RELATED SERVICES
           ========================================== */}
       {service.relatedServices?.length > 0 && (
-        <section className="section section--white">
-          <div className="wrap">
-            <p className="label" style={{ margin: '0 0 2rem' }}>
+        <section className="section--full" style={{ padding: '80px 48px', background: 'var(--white)' }}>
+          <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
+            <span className="kicker" style={{ marginBottom: '2rem' }}>
               You might also be interested in
-            </p>
+            </span>
             <div style={{
               display: 'grid',
               gridTemplateColumns: `repeat(${Math.min(service.relatedServices.length, 3)}, 1fr)`,
-              gap: '1.5rem',
+              gap: '24px',
             }}>
-              {service.relatedServices.map((related) => (
+              {service.relatedServices.map((related, i) => (
                 <Link
                   key={related._id}
                   href={`/services/${related.slug.current}`}
-                  className="card"
+                  className="card-a scroll-in"
+                  style={{ transitionDelay: `${i * 0.1}s` }}
                 >
-                  <p className="card-label">{related.categoryLabel}</p>
-                  <p className="card-title">{related.title}</p>
-                  {related.heroTagline && (
-                    <p className="card-body">{related.heroTagline}</p>
-                  )}
-                  <p style={{
-                    fontSize: '0.875rem',
-                    fontWeight: '400',
-                    color: 'var(--color-accent)',
-                    margin: '1rem 0 0',
-                  }}>
-                    Learn more →
-                  </p>
+                  <div className="card-a__corner"></div>
+                  <div className="card-a__body">
+                    <span className="card-a__tag">{related.categoryLabel}</span>
+                    <p className="card-a__title">{related.title}</p>
+                    {related.heroTagline && (
+                      <p className="card-a__text">{related.heroTagline}</p>
+                    )}
+                  </div>
+                  <div className="card-a__footer">
+                    <div className="card-a__footer-bg"></div>
+                    <div className="card-a__action">
+                      Learn more <span className="arrow">→</span>
+                    </div>
+                  </div>
                 </Link>
               ))}
             </div>
@@ -775,8 +691,8 @@ export default async function ServicePage({ params }) {
       <CTA
         heading={service.ctaHeading || 'Want to explore how this could work for your organisation?'}
         body={service.ctaBody || 'Every organisation is different, so we always start with a conversation. No pitch, no obligation - just an honest discussion about where you are and whether our approach feels right.'}
-        primaryLabel={service.ctaButtonLabel || "Let's have a conversation"}
-        primaryHref={service.ctaButtonUrl || '/contact'}
+        buttonText={service.ctaButtonLabel || "Let's have a conversation"}
+        buttonLink={service.ctaButtonUrl || '/contact'}
       />
 
     </main>

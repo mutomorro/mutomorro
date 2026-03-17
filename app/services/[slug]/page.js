@@ -189,34 +189,47 @@ export default async function ServicePage({ params }) {
             </div>
           )}
 
-          {/* Bridge text */}
-          {service.recognitionBridge && (
-            <div className="scroll-in" style={{
-              maxWidth: '720px',
-              paddingTop: '24px',
-              borderTop: '1px solid rgba(0,0,0,0.08)',
-            }}>
-              <div className="portable-text">
-                <PortableText value={service.recognitionBridge} />
-              </div>
-            </div>
-          )}
         </div>
       </section>
 
       {/* ==========================================
-          STATS STRIP
+          BRIDGE TEXT (mid-dark #423B49)
+          ========================================== */}
+      {service.recognitionBridge && (
+        <section className="section--full" style={{ padding: '80px 48px', background: '#423B49' }}>
+          <div className="scroll-in" style={{
+            maxWidth: '860px',
+            margin: '0 auto',
+            textAlign: 'center',
+          }}>
+            <div className="portable-text" style={{
+              fontSize: 'clamp(20px, 2vw, 23px)',
+              fontWeight: '300',
+              lineHeight: '1.65',
+              color: 'rgba(255,255,255,0.85)',
+            }}>
+              <PortableText value={service.recognitionBridge} components={{
+                marks: {
+                  em: ({ children }) => (
+                    <em style={{ color: '#9B51E0', fontStyle: 'italic' }}>{children}</em>
+                  ),
+                },
+              }} />
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* ==========================================
+          STATS STRIP (full dark #221C2B)
           ========================================== */}
       {service.stats?.length > 0 && (
-        <section className="section--full" style={{ padding: '0 48px 80px', background: 'var(--white)' }}>
+        <section className="section--full dark-bg" style={{ padding: '72px 48px' }}>
           <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
             <div style={{
               display: 'grid',
               gridTemplateColumns: `repeat(${service.stats.length}, 1fr)`,
               gap: '2rem',
-              padding: '3rem 0',
-              borderTop: '1px solid rgba(0,0,0,0.08)',
-              borderBottom: '1px solid rgba(0,0,0,0.08)',
             }}>
               {service.stats.map((stat, i) => (
                 <div key={stat._key || i} className="scroll-in" style={{
@@ -229,12 +242,18 @@ export default async function ServicePage({ params }) {
                   <p style={{
                     fontSize: '15px',
                     fontWeight: '400',
-                    color: 'var(--dark)',
+                    color: '#fff',
                     margin: '0 0 4px',
                   }}>
                     {stat.statLabel}
                   </p>
-                  <p className="caption-text">
+                  <p style={{
+                    fontSize: '13px',
+                    fontWeight: '400',
+                    fontStyle: 'italic',
+                    color: 'rgba(255,255,255,0.35)',
+                    margin: 0,
+                  }}>
                     {stat.statSource}
                   </p>
                 </div>

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import NavPanel from './NavPanel'
 
 export default function Nav() {
@@ -96,14 +97,15 @@ export default function Nav() {
         }}>
 
           {/* Logo */}
-          <Link href="/" onClick={closePanel} style={{ textDecoration: 'none' }}>
-            <span className="heading-gradient" style={{
-              fontSize: '1.35rem',
-              fontWeight: '400',
-              letterSpacing: '-0.01em',
-            }}>
-              Mutomorro
-            </span>
+          <Link href="/" onClick={closePanel} style={{ textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
+            <Image
+              src="/logo-black.svg"
+              alt="Mutomorro"
+              width={150}
+              height={30}
+              style={{ height: 'auto', width: '150px' }}
+              priority
+            />
           </Link>
 
           {/* Nav links - left group */}

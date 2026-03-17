@@ -487,12 +487,7 @@ a:hover {
 
 /* --- Nav menu columns (How We Help panel) --- */
 .nav-menu-col {
-  border-left: 2px solid rgba(155,81,224,0.15);
-  padding-left: 20px;
   padding-right: 16px;
-}
-.nav-menu-col--secondary {
-  border-left-color: rgba(0,0,0,0.06);
 }
 .nav-menu-link {
   display: flex;

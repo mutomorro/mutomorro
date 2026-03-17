@@ -262,7 +262,7 @@ export default function Nav() {
           <div className="nav-panel-stagger">
             <span className="kicker" style={{ marginBottom: '24px' }}>Building Capability</span>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0', maxWidth: '50%' }}>
-              <div className="nav-menu-col nav-menu-col--secondary">
+              <div className="nav-menu-col">
                 <span className="kicker" style={{ marginBottom: '20px' }}>For Leaders</span>
                 {[
                   { label: 'Leadership Programme', href: '/services/leadership-programme' },
@@ -280,13 +280,12 @@ export default function Nav() {
                   </Link>
                 ))}
               </div>
-              <div className="nav-menu-col nav-menu-col--secondary">
+              <div className="nav-menu-col">
                 <span className="kicker" style={{ marginBottom: '20px' }}>For Teams</span>
                 {[
                   { label: 'Bespoke Training', href: '/services/bespoke-training' },
                   { label: 'Problem Solving Workshops', href: '/services/problem-solving-workshops' },
                   { label: 'Manager Coaching', href: '/services/manager-coaching' },
-                  { label: 'Prebuilt Courses', href: '/courses' },
                 ].map((item) => (
                   <Link
                     key={item.label}

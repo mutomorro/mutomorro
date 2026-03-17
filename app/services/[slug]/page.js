@@ -86,45 +86,49 @@ export default async function ServicePage({ params }) {
           pointerEvents: 'none',
         }} />
 
-        <div style={{
-          maxWidth: '1350px',
-          margin: '0 auto',
-          display: 'grid',
-          gridTemplateColumns: service.propositionImageUrl ? '1fr 1fr' : '1fr',
-          gap: '4rem',
-          alignItems: 'start',
-        }}>
-          {/* Left: heading + body */}
+        <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
+          {/* Kicker + heading always full width */}
           <div className="scroll-in">
             <span className="kicker" style={{ color: '#FF4279', marginBottom: '16px' }}>Context</span>
-            <h2 className="heading-h2" style={{
-              margin: '0 0 2rem',
-            }}>
+            <h2 className="heading-h2" style={{ margin: '0 0 2rem' }}>
               {service.contextHeading}
             </h2>
-            <div className="portable-text" style={{ color: 'rgba(0,0,0,0.7)' }}>
-              <PortableText value={service.contextBody} />
-            </div>
           </div>
 
-          {/* Right: proposition diagram */}
-          {service.propositionImageUrl && (
-            <div className="scroll-in delay-1">
-              <img
-                src={service.propositionImageUrl}
-                alt={service.propositionCaption || 'Proposition diagram'}
-                style={{ width: '100%', height: 'auto' }}
-              />
-              {service.propositionCaption && (
-                <p className="caption-text" style={{
-                  marginTop: '12px',
-                  textAlign: 'center',
-                }}>
-                  {service.propositionCaption}
-                </p>
-              )}
+          {/* Body text + image split below heading */}
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: service.propositionImageUrl ? '55% 1fr' : '1fr',
+            gap: '4rem',
+            alignItems: 'start',
+          }}>
+            <div className="scroll-in" style={{
+              maxWidth: service.propositionImageUrl ? 'none' : '800px',
+            }}>
+              <div className="portable-text" style={{ color: 'rgba(0,0,0,0.7)' }}>
+                <PortableText value={service.contextBody} />
+              </div>
             </div>
-          )}
+
+            {/* Proposition diagram */}
+            {service.propositionImageUrl && (
+              <div className="scroll-in delay-1">
+                <img
+                  src={service.propositionImageUrl}
+                  alt={service.propositionCaption || 'Proposition diagram'}
+                  style={{ width: '100%', height: 'auto' }}
+                />
+                {service.propositionCaption && (
+                  <p className="caption-text" style={{
+                    marginTop: '12px',
+                    textAlign: 'center',
+                  }}>
+                    {service.propositionCaption}
+                  </p>
+                )}
+              </div>
+            )}
+          </div>
         </div>
       </section>
 

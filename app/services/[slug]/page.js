@@ -138,42 +138,52 @@ export default async function ServicePage({ params }) {
       <section className="section--full" style={{ padding: '80px 48px', background: 'var(--white)' }}>
         <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
           <div className="scroll-in">
-            <span className="kicker" style={{ color: 'var(--accent)', marginBottom: '16px' }}>Recognition</span>
+            <span className="kicker" style={{ color: '#FF4279', marginBottom: '16px' }}>Recognition</span>
             <h2 className="heading-h2" style={{ margin: '0 0 20px' }}>
               {service.recognitionHeading}
             </h2>
-            <p className="lead-text" style={{ maxWidth: '720px', marginBottom: '2.5rem' }}>
-              {service.recognitionIntro}
-            </p>
+            {service.recognitionIntro && (
+              <p className="lead-text" style={{ maxWidth: '720px', marginBottom: '2.5rem' }}>
+                {service.recognitionIntro}
+              </p>
+            )}
           </div>
 
-          {/* Recognition items */}
+          {/* Recognition cards - 2x2 grid, capped at 4 */}
           {service.recognitionItems?.length > 0 && (
             <div style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-              gap: '20px',
+              gridTemplateColumns: 'repeat(2, 1fr)',
+              gap: '28px',
               marginBottom: '2.5rem',
             }}>
-              {service.recognitionItems.map((item, i) => (
+              {service.recognitionItems.slice(0, 4).map((item, i) => (
                 <div
                   key={item._key || i}
                   className="scroll-in"
                   style={{
-                    transitionDelay: `${Math.min(i, 4) * 0.1}s`,
-                    border: '1px solid rgba(0,0,0,0.12)',
-                    padding: '24px 28px',
+                    transitionDelay: `${i * 0.1}s`,
                   }}
                 >
-                  <p style={{
-                    fontSize: '16px',
-                    fontWeight: '400',
-                    lineHeight: '1.55',
-                    color: 'var(--dark)',
-                    margin: 0,
-                  }}>
-                    {item.text}
-                  </p>
+                  {/* Image placeholder */}
+                  <div style={{
+                    width: '100%',
+                    aspectRatio: '16 / 9',
+                    background: 'var(--warm)',
+                  }} />
+                  {/* Card text */}
+                  <div style={{ padding: '24px 16px' }}>
+                    <p style={{
+                      fontSize: 'clamp(20px, 2vw, 24px)',
+                      fontWeight: '600',
+                      lineHeight: '1.3',
+                      color: 'var(--dark)',
+                      textAlign: 'center',
+                      margin: 0,
+                    }}>
+                      {item.text}
+                    </p>
+                  </div>
                 </div>
               ))}
             </div>

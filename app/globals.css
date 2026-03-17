@@ -395,8 +395,8 @@ a:hover {
   transition: max-height 0.4s var(--ease);
 }
 .nav-panel--open {
-  max-height: 80vh;
-  overflow: visible;
+  max-height: calc(100vh - 70px);
+  overflow-y: auto;
 }
 .nav-panel-stagger {
   opacity: 0;

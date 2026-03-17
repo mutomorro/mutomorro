@@ -539,9 +539,8 @@ a:hover {
   position: sticky;
   top: 70px;
   z-index: 50;
-  background: rgba(255,255,255,0.97);
-  backdrop-filter: blur(8px);
-  border-bottom: 1px solid rgba(0,0,0,0.06);
+  background: #423B49;
+  border-bottom: none;
   padding: 0 48px;
   overflow-x: auto;
   white-space: nowrap;
@@ -557,7 +556,7 @@ a:hover {
 .anchor-nav__link {
   font-size: 13px;
   font-weight: 400;
-  color: rgba(0,0,0,0.4);
+  color: rgba(255,255,255,0.55);
   text-decoration: none;
   padding: 0 16px;
   height: 100%;
@@ -566,10 +565,12 @@ a:hover {
   transition: color 0.2s;
   border-bottom: 2px solid transparent;
   cursor: pointer;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
-.anchor-nav__link:hover { color: var(--black); }
+.anchor-nav__link:hover { color: rgba(255,255,255,0.9); }
 .anchor-nav__link--active {
-  color: var(--black);
+  color: rgba(255,255,255,0.9);
   border-bottom-color: var(--accent);
 }
 

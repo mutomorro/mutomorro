@@ -72,9 +72,20 @@ export default async function ServicePage({ params }) {
       </nav>
 
       {/* ==========================================
-          SECTION 2: CONTEXT (dark)
+          SECTION 2: CONTEXT (warm)
           ========================================== */}
-      <section id="context" className="section--full dark-bg" style={{ padding: '80px 48px' }}>
+      <section id="context" className="section--full" style={{ padding: '80px 48px', background: 'var(--warm)', position: 'relative' }}>
+        {/* Shadow gradient from anchor nav dark zone */}
+        <div style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          height: '16px',
+          background: 'linear-gradient(to bottom, rgba(66, 59, 73, 0.15), transparent)',
+          pointerEvents: 'none',
+        }} />
+
         <div style={{
           maxWidth: '1350px',
           margin: '0 auto',
@@ -85,14 +96,13 @@ export default async function ServicePage({ params }) {
         }}>
           {/* Left: heading + body */}
           <div className="scroll-in">
-            <span className="kicker" style={{ marginBottom: '16px' }}>Context</span>
+            <span className="kicker" style={{ color: '#FF4279', marginBottom: '16px' }}>Context</span>
             <h2 className="heading-h2" style={{
-              color: '#ffffff',
               margin: '0 0 2rem',
             }}>
               {service.contextHeading}
             </h2>
-            <div className="portable-text" style={{ color: 'rgba(255,255,255,0.85)' }}>
+            <div className="portable-text" style={{ color: 'rgba(0,0,0,0.7)' }}>
               <PortableText value={service.contextBody} />
             </div>
           </div>
@@ -107,7 +117,6 @@ export default async function ServicePage({ params }) {
               />
               {service.propositionCaption && (
                 <p className="caption-text" style={{
-                  color: 'rgba(255,255,255,0.4)',
                   marginTop: '12px',
                   textAlign: 'center',
                 }}>

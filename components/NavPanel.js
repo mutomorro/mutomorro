@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 
-export default function NavPanel({ isOpen, onClose, onMouseEnter, onMouseLeave, children }) {
+export default function NavPanel({ isOpen, onClose, onMouseEnter, onMouseLeave, instantClose, children }) {
   const [visible, setVisible] = useState(false)
   const [animating, setAnimating] = useState(false)
   const panelRef = useRef(null)
@@ -21,32 +21,45 @@ export default function NavPanel({ isOpen, onClose, onMouseEnter, onMouseLeave, 
           if (innerRef.current) {
             const items = innerRef.current.querySelectorAll('.nav-panel-stagger')
             items.forEach((el, i) => {
-              el.style.transitionDelay = `${i * 50 + 100}ms`
+              el.style.transitionDelay = `${i * 80 + 150}ms`
               el.classList.add('nav-panel-stagger--in')
             })
           }
-          setTimeout(() => setAnimating(false), 500)
+          setTimeout(() => setAnimating(false), 700)
         })
       })
     } else if (visible) {
-      // Close: animate out then unmount
-      setAnimating(true)
-      if (panelRef.current) panelRef.current.classList.remove('nav-panel--open')
-      // Remove stagger classes immediately
-      if (innerRef.current) {
-        const items = innerRef.current.querySelectorAll('.nav-panel-stagger')
-        items.forEach((el) => {
-          el.style.transitionDelay = '0ms'
-          el.classList.remove('nav-panel-stagger--in')
-        })
-      }
-      const timer = setTimeout(() => {
+      if (instantClose) {
+        // Instant close (switching panels) — no animation
+        if (panelRef.current) panelRef.current.classList.remove('nav-panel--open')
+        if (innerRef.current) {
+          const items = innerRef.current.querySelectorAll('.nav-panel-stagger')
+          items.forEach((el) => {
+            el.style.transitionDelay = '0ms'
+            el.classList.remove('nav-panel-stagger--in')
+          })
+        }
         setVisible(false)
         setAnimating(false)
-      }, 250)
-      return () => clearTimeout(timer)
+      } else {
+        // Animated close
+        setAnimating(true)
+        if (panelRef.current) panelRef.current.classList.remove('nav-panel--open')
+        if (innerRef.current) {
+          const items = innerRef.current.querySelectorAll('.nav-panel-stagger')
+          items.forEach((el) => {
+            el.style.transitionDelay = '0ms'
+            el.classList.remove('nav-panel-stagger--in')
+          })
+        }
+        const timer = setTimeout(() => {
+          setVisible(false)
+          setAnimating(false)
+        }, 250)
+        return () => clearTimeout(timer)
+      }
     }
-  }, [isOpen])
+  }, [isOpen, instantClose])
 
   if (!visible && !isOpen) return null
 

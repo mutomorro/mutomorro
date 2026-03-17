@@ -7,9 +7,25 @@ import NavPanel from './NavPanel'
 
 export default function Nav() {
   const [openPanel, setOpenPanel] = useState(null)
+  const [isSwitching, setIsSwitching] = useState(false)
   const [isCoarse, setIsCoarse] = useState(false)
   const closeTimer = useRef(null)
   const navRef = useRef(null)
+  const prevPanelRef = useRef(null)
+
+  // Track panel switches
+  useEffect(() => {
+    if (openPanel && prevPanelRef.current && prevPanelRef.current !== openPanel) {
+      setIsSwitching(true)
+      // Reset switching flag after the new panel has mounted
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          setIsSwitching(false)
+        })
+      })
+    }
+    prevPanelRef.current = openPanel
+  }, [openPanel])
 
   const clearClose = () => {
     if (closeTimer.current) {
@@ -163,6 +179,7 @@ export default function Nav() {
       {/* About Panel */}
       <NavPanel
         isOpen={openPanel === 'about'}
+        instantClose={isSwitching}
         onClose={closePanel}
         onMouseEnter={handlePanelEnter}
         onMouseLeave={handlePanelLeave}
@@ -193,6 +210,7 @@ export default function Nav() {
       {/* How We Help Panel */}
       <NavPanel
         isOpen={openPanel === 'how-we-help'}
+        instantClose={isSwitching}
         onClose={closePanel}
         onMouseEnter={handlePanelEnter}
         onMouseLeave={handlePanelLeave}
@@ -308,6 +326,7 @@ export default function Nav() {
       {/* Explore Panel */}
       <NavPanel
         isOpen={openPanel === 'explore'}
+        instantClose={isSwitching}
         onClose={closePanel}
         onMouseEnter={handlePanelEnter}
         onMouseLeave={handlePanelLeave}

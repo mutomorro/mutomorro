@@ -372,7 +372,7 @@ a:hover {
   z-index: 90;
   background-color: rgba(34, 28, 43, 0);
   backdrop-filter: blur(0px);
-  transition: background-color 0.4s var(--ease), backdrop-filter 0.4s var(--ease);
+  transition: background-color 0.6s var(--ease), backdrop-filter 0.6s var(--ease);
   pointer-events: none;
 }
 .nav-panel-backdrop--open {
@@ -392,7 +392,7 @@ a:hover {
   padding: 0 48px;
   max-height: 0;
   overflow: hidden;
-  transition: max-height 0.4s var(--ease);
+  transition: max-height 0.6s var(--ease);
 }
 .nav-panel--open {
   max-height: calc(100vh - 70px);
@@ -406,7 +406,7 @@ a:hover {
 .nav-panel-stagger--in {
   opacity: 1;
   transform: translateY(0);
-  transition: opacity 0.35s var(--ease), transform 0.35s var(--ease);
+  transition: opacity 0.45s var(--ease), transform 0.45s var(--ease);
 }
 
 /* --- Nav panel links --- */

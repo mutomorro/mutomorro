@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { getAllProjects } from '../sanity/client'
 import CTA from '../components/CTA'
+import HeroCanvas from '../components/HeroCanvas'
 
 export default async function Home() {
   const projects = await getAllProjects()
@@ -8,19 +9,17 @@ export default async function Home() {
   return (
     <main>
 
-      {/* Hero */}
-      <section className="section section--warm" style={{ padding: '7rem 2rem 6rem' }}>
-        <div className="wrap">
-          <p className="label" style={{ margin: '0 0 1.5rem' }}>Organisational Development</p>
-          <h1 className="heading-gradient heading-display" style={{ margin: '0 0 2rem', fontSize: 'clamp(2.5rem, 6vw, 4.5rem)' }}>
-            Cultivating thriving organisations
-          </h1>
-          <p className="lead" style={{ maxWidth: '640px', fontSize: 'clamp(1.1rem, 2.5vw, 1.35rem)', margin: '0 0 3rem' }}>
-            We partner with leaders to reimagine their organisations for a world of constant complexity - seeing beyond the surface to the systems, patterns, and interconnections beneath.
-          </p>
-          <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-            <Link href="/how-we-help" className="btn btn--primary">How we help</Link>
-            <Link href="/states-of-vitality" className="btn btn--outline">Take the assessment</Link>
+      {/* Hero - full viewport with canvas animation */}
+      <section className="homepage-hero">
+        <HeroCanvas />
+        <div className="homepage-hero__text">
+          <div className="homepage-hero__text-inner">
+            <h1 className="homepage-hero__h1">
+              Cultivating thriving organisations
+            </h1>
+            <p className="homepage-hero__sub">
+              Designing living systems for the new world of work
+            </p>
           </div>
         </div>
       </section>

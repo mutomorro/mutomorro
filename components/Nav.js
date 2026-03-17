@@ -1,14 +1,19 @@
 'use client'
 
 import { useState, useEffect, useRef, useCallback } from 'react'
+import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
 import NavPanel from './NavPanel'
 
 export default function Nav() {
+  const pathname = usePathname()
+  const isHomepage = pathname === '/'
+
   const [openPanel, setOpenPanel] = useState(null)
   const [isSwitching, setIsSwitching] = useState(false)
   const [isCoarse, setIsCoarse] = useState(false)
+  const [isScrolled, setIsScrolled] = useState(false)
   const closeTimer = useRef(null)
   const navRef = useRef(null)
   const prevPanelRef = useRef(null)
@@ -51,6 +56,24 @@ export default function Nav() {
     setIsCoarse(window.matchMedia('(pointer: coarse)').matches)
   }, [])
 
+  // Scroll listener for transparent nav on homepage
+  useEffect(() => {
+    if (!isHomepage) {
+      setIsScrolled(false)
+      return
+    }
+
+    const handleScroll = () => {
+      // Transition to solid after scrolling past ~90vh (leaving some buffer before hero ends)
+      const threshold = window.innerHeight * 0.85
+      setIsScrolled(window.scrollY > threshold)
+    }
+
+    handleScroll() // Check initial position
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [isHomepage])
+
   // Close on escape key
   useEffect(() => {
     const handleKey = (e) => {
@@ -92,17 +115,27 @@ export default function Nav() {
     }
   }
 
+  // Transparent when on homepage, not scrolled, and no panel open
+  const isTransparent = isHomepage && !isScrolled && !openPanel
+
   return (
     <>
-      <nav className="nav-bar" style={{
-        position: 'sticky',
-        top: 0,
-        zIndex: 100,
-        backgroundColor: 'var(--white)',
-        borderBottom: '1px solid rgba(0,0,0,0.06)',
-        height: '70px',
-        padding: '0 48px',
-      }}>
+      <nav
+        ref={navRef}
+        className={`nav-bar${isTransparent ? ' nav-bar--transparent' : ''}`}
+        style={{
+          position: isHomepage ? 'fixed' : 'sticky',
+          top: 0,
+          left: 0,
+          right: 0,
+          zIndex: 100,
+          backgroundColor: isTransparent ? 'transparent' : 'var(--white)',
+          borderBottom: isTransparent ? '1px solid transparent' : '1px solid rgba(0,0,0,0.06)',
+          height: '70px',
+          padding: '0 48px',
+          transition: 'background-color 0.4s var(--ease), border-color 0.4s var(--ease)',
+        }}
+      >
         <div className="nav-bar__inner" style={{
           maxWidth: '1350px',
           margin: '0 auto',
@@ -115,7 +148,7 @@ export default function Nav() {
           {/* Logo */}
           <Link href="/" onClick={closePanel} style={{ textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
             <Image
-              src="/logo-black.svg"
+              src={isTransparent ? '/logo-white.svg' : '/logo-black.svg'}
               alt="Mutomorro"
               width={150}
               height={30}
@@ -140,7 +173,7 @@ export default function Nav() {
                   onClick={() => handleClick(key)}
                   onMouseEnter={() => handleLinkEnter(key)}
                   onMouseLeave={handleLinkLeave}
-                  className={`nav-link${isActive ? ' nav-link--active' : ''}`}
+                  className={`nav-link${isActive ? ' nav-link--active' : ''}${isTransparent ? ' nav-link--transparent' : ''}`}
                 >
                   {item}
                 </button>
@@ -158,7 +191,7 @@ export default function Nav() {
             <Link
               href="/states-of-vitality"
               onClick={closePanel}
-              className="btn-sec"
+              className={isTransparent ? 'btn-sec btn-sec--dark' : 'btn-sec'}
               style={{ fontSize: '14px', padding: '8px 0' }}
             >
               States of Vitality
@@ -166,7 +199,7 @@ export default function Nav() {
             <Link
               href="/contact"
               onClick={closePanel}
-              className="btn-primary"
+              className={isTransparent ? 'btn-primary btn-primary--dark' : 'btn-primary'}
               style={{ fontSize: '14px', padding: '10px 24px' }}
             >
               Talk to us

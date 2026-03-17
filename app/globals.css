@@ -348,52 +348,6 @@ a:hover {
 .nav-link--transparent:hover { color: #fff; }
 .nav-link--transparent.nav-link--active { color: #fff; }
 
-/* --- Homepage hero --- */
-.homepage-hero {
-  position: relative;
-  width: 100%;
-  height: 100vh;
-  min-height: 600px;
-  background: var(--dark);
-  overflow: hidden;
-}
-.homepage-hero__text {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding: 0 48px;
-  z-index: 10;
-  pointer-events: none;
-}
-.homepage-hero__text-inner {
-  max-width: 1350px;
-  margin: 0 auto;
-  width: 100%;
-}
-.homepage-hero__h1 {
-  font-size: clamp(48px, 8vw, 120px);
-  font-weight: 400;
-  line-height: 1.05;
-  max-width: 65%;
-  background: linear-gradient(135deg, var(--accent-deep) 0%, var(--pink) 50%, var(--coral) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-.homepage-hero__sub {
-  font-size: clamp(16px, 1.8vw, 22px);
-  font-weight: 300;
-  color: rgba(255,255,255,0.6);
-  margin-top: 24px;
-  max-width: 480px;
-  line-height: 1.6;
-}
-
 /* --- Footer links: underline draw on hover --- */
 .footer-link {
   color: rgba(255,255,255,0.75);
@@ -1295,6 +1249,4 @@ a:hover {
   .grid-2, .grid-3 { grid-template-columns: 1fr; }
   .grid-4 { grid-template-columns: 1fr 1fr; }
   .button-row { flex-direction: column; align-items: flex-start; }
-  .homepage-hero__text { padding: 0 24px; }
-  .homepage-hero__h1 { max-width: 90%; }
 }

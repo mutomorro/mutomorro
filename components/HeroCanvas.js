@@ -105,6 +105,7 @@ export default function HeroCanvas() {
       dpr = window.devicePixelRatio || 1
       W = canvas.parentElement.clientWidth
       H = canvas.parentElement.clientHeight
+      if (W === 0 || H === 0) return // Not yet laid out
       canvas.width = W * dpr
       canvas.height = H * dpr
       canvas.style.width = W + 'px'

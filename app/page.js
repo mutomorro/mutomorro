@@ -10,14 +10,49 @@ export default async function Home() {
     <main>
 
       {/* Hero - full viewport with canvas animation */}
-      <section className="homepage-hero">
+      <section style={{
+        position: 'relative',
+        width: '100%',
+        height: '100vh',
+        minHeight: '600px',
+        background: '#221C2B',
+        overflow: 'hidden',
+      }}>
         <HeroCanvas />
-        <div className="homepage-hero__text">
-          <div className="homepage-hero__text-inner">
-            <h1 className="homepage-hero__h1">
+        <div style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          padding: '0 48px',
+          zIndex: 10,
+          pointerEvents: 'none',
+        }}>
+          <div style={{ maxWidth: '1350px', margin: '0 auto', width: '100%' }}>
+            <h1 style={{
+              fontSize: 'clamp(48px, 8vw, 120px)',
+              fontWeight: 400,
+              lineHeight: 1.05,
+              maxWidth: '65%',
+              background: 'linear-gradient(135deg, #80388F 0%, #FF4279 50%, #FFA200 100%)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+            }}>
               Cultivating thriving organisations
             </h1>
-            <p className="homepage-hero__sub">
+            <p style={{
+              fontSize: 'clamp(16px, 1.8vw, 22px)',
+              fontWeight: 300,
+              color: 'rgba(255,255,255,0.6)',
+              marginTop: '24px',
+              maxWidth: '480px',
+              lineHeight: 1.6,
+            }}>
               Designing living systems for the new world of work
             </p>
           </div>

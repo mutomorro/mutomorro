@@ -484,6 +484,67 @@ a:hover {
   transform: translateX(4px);
 }
 
+/* --- Nav menu columns (How We Help panel) --- */
+.nav-menu-col {
+  border-left: 2px solid rgba(155,81,224,0.15);
+  padding: 0 24px;
+}
+.nav-menu-col--secondary {
+  border-left-color: rgba(0,0,0,0.06);
+}
+.nav-menu-col__heading {
+  font-size: clamp(20px, 2vw, 26px);
+  font-weight: 400;
+  line-height: 1.15;
+  color: var(--accent);
+  margin: 0 0 6px;
+}
+.nav-menu-col__heading--dark {
+  color: var(--dark);
+}
+.nav-menu-col__desc {
+  font-size: 15px;
+  font-weight: 300;
+  line-height: 1.4;
+  color: rgba(0,0,0,0.35);
+  margin: 0 0 20px;
+}
+.nav-menu-col__links {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.nav-menu-link {
+  display: block;
+  position: relative;
+  font-size: 16px;
+  font-weight: 400;
+  color: rgba(0,0,0,0.6);
+  text-decoration: none;
+  padding-left: 0;
+  transition: color 0.2s var(--ease), padding-left 0.2s var(--ease);
+}
+.nav-menu-link::before {
+  content: '';
+  position: absolute;
+  left: -12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 4px;
+  height: 4px;
+  border-radius: 1px;
+  background: var(--accent);
+  opacity: 0;
+  transition: opacity 0.2s var(--ease);
+}
+.nav-menu-link:hover {
+  color: var(--dark);
+  padding-left: 4px;
+}
+.nav-menu-link:hover::before {
+  opacity: 1;
+}
+
 /* --- Anchor / sticky navigation --- */
 .anchor-nav {
   position: sticky;

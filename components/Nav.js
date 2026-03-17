@@ -196,14 +196,12 @@ export default function Nav() {
         onMouseLeave={handlePanelLeave}
       >
         <div>
-          <span className="kicker" style={{ marginBottom: '2rem' }}>How We Help</span>
-
-          {/* Four application categories */}
-          <div className="nav-panel-stagger" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '2rem', marginBottom: '3rem' }}>
+          {/* Four service categories */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0' }}>
             {[
               {
                 title: 'Purpose & Direction',
-                desc: 'Who we are and where we are going',
+                desc: 'Who we are and where we\'re going',
                 links: ['Culture Change', 'Organisational Purpose', 'Strategic Alignment'],
                 hrefs: [
                   '/services/culture-change-consultancy',
@@ -244,83 +242,71 @@ export default function Nav() {
                 ],
               },
             ].map((col) => (
-              <div key={col.title}>
-                <p style={{ fontSize: '15px', fontWeight: '400', color: 'var(--dark)', marginBottom: '4px' }}>
-                  {col.title}
-                </p>
-                <p style={{ fontSize: '13px', fontWeight: '300', color: 'rgba(0,0,0,0.4)', marginBottom: '16px' }}>
-                  {col.desc}
-                </p>
-                {col.links.map((link, i) => (
-                  <Link
-                    key={link}
-                    href={col.hrefs[i]}
-                    onClick={closePanel}
-                    className="inline-link"
-                    style={{
-                      display: 'block',
-                      fontSize: '14px',
-                      fontWeight: '300',
-                      color: 'rgba(0,0,0,0.6)',
-                      padding: '5px 0',
-                    }}
-                  >
-                    {link}
-                  </Link>
-                ))}
+              <div key={col.title} className="nav-panel-stagger nav-menu-col">
+                <p className="nav-menu-col__heading">{col.title}</p>
+                <p className="nav-menu-col__desc">{col.desc}</p>
+                <div className="nav-menu-col__links">
+                  {col.links.map((link, i) => (
+                    <Link
+                      key={link}
+                      href={col.hrefs[i]}
+                      onClick={closePanel}
+                      className="nav-menu-link"
+                    >
+                      {link}
+                    </Link>
+                  ))}
+                </div>
               </div>
             ))}
           </div>
 
-          {/* Building Capability - visually distinct lower section */}
-          <div className="nav-panel-stagger" style={{
-            borderTop: '1px solid rgba(0,0,0,0.06)',
-            paddingTop: '2rem',
-            display: 'grid',
-            gridTemplateColumns: 'repeat(2, 1fr)',
-            gap: '2rem',
-            maxWidth: '50%',
-          }}>
-            <div>
-              <p style={{ fontSize: '15px', fontWeight: '400', color: 'var(--dark)', marginBottom: '4px' }}>
-                For Leaders
-              </p>
-              {[
-                { label: 'Leadership Programme', href: '/services/leadership-programme' },
-                { label: 'Executive Coaching', href: '/services/executive-coaching' },
-                { label: 'Leadership Facilitation', href: '/services/leadership-facilitation' },
-              ].map((item) => (
-                <Link
-                  key={item.label}
-                  href={item.href}
-                  onClick={closePanel}
-                  className="inline-link"
-                  style={{ display: 'block', fontSize: '14px', fontWeight: '300', color: 'rgba(0,0,0,0.6)', padding: '5px 0' }}
-                >
-                  {item.label}
-                </Link>
-              ))}
-            </div>
-            <div>
-              <p style={{ fontSize: '15px', fontWeight: '400', color: 'var(--dark)', marginBottom: '4px' }}>
-                For Teams
-              </p>
-              {[
-                { label: 'Bespoke Training', href: '/services/bespoke-training' },
-                { label: 'Problem Solving Workshops', href: '/services/problem-solving-workshops' },
-                { label: 'Manager Coaching', href: '/services/manager-coaching' },
-                { label: 'Prebuilt Courses', href: '/courses' },
-              ].map((item) => (
-                <Link
-                  key={item.label}
-                  href={item.href}
-                  onClick={closePanel}
-                  className="inline-link"
-                  style={{ display: 'block', fontSize: '14px', fontWeight: '300', color: 'rgba(0,0,0,0.6)', padding: '5px 0' }}
-                >
-                  {item.label}
-                </Link>
-              ))}
+          {/* Divider */}
+          <div style={{ borderTop: '1px solid rgba(0,0,0,0.08)', margin: '32px 0' }} />
+
+          {/* Building Capability */}
+          <div className="nav-panel-stagger">
+            <span className="kicker" style={{ marginBottom: '24px' }}>Building Capability</span>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0', maxWidth: '50%' }}>
+              <div className="nav-menu-col nav-menu-col--secondary">
+                <p className="nav-menu-col__heading nav-menu-col__heading--dark">For Leaders</p>
+                <div className="nav-menu-col__links">
+                  {[
+                    { label: 'Leadership Programme', href: '/services/leadership-programme' },
+                    { label: 'Executive Coaching', href: '/services/executive-coaching' },
+                    { label: 'Leadership Facilitation', href: '/services/leadership-facilitation' },
+                  ].map((item) => (
+                    <Link
+                      key={item.label}
+                      href={item.href}
+                      onClick={closePanel}
+                      className="nav-menu-link"
+                    >
+                      {item.label}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+              <div className="nav-menu-col nav-menu-col--secondary">
+                <p className="nav-menu-col__heading nav-menu-col__heading--dark">For Teams</p>
+                <div className="nav-menu-col__links">
+                  {[
+                    { label: 'Bespoke Training', href: '/services/bespoke-training' },
+                    { label: 'Problem Solving Workshops', href: '/services/problem-solving-workshops' },
+                    { label: 'Manager Coaching', href: '/services/manager-coaching' },
+                    { label: 'Prebuilt Courses', href: '/courses' },
+                  ].map((item) => (
+                    <Link
+                      key={item.label}
+                      href={item.href}
+                      onClick={closePanel}
+                      className="nav-menu-link"
+                    >
+                      {item.label}
+                    </Link>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
         </div>

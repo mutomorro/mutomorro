@@ -24,77 +24,83 @@ export default function Nav() {
 
   return (
     <>
-      <nav style={{
+      <nav className="nav-bar" style={{
         position: 'sticky',
         top: 0,
         zIndex: 100,
         backgroundColor: 'var(--white)',
         borderBottom: '1px solid rgba(0,0,0,0.06)',
-        padding: '0 48px',
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
         height: '70px',
       }}>
+        <div className="nav-bar__inner" style={{
+          maxWidth: '1350px',
+          margin: '0 auto',
+          padding: '0 48px',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          height: '100%',
+        }}>
 
-        {/* Logo */}
-        <Link href="/" onClick={closePanel} style={{ textDecoration: 'none' }}>
-          <span className="heading-gradient" style={{
-            fontSize: '1.35rem',
-            fontWeight: '400',
-            letterSpacing: '-0.01em',
+          {/* Logo */}
+          <Link href="/" onClick={closePanel} style={{ textDecoration: 'none' }}>
+            <span className="heading-gradient" style={{
+              fontSize: '1.35rem',
+              fontWeight: '400',
+              letterSpacing: '-0.01em',
+            }}>
+              Mutomorro
+            </span>
+          </Link>
+
+          {/* Nav links - left group */}
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '4px',
+            marginLeft: '3rem',
           }}>
-            Mutomorro
-          </span>
-        </Link>
+            {['About', 'How We Help', 'Explore'].map((item) => {
+              const key = item.toLowerCase().replace(/ /g, '-')
+              const isActive = openPanel === key
+              return (
+                <button
+                  key={key}
+                  onClick={() => togglePanel(key)}
+                  className={`nav-link${isActive ? ' nav-link--active' : ''}`}
+                >
+                  {item}
+                </button>
+              )
+            })}
+          </div>
 
-        {/* Nav links - left group */}
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '4px',
-          marginLeft: '3rem',
-        }}>
-          {['About', 'How We Help', 'Explore'].map((item) => {
-            const key = item.toLowerCase().replace(/ /g, '-')
-            const isActive = openPanel === key
-            return (
-              <button
-                key={key}
-                onClick={() => togglePanel(key)}
-                className={`nav-link${isActive ? ' nav-link--active' : ''}`}
-              >
-                {item}
-              </button>
-            )
-          })}
+          {/* CTAs - right group */}
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '12px',
+            marginLeft: 'auto',
+          }}>
+            <Link
+              href="/states-of-vitality"
+              onClick={closePanel}
+              className="btn-sec"
+              style={{ fontSize: '14px', padding: '8px 0' }}
+            >
+              States of Vitality
+            </Link>
+            <Link
+              href="/contact"
+              onClick={closePanel}
+              className="btn-primary"
+              style={{ fontSize: '14px', padding: '10px 24px' }}
+            >
+              Talk to us
+            </Link>
+          </div>
+
         </div>
-
-        {/* CTAs - right group */}
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '12px',
-          marginLeft: 'auto',
-        }}>
-          <Link
-            href="/states-of-vitality"
-            onClick={closePanel}
-            className="btn-sec"
-            style={{ fontSize: '14px', padding: '8px 0' }}
-          >
-            States of Vitality
-          </Link>
-          <Link
-            href="/contact"
-            onClick={closePanel}
-            className="btn-primary"
-            style={{ fontSize: '14px', padding: '10px 24px' }}
-          >
-            Talk to us
-          </Link>
-        </div>
-
       </nav>
 
       {/* About Panel */}

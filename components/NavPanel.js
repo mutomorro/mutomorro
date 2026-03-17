@@ -26,7 +26,6 @@ export default function NavPanel({ isOpen, onClose, children }) {
         zIndex: 95,
         backgroundColor: 'var(--warm)',
         borderBottom: '1px solid rgba(0,0,0,0.06)',
-        padding: '4rem 48px 5rem',
         boxShadow: '0 20px 60px rgba(34, 28, 43, 0.15)',
       }}>
         {/* Close button */}
@@ -49,7 +48,7 @@ export default function NavPanel({ isOpen, onClose, children }) {
           ✕
         </button>
 
-        <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
+        <div className="nav-panel__inner" style={{ maxWidth: '1350px', margin: '0 auto', padding: '4rem 48px 5rem' }}>
           {children}
         </div>
       </div>

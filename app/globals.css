@@ -1113,6 +1113,8 @@ a:hover {
   .section--compact { padding: 40px 24px; }
   .section__inner { padding: 0 24px; }
   .wrap, .wrap--narrow, .wrap--wide { padding: 0 24px; }
+  .nav-bar__inner { padding: 0 24px; }
+  .nav-panel__inner { padding: 4rem 24px 5rem; }
   .grid-2, .grid-3 { grid-template-columns: 1fr; }
   .grid-4 { grid-template-columns: 1fr 1fr; }
   .button-row { flex-direction: column; align-items: flex-start; }

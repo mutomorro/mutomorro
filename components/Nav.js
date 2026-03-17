@@ -105,35 +105,26 @@ export default function Nav() {
 
       {/* About Panel */}
       <NavPanel isOpen={openPanel === 'about'} onClose={closePanel}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '4rem' }}>
-          <div>
-            <span className="kicker">About</span>
-            <p className="body-text" style={{ color: 'rgba(0,0,0,0.55)' }}>
-              Who we are, how we think, and what we believe about organisations.
-            </p>
-          </div>
-          <div>
-            {[
-              { label: 'About us', desc: 'Who we are and why we exist', href: '/about' },
-              { label: 'Philosophy', desc: 'Intentional Ecosystems - how we think about organisations', href: '/philosophy' },
-              { label: 'The EMERGENT Framework', desc: 'The eight dimensions of organisational health', href: '/emergent-framework' },
-              { label: 'How we work', desc: 'Our four-stage approach to working together', href: '/how-we-work' },
-              { label: 'Projects and experience', desc: 'What working with us leads to', href: '/projects' },
-            ].map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                onClick={closePanel}
-                className="nav-panel-link"
-              >
-                <div>
-                  <p className="nav-panel-link__title">{item.label}</p>
-                  <p className="nav-panel-link__desc">{item.desc}</p>
-                </div>
-                <span className="nav-panel-link__arrow">→</span>
-              </Link>
-            ))}
-          </div>
+        <div>
+          {[
+            { label: 'About us', desc: 'Who we are and why we exist', href: '/about' },
+            { label: 'Philosophy', desc: 'Intentional Ecosystems — how we think about organisations', href: '/philosophy' },
+            { label: 'The EMERGENT Framework', desc: 'Eight dimensions of organisational health', href: '/emergent-framework' },
+            { label: 'How we work', desc: 'Our four-stage approach to working together', href: '/how-we-work' },
+            { label: 'Projects and experience', desc: 'What working with us leads to', href: '/projects' },
+          ].map((item, i) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              onClick={closePanel}
+              className="nav-contents-row"
+              style={i === 0 ? { borderTop: '1px solid rgba(0,0,0,0.06)' } : undefined}
+            >
+              <span className="nav-contents-row__title">{item.label}</span>
+              <span className="nav-contents-row__desc">{item.desc}</span>
+              <span className="nav-contents-row__arrow">→</span>
+            </Link>
+          ))}
         </div>
       </NavPanel>
 

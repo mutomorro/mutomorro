@@ -124,7 +124,7 @@ export default function Nav() {
         ref={navRef}
         className={`nav-bar${isTransparent ? ' nav-bar--transparent' : ''}`}
         style={{
-          position: isHomepage ? 'fixed' : 'sticky',
+          position: 'fixed',
           top: 0,
           left: 0,
           right: 0,
@@ -208,6 +208,9 @@ export default function Nav() {
 
         </div>
       </nav>
+
+      {/* Spacer to offset fixed nav on non-homepage pages */}
+      {!isHomepage && <div style={{ height: '70px' }} />}
 
       {/* About Panel */}
       <NavPanel

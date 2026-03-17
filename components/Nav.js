@@ -84,11 +84,11 @@ export default function Nav() {
         backgroundColor: 'var(--white)',
         borderBottom: '1px solid rgba(0,0,0,0.06)',
         height: '70px',
+        padding: '0 48px',
       }}>
         <div className="nav-bar__inner" style={{
           maxWidth: '1350px',
           margin: '0 auto',
-          padding: '0 48px',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',

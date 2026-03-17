@@ -85,7 +85,7 @@ export default function NavPanel({ isOpen, onClose, onMouseEnter, onMouseLeave, 
           ✕
         </button>
 
-        <div ref={innerRef} className="nav-panel__inner" style={{ maxWidth: '1350px', margin: '0 auto', padding: '4rem 48px 5rem' }}>
+        <div ref={innerRef} className="nav-panel__inner" style={{ maxWidth: '1350px', margin: '0 auto', padding: '4rem 0 5rem' }}>
           {children}
         </div>
       </div>

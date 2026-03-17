@@ -13,7 +13,7 @@ export default async function ArticlePage({ params }) {
     <main>
 
       {/* Hero */}
-      <section className="section--full dark-bg" style={{ padding: '80px 48px' }}>
+      <section className="section--full dark-bg" style={{ padding: '100px 48px 120px' }}>
         <div className="wrap--narrow">
           {/* Breadcrumb */}
           <div className="breadcrumb">
@@ -25,7 +25,7 @@ export default async function ArticlePage({ params }) {
           <span className="kicker" style={{ marginBottom: '16px' }}>{article.category}</span>
           <h1 className="heading-h1" style={{
             color: '#ffffff',
-            margin: '0 0 24px',
+            margin: '0 0 32px',
           }}>
             {article.title}
           </h1>

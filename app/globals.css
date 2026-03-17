@@ -101,7 +101,7 @@ a:hover {
 .dark-bg .kicker { color: var(--coral); }
 
 .heading-display {
-  font-size: clamp(52px, 7vw, 88px);
+  font-size: clamp(44px, 6vw, 72px);
   font-weight: 400;
   line-height: 1.02;
   letter-spacing: -0.03em;

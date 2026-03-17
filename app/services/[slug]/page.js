@@ -35,7 +35,7 @@ export default async function ServicePage({ params }) {
       {/* ==========================================
           SECTION 1: HERO (dark)
           ========================================== */}
-      <section className="section--full dark-bg" style={{ padding: '80px 48px' }}>
+      <section className="section--full dark-bg" style={{ padding: '100px 48px 120px' }}>
         <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
           {/* Breadcrumb */}
           <div className="breadcrumb">
@@ -45,7 +45,7 @@ export default async function ServicePage({ params }) {
           </div>
 
           <span className="kicker" style={{ marginBottom: '16px' }}>{service.categoryLabel}</span>
-          <h1 className="heading-gradient heading-display" style={{ margin: '0 0 24px', maxWidth: '900px' }}>
+          <h1 className="heading-gradient heading-display" style={{ margin: '0 0 32px', maxWidth: '900px' }}>
             {service.heroHeading}
           </h1>
           <p className="lead-text" style={{ color: 'rgba(255,255,255,0.6)', maxWidth: '680px' }}>

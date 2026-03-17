@@ -13,11 +13,11 @@ export default async function Projects() {
     <main>
 
       {/* Hero */}
-      <section className="section--full dark-bg" style={{ padding: '80px 48px' }}>
+      <section className="section--full dark-bg" style={{ padding: '100px 48px 120px' }}>
         <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
           <span className="kicker" style={{ marginBottom: '20px' }}>Projects and experience</span>
           <h1 className="heading-h1 heading-gradient" style={{
-            margin: '0 0 24px',
+            margin: '0 0 32px',
             maxWidth: '800px',
           }}>
             Work that makes a difference

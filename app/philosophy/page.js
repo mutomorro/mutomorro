@@ -93,10 +93,10 @@ export default function PhilosophyPage() {
     <main>
 
       {/* Hero */}
-      <section className="section--full dark-bg" style={{ padding: '80px 48px' }}>
+      <section className="section--full dark-bg" style={{ padding: '100px 48px 120px' }}>
         <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
           <span className="kicker" style={{ marginBottom: '20px' }}>Philosophy</span>
-          <h1 className="heading-display heading-gradient" style={{ maxWidth: '900px' }}>
+          <h1 className="heading-display heading-gradient" style={{ maxWidth: '900px', margin: '0 0 32px' }}>
             Designing intentional ecosystems
           </h1>
           <p className="lead-text" style={{ color: 'rgba(255,255,255,0.6)', maxWidth: '680px' }}>

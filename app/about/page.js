@@ -14,10 +14,10 @@ export default function About() {
     <main>
 
       {/* Hero */}
-      <section className="section--full dark-bg" style={{ padding: '80px 48px' }}>
+      <section className="section--full dark-bg" style={{ padding: '100px 48px 120px' }}>
         <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
           <span className="kicker" style={{ marginBottom: '20px' }}>About Mutomorro</span>
-          <h1 className="heading-display heading-gradient" style={{ maxWidth: '900px' }}>
+          <h1 className="heading-display heading-gradient" style={{ maxWidth: '900px', margin: '0 0 32px' }}>
             Designing thriving organisations for the new world of work
           </h1>
           <p className="lead-text" style={{ color: 'rgba(255,255,255,0.6)', maxWidth: '680px' }}>

@@ -12,7 +12,7 @@ export default async function CoursePage({ params }) {
     <main>
 
       {/* Hero */}
-      <section className="section--full dark-bg" style={{ padding: '80px 48px' }}>
+      <section className="section--full dark-bg" style={{ padding: '100px 48px 120px' }}>
         <div className="wrap--narrow">
           {/* Breadcrumb */}
           <div className="breadcrumb">
@@ -30,7 +30,7 @@ export default async function CoursePage({ params }) {
           )}
           <h1 className="heading-h1" style={{
             color: '#ffffff',
-            margin: '0 0 24px',
+            margin: '0 0 32px',
           }}>
             {course.title}
           </h1>

@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hero Animation - Employee Experience</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #1a1a2e; display: flex; align-items: center; justify-content: center; min-height: 100vh; overflow: hidden; }
+  canvas { display: block; }
+</style>
+</head>
+<body>
+<canvas id="hero"></canvas>
+<script>
+(function() {
+  var canvas = document.getElementById('hero');
+  var ctx = canvas.getContext('2d');
+  var dpr = window.devicePixelRatio || 1;
+  var W, H, cx, cy;
+
+  function resize() {
+    W = window.innerWidth;
+    H = window.innerHeight;
+    canvas.width = W * dpr;
+    canvas.height = H * dpr;
+    canvas.style.width = W + 'px';
+    canvas.style.height = H + 'px';
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    cx = W / 2;
+    cy = H / 2;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  var colours = [
+    { r: 128, g: 56, b: 143 },
+    { r: 155, g: 81, b: 224 },
+    { r: 255, g: 66, b: 121 },
+    { r: 255, g: 162, b: 0 },
+  ];
+
+  function colourAt(t, alpha) {
+    t = Math.max(0, Math.min(1, t));
+    var idx = t * (colours.length - 1);
+    var i = Math.floor(idx);
+    var f = idx - i;
+    if (i >= colours.length - 1) { i = colours.length - 2; f = 1; }
+    var a = colours[i], b = colours[i + 1];
+    return 'rgba(' + Math.round(a.r + (b.r - a.r) * f) + ',' +
+           Math.round(a.g + (b.g - a.g) * f) + ',' +
+           Math.round(a.b + (b.b - a.b) * f) + ',' + alpha + ')';
+  }
+
+  // ---- THE RIBBON ----
+  // A continuous looping path through the canvas, made of many control points.
+  // The ribbon weaves, loops, and flows - representing the continuous thread
+  // of everyday experience.
+
+  var ribbonPoints = 200;
+  var ribbon = [];
+
+  // Build a weaving path using layered sine waves
+  for (var i = 0; i < ribbonPoints; i++) {
+    var t = i / (ribbonPoints - 1);
+    ribbon.push({
+      baseX: t * W * 1.2 - W * 0.1, // spans wider than canvas
+      baseY: cy,
+      // Multiple wave layers for organic weaving
+      waveA: { amp: H * 0.22, freq: 1.8, phase: 0 },
+      waveB: { amp: H * 0.12, freq: 3.2, phase: 1.5 },
+      waveC: { amp: H * 0.06, freq: 5.5, phase: 3.1 },
+      t: t
+    });
+  }
+
+  // ---- MOMENTS along the ribbon ----
+  // These are experiences - some warm, some dim, some bright clusters
+  var moments = [];
+  var numMoments = 30;
+  for (var i = 0; i < numMoments; i++) {
+    var t = i / numMoments;
+    var quality = Math.random();
+    // Most moments are middling, some are great, a few are rough
+    if (quality > 0.7) quality = 0.8 + Math.random() * 0.2; // great moment
+    else if (quality < 0.15) quality = 0.05 + Math.random() * 0.1; // rough patch
+    else quality = 0.3 + Math.random() * 0.3; // everyday
+
+    moments.push({
+      ribbonT: t,
+      quality: quality, // 0 = rough, 1 = wonderful
+      size: 8 + quality * 25,
+      breathPhase: Math.random() * Math.PI * 2,
+      breathSpeed: 0.001 + Math.random() * 0.002,
+      pulsePhase: Math.random() * Math.PI * 2,
+      pulseSpeed: 0.0005 + Math.random() * 0.0008
+    });
+  }
+
+  // ---- AMBIENT PARTICLES ----
+  // Float near the ribbon, drawn to warm moments, drift from dim ones
+  var ambientParticles = [];
+  for (var i = 0; i < 40; i++) {
+    ambientParticles.push({
+      ribbonT: Math.random(),
+      offset: (Math.random() - 0.5) * 80,
+      offsetY: (Math.random() - 0.5) * 60,
+      size: 1 + Math.random() * 2,
+      driftSpeed: 0.00005 + Math.random() * 0.0001,
+      breathPhase: Math.random() * Math.PI * 2,
+      breathSpeed: 0.001 + Math.random() * 0.001,
+      colourPos: Math.random(),
+      alpha: 0.15 + Math.random() * 0.25
+    });
+  }
+
+  // ---- TEXT LABELS ----
+  var labels = [
+    { text: 'how work feels today', ring: 0, slot: 0 },
+    { text: 'whether people grow here', ring: 0, slot: 1 },
+    { text: 'what trust looks like', ring: 0, slot: 2 },
+    { text: 'how effort gets noticed', ring: 0, slot: 3 },
+    { text: 'whether your voice matters', ring: 1, slot: 0 },
+    { text: 'how teams actually work', ring: 1, slot: 1 },
+    { text: 'what the commute is for', ring: 1, slot: 2 },
+    { text: 'what people tell their friends', ring: 1, slot: 3 },
+    { text: 'how decisions land on people', ring: 2, slot: 0 },
+    { text: 'what managers actually do', ring: 2, slot: 1 },
+    { text: 'whether development is real', ring: 2, slot: 2 },
+    { text: 'how the bad days feel', ring: 2, slot: 3 },
+  ];
+
+  var ringRadii = [115, 200, 285];
+  var ringOffsets = [0.25, Math.PI / 4 + 0.15, Math.PI / 5 - 0.3];
+  var ringSizes = [13.5, 14, 14.5];
+
+  var textItems = [];
+  for (var i = 0; i < labels.length; i++) {
+    var l = labels[i];
+    var angle = ringOffsets[l.ring] + (l.slot / 4) * Math.PI * 2;
+    textItems.push({
+      text: l.text,
+      baseAngle: angle,
+      radius: ringRadii[l.ring],
+      phase: Math.random() * Math.PI * 2,
+      orbitSpeed: 0.00004 + Math.random() * 0.00003,
+      breathSpeed: 0.0003 + Math.random() * 0.0003,
+      breathAmount: 8 + Math.random() * 8,
+      fadePhase: Math.random() * Math.PI * 2,
+      fadeSpeed: 0.0003 + Math.random() * 0.0003,
+      colourPos: i / labels.length,
+      fontSize: ringSizes[l.ring]
+    });
+  }
+
+  // ---- GET RIBBON POSITION ----
+  function getRibbonPos(t, time) {
+    // Wrap t
+    t = ((t % 1) + 1) % 1;
+    var idx = t * (ribbonPoints - 1);
+    var i = Math.floor(idx);
+    var f = idx - i;
+    if (i >= ribbonPoints - 1) { i = ribbonPoints - 2; f = 1; }
+
+    var p = ribbon[i];
+    var timeShift = time * 0.00015;
+
+    var x = p.baseX;
+    var y = p.baseY
+      + Math.sin(p.t * Math.PI * p.waveA.freq + p.waveA.phase + timeShift) * p.waveA.amp
+      + Math.sin(p.t * Math.PI * p.waveB.freq + p.waveB.phase + timeShift * 1.3) * p.waveB.amp
+      + Math.sin(p.t * Math.PI * p.waveC.freq + p.waveC.phase + timeShift * 0.7) * p.waveC.amp;
+
+    return { x: x, y: y };
+  }
+
+  // ---- DRAW FUNCTIONS ----
+
+  function drawRibbon(time) {
+    // Draw the ribbon as a flowing line with varying width and colour
+    // Width varies with "quality" of nearby moments
+    // Colour shifts along the gradient
+
+    // Build path points
+    var points = [];
+    var segments = 300;
+    for (var s = 0; s <= segments; s++) {
+      var t = s / segments;
+      var pos = getRibbonPos(t, time);
+      var colT = t; // colour follows position along ribbon
+
+      // Find nearest moment to determine local quality
+      var localQuality = 0.3; // default middling
+      for (var m = 0; m < moments.length; m++) {
+        var dist = Math.abs(t - moments[m].ribbonT);
+        if (dist < 0.05) {
+          var influence = 1 - dist / 0.05;
+          localQuality = Math.max(localQuality, moments[m].quality * influence);
+        }
+      }
+
+      points.push({
+        x: pos.x,
+        y: pos.y,
+        colT: colT,
+        quality: localQuality
+      });
+    }
+
+    // Draw ribbon with varying width
+    for (var i = 1; i < points.length; i++) {
+      var p0 = points[i - 1];
+      var p1 = points[i];
+
+      var width = 1.5 + p1.quality * 3;
+      var alpha = 0.1 + p1.quality * 0.2;
+
+      ctx.beginPath();
+      ctx.moveTo(p0.x, p0.y);
+      ctx.lineTo(p1.x, p1.y);
+      ctx.strokeStyle = colourAt(p1.colT, alpha);
+      ctx.lineWidth = width;
+      ctx.stroke();
+    }
+
+    // Soft glow along ribbon centre
+    for (var i = 0; i < points.length; i += 5) {
+      var p = points[i];
+      var glowSize = 8 + p.quality * 15;
+      var glowAlpha = 0.02 + p.quality * 0.04;
+
+      var grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, glowSize);
+      grad.addColorStop(0, colourAt(p.colT, glowAlpha));
+      grad.addColorStop(1, colourAt(p.colT, 0));
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, glowSize, 0, Math.PI * 2);
+      ctx.fillStyle = grad;
+      ctx.fill();
+    }
+  }
+
+  function drawMoments(time) {
+    for (var i = 0; i < moments.length; i++) {
+      var m = moments[i];
+      var pos = getRibbonPos(m.ribbonT, time);
+      var breathe = Math.sin(time * m.breathSpeed + m.breathPhase);
+      var pulse = Math.sin(time * m.pulseSpeed + m.pulsePhase);
+
+      var size = m.size * (0.8 + breathe * 0.2);
+      var colT = m.ribbonT;
+
+      if (m.quality > 0.6) {
+        // Warm, bright moment - visible glow
+        var glowSize = size * (1.5 + pulse * 0.5);
+        var grad = ctx.createRadialGradient(pos.x, pos.y, 0, pos.x, pos.y, glowSize);
+        grad.addColorStop(0, colourAt(colT, 0.2 + m.quality * 0.15));
+        grad.addColorStop(0.4, colourAt(colT, 0.08));
+        grad.addColorStop(1, colourAt(colT, 0));
+        ctx.beginPath();
+        ctx.arc(pos.x, pos.y, glowSize, 0, Math.PI * 2);
+        ctx.fillStyle = grad;
+        ctx.fill();
+
+        // Bright core
+        ctx.beginPath();
+        ctx.arc(pos.x, pos.y, 2 + m.quality * 3, 0, Math.PI * 2);
+        ctx.fillStyle = colourAt(colT, 0.5 + m.quality * 0.3);
+        ctx.fill();
+
+      } else if (m.quality < 0.2) {
+        // Dim patch - subtle, slightly cooler
+        var dimSize = size * 0.7;
+        var grad = ctx.createRadialGradient(pos.x, pos.y, 0, pos.x, pos.y, dimSize);
+        grad.addColorStop(0, 'rgba(80, 60, 100, 0.06)');
+        grad.addColorStop(1, 'rgba(80, 60, 100, 0)');
+        ctx.beginPath();
+        ctx.arc(pos.x, pos.y, dimSize, 0, Math.PI * 2);
+        ctx.fillStyle = grad;
+        ctx.fill();
+
+      } else {
+        // Middling moment - gentle presence
+        var midSize = size * 0.5;
+        var grad = ctx.createRadialGradient(pos.x, pos.y, 0, pos.x, pos.y, midSize);
+        grad.addColorStop(0, colourAt(colT, 0.06 + breathe * 0.02));
+        grad.addColorStop(1, colourAt(colT, 0));
+        ctx.beginPath();
+        ctx.arc(pos.x, pos.y, midSize, 0, Math.PI * 2);
+        ctx.fillStyle = grad;
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.arc(pos.x, pos.y, 1.5, 0, Math.PI * 2);
+        ctx.fillStyle = colourAt(colT, 0.2 + breathe * 0.1);
+        ctx.fill();
+      }
+    }
+  }
+
+  function drawAmbientParticles(time) {
+    for (var i = 0; i < ambientParticles.length; i++) {
+      var ap = ambientParticles[i];
+
+      // Drift along ribbon slowly
+      ap.ribbonT += ap.driftSpeed * 16;
+      if (ap.ribbonT > 1) ap.ribbonT -= 1;
+
+      var pos = getRibbonPos(ap.ribbonT, time);
+      var breathe = Math.sin(time * ap.breathSpeed + ap.breathPhase);
+
+      // Find nearest moment quality to drift toward/away
+      var nearestQuality = 0.3;
+      for (var m = 0; m < moments.length; m++) {
+        var dist = Math.abs(ap.ribbonT - moments[m].ribbonT);
+        if (dist < 0.04) {
+          nearestQuality = moments[m].quality;
+        }
+      }
+
+      // Offset from ribbon - closer to warm moments, further from dim
+      var offsetMult = 0.5 + (1 - nearestQuality) * 0.8;
+      var x = pos.x + ap.offset * offsetMult + breathe * 5;
+      var y = pos.y + ap.offsetY * offsetMult + Math.sin(breathe * 2) * 3;
+      var size = ap.size * (0.7 + breathe * 0.3);
+
+      // Glow
+      var glowGrad = ctx.createRadialGradient(x, y, 0, x, y, size * 4);
+      glowGrad.addColorStop(0, colourAt(ap.colourPos, ap.alpha * 0.25));
+      glowGrad.addColorStop(1, colourAt(ap.colourPos, 0));
+      ctx.beginPath();
+      ctx.arc(x, y, size * 4, 0, Math.PI * 2);
+      ctx.fillStyle = glowGrad;
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.arc(x, y, size, 0, Math.PI * 2);
+      ctx.fillStyle = colourAt(ap.colourPos, ap.alpha);
+      ctx.fill();
+    }
+  }
+
+  function drawTextLabels(time) {
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+
+    for (var i = 0; i < textItems.length; i++) {
+      var t = textItems[i];
+      var currentAngle = t.baseAngle + time * t.orbitSpeed;
+      var radialBreath = Math.sin(time * t.breathSpeed + t.phase) * t.breathAmount;
+      var currentRadius = t.radius + radialBreath;
+      var x = cx + Math.cos(currentAngle) * currentRadius;
+      var y = cy + Math.sin(currentAngle) * currentRadius;
+      var fadeCycle = Math.sin(time * t.fadeSpeed + t.fadePhase);
+      var alpha = 0.4 + fadeCycle * 0.15;
+      var tilt = Math.sin(currentAngle) * 0.04;
+
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.rotate(tilt);
+
+      ctx.shadowColor = colourAt(t.colourPos, 0.5);
+      ctx.shadowBlur = 20;
+      ctx.font = '400 ' + t.fontSize + 'px "Source Sans 3", "Source Sans Pro", sans-serif';
+      ctx.fillStyle = colourAt(t.colourPos, alpha);
+      ctx.fillText(t.text, 0, 0);
+
+      ctx.shadowColor = 'transparent';
+      ctx.shadowBlur = 0;
+      ctx.fillStyle = colourAt(t.colourPos, alpha);
+      ctx.fillText(t.text, 0, 0);
+
+      ctx.restore();
+    }
+  }
+
+  // ---- MAIN LOOP ----
+  function tick(time) {
+    ctx.clearRect(0, 0, W, H);
+
+    drawRibbon(time);
+    drawMoments(time);
+    drawAmbientParticles(time);
+    drawTextLabels(time);
+
+    requestAnimationFrame(tick);
+  }
+
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    tick(8000);
+  } else {
+    requestAnimationFrame(tick);
+  }
+})();
+</script>
+</body>
+</html>

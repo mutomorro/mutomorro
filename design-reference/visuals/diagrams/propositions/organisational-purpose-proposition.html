@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Organisational Purpose - Proposition</title>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: #1a1a2e;
+  display: flex; align-items: center; justify-content: center;
+  min-height: 100vh; overflow: hidden;
+}
+.diagram {
+  width: 1920px; height: 1080px;
+  position: relative; overflow: hidden;
+  font-family: 'Source Sans 3', sans-serif;
+  background: radial-gradient(ellipse at 50% 48%, rgba(128,56,143,0.12) 0%, rgba(80,30,100,0.06) 35%, transparent 70%), radial-gradient(ellipse at 30% 60%, rgba(255,66,121,0.04) 0%, transparent 50%), radial-gradient(ellipse at 70% 40%, rgba(255,162,0,0.03) 0%, transparent 50%);
+}
+.constellation { position: absolute; inset: 0; pointer-events: none; }
+.caption {
+  position: absolute;
+  bottom: 36px; left: 50%;
+  transform: translateX(-50%);
+  font-size: 30px; font-weight: 300;
+  font-style: italic;
+  color: rgba(255,255,255,0.25);
+  white-space: nowrap;
+}
+</style>
+</head>
+<body>
+<div class="diagram">
+
+  <svg class="constellation" viewBox="0 0 1920 1080">
+    <circle cx="110" cy="75" r="1.5" fill="rgba(155,81,224,0.18)"/>
+    <circle cx="290" cy="140" r="1" fill="rgba(200,150,220,0.12)"/>
+    <circle cx="75" cy="210" r="1.5" fill="rgba(155,81,224,0.12)"/>
+    <circle cx="1720" cy="70" r="1.5" fill="rgba(255,66,121,0.15)"/>
+    <circle cx="1840" cy="180" r="1" fill="rgba(255,162,0,0.1)"/>
+    <circle cx="1580" cy="110" r="1" fill="rgba(155,81,224,0.12)"/>
+    <circle cx="470" cy="50" r="1" fill="rgba(200,150,220,0.1)"/>
+    <circle cx="1380" cy="45" r="1" fill="rgba(255,162,0,0.08)"/>
+    <circle cx="190" cy="920" r="1.5" fill="rgba(155,81,224,0.12)"/>
+    <circle cx="340" cy="990" r="1" fill="rgba(200,150,220,0.1)"/>
+    <circle cx="1690" cy="930" r="1" fill="rgba(255,66,121,0.1)"/>
+    <circle cx="1540" cy="1010" r="1.5" fill="rgba(255,162,0,0.08)"/>
+    <circle cx="55" cy="520" r="1" fill="rgba(155,81,224,0.1)"/>
+    <circle cx="1860" cy="490" r="1.5" fill="rgba(255,120,80,0.1)"/>
+    <circle cx="1870" cy="690" r="1" fill="rgba(255,162,0,0.08)"/>
+    <circle cx="45" cy="720" r="1.5" fill="rgba(200,150,220,0.1)"/>
+    <circle cx="800" cy="30" r="1" fill="rgba(155,81,224,0.08)"/>
+    <circle cx="1120" cy="1050" r="1" fill="rgba(155,81,224,0.08)"/>
+    <line x1="110" y1="75" x2="290" y2="140" stroke="rgba(155,81,224,0.05)" stroke-width="1"/>
+    <line x1="75" y1="210" x2="110" y2="75" stroke="rgba(155,81,224,0.04)" stroke-width="1"/>
+    <line x1="290" y1="140" x2="470" y2="50" stroke="rgba(155,81,224,0.03)" stroke-width="1"/>
+    <line x1="1720" y1="70" x2="1840" y2="180" stroke="rgba(255,66,121,0.04)" stroke-width="1"/>
+    <line x1="1580" y1="110" x2="1720" y2="70" stroke="rgba(155,81,224,0.04)" stroke-width="1"/>
+    <line x1="190" y1="920" x2="340" y2="990" stroke="rgba(155,81,224,0.04)" stroke-width="1"/>
+    <line x1="1690" y1="930" x2="1540" y2="1010" stroke="rgba(255,66,121,0.03)" stroke-width="1"/>
+    <line x1="55" y1="520" x2="45" y2="720" stroke="rgba(155,81,224,0.03)" stroke-width="1"/>
+    <line x1="1860" y1="490" x2="1870" y2="690" stroke="rgba(255,120,80,0.03)" stroke-width="1"/>
+  </svg>
+
+
+  <style>
+    .compass-centre {
+      position: absolute;
+      left: 50%; top: 46%;
+      transform: translate(-50%, -50%);
+      width: 200px; height: 200px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,162,0,0.12) 0%, rgba(255,66,121,0.05) 60%, transparent 100%);
+      border: 2px solid rgba(255,162,0,0.22);
+      display: flex; align-items: center; justify-content: center;
+      flex-direction: column;
+    }
+    .compass-title { font-size: 48px; font-weight: 700; color: rgba(255,255,255,0.75); }
+    .direction {
+      position: absolute;
+      display: flex; flex-direction: column;
+      align-items: center; text-align: center;
+    }
+    .dir-circle {
+      width: 160px; height: 160px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      flex-direction: column;
+    }
+    .dir-title { font-size: 32px; font-weight: 600; }
+    .dir-sub { font-size: 24px; font-weight: 300; margin-top: 4px; }
+    .d-top { left: 50%; top: 4%; transform: translateX(-50%); }
+    .d-right { right: 14%; top: 46%; transform: translateY(-50%); }
+    .d-bottom { left: 50%; bottom: 10%; transform: translateX(-50%); }
+    .d-left { left: 14%; top: 46%; transform: translateY(-50%); }
+    .d-top .dir-circle { background: rgba(128,56,143,0.08); border: 1.5px solid rgba(128,56,143,0.18); }
+    .d-top .dir-title { color: rgba(200,160,230,0.6); }
+    .d-top .dir-sub { color: rgba(200,160,230,0.35); }
+    .d-right .dir-circle { background: rgba(255,66,121,0.06); border: 1.5px solid rgba(255,66,121,0.15); }
+    .d-right .dir-title { color: rgba(255,150,170,0.6); }
+    .d-right .dir-sub { color: rgba(255,150,170,0.35); }
+    .d-bottom .dir-circle { background: rgba(255,162,0,0.06); border: 1.5px solid rgba(255,162,0,0.15); }
+    .d-bottom .dir-title { color: rgba(255,200,130,0.6); }
+    .d-bottom .dir-sub { color: rgba(255,200,130,0.35); }
+    .d-left .dir-circle { background: rgba(155,81,224,0.06); border: 1.5px solid rgba(155,81,224,0.15); }
+    .d-left .dir-title { color: rgba(200,170,240,0.6); }
+    .d-left .dir-sub { color: rgba(200,170,240,0.35); }
+  </style>
+
+  <svg style="position:absolute;inset:0;pointer-events:none;" viewBox="0 0 1920 1080">
+    <line x1="960" y1="300" x2="960" y2="200" stroke="rgba(128,56,143,0.1)" stroke-width="2"/>
+    <line x1="1120" y1="497" x2="1300" y2="497" stroke="rgba(255,66,121,0.08)" stroke-width="2"/>
+    <line x1="960" y1="600" x2="960" y2="730" stroke="rgba(255,162,0,0.08)" stroke-width="2"/>
+    <line x1="800" y1="497" x2="620" y2="497" stroke="rgba(155,81,224,0.08)" stroke-width="2"/>
+  </svg>
+
+  <div class="compass-centre">
+    <span class="compass-title">Purpose</span>
+  </div>
+
+  <div class="direction d-top">
+    <div class="dir-circle">
+      <span class="dir-title">Strategy</span>
+      <span class="dir-sub">where we're heading</span>
+    </div>
+  </div>
+  <div class="direction d-right">
+    <div class="dir-circle">
+      <span class="dir-title">Culture</span>
+      <span class="dir-sub">how we behave</span>
+    </div>
+  </div>
+  <div class="direction d-bottom">
+    <div class="dir-circle">
+      <span class="dir-title">Daily work</span>
+      <span class="dir-sub">what people do</span>
+    </div>
+  </div>
+  <div class="direction d-left">
+    <div class="dir-circle">
+      <span class="dir-title">Operations</span>
+      <span class="dir-sub">how we deliver</span>
+    </div>
+  </div>
+
+  <div class="caption">Purpose that shapes decisions, not just decorates walls</div>
+
+</div>
+</body>
+</html>

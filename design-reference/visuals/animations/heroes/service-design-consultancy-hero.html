@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hero Animation - Service Design</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #1a1a2e; display: flex; align-items: center; justify-content: center; min-height: 100vh; overflow: hidden; }
+  canvas { display: block; }
+</style>
+</head>
+<body>
+<canvas id="hero"></canvas>
+<script>
+(function() {
+  var canvas = document.getElementById('hero');
+  var ctx = canvas.getContext('2d');
+  var dpr = window.devicePixelRatio || 1;
+  var W, H, cx, cy;
+
+  function resize() {
+    W = window.innerWidth;
+    H = window.innerHeight;
+    canvas.width = W * dpr;
+    canvas.height = H * dpr;
+    canvas.style.width = W + 'px';
+    canvas.style.height = H + 'px';
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    cx = W / 2;
+    cy = H / 2;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  var colours = [
+    { r: 128, g: 56, b: 143 },
+    { r: 155, g: 81, b: 224 },
+    { r: 255, g: 66, b: 121 },
+    { r: 255, g: 162, b: 0 },
+  ];
+
+  function colourAt(t, alpha) {
+    t = Math.max(0, Math.min(1, t));
+    var idx = t * (colours.length - 1);
+    var i = Math.floor(idx);
+    var f = idx - i;
+    if (i >= colours.length - 1) { i = colours.length - 2; f = 1; }
+    var a = colours[i], b = colours[i + 1];
+    return 'rgba(' + Math.round(a.r + (b.r - a.r) * f) + ',' +
+           Math.round(a.g + (b.g - a.g) * f) + ',' +
+           Math.round(a.b + (b.b - a.b) * f) + ',' + alpha + ')';
+  }
+
+  // ---- LEFT FIELD: USER NEEDS ----
+  // Warm, organic, soft shapes - representing real human needs and experiences
+  // Colour range: warm (pink to orange, colourPos 0.5-1.0)
+  var userParticles = [];
+  var numUser = 35;
+  for (var i = 0; i < numUser; i++) {
+    userParticles.push({
+      baseX: W * 0.05 + Math.random() * W * 0.3,
+      baseY: cy + (Math.random() - 0.5) * H * 0.7,
+      driftX: (Math.random() - 0.5) * 30,
+      driftY: (Math.random() - 0.5) * 25,
+      driftPhase: Math.random() * Math.PI * 2,
+      driftSpeed: 0.0002 + Math.random() * 0.0003,
+      size: 3 + Math.random() * 5,
+      // Organic shape - more circular, softer
+      softness: 0.7 + Math.random() * 0.3,
+      breathPhase: Math.random() * Math.PI * 2,
+      breathSpeed: 0.0008 + Math.random() * 0.001,
+      colourPos: 0.55 + Math.random() * 0.4, // warm range
+      alpha: 0.2 + Math.random() * 0.3,
+      // Gentle pull toward centre
+      pullStrength: 0.00001 + Math.random() * 0.00002
+    });
+  }
+
+  // ---- RIGHT FIELD: ORGANISATIONAL CAPABILITY ----
+  // More structured, angular, cooler - representing resources and expertise
+  // Colour range: cool (purple to violet, colourPos 0.0-0.4)
+  var orgParticles = [];
+  var numOrg = 35;
+  for (var i = 0; i < numOrg; i++) {
+    orgParticles.push({
+      baseX: W * 0.65 + Math.random() * W * 0.3,
+      baseY: cy + (Math.random() - 0.5) * H * 0.7,
+      driftX: (Math.random() - 0.5) * 25,
+      driftY: (Math.random() - 0.5) * 20,
+      driftPhase: Math.random() * Math.PI * 2,
+      driftSpeed: 0.0002 + Math.random() * 0.0003,
+      size: 2.5 + Math.random() * 4,
+      // More angular shape
+      sides: 3 + Math.floor(Math.random() * 4), // triangles to hexagons
+      rotation: Math.random() * Math.PI * 2,
+      rotSpeed: 0.0002 + (Math.random() - 0.5) * 0.0003,
+      breathPhase: Math.random() * Math.PI * 2,
+      breathSpeed: 0.0007 + Math.random() * 0.0009,
+      colourPos: Math.random() * 0.35, // cool range
+      alpha: 0.2 + Math.random() * 0.3,
+      pullStrength: 0.00001 + Math.random() * 0.00002
+    });
+  }
+
+  // ---- MEETING ZONE ----
+  // Where the two fields overlap, new forms emerge
+  var meetingParticles = [];
+  var numMeeting = 15;
+  for (var i = 0; i < numMeeting; i++) {
+    meetingParticles.push({
+      angle: Math.random() * Math.PI * 2,
+      dist: 10 + Math.random() * 60,
+      orbitSpeed: 0.0004 + Math.random() * 0.0006,
+      size: 2 + Math.random() * 3,
+      breathPhase: Math.random() * Math.PI * 2,
+      breathSpeed: 0.001 + Math.random() * 0.001,
+      colourPos: 0.3 + Math.random() * 0.4, // blended colour range
+      alpha: 0.3 + Math.random() * 0.35
+    });
+  }
+
+  // ---- CROSSING PARTICLES ----
+  // Particles that travel from one side to the meeting zone and back
+  var crossers = [];
+  for (var i = 0; i < 12; i++) {
+    var fromLeft = i < 6;
+    crossers.push({
+      fromLeft: fromLeft,
+      progress: Math.random(),
+      speed: 0.0008 + Math.random() * 0.001,
+      startY: cy + (Math.random() - 0.5) * H * 0.5,
+      wobblePhase: Math.random() * Math.PI * 2,
+      wobbleSpeed: 0.002 + Math.random() * 0.002,
+      wobbleAmount: 10 + Math.random() * 20,
+      size: 1.5 + Math.random() * 2,
+      colourPos: fromLeft ? (0.55 + Math.random() * 0.4) : (Math.random() * 0.35),
+      alpha: 0.25 + Math.random() * 0.25
+    });
+  }
+
+  // ---- CREATIVE SPARKS ----
+  // Brief bright flashes in the meeting zone - moments of creative collision
+  var sparks = [];
+  var sparkTimer = 0;
+  var sparkInterval = 1500;
+
+  // ---- TEXT LABELS ----
+  var labels = [
+    { text: 'what users actually need', ring: 0, slot: 0 },
+    { text: 'how services are shaped', ring: 0, slot: 1 },
+    { text: 'where the gaps are', ring: 0, slot: 2 },
+    { text: 'how improvements land', ring: 0, slot: 3 },
+    { text: 'what the journey map reveals', ring: 1, slot: 0 },
+    { text: 'how front and back connect', ring: 1, slot: 1 },
+    { text: 'what good design feels like', ring: 1, slot: 2 },
+    { text: 'where complexity hides', ring: 1, slot: 3 },
+    { text: 'how users describe it', ring: 2, slot: 0 },
+    { text: 'what the data shows', ring: 2, slot: 1 },
+    { text: 'whether design is ongoing', ring: 2, slot: 2 },
+    { text: 'how services evolve with people', ring: 2, slot: 3 },
+  ];
+
+  var ringRadii = [120, 205, 290];
+  var ringOffsets = [0.1, Math.PI / 4 - 0.1, Math.PI / 6 + 0.2];
+  var ringSizes = [13.5, 14, 14.5];
+
+  var textItems = [];
+  for (var i = 0; i < labels.length; i++) {
+    var l = labels[i];
+    var angle = ringOffsets[l.ring] + (l.slot / 4) * Math.PI * 2;
+    textItems.push({
+      text: l.text,
+      baseAngle: angle,
+      radius: ringRadii[l.ring],
+      phase: Math.random() * Math.PI * 2,
+      orbitSpeed: 0.00004 + Math.random() * 0.00003,
+      breathSpeed: 0.0003 + Math.random() * 0.0003,
+      breathAmount: 8 + Math.random() * 8,
+      fadePhase: Math.random() * Math.PI * 2,
+      fadeSpeed: 0.0003 + Math.random() * 0.0003,
+      colourPos: i / labels.length,
+      fontSize: ringSizes[l.ring]
+    });
+  }
+
+  // ---- DRAW FUNCTIONS ----
+
+  function drawUserField(time) {
+    for (var i = 0; i < userParticles.length; i++) {
+      var p = userParticles[i];
+      var breathe = Math.sin(time * p.breathSpeed + p.breathPhase);
+      var drift = Math.sin(time * p.driftSpeed + p.driftPhase);
+
+      var x = p.baseX + p.driftX * drift;
+      var y = p.baseY + p.driftY * Math.sin(drift * 1.3 + 0.5);
+
+      // Gentle pull toward meeting zone
+      x += (cx - x) * p.pullStrength * time * 0.01;
+
+      var size = p.size * (0.8 + breathe * 0.2);
+
+      // Soft glow
+      var glowSize = size * 4;
+      var glowGrad = ctx.createRadialGradient(x, y, 0, x, y, glowSize);
+      glowGrad.addColorStop(0, colourAt(p.colourPos, p.alpha * 0.25));
+      glowGrad.addColorStop(1, colourAt(p.colourPos, 0));
+      ctx.beginPath();
+      ctx.arc(x, y, glowSize, 0, Math.PI * 2);
+      ctx.fillStyle = glowGrad;
+      ctx.fill();
+
+      // Organic soft circle
+      ctx.beginPath();
+      ctx.arc(x, y, size, 0, Math.PI * 2);
+      ctx.fillStyle = colourAt(p.colourPos, p.alpha);
+      ctx.fill();
+    }
+
+    // Connections between nearby user particles
+    for (var i = 0; i < userParticles.length; i++) {
+      var p1 = userParticles[i];
+      var drift1 = Math.sin(time * p1.driftSpeed + p1.driftPhase);
+      var x1 = p1.baseX + p1.driftX * drift1 + (cx - p1.baseX) * p1.pullStrength * time * 0.01;
+      var y1 = p1.baseY + p1.driftY * Math.sin(drift1 * 1.3 + 0.5);
+
+      for (var j = i + 1; j < userParticles.length; j++) {
+        var p2 = userParticles[j];
+        var drift2 = Math.sin(time * p2.driftSpeed + p2.driftPhase);
+        var x2 = p2.baseX + p2.driftX * drift2 + (cx - p2.baseX) * p2.pullStrength * time * 0.01;
+        var y2 = p2.baseY + p2.driftY * Math.sin(drift2 * 1.3 + 0.5);
+
+        var dist = Math.sqrt((x2-x1)*(x2-x1) + (y2-y1)*(y2-y1));
+        if (dist < 70) {
+          var alpha = (1 - dist / 70) * 0.05;
+          ctx.beginPath();
+          ctx.moveTo(x1, y1);
+          ctx.lineTo(x2, y2);
+          ctx.strokeStyle = colourAt((p1.colourPos + p2.colourPos) / 2, alpha);
+          ctx.lineWidth = 0.5;
+          ctx.stroke();
+        }
+      }
+    }
+  }
+
+  function drawOrgField(time) {
+    for (var i = 0; i < orgParticles.length; i++) {
+      var p = orgParticles[i];
+      var breathe = Math.sin(time * p.breathSpeed + p.breathPhase);
+      var drift = Math.sin(time * p.driftSpeed + p.driftPhase);
+
+      var x = p.baseX + p.driftX * drift;
+      var y = p.baseY + p.driftY * Math.sin(drift * 1.3 + 0.5);
+
+      // Gentle pull toward meeting zone
+      x += (cx - x) * p.pullStrength * time * 0.01;
+
+      var size = p.size * (0.85 + breathe * 0.15);
+      var rot = p.rotation + time * p.rotSpeed;
+
+      // Glow
+      var glowSize = size * 3.5;
+      var glowGrad = ctx.createRadialGradient(x, y, 0, x, y, glowSize);
+      glowGrad.addColorStop(0, colourAt(p.colourPos, p.alpha * 0.2));
+      glowGrad.addColorStop(1, colourAt(p.colourPos, 0));
+      ctx.beginPath();
+      ctx.arc(x, y, glowSize, 0, Math.PI * 2);
+      ctx.fillStyle = glowGrad;
+      ctx.fill();
+
+      // Angular shape
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.rotate(rot);
+      ctx.beginPath();
+      for (var s = 0; s <= p.sides; s++) {
+        var a = (s / p.sides) * Math.PI * 2;
+        var px = Math.cos(a) * size;
+        var py = Math.sin(a) * size;
+        if (s === 0) ctx.moveTo(px, py);
+        else ctx.lineTo(px, py);
+      }
+      ctx.closePath();
+      ctx.fillStyle = colourAt(p.colourPos, p.alpha);
+      ctx.fill();
+      ctx.restore();
+    }
+
+    // Connections
+    for (var i = 0; i < orgParticles.length; i++) {
+      var p1 = orgParticles[i];
+      var drift1 = Math.sin(time * p1.driftSpeed + p1.driftPhase);
+      var x1 = p1.baseX + p1.driftX * drift1 + (cx - p1.baseX) * p1.pullStrength * time * 0.01;
+      var y1 = p1.baseY + p1.driftY * Math.sin(drift1 * 1.3 + 0.5);
+
+      for (var j = i + 1; j < orgParticles.length; j++) {
+        var p2 = orgParticles[j];
+        var drift2 = Math.sin(time * p2.driftSpeed + p2.driftPhase);
+        var x2 = p2.baseX + p2.driftX * drift2 + (cx - p2.baseX) * p2.pullStrength * time * 0.01;
+        var y2 = p2.baseY + p2.driftY * Math.sin(drift2 * 1.3 + 0.5);
+
+        var dist = Math.sqrt((x2-x1)*(x2-x1) + (y2-y1)*(y2-y1));
+        if (dist < 60) {
+          var alpha = (1 - dist / 60) * 0.05;
+          ctx.beginPath();
+          ctx.moveTo(x1, y1);
+          ctx.lineTo(x2, y2);
+          ctx.strokeStyle = colourAt((p1.colourPos + p2.colourPos) / 2, alpha);
+          ctx.lineWidth = 0.5;
+          ctx.stroke();
+        }
+      }
+    }
+  }
+
+  function drawMeetingZone(time) {
+    // Central glow where the two fields meet
+    var pulse = Math.sin(time * 0.0006) * 0.3;
+    var size = 80 + pulse * 20;
+
+    var grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, size);
+    grad.addColorStop(0, colourAt(0.45, 0.1 + pulse * 0.03));
+    grad.addColorStop(0.4, colourAt(0.4, 0.05));
+    grad.addColorStop(1, colourAt(0.35, 0));
+    ctx.beginPath();
+    ctx.arc(cx, cy, size, 0, Math.PI * 2);
+    ctx.fillStyle = grad;
+    ctx.fill();
+
+    // Meeting particles - orbiting in the creative zone
+    for (var i = 0; i < meetingParticles.length; i++) {
+      var mp = meetingParticles[i];
+      var angle = mp.angle + time * mp.orbitSpeed;
+      var breathe = Math.sin(time * mp.breathSpeed + mp.breathPhase);
+      var dist = mp.dist + breathe * 10;
+
+      var x = cx + Math.cos(angle) * dist;
+      var y = cy + Math.sin(angle) * dist;
+      var msize = mp.size * (0.8 + breathe * 0.3);
+
+      // These particles are a blend of both - neither round nor angular
+      // Draw as softened polygons
+      var sides = 5 + Math.floor(breathe * 2);
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.rotate(angle * 0.3);
+
+      // Glow
+      var glowGrad = ctx.createRadialGradient(0, 0, 0, 0, 0, msize * 5);
+      glowGrad.addColorStop(0, colourAt(mp.colourPos, mp.alpha * 0.35));
+      glowGrad.addColorStop(1, colourAt(mp.colourPos, 0));
+      ctx.beginPath();
+      ctx.arc(0, 0, msize * 5, 0, Math.PI * 2);
+      ctx.fillStyle = glowGrad;
+      ctx.fill();
+
+      // Blended shape
+      ctx.beginPath();
+      for (var s = 0; s <= sides; s++) {
+        var a = (s / sides) * Math.PI * 2;
+        var r = msize * (0.85 + Math.sin(a * 2 + time * 0.001) * 0.15);
+        if (s === 0) ctx.moveTo(Math.cos(a) * r, Math.sin(a) * r);
+        else ctx.lineTo(Math.cos(a) * r, Math.sin(a) * r);
+      }
+      ctx.closePath();
+      ctx.fillStyle = colourAt(mp.colourPos, mp.alpha);
+      ctx.fill();
+
+      ctx.restore();
+    }
+  }
+
+  function drawCrossers(time) {
+    for (var i = 0; i < crossers.length; i++) {
+      var cr = crossers[i];
+      cr.progress += cr.speed * 16;
+      if (cr.progress > 1) cr.progress -= 1;
+
+      var t = cr.progress;
+      // Ease: slow at edges, fast in middle
+      var eased = t < 0.5 ? 2 * t * t : 1 - 2 * (1 - t) * (1 - t);
+
+      var startX = cr.fromLeft ? W * 0.1 : W * 0.9;
+      var endX = cx;
+      var x = startX + (endX - startX) * eased;
+
+      // Return journey
+      if (t > 0.5) {
+        x = endX + (startX - endX) * ((t - 0.5) * 2);
+      }
+
+      var wobble = Math.sin(time * cr.wobbleSpeed + cr.wobblePhase) * cr.wobbleAmount;
+      var y = cr.startY + wobble;
+
+      // Trail
+      var trailAlpha = cr.alpha * 0.15;
+      ctx.beginPath();
+      var prevX = startX + (endX - startX) * (eased * 0.95);
+      if (t > 0.5) prevX = endX + (startX - endX) * (((t - 0.02) - 0.5) * 2);
+      ctx.moveTo(prevX, y - wobble * 0.1);
+      ctx.lineTo(x, y);
+      ctx.strokeStyle = colourAt(cr.colourPos, trailAlpha);
+      ctx.lineWidth = cr.size * 0.5;
+      ctx.stroke();
+
+      // Particle
+      ctx.beginPath();
+      ctx.arc(x, y, cr.size, 0, Math.PI * 2);
+      ctx.fillStyle = colourAt(cr.colourPos, cr.alpha);
+      ctx.fill();
+    }
+  }
+
+  function drawSparks(time) {
+    sparkTimer += 16;
+    if (sparkTimer > sparkInterval) {
+      sparks.push({
+        x: cx + (Math.random() - 0.5) * 60,
+        y: cy + (Math.random() - 0.5) * 50,
+        born: time,
+        life: 600 + Math.random() * 400,
+        colourPos: 0.3 + Math.random() * 0.4
+      });
+      sparkTimer = 0;
+    }
+
+    for (var i = sparks.length - 1; i >= 0; i--) {
+      var spark = sparks[i];
+      var age = time - spark.born;
+      if (age > spark.life) { sparks.splice(i, 1); continue; }
+
+      var progress = age / spark.life;
+      var alpha = (1 - progress) * 0.4;
+      var size = (1 + progress * 8) * (1 - progress);
+
+      ctx.beginPath();
+      ctx.arc(spark.x, spark.y, size, 0, Math.PI * 2);
+      ctx.fillStyle = colourAt(spark.colourPos, alpha);
+      ctx.fill();
+
+      // Tiny burst
+      var burstSize = size * 3;
+      var burstGrad = ctx.createRadialGradient(spark.x, spark.y, 0, spark.x, spark.y, burstSize);
+      burstGrad.addColorStop(0, colourAt(spark.colourPos, alpha * 0.3));
+      burstGrad.addColorStop(1, colourAt(spark.colourPos, 0));
+      ctx.beginPath();
+      ctx.arc(spark.x, spark.y, burstSize, 0, Math.PI * 2);
+      ctx.fillStyle = burstGrad;
+      ctx.fill();
+    }
+  }
+
+  function drawTextLabels(time) {
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+
+    for (var i = 0; i < textItems.length; i++) {
+      var t = textItems[i];
+      var currentAngle = t.baseAngle + time * t.orbitSpeed;
+      var radialBreath = Math.sin(time * t.breathSpeed + t.phase) * t.breathAmount;
+      var currentRadius = t.radius + radialBreath;
+      var x = cx + Math.cos(currentAngle) * currentRadius;
+      var y = cy + Math.sin(currentAngle) * currentRadius;
+      var fadeCycle = Math.sin(time * t.fadeSpeed + t.fadePhase);
+      var alpha = 0.4 + fadeCycle * 0.15;
+      var tilt = Math.sin(currentAngle) * 0.04;
+
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.rotate(tilt);
+
+      ctx.shadowColor = colourAt(t.colourPos, 0.5);
+      ctx.shadowBlur = 20;
+      ctx.font = '400 ' + t.fontSize + 'px "Source Sans 3", "Source Sans Pro", sans-serif';
+      ctx.fillStyle = colourAt(t.colourPos, alpha);
+      ctx.fillText(t.text, 0, 0);
+
+      ctx.shadowColor = 'transparent';
+      ctx.shadowBlur = 0;
+      ctx.fillStyle = colourAt(t.colourPos, alpha);
+      ctx.fillText(t.text, 0, 0);
+
+      ctx.restore();
+    }
+  }
+
+  // ---- MAIN LOOP ----
+  function tick(time) {
+    ctx.clearRect(0, 0, W, H);
+
+    drawUserField(time);
+    drawOrgField(time);
+    drawCrossers(time);
+    drawMeetingZone(time);
+    drawSparks(time);
+    drawTextLabels(time);
+
+    requestAnimationFrame(tick);
+  }
+
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    tick(8000);
+  } else {
+    requestAnimationFrame(tick);
+  }
+})();
+</script>
+</body>
+</html>

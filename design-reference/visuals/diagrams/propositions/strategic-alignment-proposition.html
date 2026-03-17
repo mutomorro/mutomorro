@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Strategic Alignment - Proposition</title>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: #1a1a2e;
+  display: flex; align-items: center; justify-content: center;
+  min-height: 100vh; overflow: hidden;
+}
+.diagram {
+  width: 1920px; height: 1080px;
+  position: relative; overflow: hidden;
+  font-family: 'Source Sans 3', sans-serif;
+  background: radial-gradient(ellipse at 50% 45%, rgba(128,56,143,0.1) 0%, rgba(80,30,100,0.05) 35%, transparent 65%), radial-gradient(ellipse at 75% 50%, rgba(255,162,0,0.04) 0%, transparent 45%), radial-gradient(ellipse at 25% 55%, rgba(155,81,224,0.04) 0%, transparent 45%);
+}
+.constellation { position: absolute; inset: 0; pointer-events: none; }
+.caption {
+  position: absolute;
+  bottom: 36px; left: 50%;
+  transform: translateX(-50%);
+  font-size: 30px; font-weight: 300;
+  font-style: italic;
+  color: rgba(255,255,255,0.25);
+  white-space: nowrap;
+}
+</style>
+</head>
+<body>
+<div class="diagram">
+
+  <svg class="constellation" viewBox="0 0 1920 1080">
+    <circle cx="110" cy="75" r="1.5" fill="rgba(155,81,224,0.18)"/>
+    <circle cx="290" cy="140" r="1" fill="rgba(200,150,220,0.12)"/>
+    <circle cx="75" cy="210" r="1.5" fill="rgba(155,81,224,0.12)"/>
+    <circle cx="1720" cy="70" r="1.5" fill="rgba(255,66,121,0.15)"/>
+    <circle cx="1840" cy="180" r="1" fill="rgba(255,162,0,0.1)"/>
+    <circle cx="1580" cy="110" r="1" fill="rgba(155,81,224,0.12)"/>
+    <circle cx="470" cy="50" r="1" fill="rgba(200,150,220,0.1)"/>
+    <circle cx="1380" cy="45" r="1" fill="rgba(255,162,0,0.08)"/>
+    <circle cx="190" cy="920" r="1.5" fill="rgba(155,81,224,0.12)"/>
+    <circle cx="340" cy="990" r="1" fill="rgba(200,150,220,0.1)"/>
+    <circle cx="1690" cy="930" r="1" fill="rgba(255,66,121,0.1)"/>
+    <circle cx="1540" cy="1010" r="1.5" fill="rgba(255,162,0,0.08)"/>
+    <circle cx="55" cy="520" r="1" fill="rgba(155,81,224,0.1)"/>
+    <circle cx="1860" cy="490" r="1.5" fill="rgba(255,120,80,0.1)"/>
+    <circle cx="1870" cy="690" r="1" fill="rgba(255,162,0,0.08)"/>
+    <circle cx="45" cy="720" r="1.5" fill="rgba(200,150,220,0.1)"/>
+    <circle cx="800" cy="30" r="1" fill="rgba(155,81,224,0.08)"/>
+    <circle cx="1120" cy="1050" r="1" fill="rgba(155,81,224,0.08)"/>
+    <line x1="110" y1="75" x2="290" y2="140" stroke="rgba(155,81,224,0.05)" stroke-width="1"/>
+    <line x1="75" y1="210" x2="110" y2="75" stroke="rgba(155,81,224,0.04)" stroke-width="1"/>
+    <line x1="290" y1="140" x2="470" y2="50" stroke="rgba(155,81,224,0.03)" stroke-width="1"/>
+    <line x1="1720" y1="70" x2="1840" y2="180" stroke="rgba(255,66,121,0.04)" stroke-width="1"/>
+    <line x1="1580" y1="110" x2="1720" y2="70" stroke="rgba(155,81,224,0.04)" stroke-width="1"/>
+    <line x1="190" y1="920" x2="340" y2="990" stroke="rgba(155,81,224,0.04)" stroke-width="1"/>
+    <line x1="1690" y1="930" x2="1540" y2="1010" stroke="rgba(255,66,121,0.03)" stroke-width="1"/>
+    <line x1="55" y1="520" x2="45" y2="720" stroke="rgba(155,81,224,0.03)" stroke-width="1"/>
+    <line x1="1860" y1="490" x2="1870" y2="690" stroke="rgba(255,120,80,0.03)" stroke-width="1"/>
+  </svg>
+
+
+  <style>
+    .half {
+      position: absolute; top: 8%; bottom: 14%;
+      display: flex; flex-direction: column;
+      justify-content: center; padding: 50px 60px;
+    }
+    .half-before { left: 4%; width: 42%; }
+    .half-after { right: 4%; width: 42%; }
+    .half-title {
+      font-size: 34px; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 1px;
+      margin-bottom: 36px;
+    }
+    .half-before .half-title { color: rgba(200,160,230,0.5); }
+    .half-after .half-title { color: rgba(255,200,130,0.55); }
+    .align-row {
+      display: flex; align-items: center;
+      margin-bottom: 18px; gap: 20px;
+    }
+    .align-label {
+      font-size: 30px; font-weight: 600; width: 180px;
+      text-align: right;
+    }
+    .align-arrow {
+      font-size: 28px; width: 60px; text-align: center;
+    }
+    .align-desc {
+      font-size: 28px; font-weight: 300; flex: 1;
+    }
+    .half-before .align-label { color: rgba(200,160,230,0.5); }
+    .half-before .align-arrow { color: rgba(200,160,230,0.2); }
+    .half-before .align-desc { color: rgba(200,160,230,0.35); }
+    .half-after .align-label { color: rgba(255,200,130,0.5); }
+    .half-after .align-arrow { color: rgba(255,200,130,0.2); }
+    .half-after .align-desc { color: rgba(255,200,130,0.35); }
+    .centre-divider {
+      position: absolute; left: 50%; top: 10%; bottom: 14%;
+      width: 1.5px;
+      background: linear-gradient(to bottom, transparent, rgba(255,255,255,0.06) 20%, rgba(255,255,255,0.06) 80%, transparent);
+    }
+    .centre-arrow {
+      position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%);
+      font-size: 52px; color: rgba(255,66,121,0.25);
+    }
+  </style>
+
+  <div class="half half-before">
+    <span class="half-title">Misaligned</span>
+    <div class="align-row"><span class="align-label">Strategy</span><span class="align-arrow">&#x2192;</span><span class="align-desc">Clear at the top</span></div>
+    <div class="align-row"><span class="align-label">Structure</span><span class="align-arrow">&#x2199;</span><span class="align-desc">Built for the last strategy</span></div>
+    <div class="align-row"><span class="align-label">Operations</span><span class="align-arrow">&#x2197;</span><span class="align-desc">Doing their own thing</span></div>
+    <div class="align-row"><span class="align-label">Culture</span><span class="align-arrow">&#x2190;</span><span class="align-desc">Pulling a different way</span></div>
+    <div class="align-row"><span class="align-label">Capability</span><span class="align-arrow">&#x2193;</span><span class="align-desc">Gaps nobody fills</span></div>
+  </div>
+  <div class="centre-divider"></div>
+  <span class="centre-arrow">&#x2192;</span>
+  <div class="half half-after">
+    <span class="half-title">Aligned</span>
+    <div class="align-row"><span class="align-label">Strategy</span><span class="align-arrow">&#x2192;</span><span class="align-desc">Understood everywhere</span></div>
+    <div class="align-row"><span class="align-label">Structure</span><span class="align-arrow">&#x2192;</span><span class="align-desc">Enables the strategy</span></div>
+    <div class="align-row"><span class="align-label">Operations</span><span class="align-arrow">&#x2192;</span><span class="align-desc">Deliver it</span></div>
+    <div class="align-row"><span class="align-label">Culture</span><span class="align-arrow">&#x2192;</span><span class="align-desc">Supports it</span></div>
+    <div class="align-row"><span class="align-label">Capability</span><span class="align-arrow">&#x2192;</span><span class="align-desc">Keeps pace</span></div>
+  </div>
+
+  <div class="caption">Align the organisation to the strategy, not just the leadership team</div>
+
+</div>
+</body>
+</html>

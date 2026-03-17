@@ -1,0 +1,1845 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System Showcase</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --white: #FFFFFF;
+    --warm: #FAF6F1;
+    --dark: #221C2B;
+    --black: #000000;
+    --accent: #9B51E0;
+    --accent-deep: #80388F;
+    --pink: #FF4279;
+    --coral: #FFA200;
+    --font: 'Source Sans 3', sans-serif;
+    --ease: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  body {
+    font-family: var(--font);
+    background: var(--white);
+    color: var(--black);
+    font-weight: 400;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ================================================
+     LAYOUT
+     ================================================ */
+  .section { padding: 80px 48px; max-width: 1100px; margin: 0 auto; }
+  .section--full { max-width: none; position: relative; z-index: 0; }
+  .section__inner { max-width: 1100px; margin: 0 auto; padding: 0 48px; }
+  .dark-bg { background: var(--dark); color: #fff; }
+  .warm-bg { background: var(--warm); }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: start; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 32px; }
+  .grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 20px; }
+
+  /* ================================================
+     SYSTEM LABELS (design system annotations)
+     ================================================ */
+  .sys-label {
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 48px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(155, 81, 224, 0.2);
+  }
+  .dark-bg .sys-label { border-bottom-color: rgba(155,81,224,0.4); }
+
+  .sys-note {
+    font-size: 14px;
+    font-weight: 300;
+    line-height: 1.6;
+    color: rgba(0,0,0,0.4);
+    max-width: 550px;
+    margin-top: 16px;
+  }
+  .dark-bg .sys-note { color: rgba(255,255,255,0.35); }
+
+  .sys-spec {
+    font-size: 12px;
+    font-weight: 400;
+    letter-spacing: 0.05em;
+    color: rgba(0,0,0,0.3);
+    margin-top: 8px;
+    font-variant-numeric: tabular-nums;
+  }
+  .dark-bg .sys-spec { color: rgba(255,255,255,0.25); }
+
+  .divider { height: 1px; background: rgba(0,0,0,0.08); margin: 56px 0; }
+  .dark-bg .divider { background: rgba(255,255,255,0.08); }
+
+  /* ================================================
+     HERO / COVER
+     ================================================ */
+  .cover {
+    min-height: 70vh;
+    display: flex;
+    align-items: flex-end;
+    padding: 0 0 96px 0;
+    position: relative;
+    overflow: hidden;
+  }
+  .cover__content {
+    position: relative;
+    z-index: 2;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 48px;
+    width: 100%;
+  }
+  .cover__title {
+    font-size: clamp(52px, 7vw, 88px);
+    font-weight: 400;
+    line-height: 1.02;
+    letter-spacing: -0.03em;
+    color: #fff;
+    max-width: 750px;
+    margin-bottom: 20px;
+  }
+  .cover__subtitle {
+    font-size: 20px;
+    font-weight: 300;
+    line-height: 1.6;
+    color: rgba(255,255,255,0.55);
+    max-width: 520px;
+  }
+
+  /* ================================================
+     TYPOGRAPHY
+     ================================================ */
+  .kicker {
+    font-size: 13px;
+    font-weight: 400;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 16px;
+    display: block;
+  }
+  .dark-bg .kicker { color: var(--coral); }
+
+  .heading-display {
+    font-size: clamp(52px, 7vw, 88px);
+    font-weight: 400;
+    line-height: 1.02;
+    letter-spacing: -0.03em;
+  }
+  h1, .heading-h1 {
+    font-size: clamp(48px, 6vw, 80px);
+    font-weight: 400;
+    line-height: 1.05;
+    letter-spacing: -0.025em;
+  }
+  h2, .heading-h2 {
+    font-size: clamp(36px, 4.5vw, 56px);
+    font-weight: 400;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+  h3, .heading-h3 {
+    font-size: clamp(24px, 3vw, 34px);
+    font-weight: 400;
+    line-height: 1.2;
+  }
+  h4, .heading-h4 {
+    font-size: clamp(20px, 2vw, 26px);
+    font-weight: 400;
+    line-height: 1.25;
+  }
+
+  .heading-gradient {
+    background: linear-gradient(135deg, var(--accent-deep) 0%, var(--pink) 50%, var(--coral) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .body-text {
+    font-size: 18px;
+    font-weight: 300;
+    line-height: 1.75;
+    max-width: 640px;
+  }
+  .dark-bg .body-text { color: rgba(255,255,255,0.85); }
+
+  .body-small {
+    font-size: 16px;
+    font-weight: 300;
+    line-height: 1.75;
+  }
+
+  .lead-text {
+    font-size: 22px;
+    font-weight: 300;
+    line-height: 1.6;
+    color: rgba(0,0,0,0.55);
+    max-width: 640px;
+  }
+  .dark-bg .lead-text { color: rgba(255,255,255,0.6); }
+
+  .caption-text {
+    font-size: 13px;
+    font-weight: 400;
+    color: rgba(0,0,0,0.35);
+  }
+  .dark-bg .caption-text { color: rgba(255,255,255,0.3); }
+
+  .pull-quote {
+    font-size: clamp(24px, 3vw, 36px);
+    font-weight: 300;
+    line-height: 1.4;
+    border-left: 3px solid var(--accent);
+    padding-left: 28px;
+    margin: 40px 0;
+    max-width: 640px;
+  }
+  .dark-bg .pull-quote { border-left-color: var(--pink); color: rgba(255,255,255,0.85); }
+
+  .stat-number {
+    font-size: clamp(48px, 5vw, 72px);
+    font-weight: 300;
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+
+  /* ================================================
+     MARKER HIGHLIGHTS
+     ================================================ */
+  .marker { position: relative; display: inline; z-index: 1; }
+  .marker-bg { position: absolute; pointer-events: none; border-radius: 3px; }
+  .marker-bg--sweeping { animation: markerSweep 0.5s var(--ease) forwards; }
+  @keyframes markerSweep { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0% 0 0); } }
+
+  /* ================================================
+     INLINE LINKS
+     ================================================ */
+  .inline-link {
+    color: var(--accent);
+    text-decoration: none;
+    background-image: linear-gradient(var(--accent), var(--accent));
+    background-size: 0% 1.5px;
+    background-position: 0 100%;
+    background-repeat: no-repeat;
+    transition: background-size 0.35s var(--ease);
+    cursor: pointer;
+  }
+  .inline-link:hover { background-size: 100% 1.5px; }
+  .dark-bg .inline-link { color: #C9A4F0; background-image: linear-gradient(#C9A4F0, #C9A4F0); }
+
+  /* ================================================
+     BUTTONS
+     ================================================ */
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font);
+    font-weight: 400;
+    font-size: 15px;
+    letter-spacing: 0.06em;
+    text-decoration: none;
+    cursor: pointer;
+    border: none;
+    padding: 16px 36px;
+    border-radius: 0;
+    position: relative;
+    overflow: hidden;
+    color: #fff;
+    background: var(--black);
+    z-index: 1;
+    transition: all 0.4s;
+  }
+  .btn-primary::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--accent);
+    clip-path: polygon(0 0, 0 0, 0 100%, 0 100%);
+    transition: clip-path 0.5s var(--ease);
+    z-index: -1;
+  }
+  .btn-primary:hover::before {
+    clip-path: polygon(0 0, 110% 0, 100% 100%, 0 100%);
+  }
+  .btn-primary--lg { font-size: 16px; padding: 18px 44px; }
+  .btn-primary--dark {
+    background: #fff;
+    color: var(--dark);
+    transition: color 0.4s;
+  }
+  .btn-primary--dark::before { background: var(--accent); }
+  .btn-primary--dark:hover { color: #fff; }
+
+  .btn-sec {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font);
+    font-weight: 400;
+    font-size: 15px;
+    letter-spacing: 0.08em;
+    text-decoration: none;
+    cursor: pointer;
+    border: none;
+    padding: 16px 0;
+    border-radius: 0;
+    position: relative;
+    overflow: hidden;
+    background: transparent;
+    color: var(--black);
+  }
+  .btn-sec::after {
+    content: '';
+    position: absolute;
+    bottom: 10px;
+    left: 0;
+    width: 100%;
+    height: 1.5px;
+    background: var(--accent);
+    transform-origin: left;
+    transform: scaleX(0);
+    transition: transform 0.35s var(--ease);
+  }
+  .btn-sec:hover::after { transform: scaleX(1); }
+  .btn-sec--dark { color: #fff; }
+  .btn-sec--dark::after { background: var(--accent); }
+
+  .button-row { display: flex; align-items: center; gap: 24px; flex-wrap: wrap; }
+
+  /* ================================================
+     CARDS
+     ================================================ */
+
+  /* Placeholder image */
+  .img-placeholder {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #e8e0f0 0%, #d4c8e2 50%, #e0d6ec 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 400;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(0,0,0,0.2);
+  }
+
+  /* CARD A */
+  .card-a {
+    position: relative;
+    border: 1px solid rgba(0,0,0,0.12);
+    border-radius: 0;
+    background: var(--white);
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.35s var(--ease);
+    display: flex;
+    flex-direction: column;
+  }
+  .card-a__corner {
+    position: absolute;
+    top: -1px;
+    right: -1px;
+    width: 70px;
+    height: 70px;
+    z-index: 3;
+    pointer-events: none;
+  }
+  .card-a__corner::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 0 48px 48px 0;
+    border-color: transparent var(--accent) transparent transparent;
+    transition: border-width 0.35s var(--ease);
+  }
+  .card-a:hover .card-a__corner::after { border-width: 0 62px 62px 0; }
+  .card-a__image {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    position: relative;
+  }
+  .card-a__image-inner {
+    width: 100%;
+    height: 100%;
+    transition: transform 0.5s var(--ease);
+  }
+  .card-a:hover .card-a__image-inner { transform: scale(1.04); }
+  .card-a__tag {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: rgba(155, 81, 224, 0.06);
+    padding: 5px 12px;
+    margin-bottom: 14px;
+  }
+  .card-a__body { padding: 28px 32px; flex: 1; }
+  .card-a__title {
+    font-size: 22px;
+    font-weight: 400;
+    line-height: 1.25;
+    margin-bottom: 10px;
+    color: var(--black);
+  }
+  .card-a__text {
+    font-size: 15px;
+    font-weight: 300;
+    line-height: 1.7;
+    color: rgba(0,0,0,0.6);
+  }
+  .card-a__footer {
+    border-top: 1px solid rgba(0,0,0,0.06);
+    position: relative;
+    overflow: hidden;
+    margin-top: auto;
+  }
+  .card-a__footer-bg {
+    position: absolute;
+    inset: 0;
+    background: var(--accent);
+    clip-path: polygon(0 0, 0 0, 0 100%, 0 100%);
+    transition: clip-path 0.4s var(--ease);
+    z-index: 0;
+  }
+  .card-a:hover .card-a__footer-bg { clip-path: polygon(0 0, 110% 0, 100% 100%, 0 100%); }
+  .card-a__action {
+    position: relative;
+    z-index: 1;
+    font-size: 14px;
+    font-weight: 400;
+    letter-spacing: 0.06em;
+    padding: 14px 32px;
+    color: var(--black);
+    transition: color 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+  }
+  .card-a__action .arrow { margin-left: auto; transition: transform 0.3s; }
+  .card-a:hover .card-a__action { color: #fff; }
+  .card-a:hover .card-a__action .arrow { transform: translateX(4px); }
+  .card-a:hover { border-color: rgba(0,0,0,0.25); }
+
+  /* CARD C */
+  .card-c {
+    position: relative;
+    border: 1px solid rgba(0,0,0,0.12);
+    border-radius: 0;
+    background: var(--white);
+    overflow: hidden;
+    cursor: pointer;
+    transition: border-color 0.35s;
+    display: flex;
+    flex-direction: column;
+  }
+  .card-c__fill {
+    position: absolute;
+    inset: 0;
+    background: var(--black);
+    clip-path: polygon(0 100%, 0 100%, 0 100%, 0 100%);
+    transition: clip-path 0.5s var(--ease);
+    z-index: 0;
+  }
+  .card-c:hover .card-c__fill { clip-path: polygon(0 0, 110% 0, 100% 100%, 0 100%); }
+  .card-c__image {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    position: relative;
+    z-index: 1;
+  }
+  .card-c__image-inner {
+    width: 100%;
+    height: 100%;
+    transition: transform 0.5s var(--ease), opacity 0.4s;
+  }
+  .card-c:hover .card-c__image-inner { transform: scale(1.04); opacity: 0.3; }
+  .card-c__body {
+    padding: 28px 32px;
+    position: relative;
+    z-index: 1;
+    flex: 1;
+  }
+  .card-c__tag {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: rgba(155, 81, 224, 0.06);
+    padding: 5px 12px;
+    margin-bottom: 14px;
+    transition: background 0.3s, color 0.3s;
+  }
+  .card-c:hover .card-c__tag { background: rgba(155, 81, 224, 0.2); }
+  .card-c__title {
+    font-size: 22px;
+    font-weight: 400;
+    line-height: 1.25;
+    margin-bottom: 10px;
+    color: var(--black);
+    transition: color 0.3s;
+  }
+  .card-c:hover .card-c__title { color: #fff; }
+  .card-c__text {
+    font-size: 15px;
+    font-weight: 300;
+    line-height: 1.7;
+    color: rgba(0,0,0,0.6);
+    transition: color 0.3s;
+  }
+  .card-c:hover .card-c__text { color: rgba(255,255,255,0.7); }
+  .card-c__action {
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--accent);
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: color 0.3s;
+  }
+  .card-c__action .arrow { transition: transform 0.3s; }
+  .card-c:hover .card-c__action .arrow { transform: translateX(4px); }
+  .card-c:hover { border-color: var(--black); }
+
+  /* CARD D */
+  .card-d {
+    position: relative;
+    border: 1px solid rgba(0,0,0,0.12);
+    border-radius: 0;
+    background: var(--white);
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.35s;
+    display: flex;
+    flex-direction: column;
+  }
+  .card-d__badge {
+    position: absolute;
+    top: 0;
+    left: 0;
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #fff;
+    background: var(--accent);
+    padding: 8px 16px;
+    z-index: 3;
+  }
+  .card-d__image {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    position: relative;
+  }
+  .card-d__image-inner {
+    width: 100%;
+    height: 100%;
+    transition: transform 0.5s var(--ease);
+  }
+  .card-d:hover .card-d__image-inner { transform: scale(1.04); }
+  .card-d__body { padding: 28px 32px; flex: 1; }
+  .card-d__title {
+    font-size: 22px;
+    font-weight: 400;
+    line-height: 1.25;
+    margin-bottom: 10px;
+    color: var(--black);
+  }
+  .card-d__text {
+    font-size: 15px;
+    font-weight: 300;
+    line-height: 1.7;
+    color: rgba(0,0,0,0.6);
+  }
+  .card-d__meta {
+    font-size: 13px;
+    font-weight: 400;
+    color: rgba(0,0,0,0.35);
+    margin-top: 12px;
+  }
+  .card-d__footer {
+    border-top: 1px solid rgba(0,0,0,0.06);
+    position: relative;
+    overflow: hidden;
+    margin-top: auto;
+  }
+  .card-d__footer-fill {
+    position: absolute;
+    inset: 0;
+    background: var(--black);
+    clip-path: polygon(0 0, 0 0, 0 100%, 0 100%);
+    transition: clip-path 0.4s var(--ease);
+  }
+  .card-d:hover .card-d__footer-fill { clip-path: polygon(0 0, 110% 0, 100% 100%, 0 100%); }
+  .card-d__action {
+    position: relative;
+    z-index: 1;
+    font-size: 14px;
+    font-weight: 400;
+    letter-spacing: 0.06em;
+    padding: 14px 32px;
+    color: var(--black);
+    transition: color 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+  }
+  .card-d__action .arrow { margin-left: auto; transition: transform 0.3s; }
+  .card-d:hover .card-d__action { color: #fff; }
+  .card-d:hover .card-d__action .arrow { transform: translateX(4px); }
+  .card-d:hover { border-color: rgba(0,0,0,0.25); }
+
+  /* ================================================
+     IMAGE TREATMENTS
+     ================================================ */
+  .fake-img {
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    position: relative;
+    overflow: hidden;
+  }
+  .fake-img--a {
+    background: linear-gradient(135deg, #FF6B6B 0%, #FFB347 16%, #4ECB71 32%, #45B7D1 48%, #7C5BF0 64%, #FF6B9D 80%, #C9B1FF 100%);
+  }
+  .fake-img--b {
+    background: linear-gradient(to right, #FF6B8A 0%, #FF9F43 14%, #00C853 28%, #00BCD4 42%, #2979FF 56%, #7C4DFF 70%, #9E8D8D 85%, #B0A0A0 100%);
+  }
+  .fake-img__blocks {
+    position: absolute;
+    inset: 12%;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    gap: 6px;
+  }
+  .fake-img__block { background: rgba(255,255,255,0.25); border-radius: 2px; }
+
+  .img-mat {
+    background: var(--warm);
+    padding: 24px;
+    border: 1px solid rgba(0,0,0,0.06);
+  }
+  .img-mat .fake-img { aspect-ratio: auto; }
+
+  .img-offset { position: relative; }
+  .img-offset::before {
+    content: '';
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    right: -8px;
+    bottom: -8px;
+    border: 1px solid rgba(0,0,0,0.12);
+    z-index: -1;
+  }
+  .img-offset .fake-img { border: 1px solid rgba(0,0,0,0.08); position: relative; }
+
+  /* ================================================
+     FORM FIELDS
+     ================================================ */
+  .form-group { margin-bottom: 24px; }
+  .form-label {
+    font-size: 13px;
+    font-weight: 400;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: rgba(0,0,0,0.5);
+    margin-bottom: 8px;
+    display: block;
+  }
+  .form-input {
+    font-family: var(--font);
+    font-size: 16px;
+    font-weight: 300;
+    padding: 14px 16px;
+    border: 1px solid rgba(0,0,0,0.12);
+    border-radius: 0;
+    background: transparent;
+    width: 100%;
+    color: var(--black);
+    outline: none;
+    transition: border-color 0.3s;
+    -webkit-appearance: none;
+  }
+  .form-input:focus {
+    border-color: var(--accent);
+    border-bottom-width: 2px;
+  }
+  .form-input::placeholder { color: rgba(0,0,0,0.25); font-weight: 300; }
+  .form-textarea { min-height: 120px; resize: vertical; }
+
+  /* ================================================
+     SCROLL ANIMATIONS
+     ================================================ */
+  .scroll-in {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.7s var(--ease), transform 0.7s var(--ease);
+  }
+  .scroll-in.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .delay-1 { transition-delay: 0.1s; }
+  .delay-2 { transition-delay: 0.2s; }
+  .delay-3 { transition-delay: 0.3s; }
+  .delay-4 { transition-delay: 0.4s; }
+
+  /* Scale up for stats */
+  .scroll-scale {
+    opacity: 0;
+    transform: scale(0.95);
+    transition: opacity 0.7s var(--ease), transform 0.7s var(--ease);
+  }
+  .scroll-scale.visible {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  /* ================================================
+     BACKGROUND PATTERNS
+     ================================================ */
+  .bg-network, .bg-woven, .bg-constellation {
+    position: relative;
+    overflow: hidden;
+  }
+  .bg-pattern-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .bg-fade-overlay {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 1;
+  }
+  .bg-fade-left .bg-fade-overlay {
+    background: linear-gradient(90deg, rgba(255,255,255,1) 30%, rgba(255,255,255,0.8) 45%, rgba(255,255,255,0) 65%);
+  }
+  .bg-fade-warm-left .bg-fade-overlay {
+    background: linear-gradient(90deg, rgba(250,246,241,1) 30%, rgba(250,246,241,0.8) 45%, rgba(250,246,241,0) 65%);
+  }
+  .pattern-content {
+    position: relative;
+    z-index: 2;
+  }
+
+  /* ================================================
+     COLOUR SWATCHES
+     ================================================ */
+  .swatch {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .swatch__block {
+    width: 100%;
+    aspect-ratio: 1;
+    border: 1px solid rgba(0,0,0,0.08);
+  }
+  .swatch__name {
+    font-size: 14px;
+    font-weight: 400;
+  }
+  .swatch__hex {
+    font-size: 12px;
+    font-weight: 400;
+    color: rgba(0,0,0,0.35);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ================================================
+     SECTION TRANSITION DEMO
+     ================================================ */
+  .transition-zone {
+    position: relative;
+    z-index: 3;
+  }
+  .transition-zone canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+  }
+
+  /* ================================================
+     TABLE OF CONTENTS NAV
+     ================================================ */
+  .toc {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+    padding: 0 48px;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+  .toc__inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    gap: 0;
+    height: 48px;
+    align-items: center;
+  }
+  .toc__link {
+    font-size: 13px;
+    font-weight: 400;
+    color: rgba(0,0,0,0.4);
+    text-decoration: none;
+    padding: 0 16px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    transition: color 0.2s;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+  }
+  .toc__link:hover { color: var(--black); }
+  .toc__link.active {
+    color: var(--black);
+    border-bottom-color: var(--accent);
+  }
+
+  /* ================================================
+     FEEDBACK / STATUS
+     ================================================ */
+  .feedback-success {
+    border-left: 3px solid var(--accent);
+    padding: 20px 24px;
+    font-size: 16px;
+    font-weight: 300;
+    line-height: 1.6;
+  }
+  .feedback-error {
+    border-left: 3px solid var(--pink);
+    padding: 20px 24px;
+    font-size: 16px;
+    font-weight: 300;
+    line-height: 1.6;
+  }
+
+  /* ================================================
+     RESPONSIVE
+     ================================================ */
+  @media (max-width: 900px) {
+    .section { padding: 56px 24px; }
+    .section__inner { padding: 0 24px; }
+    .grid-3, .grid-2 { grid-template-columns: 1fr; }
+    .grid-4 { grid-template-columns: 1fr 1fr; }
+    .cover__content { padding: 0 24px; }
+    .toc { padding: 0 24px; }
+    .button-row { flex-direction: column; align-items: flex-start; }
+  }
+</style>
+</head>
+<body>
+
+<!-- SVG FILTERS FOR MARKER HIGHLIGHTS -->
+<svg width="0" height="0" style="position: absolute;">
+  <defs>
+    <filter id="rough1" x="-5%" y="-10%" width="110%" height="120%">
+      <feTurbulence type="turbulence" baseFrequency="0.04" numOctaves="4" seed="2" result="noise"/>
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="4" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+    <filter id="rough2" x="-5%" y="-10%" width="110%" height="120%">
+      <feTurbulence type="turbulence" baseFrequency="0.04" numOctaves="4" seed="7" result="noise"/>
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="4" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+    <filter id="rough3" x="-5%" y="-10%" width="110%" height="120%">
+      <feTurbulence type="turbulence" baseFrequency="0.04" numOctaves="4" seed="13" result="noise"/>
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="4" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+  </defs>
+</svg>
+
+
+<!-- =============================================
+     HERO / COVER
+     ============================================= -->
+<div id="cover" class="section--full dark-bg cover bg-constellation">
+  <div class="cover__content">
+    <span class="kicker" style="margin-bottom: 20px;">Design System</span>
+    <h1 class="cover__title">The visual language, shown not told</h1>
+    <p class="cover__subtitle">Every element in its actual form. Hover, scroll, and interact - this is the system as it lives in code.</p>
+  </div>
+</div>
+
+
+<!-- TABLE OF CONTENTS -->
+<nav class="toc">
+  <div class="toc__inner">
+    <a class="toc__link" href="#colour">Colour</a>
+    <a class="toc__link" href="#typography">Typography</a>
+    <a class="toc__link" href="#buttons">Buttons</a>
+    <a class="toc__link" href="#cards">Cards</a>
+    <a class="toc__link" href="#links">Links</a>
+    <a class="toc__link" href="#images">Images</a>
+    <a class="toc__link" href="#scroll">Scroll</a>
+    <a class="toc__link" href="#patterns">Patterns</a>
+    <a class="toc__link" href="#forms">Forms</a>
+    <a class="toc__link" href="#feedback">Feedback</a>
+  </div>
+</nav>
+
+
+<!-- =============================================
+     1. COLOUR PALETTE
+     ============================================= -->
+<div id="colour" class="section">
+  <div class="sys-label">01 / Colour Palette</div>
+
+  <div style="margin-bottom: 48px;">
+    <h2 style="margin-bottom: 12px;">Light-first, colour through purpose</h2>
+    <p class="lead-text">White and warm backgrounds do the heavy lifting. Colour appears where it has a job - headings, accents, animated backgrounds.</p>
+  </div>
+
+  <div class="grid-4" style="margin-bottom: 56px;">
+    <div class="swatch">
+      <div class="swatch__block" style="background: #FFFFFF;"></div>
+      <span class="swatch__name">White</span>
+      <span class="swatch__hex">#FFFFFF</span>
+    </div>
+    <div class="swatch">
+      <div class="swatch__block" style="background: #FAF6F1;"></div>
+      <span class="swatch__name">Warm</span>
+      <span class="swatch__hex">#FAF6F1</span>
+    </div>
+    <div class="swatch">
+      <div class="swatch__block" style="background: #221C2B; border-color: transparent;"></div>
+      <span class="swatch__name">Dark</span>
+      <span class="swatch__hex">#221C2B</span>
+    </div>
+    <div class="swatch">
+      <div class="swatch__block" style="background: #000000; border-color: transparent;"></div>
+      <span class="swatch__name">Black</span>
+      <span class="swatch__hex">#000000</span>
+    </div>
+  </div>
+
+  <div class="grid-4" style="margin-bottom: 56px;">
+    <div class="swatch">
+      <div class="swatch__block" style="background: #9B51E0; border-color: transparent;"></div>
+      <span class="swatch__name">Accent Purple</span>
+      <span class="swatch__hex">#9B51E0</span>
+    </div>
+    <div class="swatch">
+      <div class="swatch__block" style="background: #80388F; border-color: transparent;"></div>
+      <span class="swatch__name">Deep Purple</span>
+      <span class="swatch__hex">#80388F</span>
+    </div>
+    <div class="swatch">
+      <div class="swatch__block" style="background: #FF4279; border-color: transparent;"></div>
+      <span class="swatch__name">Pink</span>
+      <span class="swatch__hex">#FF4279</span>
+    </div>
+    <div class="swatch">
+      <div class="swatch__block" style="background: #FFA200; border-color: transparent;"></div>
+      <span class="swatch__name">Coral / Orange</span>
+      <span class="swatch__hex">#FFA200</span>
+    </div>
+  </div>
+
+  <div style="margin-bottom: 16px;">
+    <span class="kicker">The gradient</span>
+    <div style="height: 80px; background: linear-gradient(135deg, #80388F 0%, #FF4279 50%, #FFA200 100%); margin-bottom: 12px;"></div>
+    <p class="sys-note" style="margin-top: 8px;">Moves from cool purple toward warm coral. The eye lands on warmth. This directional movement stops it reading as cold tech.</p>
+  </div>
+</div>
+
+
+<!-- =============================================
+     2. TYPOGRAPHY
+     ============================================= -->
+<div id="typography" class="section--full warm-bg" style="padding: 80px 0;">
+  <div class="section__inner">
+    <div class="sys-label">02 / Typography</div>
+
+    <div style="margin-bottom: 56px;">
+      <span class="kicker">Source Sans 3</span>
+      <p class="heading-display" style="margin-bottom: 8px;">Display heading</p>
+      <p class="sys-spec">clamp(52px, 7vw, 88px) / weight 400 / line-height 1.02 / letter-spacing -0.03em</p>
+    </div>
+
+    <div style="margin-bottom: 56px;">
+      <h1 class="heading-gradient">H1 gets the gradient</h1>
+      <p class="sys-spec">clamp(48px, 6vw, 80px) / weight 400 / line-height 1.05 / letter-spacing -0.025em</p>
+    </div>
+
+    <div style="margin-bottom: 56px;">
+      <h2>H2 section heading</h2>
+      <p class="sys-spec">clamp(36px, 4.5vw, 56px) / weight 400 / line-height 1.1 / letter-spacing -0.02em</p>
+    </div>
+
+    <div style="margin-bottom: 56px;">
+      <h3>H3 sub-section heading</h3>
+      <p class="sys-spec">clamp(24px, 3vw, 34px) / weight 400 / line-height 1.2</p>
+    </div>
+
+    <div style="margin-bottom: 56px;">
+      <h4>H4 content heading</h4>
+      <p class="sys-spec">clamp(20px, 2vw, 26px) / weight 400 / line-height 1.25</p>
+    </div>
+
+    <div class="divider"></div>
+
+    <div style="margin-bottom: 48px;">
+      <span class="kicker">Body Copy</span>
+      <p class="lead-text" style="margin-bottom: 24px;">Lead paragraph bridges heading and body. Softer colour, larger size, same light weight.</p>
+      <p class="body-text">Body text is set at 18px, weight 300, with generous 1.75 line-height. The light weight creates clear separation from the 400-weight headings without needing colour differences. Both headings and body are black - the hierarchy comes entirely from scale and weight.</p>
+      <p class="sys-spec">18px / weight 300 / line-height 1.75 / colour #000</p>
+    </div>
+
+    <div class="divider"></div>
+
+    <div style="margin-bottom: 48px;">
+      <span class="kicker">Kicker Text</span>
+      <p class="sys-note" style="margin-top: 0;">The small label above headings. 13px, weight 400, uppercase, letter-spacing 0.15em. Accent purple on light, coral on dark.</p>
+    </div>
+
+    <div class="pull-quote">
+      When you work at the ecosystem level, culture change stops being a project and becomes a capability your organisation owns.
+    </div>
+    <p class="sys-spec">Pull quote: clamp(24px, 3vw, 36px) / weight 300 / accent left border</p>
+
+    <div class="divider"></div>
+
+    <div style="margin-bottom: 48px;">
+      <span class="kicker">Heading Highlights</span>
+      <h2 style="margin-bottom: 8px;">The <span class="marker" data-opacity="0.18" data-top="0.5" data-bottom="0.95" data-filter="rough1">ecosystem</span> beneath the surface</h2>
+      <p class="sys-note">Subtle marker: covers lower portion, opacity 0.18. SVG displacement filter gives organic rough edges.</p>
+    </div>
+
+    <div style="margin-bottom: 20px;">
+      <h2 style="margin-bottom: 8px;">Organisations are <span class="marker" data-opacity="0.22" data-top="0.25" data-bottom="0.9" data-filter="rough2">living systems</span></h2>
+      <p class="sys-note">Mid-weight marker: covers more of the word, opacity 0.22. Best for primary headings.</p>
+    </div>
+  </div>
+</div>
+
+
+<!-- =============================================
+     TYPOGRAPHY ON DARK
+     ============================================= -->
+<div class="section--full dark-bg" style="padding: 80px 0;">
+  <div class="section__inner">
+    <div class="sys-label">02b / Typography on Dark</div>
+
+    <span class="kicker">Culture Change</span>
+    <h2 style="color: #fff; margin-bottom: 16px;">Thriving cultures grow from the <span class="marker" data-opacity="0.35" data-top="0.5" data-bottom="0.95" data-filter="rough3">ecosystem</span> beneath them</h2>
+    <p class="lead-text">Marker highlights increase to 0.35 opacity on dark backgrounds.</p>
+    <p class="body-text" style="margin-top: 20px;">Body text on dark uses 85% white for comfortable reading. Kicker text switches from accent purple to coral (#FFA200) to stay within the warm end of the palette.</p>
+
+    <div class="pull-quote" style="margin-top: 40px;">
+      Every organisation has invisible patterns - how information flows, where decisions really get made, which stories get told and retold.
+    </div>
+
+    <div style="display: flex; gap: 56px; margin-top: 48px;">
+      <div>
+        <p class="stat-number heading-gradient">87%</p>
+        <p class="caption-text" style="margin-top: 8px;">Stat with gradient</p>
+      </div>
+      <div>
+        <p class="stat-number" style="color: var(--accent);">12x</p>
+        <p class="caption-text" style="margin-top: 8px;">Stat with accent</p>
+      </div>
+      <div>
+        <p class="stat-number" style="color: #fff;">240+</p>
+        <p class="caption-text" style="margin-top: 8px;">Stat in white</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- =============================================
+     3. BUTTONS
+     ============================================= -->
+<div id="buttons" class="section">
+  <div class="sys-label">03 / Buttons</div>
+
+  <div style="margin-bottom: 56px;">
+    <h2 style="margin-bottom: 12px;">Sharp corners, diagonal language</h2>
+    <p class="lead-text">Primary is the confident action. Secondary is the quiet editorial nudge. The contrast creates instant hierarchy.</p>
+  </div>
+
+  <div style="margin-bottom: 48px;">
+    <span class="kicker">Primary + Secondary Pairing</span>
+    <div class="button-row" style="margin-top: 16px;">
+      <a class="btn-primary btn-primary--lg">Start a conversation</a>
+      <a class="btn-sec">How we work</a>
+    </div>
+    <p class="sys-note">Primary: black with diagonal purple wipe. Secondary: text with underline draw from left.</p>
+  </div>
+
+  <div style="margin-bottom: 48px;">
+    <span class="kicker">Sizes</span>
+    <div class="button-row" style="margin-top: 16px;">
+      <a class="btn-primary btn-primary--lg">Large</a>
+      <a class="btn-primary">Medium</a>
+    </div>
+    <p class="sys-spec">Large: 16px, 18px 44px padding. Medium: 15px, 16px 36px padding.</p>
+  </div>
+</div>
+
+<div class="section--full dark-bg" style="padding: 80px 0;">
+  <div class="section__inner">
+    <div class="sys-label">03b / Buttons on Dark</div>
+    <div class="button-row">
+      <a class="btn-primary btn-primary--dark btn-primary--lg">Start a conversation</a>
+      <a class="btn-sec btn-sec--dark">How we work</a>
+    </div>
+    <p class="sys-note">On dark: primary inverts to white, same purple wipe. Secondary stays text-only with purple underline draw.</p>
+  </div>
+</div>
+
+
+<!-- =============================================
+     4. CARDS
+     ============================================= -->
+<div id="cards" class="section" style="max-width: 1200px;">
+  <div class="sys-label">04 / Cards</div>
+
+  <div style="margin-bottom: 56px;">
+    <h2 style="margin-bottom: 12px;">Three types, one diagonal language</h2>
+    <p class="lead-text">Sharp corners everywhere. Outlined frames with accent purple details. The diagonal wipe from buttons runs through the whole card system.</p>
+  </div>
+
+  <span class="kicker">Card A - The Workhorse</span>
+  <p class="sys-note" style="margin-bottom: 32px;">Corner triangle, diagonal footer wipe. For services, application pages, general content.</p>
+  <div class="grid-3" style="margin-bottom: 64px;">
+    <div class="card-a">
+      <div class="card-a__corner"></div>
+      <div class="card-a__image"><div class="card-a__image-inner"><div class="img-placeholder">Image</div></div></div>
+      <div class="card-a__body">
+        <span class="card-a__tag">Culture Change</span>
+        <h3 class="card-a__title">Thriving cultures grow from the ecosystem beneath them</h3>
+        <p class="card-a__text">How to shift the living patterns that shape the way your organisation works.</p>
+      </div>
+      <div class="card-a__footer">
+        <div class="card-a__footer-bg"></div>
+        <span class="card-a__action">Explore <span class="arrow">&rarr;</span></span>
+      </div>
+    </div>
+    <div class="card-a">
+      <div class="card-a__corner"></div>
+      <div class="card-a__image"><div class="card-a__image-inner"><div class="img-placeholder">Image</div></div></div>
+      <div class="card-a__body">
+        <span class="card-a__tag">Merger Integration</span>
+        <h3 class="card-a__title">Two organisations becoming one living system</h3>
+        <p class="card-a__text">Building genuine connection between cultures rather than absorbing one into the other.</p>
+      </div>
+      <div class="card-a__footer">
+        <div class="card-a__footer-bg"></div>
+        <span class="card-a__action">Explore <span class="arrow">&rarr;</span></span>
+      </div>
+    </div>
+    <div class="card-a">
+      <div class="card-a__corner"></div>
+      <div class="card-a__image"><div class="card-a__image-inner"><div class="img-placeholder">Image</div></div></div>
+      <div class="card-a__body">
+        <span class="card-a__tag">Organisational Design</span>
+        <h3 class="card-a__title">Structures that enable, not constrain</h3>
+        <p class="card-a__text">Designing how the organisation works as a system, not just redrawing boxes on a chart.</p>
+      </div>
+      <div class="card-a__footer">
+        <div class="card-a__footer-bg"></div>
+        <span class="card-a__action">Explore <span class="arrow">&rarr;</span></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <span class="kicker">Card C - The Dramatic One</span>
+  <p class="sys-note" style="margin-bottom: 32px;">Full diagonal black fill on hover. Maximum drama. Use sparingly for impact.</p>
+  <div class="grid-3" style="margin-bottom: 64px;">
+    <div class="card-c">
+      <div class="card-c__fill"></div>
+      <div class="card-c__image"><div class="card-c__image-inner"><div class="img-placeholder">Image</div></div></div>
+      <div class="card-c__body">
+        <span class="card-c__tag">Case Study</span>
+        <h3 class="card-c__title">How a global retailer transformed from within</h3>
+        <p class="card-c__text">From fragmented teams to a living system that adapts and grows.</p>
+        <div class="card-c__action">Read more <span class="arrow">&rarr;</span></div>
+      </div>
+    </div>
+    <div class="card-c">
+      <div class="card-c__fill"></div>
+      <div class="card-c__image"><div class="card-c__image-inner"><div class="img-placeholder">Image</div></div></div>
+      <div class="card-c__body">
+        <span class="card-c__tag">Featured</span>
+        <h3 class="card-c__title">Building capability that outlasts the consultant</h3>
+        <p class="card-c__text">Why the best interventions make themselves unnecessary.</p>
+        <div class="card-c__action">Read more <span class="arrow">&rarr;</span></div>
+      </div>
+    </div>
+    <div class="card-c">
+      <div class="card-c__fill"></div>
+      <div class="card-c__image"><div class="card-c__image-inner"><div class="img-placeholder">Image</div></div></div>
+      <div class="card-c__body">
+        <span class="card-c__tag">Project</span>
+        <h3 class="card-c__title">When purpose becomes more than words on a wall</h3>
+        <p class="card-c__text">A financial services firm discovers what purpose means in practice.</p>
+        <div class="card-c__action">Read more <span class="arrow">&rarr;</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <span class="kicker">Card D - The Categorised One</span>
+  <p class="sys-note" style="margin-bottom: 32px;">Purple badge, black footer wipe. For dimensions, articles, framework elements.</p>
+  <div class="grid-3">
+    <div class="card-d">
+      <span class="card-d__badge">Dimension</span>
+      <div class="card-d__image"><div class="card-d__image-inner"><div class="img-placeholder">Image</div></div></div>
+      <div class="card-d__body">
+        <h3 class="card-d__title">Enacted Culture</h3>
+        <p class="card-d__text">The patterns people actually live by, not the ones written on the wall.</p>
+        <p class="card-d__meta">EMERGENT Framework</p>
+      </div>
+      <div class="card-d__footer">
+        <div class="card-d__footer-fill"></div>
+        <span class="card-d__action">Explore <span class="arrow">&rarr;</span></span>
+      </div>
+    </div>
+    <div class="card-d">
+      <span class="card-d__badge">Article</span>
+      <div class="card-d__image"><div class="card-d__image-inner"><div class="img-placeholder">Image</div></div></div>
+      <div class="card-d__body">
+        <h3 class="card-d__title">Why culture change programmes fail</h3>
+        <p class="card-d__text">The common assumptions that lead good intentions astray.</p>
+        <p class="card-d__meta">8 min read</p>
+      </div>
+      <div class="card-d__footer">
+        <div class="card-d__footer-fill"></div>
+        <span class="card-d__action">Read <span class="arrow">&rarr;</span></span>
+      </div>
+    </div>
+    <div class="card-d">
+      <span class="card-d__badge">Guide</span>
+      <div class="card-d__image"><div class="card-d__image-inner"><div class="img-placeholder">Image</div></div></div>
+      <div class="card-d__body">
+        <h3 class="card-d__title">Seeing your organisation as a living system</h3>
+        <p class="card-d__text">A practical introduction to the Intentional Ecosystems philosophy.</p>
+        <p class="card-d__meta">12 min read</p>
+      </div>
+      <div class="card-d__footer">
+        <div class="card-d__footer-fill"></div>
+        <span class="card-d__action">Read <span class="arrow">&rarr;</span></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- =============================================
+     5. INLINE LINKS
+     ============================================= -->
+<div id="links" class="section">
+  <div class="sys-label">05 / Inline Links</div>
+
+  <h2 style="margin-bottom: 24px;">Links within body text</h2>
+  <p class="body-text" style="margin-bottom: 32px;">
+    When links sit inside a paragraph, they use <a class="inline-link">accent purple with no underline at rest</a>. On hover, an underline draws in from the left using a background-image technique so it <a class="inline-link">wraps correctly across multiple lines of text without breaking</a>. This is subtle but distinctive - the draw animation connects to the same language used by secondary buttons.
+  </p>
+</div>
+
+<div class="section--full dark-bg" style="padding: 80px 0;">
+  <div class="section__inner">
+    <div class="sys-label">05b / Inline Links on Dark</div>
+    <p class="body-text">
+      On dark backgrounds, links shift to a <a class="inline-link">lighter purple (#C9A4F0)</a> for readability. The same underline draw behaviour applies. The <a class="inline-link">accent colour adapts to its context</a> while keeping the same interaction language.
+    </p>
+  </div>
+</div>
+
+
+<!-- =============================================
+     6. IMAGE TREATMENTS
+     ============================================= -->
+<div id="images" class="section">
+  <div class="sys-label">06 / Image Treatments</div>
+
+  <div style="margin-bottom: 48px;">
+    <h2 style="margin-bottom: 12px;">Containing colour with editorial frames</h2>
+    <p class="lead-text">Two treatments for handling colourful visuals within the restrained palette. Sharp corners on everything.</p>
+  </div>
+
+  <div class="grid-2" style="margin-bottom: 64px;">
+    <div>
+      <span class="kicker">Gallery Mat</span>
+      <div class="img-mat">
+        <div class="fake-img fake-img--a" style="aspect-ratio: 16/10;">
+          <div class="fake-img__blocks">
+            <div class="fake-img__block"></div><div class="fake-img__block"></div>
+            <div class="fake-img__block"></div><div class="fake-img__block"></div>
+            <div class="fake-img__block"></div><div class="fake-img__block"></div>
+            <div class="fake-img__block"></div><div class="fake-img__block"></div>
+            <div class="fake-img__block"></div><div class="fake-img__block"></div>
+            <div class="fake-img__block"></div><div class="fake-img__block"></div>
+          </div>
+        </div>
+      </div>
+      <p class="sys-note">Warm padding (24px) around the image with thin border. Like a framed print in a gallery - the mat contains the artwork.</p>
+    </div>
+    <div>
+      <span class="kicker">Editorial Offset Frame</span>
+      <div class="img-offset">
+        <div class="fake-img fake-img--b" style="aspect-ratio: 16/10;">
+          <div class="fake-img__blocks">
+            <div class="fake-img__block"></div><div class="fake-img__block"></div>
+            <div class="fake-img__block"></div><div class="fake-img__block"></div>
+            <div class="fake-img__block"></div><div class="fake-img__block"></div>
+            <div class="fake-img__block"></div><div class="fake-img__block"></div>
+            <div class="fake-img__block"></div><div class="fake-img__block"></div>
+            <div class="fake-img__block"></div><div class="fake-img__block"></div>
+          </div>
+        </div>
+      </div>
+      <p class="sys-note">Ghost border offset 8px behind and below. Adds depth and editorial sophistication without touching the image.</p>
+    </div>
+  </div>
+</div>
+
+
+<!-- =============================================
+     7. SCROLL ANIMATIONS
+     ============================================= -->
+<div id="scroll" class="section--full warm-bg" style="padding: 80px 0;">
+  <div class="section__inner">
+    <div class="sys-label">07 / Scroll Animations</div>
+
+    <div style="margin-bottom: 48px;">
+      <h2 style="margin-bottom: 12px;">The page unfolds - it doesn't perform</h2>
+      <p class="lead-text">Scroll down to see elements arrive. Subtle fade-ups with staggered timing create a reading rhythm.</p>
+    </div>
+
+    <div style="height: 100px;"></div>
+
+    <div class="scroll-in">
+      <span class="kicker">Staggered Heading Stack</span>
+    </div>
+    <div class="scroll-in delay-1">
+      <h2>Each element arrives separately</h2>
+    </div>
+    <div class="scroll-in delay-2">
+      <p class="body-text">With 0.1s delay between kicker, heading, and body text. Your eye follows the content as it appears. 24px rise, 0.7s duration.</p>
+    </div>
+
+    <div style="height: 80px;"></div>
+
+    <div class="scroll-in">
+      <span class="kicker">Card Stagger</span>
+      <p class="sys-note" style="margin-bottom: 32px;">Cards arrive left to right with 0.1s increments.</p>
+    </div>
+    <div class="grid-3">
+      <div class="scroll-in delay-1" style="border: 1px solid rgba(0,0,0,0.12); background: var(--white); padding: 32px;">
+        <span style="font-size: 11px; font-weight: 400; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); background: rgba(155,81,224,0.06); padding: 5px 12px; display: inline-block; margin-bottom: 14px;">First</span>
+        <h4>Understand the system</h4>
+        <p class="body-small" style="color: rgba(0,0,0,0.6); margin-top: 8px;">Map the real patterns beneath the surface.</p>
+      </div>
+      <div class="scroll-in delay-2" style="border: 1px solid rgba(0,0,0,0.12); background: var(--white); padding: 32px;">
+        <span style="font-size: 11px; font-weight: 400; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); background: rgba(155,81,224,0.06); padding: 5px 12px; display: inline-block; margin-bottom: 14px;">Then</span>
+        <h4>Co-design the change</h4>
+        <p class="body-small" style="color: rgba(0,0,0,0.6); margin-top: 8px;">Work with the people who live in the system.</p>
+      </div>
+      <div class="scroll-in delay-3" style="border: 1px solid rgba(0,0,0,0.12); background: var(--white); padding: 32px;">
+        <span style="font-size: 11px; font-weight: 400; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); background: rgba(155,81,224,0.06); padding: 5px 12px; display: inline-block; margin-bottom: 14px;">Finally</span>
+        <h4>Build lasting capability</h4>
+        <p class="body-small" style="color: rgba(0,0,0,0.6); margin-top: 8px;">Leave the organisation stronger than you found it.</p>
+      </div>
+    </div>
+
+    <div style="height: 80px;"></div>
+
+    <div class="scroll-in">
+      <span class="kicker">Scale Up for Stats</span>
+      <p class="sys-note" style="margin-bottom: 32px;">Subtle 0.95 to 1.0 scale for numbers and statistics.</p>
+    </div>
+    <div style="display: flex; gap: 56px;">
+      <div class="scroll-scale delay-1">
+        <p class="stat-number heading-gradient">87%</p>
+        <p class="caption-text" style="margin-top: 8px;">Of leaders see improvement within 6 months</p>
+      </div>
+      <div class="scroll-scale delay-2">
+        <p class="stat-number" style="color: var(--accent);">12x</p>
+        <p class="caption-text" style="margin-top: 8px;">Return on capability investment</p>
+      </div>
+      <div class="scroll-scale delay-3">
+        <p class="stat-number">240+</p>
+        <p class="caption-text" style="margin-top: 8px;">Organisations supported</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- =============================================
+     8. BACKGROUND PATTERNS
+     ============================================= -->
+<div id="patterns">
+
+  <div class="section" style="padding-bottom: 32px;">
+    <div class="sys-label">08 / Background Patterns</div>
+    <h2 style="margin-bottom: 12px;">Three living patterns, one colour</h2>
+    <p class="lead-text">All in accent purple (#9B51E0). Breathing gently. Each designed for a specific background colour. Seeded random numbers mean they render the same every time.</p>
+  </div>
+
+  <!-- Soft Network on White -->
+  <div class="bg-network" style="background: var(--white);">
+    <div class="pattern-content section">
+      <span class="kicker">Soft Network</span>
+      <h2>Drifting nodes with gentle connections</h2>
+      <p class="body-text" style="margin-top: 16px;">The most subtle pattern. Barely there but alive. For white sections where you want atmosphere without weight.</p>
+      <p class="sys-spec" style="margin-top: 12px;">bg-network / white background / 40 nodes</p>
+    </div>
+  </div>
+
+  <!-- Woven Threads on Warm -->
+  <div class="bg-woven" style="background: var(--warm);">
+    <div class="pattern-content section">
+      <span class="kicker">Woven Threads</span>
+      <h2>Undulating threads weaving across</h2>
+      <p class="body-text" style="margin-top: 16px;">More texture than network. Feels like fabric or interconnected systems. For warm sections where you want depth.</p>
+      <p class="sys-spec" style="margin-top: 12px;">bg-woven / warm background / 20 threads</p>
+    </div>
+  </div>
+
+  <!-- Constellation on Dark -->
+  <div class="bg-constellation" style="background: var(--dark);">
+    <div class="pattern-content section" style="color: #fff;">
+      <span class="kicker" style="color: var(--coral);">Constellation</span>
+      <h2 style="color: #fff;">Twinkling connected points of light</h2>
+      <p class="body-text" style="margin-top: 16px; color: rgba(255,255,255,0.8);">The most atmospheric pattern. Stars drift, pulse, and connect. For dark sections where you want the living systems feeling at its strongest.</p>
+      <p class="sys-spec" style="margin-top: 12px; color: rgba(255,255,255,0.25);">bg-constellation / dark background / 55 stars</p>
+    </div>
+  </div>
+
+  <!-- Network with fade -->
+  <div class="bg-network bg-fade-left" style="background: var(--white);">
+    <div class="pattern-content section">
+      <span class="kicker">With Fade Overlay</span>
+      <h2>Patterns can be faded for readability</h2>
+      <p class="body-text" style="margin-top: 16px;">CSS classes like bg-fade-left clear the pattern behind text. The pattern stays visible on the opposite side, creating asymmetry.</p>
+      <p class="sys-spec" style="margin-top: 12px;">bg-network + bg-fade-left</p>
+    </div>
+  </div>
+</div>
+
+
+<!-- =============================================
+     9. FORMS
+     ============================================= -->
+<div id="forms" class="section">
+  <div class="sys-label">09 / Form Fields</div>
+
+  <div style="margin-bottom: 48px;">
+    <h2 style="margin-bottom: 12px;">Derived from existing systems</h2>
+    <p class="lead-text">No new visual language needed. Labels use kicker text treatment. Focus states use the accent purple underline draw. Submit uses the primary button.</p>
+  </div>
+
+  <div style="max-width: 500px;">
+    <div class="form-group">
+      <label class="form-label">Your name</label>
+      <input class="form-input" type="text" placeholder="Full name">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Email address</label>
+      <input class="form-input" type="email" placeholder="you@company.com">
+    </div>
+    <div class="form-group">
+      <label class="form-label">What are you working on?</label>
+      <textarea class="form-input form-textarea" placeholder="Tell us about your situation..."></textarea>
+    </div>
+    <a class="btn-primary" style="margin-top: 8px;">Send message</a>
+  </div>
+</div>
+
+
+<!-- =============================================
+     10. FEEDBACK / STATUS
+     ============================================= -->
+<div id="feedback" class="section--full warm-bg" style="padding: 80px 0;">
+  <div class="section__inner">
+    <div class="sys-label">10 / Feedback and Status</div>
+
+    <div style="margin-bottom: 48px;">
+      <h2 style="margin-bottom: 12px;">How the site communicates</h2>
+      <p class="lead-text">Derived from pull quote and accent colour treatments. No spinners - subtle opacity pulse for loading.</p>
+    </div>
+
+    <div style="max-width: 600px;">
+      <div class="feedback-success" style="margin-bottom: 32px;">
+        Thanks for getting in touch. We'll come back to you within 48 hours.
+      </div>
+      <p class="sys-note" style="margin-top: -16px; margin-bottom: 48px;">Success: accent purple left border (pull quote treatment)</p>
+
+      <div class="feedback-error" style="margin-bottom: 32px;">
+        Please check the email address and try again.
+      </div>
+      <p class="sys-note" style="margin-top: -16px; margin-bottom: 48px;">Error: pink left border (#FF4279)</p>
+    </div>
+  </div>
+</div>
+
+
+<!-- =============================================
+     IN CONTEXT: CTA SECTION
+     ============================================= -->
+<div class="section--full dark-bg bg-constellation" style="padding: 120px 0; text-align: center;">
+  <div class="section__inner pattern-content">
+    <span class="kicker" style="color: var(--coral);">Let's Talk</span>
+    <h2 style="color: #fff; max-width: 600px; margin: 0 auto 20px;">Ready to see your organisation <span class="marker" data-opacity="0.35" data-top="0.5" data-bottom="0.95" data-filter="rough1">differently</span>?</h2>
+    <p style="font-size: 18px; font-weight: 300; color: rgba(255,255,255,0.5); max-width: 480px; margin: 0 auto 40px; line-height: 1.6;">Every conversation starts with listening. Tell us what you're working on and we'll explore it together.</p>
+    <div class="button-row" style="justify-content: center;">
+      <a class="btn-primary btn-primary--dark btn-primary--lg">Start a conversation</a>
+      <a class="btn-sec btn-sec--dark">How we work</a>
+    </div>
+  </div>
+</div>
+
+
+<!-- =============================================
+     DESIGN PRINCIPLES FOOTER
+     ============================================= -->
+<div class="section" style="padding-bottom: 120px;">
+  <div class="sys-label">Design Principles</div>
+  <div class="grid-2">
+    <div>
+      <h3 style="margin-bottom: 12px;">Two interaction languages</h3>
+      <p class="body-text">The diagonal fill motif runs through primary buttons, card footers, and navigation hovers. The underline draw runs through secondary buttons, inline links, footer links, and form focus states. Two languages, consistently applied.</p>
+    </div>
+    <div>
+      <h3 style="margin-bottom: 12px;">Sharp corners everywhere</h3>
+      <p class="body-text">Border-radius: 0 on everything - buttons, cards, images, forms. This is the editorial line. No rounded corners. The system commits fully.</p>
+    </div>
+  </div>
+  <div class="grid-2" style="margin-top: 48px;">
+    <div>
+      <h3 style="margin-bottom: 12px;">Hierarchy through weight, not colour</h3>
+      <p class="body-text">Headings and body are both black. Weight 400 headings against weight 300 body creates all the separation needed. Lead paragraphs in softer colour bridge the gap where needed.</p>
+    </div>
+    <div>
+      <h3 style="margin-bottom: 12px;">Restraint is everything</h3>
+      <p class="body-text">Background patterns used sparingly. One marker highlight per heading. No animation on navigation or footer. Hero text stays static. The page unfolds quietly - it doesn't perform.</p>
+    </div>
+  </div>
+</div>
+
+
+<script>
+// ======================================================
+// BACKGROUND PATTERNS
+// ======================================================
+(function() {
+  var COL = {r:155, g:81, b:224};
+  function rgba(a) { return 'rgba('+COL.r+','+COL.g+','+COL.b+','+a+')'; }
+  function makeSeed(n) {
+    var s = n;
+    return function() { s=(s*16807+0)%2147483647; return(s-1)/2147483646; };
+  }
+
+  var activePatterns = [];
+  var rafId = null;
+  var isRunning = false;
+
+  function createCanvas(parent) {
+    var c = document.createElement('canvas');
+    c.className = 'bg-pattern-canvas';
+    var dpr = window.devicePixelRatio || 1;
+    var w = parent.offsetWidth;
+    var h = parent.offsetHeight;
+    c.width = w * dpr;
+    c.height = h * dpr;
+    c.style.width = w + 'px';
+    c.style.height = h + 'px';
+    var ctx = c.getContext('2d');
+    ctx.scale(dpr, dpr);
+    parent.insertBefore(c, parent.firstChild);
+    return {ctx: ctx, w: w, h: h};
+  }
+
+  function addFadeOverlay(parent) {
+    var needsFade = parent.classList.contains('bg-fade-left') ||
+                    parent.classList.contains('bg-fade-right') ||
+                    parent.classList.contains('bg-fade-warm-left');
+    if (needsFade) {
+      var overlay = document.createElement('div');
+      overlay.className = 'bg-fade-overlay';
+      var canvas = parent.querySelector('.bg-pattern-canvas');
+      if (canvas && canvas.nextSibling) {
+        parent.insertBefore(overlay, canvas.nextSibling);
+      } else {
+        parent.appendChild(overlay);
+      }
+    }
+  }
+
+  function initNetwork(parent) {
+    var s = createCanvas(parent);
+    addFadeOverlay(parent);
+    var sr = makeSeed(42);
+    var nodes = [];
+    for (var i=0;i<40;i++) {
+      nodes.push({bx:sr()*s.w, by:sr()*s.h, x:0, y:0, r:3+sr()*8,
+        phase:sr()*Math.PI*2, speed:0.5+sr()*0.5});
+    }
+    nodes.forEach(function(n){n.x=n.bx;n.y=n.by;});
+    var ctx=s.ctx, w=s.w, h=s.h;
+    return function(time) {
+      ctx.clearRect(0,0,w,h);
+      nodes.forEach(function(n) {
+        n.x = n.bx + Math.sin(time*0.0004*n.speed + n.phase) * 25;
+        n.y = n.by + Math.cos(time*0.0003*n.speed + n.phase*1.3) * 20;
+      });
+      for (var i=0;i<nodes.length;i++) {
+        for (var j=i+1;j<nodes.length;j++) {
+          var dx=nodes[i].x-nodes[j].x, dy=nodes[i].y-nodes[j].y;
+          var dist=Math.sqrt(dx*dx+dy*dy);
+          if (dist<220) {
+            var alpha = (1-dist/220)*0.08;
+            ctx.beginPath();ctx.moveTo(nodes[i].x,nodes[i].y);ctx.lineTo(nodes[j].x,nodes[j].y);
+            ctx.strokeStyle=rgba(alpha);ctx.lineWidth=1;ctx.stroke();
+          }
+        }
+      }
+      nodes.forEach(function(n) {
+        var pulse = 0.8 + Math.sin(time*0.001 + n.phase)*0.2;
+        ctx.beginPath();ctx.arc(n.x,n.y,n.r*pulse,0,Math.PI*2);
+        ctx.fillStyle=rgba(0.05+0.03*pulse);ctx.fill();
+        ctx.beginPath();ctx.arc(n.x,n.y,2.5,0,Math.PI*2);
+        ctx.fillStyle=rgba(0.12+0.1*pulse);ctx.fill();
+      });
+    };
+  }
+
+  function initWoven(parent) {
+    var s = createCanvas(parent);
+    addFadeOverlay(parent);
+    var sr = makeSeed(400);
+    var threads=[];
+    for (var i=0;i<20;i++) {
+      var pts=[];var y=sr()*s.h;pts.push({x:-20,y:y,cpx:0,cpy:0});
+      var numPts=6+Math.floor(sr()*4),stepX=(s.w+40)/numPts;
+      for (var j=1;j<=numPts;j++) {
+        var px=j*stepX-20,py=y+(sr()-0.5)*120;
+        var cpx=px-stepX*0.5,cpy=(y+py)/2+(sr()-0.5)*80;
+        pts.push({x:px,y:py,cpx:cpx,cpy:cpy});y=py;
+      }
+      threads.push({pts:pts,alpha:0.05+sr()*0.03,width:1+sr()*1.5,phase:sr()*Math.PI*2,
+        speed:0.6+sr()*0.8});
+    }
+    var ctx=s.ctx, w=s.w, h=s.h;
+    return function(time) {
+      ctx.clearRect(0,0,w,h);
+      threads.forEach(function(t) {
+        var wave = Math.sin(time*0.00015*t.speed + t.phase) * 25;
+        var alphaShift = 0.75 + Math.sin(time*0.0002 + t.phase)*0.25;
+        ctx.beginPath();ctx.moveTo(t.pts[0].x, t.pts[0].y + wave);
+        for (var j=1;j<t.pts.length;j++) {
+          var p=t.pts[j];
+          var lw = wave * (1 + Math.sin(j*0.7 + time*0.0001)*0.5);
+          ctx.quadraticCurveTo(p.cpx, p.cpy+lw, p.x, p.y+lw);
+        }
+        ctx.strokeStyle=rgba(t.alpha * alphaShift);ctx.lineWidth=t.width;ctx.stroke();
+      });
+    };
+  }
+
+  function initConstellation(parent) {
+    var s = createCanvas(parent);
+    addFadeOverlay(parent);
+    var sr = makeSeed(200);
+    var stars=[];
+    for (var i=0;i<55;i++) {
+      stars.push({bx:sr()*s.w,by:sr()*s.h,x:0,y:0,size:1+sr()*2.5,
+        phase:sr()*Math.PI*2,twinkleSpeed:0.0015+sr()*0.003,
+        speed:0.5+sr()*0.5});
+    }
+    stars.forEach(function(st){st.x=st.bx;st.y=st.by;});
+    var ctx=s.ctx, w=s.w, h=s.h;
+    return function(time) {
+      ctx.clearRect(0,0,w,h);
+      stars.forEach(function(st) {
+        st.x = st.bx + Math.sin(time*0.0002*st.speed + st.phase)*15;
+        st.y = st.by + Math.cos(time*0.00015*st.speed + st.phase*1.2)*12;
+      });
+      for (var i=0;i<stars.length;i++) {
+        for (var j=i+1;j<stars.length;j++) {
+          var dx=stars[i].x-stars[j].x,dy=stars[i].y-stars[j].y;
+          var dist=Math.sqrt(dx*dx+dy*dy);
+          if (dist<160) {
+            ctx.beginPath();ctx.moveTo(stars[i].x,stars[i].y);ctx.lineTo(stars[j].x,stars[j].y);
+            ctx.strokeStyle=rgba((1-dist/160)*0.15);ctx.lineWidth=0.5;ctx.stroke();
+          }
+        }
+      }
+      stars.forEach(function(st) {
+        var tw = 0.5 + Math.sin(time*st.twinkleSpeed + st.phase)*0.5;
+        var g=ctx.createRadialGradient(st.x,st.y,0,st.x,st.y,st.size*5);
+        g.addColorStop(0,rgba(0.25*tw));g.addColorStop(1,rgba(0));
+        ctx.beginPath();ctx.arc(st.x,st.y,st.size*5,0,Math.PI*2);ctx.fillStyle=g;ctx.fill();
+        ctx.beginPath();ctx.arc(st.x,st.y,st.size*(0.8+tw*0.4),0,Math.PI*2);
+        ctx.fillStyle=rgba(0.3+0.3*tw);ctx.fill();
+      });
+    };
+  }
+
+  var map = {
+    'bg-network': initNetwork,
+    'bg-woven': initWoven,
+    'bg-constellation': initConstellation
+  };
+
+  function cleanup() {
+    if (rafId) { cancelAnimationFrame(rafId); rafId=null; }
+    isRunning = false;
+    activePatterns = [];
+    document.querySelectorAll('.bg-pattern-canvas').forEach(function(el){el.remove();});
+    document.querySelectorAll('.bg-fade-overlay').forEach(function(el){el.remove();});
+  }
+
+  function init() {
+    cleanup();
+    Object.keys(map).forEach(function(cls) {
+      document.querySelectorAll('.'+cls).forEach(function(el) {
+        activePatterns.push(map[cls](el));
+      });
+    });
+    if (activePatterns.length > 0) {
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        activePatterns.forEach(function(drawFn){drawFn(0);});
+      } else {
+        isRunning = true;
+        rafId = requestAnimationFrame(tick);
+      }
+    }
+  }
+
+  function tick(time) {
+    if (!isRunning) return;
+    for (var i=0;i<activePatterns.length;i++) { activePatterns[i](time); }
+    rafId = requestAnimationFrame(tick);
+  }
+
+  if (document.readyState === 'complete') { setTimeout(init, 100); }
+  else { window.addEventListener('load', function() { setTimeout(init, 200); }); }
+
+  var resizeTimer;
+  window.addEventListener('resize', function() {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(init, 300);
+  });
+})();
+
+
+// ======================================================
+// MARKER HIGHLIGHTS
+// ======================================================
+function initMarkers() {
+  var filters = ['rough1', 'rough2', 'rough3'];
+  document.querySelectorAll('.marker').forEach(function(span, i) {
+    span.style.position = 'relative';
+    span.style.zIndex = '1';
+    var rect = span.getBoundingClientRect();
+    var opacity = parseFloat(span.dataset.opacity) || 0.2;
+    var topPx = rect.height * parseFloat(span.dataset.top || 0.3);
+    var bottomPx = rect.height * parseFloat(span.dataset.bottom || 0.9);
+    var height = bottomPx - topPx;
+    var angle = (Math.random() - 0.5) * 2.5;
+    var filterId = span.dataset.filter || filters[i % filters.length];
+    var bg = document.createElement('div');
+    bg.className = 'marker-bg';
+    bg.style.cssText = 'position:absolute;left:-5px;top:'+topPx+'px;width:'+(rect.width+10)+'px;height:'+height+'px;background:rgba(155,81,224,'+opacity+');border-radius:3px;transform:rotate('+angle+'deg);filter:url(#'+filterId+');z-index:-1;pointer-events:none;';
+    span.appendChild(bg);
+    bg.style.clipPath = 'inset(0 100% 0 0)';
+    setTimeout(function() { bg.classList.add('marker-bg--sweeping'); }, 500 + i * 200);
+  });
+}
+document.fonts.ready.then(function() { initMarkers(); });
+
+
+// ======================================================
+// SCROLL ANIMATIONS
+// ======================================================
+(function() {
+  var observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15, rootMargin: '0px 0px -8% 0px' });
+
+  document.querySelectorAll('.scroll-in, .scroll-scale').forEach(function(el) {
+    observer.observe(el);
+  });
+})();
+
+
+// ======================================================
+// TABLE OF CONTENTS ACTIVE STATE
+// ======================================================
+(function() {
+  var sections = document.querySelectorAll('[id]');
+  var links = document.querySelectorAll('.toc__link');
+
+  var tocObserver = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        var id = entry.target.id;
+        links.forEach(function(link) {
+          link.classList.toggle('active', link.getAttribute('href') === '#' + id);
+        });
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px' });
+
+  sections.forEach(function(section) {
+    if (section.id && document.querySelector('.toc__link[href="#'+section.id+'"]')) {
+      tocObserver.observe(section);
+    }
+  });
+})();
+</script>
+
+</body>
+</html>

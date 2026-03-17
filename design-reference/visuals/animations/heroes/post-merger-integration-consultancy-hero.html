@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hero Animation - Post-Merger Integration</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #1a1a2e; display: flex; align-items: center; justify-content: center; min-height: 100vh; overflow: hidden; }
+  canvas { display: block; }
+</style>
+</head>
+<body>
+<canvas id="hero"></canvas>
+<script>
+(function() {
+  var canvas = document.getElementById('hero');
+  var ctx = canvas.getContext('2d');
+  var dpr = window.devicePixelRatio || 1;
+  var W, H, cx, cy;
+
+  function resize() {
+    W = window.innerWidth;
+    H = window.innerHeight;
+    canvas.width = W * dpr;
+    canvas.height = H * dpr;
+    canvas.style.width = W + 'px';
+    canvas.style.height = H + 'px';
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    cx = W / 2;
+    cy = H / 2;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  // ---- COLOURS (brand gradient) ----
+  var colours = [
+    { r: 128, g: 56, b: 143 },
+    { r: 155, g: 81, b: 224 },
+    { r: 255, g: 66, b: 121 },
+    { r: 255, g: 162, b: 0 },
+  ];
+
+  function colourAt(t, alpha) {
+    t = Math.max(0, Math.min(1, t));
+    var idx = t * (colours.length - 1);
+    var i = Math.floor(idx);
+    var f = idx - i;
+    if (i >= colours.length - 1) { i = colours.length - 2; f = 1; }
+    var a = colours[i], b = colours[i + 1];
+    var r = Math.round(a.r + (b.r - a.r) * f);
+    var g = Math.round(a.g + (b.g - a.g) * f);
+    var bl = Math.round(a.b + (b.b - a.b) * f);
+    return 'rgba(' + r + ',' + g + ',' + bl + ',' + alpha + ')';
+  }
+
+  // ---- TWO GALAXY CLUSTERS ----
+  // Galaxy A (left, purple-dominant) and Galaxy B (right, orange-dominant)
+  // They slowly drift toward each other over time
+
+  var galaxyA = { baseX: -120, baseY: -20, colourBase: 0.0, rotDir: 1 };
+  var galaxyB = { baseX: 120, baseY: 20, colourBase: 0.6, rotDir: -1 };
+
+  // Particles for each galaxy
+  var particlesA = [];
+  var particlesB = [];
+  var numPerGalaxy = 45;
+
+  function createGalaxyParticles(galaxy, arr) {
+    for (var i = 0; i < numPerGalaxy; i++) {
+      // Spiral distribution
+      var armAngle = (i % 3) * (Math.PI * 2 / 3); // 3 spiral arms
+      var dist = 15 + (i / numPerGalaxy) * 160;
+      var spiralOffset = (i / numPerGalaxy) * Math.PI * 1.5;
+      var angle = armAngle + spiralOffset;
+      // Add scatter
+      var scatter = (Math.random() - 0.5) * 50;
+      var scatterAngle = Math.random() * Math.PI * 2;
+
+      arr.push({
+        localX: Math.cos(angle) * dist + Math.cos(scatterAngle) * scatter,
+        localY: Math.sin(angle) * dist + Math.sin(scatterAngle) * scatter,
+        size: 1.5 + Math.random() * 2.5,
+        orbitSpeed: 0.00015 + Math.random() * 0.0001,
+        breathPhase: Math.random() * Math.PI * 2,
+        breathSpeed: 0.001 + Math.random() * 0.001,
+        colourOffset: (Math.random() - 0.5) * 0.15,
+        alpha: 0.3 + Math.random() * 0.5
+      });
+    }
+  }
+
+  createGalaxyParticles(galaxyA, particlesA);
+  createGalaxyParticles(galaxyB, particlesB);
+
+  // Bridge particles - form in the overlap zone
+  var bridgeParticles = [];
+  for (var i = 0; i < 15; i++) {
+    bridgeParticles.push({
+      angle: Math.random() * Math.PI * 2,
+      dist: 10 + Math.random() * 50,
+      size: 1 + Math.random() * 2,
+      speed: 0.0003 + Math.random() * 0.0003,
+      phase: Math.random() * Math.PI * 2,
+      colourPos: 0.3 + Math.random() * 0.4
+    });
+  }
+
+  // ---- TEXT LABELS ----
+  var labels = [
+    { text: 'how teams meet', ring: 0, slot: 0 },
+    { text: 'what stays', ring: 0, slot: 1 },
+    { text: 'what changes', ring: 0, slot: 2 },
+    { text: 'who we become', ring: 0, slot: 3 },
+    { text: 'how decisions now work', ring: 1, slot: 0 },
+    { text: 'whose way of doing things', ring: 1, slot: 1 },
+    { text: 'what knowledge crosses over', ring: 1, slot: 2 },
+    { text: 'how services join up', ring: 1, slot: 3 },
+    { text: 'which culture leads', ring: 2, slot: 0 },
+    { text: 'how people feel about it', ring: 2, slot: 1 },
+    { text: 'what gets lost in the rush', ring: 2, slot: 2 },
+    { text: 'what the new organisation is for', ring: 2, slot: 3 },
+  ];
+
+  var ringRadii = [115, 200, 285];
+  var ringOffsets = [0.1, Math.PI / 4 + 0.2, Math.PI / 6 - 0.1];
+  var ringSizes = [13.5, 14, 14.5];
+
+  var textItems = [];
+  for (var i = 0; i < labels.length; i++) {
+    var l = labels[i];
+    var angle = ringOffsets[l.ring] + (l.slot / 4) * Math.PI * 2;
+    textItems.push({
+      text: l.text,
+      baseAngle: angle,
+      radius: ringRadii[l.ring],
+      phase: Math.random() * Math.PI * 2,
+      orbitSpeed: 0.00004 + Math.random() * 0.00003,
+      breathSpeed: 0.0003 + Math.random() * 0.0003,
+      breathAmount: 8 + Math.random() * 8,
+      fadePhase: Math.random() * Math.PI * 2,
+      fadeSpeed: 0.0003 + Math.random() * 0.0003,
+      colourPos: i / labels.length,
+      fontSize: ringSizes[l.ring]
+    });
+  }
+
+  // ---- CONNECTIONS between nearby particles ----
+  function drawConnections(particles, galaxyX, galaxyY, rotation, colourBase, time) {
+    for (var i = 0; i < particles.length; i++) {
+      var p1 = particles[i];
+      var cos1 = Math.cos(rotation);
+      var sin1 = Math.sin(rotation);
+      var x1 = galaxyX + p1.localX * cos1 - p1.localY * sin1;
+      var y1 = galaxyY + p1.localX * sin1 + p1.localY * cos1;
+
+      for (var j = i + 1; j < particles.length; j++) {
+        var p2 = particles[j];
+        var x2 = galaxyX + p2.localX * cos1 - p2.localY * sin1;
+        var y2 = galaxyY + p2.localX * sin1 + p2.localY * cos1;
+
+        var dx = x2 - x1;
+        var dy = y2 - y1;
+        var dist = Math.sqrt(dx * dx + dy * dy);
+
+        if (dist < 60) {
+          var alpha = (1 - dist / 60) * 0.06;
+          ctx.beginPath();
+          ctx.moveTo(x1, y1);
+          ctx.lineTo(x2, y2);
+          ctx.strokeStyle = colourAt(colourBase + 0.1, alpha);
+          ctx.lineWidth = 0.5;
+          ctx.stroke();
+        }
+      }
+    }
+  }
+
+  // Cross-galaxy connections (in overlap zone)
+  function drawCrossConnections(pA, gAx, gAy, rotA, pB, gBx, gBy, rotB, time) {
+    var cosA = Math.cos(rotA), sinA = Math.sin(rotA);
+    var cosB = Math.cos(rotB), sinB = Math.sin(rotB);
+
+    for (var i = 0; i < pA.length; i += 2) {
+      var a = pA[i];
+      var ax = gAx + a.localX * cosA - a.localY * sinA;
+      var ay = gAy + a.localX * sinA + a.localY * cosA;
+
+      for (var j = 0; j < pB.length; j += 2) {
+        var b = pB[j];
+        var bx = gBx + b.localX * cosB - b.localY * sinB;
+        var by = gBy + b.localX * sinB + b.localY * cosB;
+
+        var dx = bx - ax;
+        var dy = by - ay;
+        var dist = Math.sqrt(dx * dx + dy * dy);
+
+        if (dist < 45) {
+          var alpha = (1 - dist / 45) * 0.1;
+          var pulse = 0.5 + Math.sin(time * 0.001 + i + j) * 0.5;
+          ctx.beginPath();
+          ctx.moveTo(ax, ay);
+          ctx.lineTo(bx, by);
+          ctx.strokeStyle = colourAt(0.4, alpha * pulse);
+          ctx.lineWidth = 0.8;
+          ctx.stroke();
+        }
+      }
+    }
+  }
+
+  // ---- DRAW FUNCTIONS ----
+
+  function drawGalaxy(particles, gx, gy, rotation, colourBase, time) {
+    var cos = Math.cos(rotation);
+    var sin = Math.sin(rotation);
+
+    // Outer halo glow
+    var haloGrad = ctx.createRadialGradient(gx, gy, 0, gx, gy, 180);
+    haloGrad.addColorStop(0, colourAt(colourBase + 0.1, 0.04));
+    haloGrad.addColorStop(0.5, colourAt(colourBase + 0.05, 0.02));
+    haloGrad.addColorStop(1, colourAt(colourBase, 0));
+    ctx.beginPath();
+    ctx.arc(gx, gy, 180, 0, Math.PI * 2);
+    ctx.fillStyle = haloGrad;
+    ctx.fill();
+
+    // Connections
+    drawConnections(particles, gx, gy, rotation, colourBase, time);
+
+    // Particles
+    for (var i = 0; i < particles.length; i++) {
+      var p = particles[i];
+      var breathe = Math.sin(time * p.breathSpeed + p.breathPhase);
+      var x = gx + p.localX * cos - p.localY * sin;
+      var y = gy + p.localX * sin + p.localY * cos;
+      var size = p.size * (0.8 + breathe * 0.2);
+      var colT = colourBase + p.colourOffset;
+
+      // Glow
+      var glowGrad = ctx.createRadialGradient(x, y, 0, x, y, size * 5);
+      glowGrad.addColorStop(0, colourAt(colT, p.alpha * 0.25));
+      glowGrad.addColorStop(1, colourAt(colT, 0));
+      ctx.beginPath();
+      ctx.arc(x, y, size * 5, 0, Math.PI * 2);
+      ctx.fillStyle = glowGrad;
+      ctx.fill();
+
+      // Core
+      ctx.beginPath();
+      ctx.arc(x, y, size, 0, Math.PI * 2);
+      ctx.fillStyle = colourAt(colT, p.alpha);
+      ctx.fill();
+    }
+
+    // Centre glow
+    var coreGrad = ctx.createRadialGradient(gx, gy, 0, gx, gy, 40);
+    coreGrad.addColorStop(0, colourAt(colourBase + 0.15, 0.12));
+    coreGrad.addColorStop(0.5, colourAt(colourBase + 0.1, 0.05));
+    coreGrad.addColorStop(1, colourAt(colourBase, 0));
+    ctx.beginPath();
+    ctx.arc(gx, gy, 40, 0, Math.PI * 2);
+    ctx.fillStyle = coreGrad;
+    ctx.fill();
+  }
+
+  function drawMergeGlow(mx, my, time) {
+    // Pulsing glow in the overlap zone - brighter than either galaxy
+    var pulse = 0.7 + Math.sin(time * 0.0006) * 0.3;
+    var radius = 70 * pulse;
+
+    var grad = ctx.createRadialGradient(mx, my, 0, mx, my, radius);
+    grad.addColorStop(0, colourAt(0.35, 0.1 * pulse));
+    grad.addColorStop(0.4, colourAt(0.4, 0.05 * pulse));
+    grad.addColorStop(1, colourAt(0.45, 0));
+    ctx.beginPath();
+    ctx.arc(mx, my, radius, 0, Math.PI * 2);
+    ctx.fillStyle = grad;
+    ctx.fill();
+  }
+
+  function drawBridgeParticles(mx, my, time) {
+    for (var i = 0; i < bridgeParticles.length; i++) {
+      var bp = bridgeParticles[i];
+      var angle = bp.angle + time * bp.speed;
+      var breathe = Math.sin(time * 0.001 + bp.phase);
+      var dist = bp.dist + breathe * 10;
+      var x = mx + Math.cos(angle) * dist;
+      var y = my + Math.sin(angle) * dist;
+      var size = bp.size * (0.8 + breathe * 0.3);
+
+      // Small glow
+      var grad = ctx.createRadialGradient(x, y, 0, x, y, size * 4);
+      grad.addColorStop(0, colourAt(bp.colourPos, 0.3));
+      grad.addColorStop(1, colourAt(bp.colourPos, 0));
+      ctx.beginPath();
+      ctx.arc(x, y, size * 4, 0, Math.PI * 2);
+      ctx.fillStyle = grad;
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.arc(x, y, size, 0, Math.PI * 2);
+      ctx.fillStyle = colourAt(bp.colourPos, 0.6);
+      ctx.fill();
+    }
+  }
+
+  function drawTextLabels(time) {
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+
+    for (var i = 0; i < textItems.length; i++) {
+      var t = textItems[i];
+
+      var currentAngle = t.baseAngle + time * t.orbitSpeed;
+      var radialBreath = Math.sin(time * t.breathSpeed + t.phase) * t.breathAmount;
+      var currentRadius = t.radius + radialBreath;
+
+      var x = cx + Math.cos(currentAngle) * currentRadius;
+      var y = cy + Math.sin(currentAngle) * currentRadius;
+
+      var fadeCycle = Math.sin(time * t.fadeSpeed + t.fadePhase);
+      var alpha = 0.4 + fadeCycle * 0.15;
+
+      var tilt = Math.sin(currentAngle) * 0.04;
+
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.rotate(tilt);
+
+      // Glow pass
+      ctx.shadowColor = colourAt(t.colourPos, 0.5);
+      ctx.shadowBlur = 20;
+      ctx.font = '400 ' + t.fontSize + 'px "Source Sans 3", "Source Sans Pro", sans-serif';
+      ctx.fillStyle = colourAt(t.colourPos, alpha);
+      ctx.fillText(t.text, 0, 0);
+
+      // Crisp pass
+      ctx.shadowColor = 'transparent';
+      ctx.shadowBlur = 0;
+      ctx.fillStyle = colourAt(t.colourPos, alpha);
+      ctx.fillText(t.text, 0, 0);
+
+      ctx.restore();
+    }
+  }
+
+  // ---- MAIN LOOP ----
+  function tick(time) {
+    ctx.clearRect(0, 0, W, H);
+
+    // Galaxy positions - slowly drifting together
+    // They oscillate gently, never quite fully merging
+    var drift = Math.sin(time * 0.00008) * 30;
+    var approach = Math.sin(time * 0.00004) * 20; // gentle breathing toward each other
+
+    var gAx = cx + galaxyA.baseX + drift + approach;
+    var gAy = cy + galaxyA.baseY + Math.sin(time * 0.0001 + 1) * 15;
+    var gBx = cx + galaxyB.baseX - drift - approach;
+    var gBy = cy + galaxyB.baseY + Math.sin(time * 0.0001 + 3) * 15;
+
+    // Rotation
+    var rotA = time * 0.00012 * galaxyA.rotDir;
+    var rotB = time * 0.0001 * galaxyB.rotDir;
+
+    // Merge point (midpoint between galaxies)
+    var mx = (gAx + gBx) / 2;
+    var my = (gAy + gBy) / 2;
+
+    // Draw merge glow first (behind galaxies)
+    drawMergeGlow(mx, my, time);
+
+    // Cross-galaxy connections
+    drawCrossConnections(particlesA, gAx, gAy, rotA, particlesB, gBx, gBy, rotB, time);
+
+    // Draw both galaxies
+    drawGalaxy(particlesA, gAx, gAy, rotA, galaxyA.colourBase, time);
+    drawGalaxy(particlesB, gBx, gBy, rotB, galaxyB.colourBase, time);
+
+    // Bridge particles in overlap
+    drawBridgeParticles(mx, my, time);
+
+    // Text labels
+    drawTextLabels(time);
+
+    requestAnimationFrame(tick);
+  }
+
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    tick(8000);
+  } else {
+    requestAnimationFrame(tick);
+  }
+})();
+</script>
+</body>
+</html>

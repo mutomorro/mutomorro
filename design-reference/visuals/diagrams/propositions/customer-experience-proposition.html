@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Customer Experience - Proposition</title>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: #1a1a2e;
+  display: flex; align-items: center; justify-content: center;
+  min-height: 100vh; overflow: hidden;
+}
+.diagram {
+  width: 1920px; height: 1080px;
+  position: relative; overflow: hidden;
+  font-family: 'Source Sans 3', sans-serif;
+  background:
+    radial-gradient(ellipse at 50% 46%, rgba(128,56,143,0.1) 0%, rgba(80,30,100,0.05) 30%, transparent 60%),
+    radial-gradient(ellipse at 65% 35%, rgba(255,162,0,0.03) 0%, transparent 40%),
+    radial-gradient(ellipse at 35% 60%, rgba(255,66,121,0.03) 0%, transparent 40%);
+}
+.constellation {
+  position: absolute; inset: 0; pointer-events: none;
+}
+
+.ring {
+  position: absolute;
+  border-radius: 50%;
+  left: 50%; top: 46%;
+  transform: translate(-50%, -50%);
+}
+
+/* Outer - Customer experience */
+.ring-outer {
+  width: 820px; height: 820px;
+  border: 2.5px solid rgba(255,162,0,0.22);
+  background: radial-gradient(circle,
+    transparent 55%,
+    rgba(255,162,0,0.03) 75%,
+    rgba(255,162,0,0.06) 100%);
+}
+
+/* Middle - Service delivery */
+.ring-middle {
+  width: 540px; height: 540px;
+  border: 2.5px solid rgba(255,66,121,0.25);
+  background: radial-gradient(circle,
+    transparent 45%,
+    rgba(255,66,121,0.03) 70%,
+    rgba(255,66,121,0.07) 100%);
+}
+
+/* Inner - Organisation */
+.ring-inner {
+  width: 280px; height: 280px;
+  border: 2.5px solid rgba(155,81,224,0.3);
+  background: radial-gradient(circle,
+    rgba(128,56,143,0.1) 0%,
+    rgba(155,81,224,0.06) 50%,
+    rgba(155,81,224,0.1) 100%);
+}
+
+/* Ring labels - positioned on the rings */
+.ring-label {
+  position: absolute;
+  left: 50%; transform: translateX(-50%);
+  text-align: center;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+.ring-outer .ring-label {
+  top: 28px;
+  font-size: 28px;
+  color: rgba(255,162,0,0.5);
+}
+.ring-middle .ring-label {
+  top: 24px;
+  font-size: 26px;
+  color: rgba(255,66,121,0.55);
+}
+.ring-inner .ring-label {
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 38px;
+  color: rgba(200,170,240,0.6);
+  letter-spacing: 2px;
+  line-height: 1.4;
+  text-transform: none;
+  font-weight: 700;
+}
+
+/* Arrow indicators showing inside-out direction */
+.arrow-label {
+  position: absolute;
+  font-size: 28px;
+  font-weight: 300;
+  color: rgba(255,255,255,0.2);
+}
+
+/* Connection lines */
+.connections {
+  position: absolute; inset: 0; pointer-events: none;
+}
+
+.caption {
+  position: absolute;
+  bottom: 36px; left: 50%;
+  transform: translateX(-50%);
+  font-size: 30px; font-weight: 300;
+  font-style: italic;
+  color: rgba(255,255,255,0.25);
+  white-space: nowrap;
+}
+</style>
+</head>
+<body>
+<div class="diagram">
+
+  <!-- Constellation background -->
+  <svg class="constellation" viewBox="0 0 1920 1080">
+    <circle cx="100" cy="70" r="1.5" fill="rgba(155,81,224,0.18)"/>
+    <circle cx="260" cy="130" r="1" fill="rgba(200,150,220,0.12)"/>
+    <circle cx="70" cy="200" r="1.5" fill="rgba(155,81,224,0.12)"/>
+    <circle cx="1750" cy="60" r="1.5" fill="rgba(255,162,0,0.12)"/>
+    <circle cx="1850" cy="170" r="1" fill="rgba(255,66,121,0.12)"/>
+    <circle cx="1620" cy="100" r="1" fill="rgba(155,81,224,0.12)"/>
+    <circle cx="180" cy="950" r="1.5" fill="rgba(155,81,224,0.12)"/>
+    <circle cx="350" cy="1010" r="1" fill="rgba(200,150,220,0.1)"/>
+    <circle cx="1680" cy="960" r="1" fill="rgba(255,162,0,0.1)"/>
+    <circle cx="1500" cy="1020" r="1.5" fill="rgba(255,66,121,0.1)"/>
+    <circle cx="50" cy="500" r="1" fill="rgba(155,81,224,0.1)"/>
+    <circle cx="1880" cy="480" r="1.5" fill="rgba(255,120,80,0.1)"/>
+    <circle cx="1870" cy="680" r="1" fill="rgba(255,162,0,0.08)"/>
+    <circle cx="40" cy="750" r="1.5" fill="rgba(200,150,220,0.1)"/>
+    <circle cx="450" cy="40" r="1" fill="rgba(155,81,224,0.1)"/>
+    <circle cx="1350" cy="1040" r="1" fill="rgba(200,150,220,0.08)"/>
+    <circle cx="800" cy="20" r="1" fill="rgba(155,81,224,0.08)"/>
+    <circle cx="1150" cy="1050" r="1.5" fill="rgba(155,81,224,0.08)"/>
+    <line x1="100" y1="70" x2="260" y2="130" stroke="rgba(155,81,224,0.05)" stroke-width="1"/>
+    <line x1="70" y1="200" x2="100" y2="70" stroke="rgba(155,81,224,0.04)" stroke-width="1"/>
+    <line x1="260" y1="130" x2="450" y2="40" stroke="rgba(155,81,224,0.03)" stroke-width="1"/>
+    <line x1="1750" y1="60" x2="1850" y2="170" stroke="rgba(255,162,0,0.04)" stroke-width="1"/>
+    <line x1="1620" y1="100" x2="1750" y2="60" stroke="rgba(155,81,224,0.04)" stroke-width="1"/>
+    <line x1="180" y1="950" x2="350" y2="1010" stroke="rgba(155,81,224,0.04)" stroke-width="1"/>
+    <line x1="1680" y1="960" x2="1500" y2="1020" stroke="rgba(255,66,121,0.03)" stroke-width="1"/>
+    <line x1="50" y1="500" x2="40" y2="750" stroke="rgba(155,81,224,0.03)" stroke-width="1"/>
+    <line x1="1880" y1="480" x2="1870" y2="680" stroke="rgba(255,120,80,0.03)" stroke-width="1"/>
+    <line x1="1150" y1="1050" x2="1350" y2="1040" stroke="rgba(155,81,224,0.03)" stroke-width="1"/>
+  </svg>
+
+  <!-- Subtle radial lines showing inside-out flow -->
+  <svg class="connections" viewBox="0 0 1920 1080">
+    <defs>
+      <linearGradient id="rayGrad" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0%" stop-color="#9B51E0" stop-opacity="0.08"/>
+        <stop offset="50%" stop-color="#FF4279" stop-opacity="0.05"/>
+        <stop offset="100%" stop-color="#FFA200" stop-opacity="0.08"/>
+      </linearGradient>
+    </defs>
+    <!-- Radial rays from centre outward -->
+    <line x1="960" y1="357" x2="960" y2="87" stroke="rgba(200,150,220,0.06)" stroke-width="2"/>
+    <line x1="1100" y1="387" x2="1310" y2="150" stroke="rgba(200,150,220,0.06)" stroke-width="2"/>
+    <line x1="1100" y1="557" x2="1330" y2="770" stroke="rgba(200,150,220,0.06)" stroke-width="2"/>
+    <line x1="960" y1="637" x2="960" y2="870" stroke="rgba(200,150,220,0.06)" stroke-width="2"/>
+    <line x1="820" y1="557" x2="590" y2="770" stroke="rgba(200,150,220,0.06)" stroke-width="2"/>
+    <line x1="820" y1="387" x2="590" y2="150" stroke="rgba(200,150,220,0.06)" stroke-width="2"/>
+
+    <!-- Small arrow heads on the outer ends -->
+    <polygon points="960,87 953,102 967,102" fill="rgba(255,162,0,0.2)"/>
+    <polygon points="1310,150 1298,160 1308,168" fill="rgba(255,162,0,0.2)"/>
+    <polygon points="1330,770 1318,762 1308,774" fill="rgba(255,162,0,0.2)"/>
+    <polygon points="960,870 953,855 967,855" fill="rgba(255,162,0,0.2)"/>
+    <polygon points="590,770 602,762 612,774" fill="rgba(255,162,0,0.2)"/>
+    <polygon points="590,150 602,160 612,148" fill="rgba(255,162,0,0.2)"/>
+  </svg>
+
+  <div class="ring ring-outer">
+    <span class="ring-label">Customer experience</span>
+  </div>
+  <div class="ring ring-middle">
+    <span class="ring-label">Service delivery</span>
+  </div>
+  <div class="ring ring-inner">
+    <span class="ring-label">Organisation</span>
+  </div>
+
+  <div class="caption">Great customer experience starts inside the organisation</div>
+</div>
+</body>
+</html>

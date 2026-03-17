@@ -1,41 +1,41 @@
 import Link from 'next/link'
 
-export default function SectionNavFooter({ prevArticle, nextArticle, dimensionSlug, dimensionColour }) {
+export default function SectionNavFooter({ prevArticle, nextArticle, dimensionSlug }) {
   return (
-    <nav className="scroll-in" style={{
-      marginTop: '4rem',
-      paddingTop: '3rem',
-      borderTop: '1px solid rgba(0,0,0,0.08)',
-      display: 'flex',
-      justifyContent: 'space-between',
-      alignItems: 'flex-start',
-      gap: '2rem',
-    }}>
+    <nav className="ew-section-nav-footer">
       {/* Previous */}
-      <div style={{ flex: 1 }}>
-        {prevArticle && (
-          <Link
-            href={`/emergent-framework/${dimensionSlug}/${prevArticle.slug.current}`}
-            className="btn-sec"
-            style={{ textAlign: 'left', justifyContent: 'flex-start' }}
-          >
-            ← {prevArticle.title}
-          </Link>
-        )}
-      </div>
+      {prevArticle ? (
+        <Link
+          href={`/emergent-framework/${dimensionSlug}/${prevArticle.slug.current}`}
+          className="ew-section-nav-btn"
+        >
+          <span>&larr;</span> {prevArticle.title}
+        </Link>
+      ) : (
+        <Link
+          href={`/emergent-framework/${dimensionSlug}`}
+          className="ew-section-nav-btn"
+        >
+          <span>&larr;</span> Back to overview
+        </Link>
+      )}
 
       {/* Next */}
-      <div style={{ flex: 1, textAlign: 'right' }}>
-        {nextArticle && (
-          <Link
-            href={`/emergent-framework/${dimensionSlug}/${nextArticle.slug.current}`}
-            className="btn-sec"
-            style={{ textAlign: 'right', justifyContent: 'flex-end' }}
-          >
-            {nextArticle.title} →
-          </Link>
-        )}
-      </div>
+      {nextArticle ? (
+        <Link
+          href={`/emergent-framework/${dimensionSlug}/${nextArticle.slug.current}`}
+          className="ew-section-nav-btn"
+        >
+          {nextArticle.title} <span>&rarr;</span>
+        </Link>
+      ) : (
+        <Link
+          href="/emergent-framework"
+          className="ew-section-nav-btn"
+        >
+          Back to the model <span>&rarr;</span>
+        </Link>
+      )}
     </nav>
   )
 }

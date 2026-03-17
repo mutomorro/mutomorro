@@ -1,174 +1,133 @@
 'use client'
 
-import { useState } from 'react'
-import { usePathname } from 'next/navigation'
+import { useState, useEffect } from 'react'
+import { usePathname, useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { DIMENSION_LETTERS } from './constants'
 
 export default function EmergentSidebar({ dimensions, articles }) {
   const pathname = usePathname()
+  const router = useRouter()
 
   // Track which dimension groups are expanded
-  const [expanded, setExpanded] = useState(() => {
-    // Auto-expand the dimension the user is currently viewing
-    const currentDim = dimensions.find(d =>
+  const [expanded, setExpanded] = useState({})
+
+  // Auto-expand the active dimension on mount and path change
+  useEffect(() => {
+    const activeDim = dimensions.find(d =>
       pathname.includes(`/emergent-framework/${d.slug.current}`)
     )
-    if (currentDim) return { [currentDim._id]: true }
-    return {}
-  })
+    if (activeDim) {
+      setExpanded(prev => ({ ...prev, [activeDim.slug.current]: true }))
+    }
+  }, [pathname, dimensions])
 
-  function toggleGroup(id) {
-    setExpanded(prev => ({ ...prev, [id]: !prev[id] }))
+  function handleDimensionClick(slug) {
+    const wasExpanded = expanded[slug]
+    // Close all others, toggle the clicked one
+    setExpanded({ [slug]: !wasExpanded })
+    // Navigate if we're opening it
+    if (!wasExpanded) {
+      router.push(`/emergent-framework/${slug}`)
+    }
   }
 
+  const isOverviewActive = pathname === '/emergent-framework'
+
   return (
-    <aside style={{
-      width: '280px',
-      flexShrink: 0,
-      position: 'sticky',
-      top: '70px',
-      height: 'calc(100vh - 70px)',
-      overflowY: 'auto',
-      background: 'var(--dark)',
-      padding: '2rem 0',
-    }}>
-      {/* Sidebar header */}
-      <div style={{ padding: '0 24px', marginBottom: '2rem' }}>
-        <Link
-          href="/emergent-framework"
-          style={{
-            fontSize: '13px',
-            fontWeight: '400',
-            letterSpacing: '0.15em',
-            textTransform: 'uppercase',
-            color: pathname === '/emergent-framework'
-              ? '#fff'
-              : 'rgba(255,255,255,0.5)',
-            textDecoration: 'none',
-            transition: 'color 0.2s',
-          }}
-        >
-          EMERGENT Framework
+    <aside className="ew-sidebar">
+      {/* Brand */}
+      <div className="ew-sidebar-brand">
+        <Link href="/emergent-framework">
+          The EMERGENT Framework&#8480;
         </Link>
       </div>
 
-      {/* Dimension groups */}
-      <nav>
+      {/* Overview link */}
+      <div className="ew-sidebar-label">Overview</div>
+      <nav className="ew-sidebar-nav">
+        <Link
+          href="/emergent-framework"
+          className={`ew-nav-item ${isOverviewActive ? 'active' : ''}`}
+        >
+          <span className="ew-nav-overview-icon">&#9673;</span>
+          <span className="ew-nav-letter-divider" />
+          <span className="ew-nav-dim-name">Explore the model</span>
+        </Link>
+
+        <div className="ew-sidebar-divider" />
+        <div className="ew-sidebar-label" style={{ paddingLeft: '16px', paddingTop: '12px' }}>
+          Eight dimensions
+        </div>
+
+        {/* Dimension groups */}
         {dimensions.map((dimension) => {
-          const isExpanded = expanded[dimension._id]
-          const dimensionPath = `/emergent-framework/${dimension.slug.current}`
+          const slug = dimension.slug.current
+          const isExpanded = expanded[slug]
+          const dimensionPath = `/emergent-framework/${slug}`
           const isActiveDimension = pathname.startsWith(dimensionPath)
-          const dimensionArticles = articles[dimension.slug.current] || []
+          const dimensionArticles = articles[slug] || []
+          const letter = dimension.letter || DIMENSION_LETTERS[slug] || dimension.title.charAt(0)
 
           return (
-            <div key={dimension._id} style={{ marginBottom: '4px' }}>
-              {/* Dimension heading - clickable to expand/collapse */}
+            <div
+              key={dimension._id}
+              className={`ew-nav-group ${isExpanded ? 'expanded' : ''}`}
+            >
+              {/* Dimension heading - click expands AND navigates */}
               <button
-                onClick={() => toggleGroup(dimension._id)}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '10px',
-                  width: '100%',
-                  padding: '10px 24px',
-                  background: 'none',
-                  border: 'none',
-                  cursor: 'pointer',
-                  textAlign: 'left',
-                  transition: 'background 0.15s',
-                }}
+                className={`ew-nav-item ${isActiveDimension ? 'active' : ''}`}
+                onClick={() => handleDimensionClick(slug)}
               >
-                {/* Active indicator */}
-                <span style={{
-                  width: '3px',
-                  height: '16px',
-                  background: isActiveDimension ? dimension.colour : 'transparent',
-                  borderRadius: '1px',
-                  flexShrink: 0,
-                  transition: 'background 0.2s',
-                }} />
-
-                {/* Dimension name */}
-                <span style={{
-                  fontSize: '15px',
-                  fontWeight: isActiveDimension ? '400' : '300',
-                  color: isActiveDimension ? '#fff' : 'rgba(255,255,255,0.5)',
-                  transition: 'color 0.2s',
-                  flex: 1,
-                }}>
-                  {dimension.anchor}
+                <span
+                  className="ew-nav-letter"
+                  style={{ color: dimension.colour }}
+                >
+                  {letter}
                 </span>
-
-                {/* Expand/collapse arrow */}
+                <span className="ew-nav-letter-divider" />
+                <span className="ew-nav-dim-name">{dimension.title}</span>
                 {dimensionArticles.length > 0 && (
-                  <span style={{
-                    fontSize: '11px',
-                    color: 'rgba(255,255,255,0.3)',
-                    transform: isExpanded ? 'rotate(90deg)' : 'rotate(0)',
-                    transition: 'transform 0.2s',
-                    flexShrink: 0,
-                  }}>
-                    ▶
-                  </span>
+                  <span className="ew-nav-expand">&#9662;</span>
                 )}
               </button>
 
-              {/* Articles within this dimension */}
-              {isExpanded && dimensionArticles.length > 0 && (
-                <div style={{ paddingBottom: '8px' }}>
-                  {/* Dimension overview link */}
-                  <Link
-                    href={dimensionPath}
-                    style={{
-                      display: 'block',
-                      padding: '6px 24px 6px 47px',
-                      fontSize: '14px',
-                      fontWeight: '300',
-                      color: pathname === dimensionPath
-                        ? '#fff'
-                        : 'rgba(255,255,255,0.4)',
-                      textDecoration: 'none',
-                      transition: 'color 0.15s',
-                      borderLeft: pathname === dimensionPath
-                        ? `2px solid var(--accent)`
-                        : '2px solid transparent',
-                    }}
-                  >
-                    Overview
-                  </Link>
+              {/* Sub-items */}
+              <div className="ew-nav-subitems">
+                {/* Overview link */}
+                <Link
+                  href={dimensionPath}
+                  className={`ew-nav-subitem ${pathname === dimensionPath ? 'active' : ''}`}
+                  style={pathname === dimensionPath ? { borderLeftColor: dimension.colour } : undefined}
+                >
+                  Overview
+                </Link>
 
-                  {/* Article links */}
-                  {dimensionArticles.map((article) => {
-                    const articlePath = `${dimensionPath}/${article.slug.current}`
-                    const isActive = pathname === articlePath
+                {/* Article links */}
+                {dimensionArticles.map((article) => {
+                  const articlePath = `${dimensionPath}/${article.slug.current}`
+                  const isActive = pathname === articlePath
 
-                    return (
-                      <Link
-                        key={article._id}
-                        href={articlePath}
-                        style={{
-                          display: 'block',
-                          padding: '6px 24px 6px 47px',
-                          fontSize: '14px',
-                          fontWeight: '300',
-                          color: isActive ? '#fff' : 'rgba(255,255,255,0.4)',
-                          textDecoration: 'none',
-                          transition: 'color 0.15s',
-                          borderLeft: isActive
-                            ? `2px solid var(--accent)`
-                            : '2px solid transparent',
-                        }}
-                      >
-                        {article.title}
-                      </Link>
-                    )
-                  })}
-                </div>
-              )}
+                  return (
+                    <Link
+                      key={article._id}
+                      href={articlePath}
+                      className={`ew-nav-subitem ${isActive ? 'active' : ''}`}
+                      style={isActive ? { borderLeftColor: dimension.colour } : undefined}
+                    >
+                      {article.title}
+                    </Link>
+                  )
+                })}
+              </div>
             </div>
           )
         })}
       </nav>
+
+      <div className="ew-sidebar-footer">
+        The eight dimensions are interconnected. Strengthening one often shifts the others.
+      </div>
     </aside>
   )
 }

@@ -1,5 +1,11 @@
 import Link from 'next/link'
 import { getAllDimensions } from '../../sanity/client'
+import { DIMENSION_LETTERS } from '../../components/emergent/constants'
+
+export const metadata = {
+  title: 'The EMERGENT Framework - Mutomorro',
+  description: 'Eight dimensions of organisational health. A model for understanding how purpose, strategy, culture, capacity, and the way work gets done all shape each other.',
+}
 
 export default async function EmergentFramework() {
   const dimensions = await getAllDimensions()
@@ -7,97 +13,74 @@ export default async function EmergentFramework() {
   return (
     <main>
 
-      {/* Hero */}
-      <section className="section--full dark-bg" style={{ padding: '100px 48px 120px' }}>
-        <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
-          <span className="kicker" style={{ marginBottom: '20px' }}>
-            The EMERGENT Framework
-          </span>
-          <h1 className="heading-display heading-gradient" style={{
-            margin: '0 0 32px',
-            maxWidth: '800px',
-          }}>
-            Eight dimensions of organisational health
-          </h1>
-          <p className="lead-text" style={{
-            color: 'rgba(255,255,255,0.6)',
-            maxWidth: '600px',
-            margin: '0 0 3rem',
-          }}>
-            Healthy organisations aren't built from a single initiative or a strategy document. They emerge from eight interconnected dimensions - each one distinct, all of them interdependent.
-          </p>
-          <Link href="/states-of-vitality" className="btn-primary btn-primary--dark btn-primary--lg">
-            Take the assessment
-          </Link>
-        </div>
-      </section>
+      {/* Header - light background, gradient title */}
+      <div className="ew-overview-header">
+        <div className="ew-overview-kicker">A model of organisational health</div>
+        <h1 className="ew-overview-title">The EMERGENT Framework</h1>
+      </div>
 
-      {/* Dimension cards grid */}
-      <section className="section--full" style={{ padding: '80px 48px', background: 'var(--white)' }}>
-        <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
+      {/* Two-column intro */}
+      <div className="ew-overview-columns">
+        <div className="ew-overview-text">
+          <p>Every organisation is a living system. Not a machine with parts to optimise, but an ecosystem where purpose, strategy, culture, capacity, and the way work gets done all shape each other constantly.</p>
+          <p>The EMERGENT Framework describes eight dimensions that together determine how healthy an organisation is and how well it can respond to whatever comes next.</p>
 
-          {/* Intro two-column */}
-          <div className="scroll-in" style={{
-            display: 'grid',
-            gridTemplateColumns: '1fr 1fr',
-            gap: '4rem',
-            marginBottom: '5rem',
-          }}>
-            <div>
-              <span className="kicker" style={{ color: 'var(--accent)', marginBottom: '16px' }}>
-                The model
-              </span>
-              <h2 className="heading-h2" style={{ margin: 0 }}>
-                What makes an organisation healthy?
-              </h2>
-            </div>
-            <div>
-              <p className="body-text" style={{ margin: 0 }}>
-                Each letter in EMERGENT stands for a dimension of organisational life. Together, they form a diagnostic lens - a way of seeing the whole system, not just its parts. Click any dimension to explore its articles and insights.
-              </p>
-            </div>
+          <div className="ew-overview-pull-quote">
+            These are not departments or initiatives. They are interconnected conditions. Strengthen one, and the others shift.
           </div>
 
-          {/* Dimension card grid */}
-          <div className="grid-2">
-            {dimensions.map((dimension, index) => (
-              <Link
-                key={dimension._id}
-                href={`/emergent-framework/${dimension.slug.current}`}
-                className="card-d scroll-in"
-                style={{ animationDelay: `${index * 0.05}s` }}
-              >
-                {/* Badge with dimension colour */}
-                <div className="card-d__badge" style={{ background: dimension.colour }}>
-                  {dimension.letter}
-                </div>
+          <p>The framework emerged from fifteen years of working with organisations navigating change - from 30-person charities to 80,000-person corporates. The same patterns kept appearing. Organisations that treated problems in isolation kept solving the same things in different forms. Organisations that understood how their parts connected made progress that lasted.</p>
+        </div>
 
-                <div className="card-d__body" style={{ paddingTop: '48px' }}>
-                  <p style={{
-                    fontSize: '13px',
-                    fontWeight: '400',
-                    letterSpacing: '0.15em',
-                    textTransform: 'uppercase',
-                    color: dimension.colour,
-                    margin: '0 0 8px',
-                  }}>
-                    {dimension.anchor}
-                  </p>
-                  <div className="card-d__title">{dimension.tagline || dimension.title}</div>
-                  <p className="card-d__text">{dimension.shortSummary}</p>
-                </div>
-
-                <div className="card-d__footer">
-                  <div className="card-d__footer-fill" />
-                  <div className="card-d__action">
-                    Explore dimension <span className="arrow">→</span>
-                  </div>
-                </div>
-              </Link>
-            ))}
+        {/* Ecosystem visual placeholder */}
+        <div className="ew-overview-visual">
+          <div className="ew-visual-placeholder">
+            <div className="ew-visual-ring ew-visual-ring--outer" />
+            <div className="ew-visual-ring ew-visual-ring--inner" />
+            <div className="ew-visual-dot" style={{ background: 'var(--dim-es)', top: '8%', left: '50%', transform: 'translateX(-50%)' }} />
+            <div className="ew-visual-dot" style={{ background: 'var(--dim-mw)', top: '18%', right: '12%' }} />
+            <div className="ew-visual-dot" style={{ background: 'var(--dim-ev)', top: '45%', right: '2%' }} />
+            <div className="ew-visual-dot" style={{ background: 'var(--dim-rp)', bottom: '18%', right: '12%' }} />
+            <div className="ew-visual-dot" style={{ background: 'var(--dim-gc)', bottom: '8%', left: '50%', transform: 'translateX(-50%)' }} />
+            <div className="ew-visual-dot" style={{ background: 'var(--dim-ec)', bottom: '18%', left: '12%' }} />
+            <div className="ew-visual-dot" style={{ background: 'var(--dim-nc)', top: '45%', left: '2%' }} />
+            <div className="ew-visual-dot" style={{ background: 'var(--dim-tc)', top: '18%', left: '12%' }} />
+            <div className="ew-visual-centre">
+              Ecosystem visual<span>Canvas animation slot</span>
+            </div>
           </div>
         </div>
-      </section>
+      </div>
+
+      {/* Dimension list */}
+      <div className="ew-overview-grid-label">Explore the eight dimensions</div>
+      <div className="ew-overview-grid">
+        {dimensions.map((dimension) => {
+          const slug = dimension.slug.current
+          const letter = dimension.letter || DIMENSION_LETTERS[slug] || dimension.title.charAt(0)
+
+          return (
+            <Link
+              key={dimension._id}
+              href={`/emergent-framework/${slug}`}
+              className="ew-overview-card"
+            >
+              <div className="ew-card-letter-large" style={{ color: dimension.colour }}>
+                {letter}
+              </div>
+              <div className="ew-card-divider" />
+              <div className="ew-card-content">
+                <div className="ew-card-left">
+                  <div className="ew-card-name">{dimension.title}</div>
+                  <div className="ew-card-tagline">{dimension.tagline}</div>
+                </div>
+                <div className="ew-card-summary">{dimension.shortSummary}</div>
+              </div>
+              <div className="ew-card-arrow">&rarr;</div>
+            </Link>
+          )
+        })}
+      </div>
 
     </main>
   )

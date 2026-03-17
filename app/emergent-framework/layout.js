@@ -1,5 +1,6 @@
 import { getAllDimensions, getDimensionArticles } from '../../sanity/client'
 import EmergentSidebar from '../../components/emergent/EmergentSidebar'
+import './emergent-wiki.css'
 
 export default async function EmergentLayout({ children }) {
   const dimensions = await getAllDimensions()
@@ -14,15 +15,12 @@ export default async function EmergentLayout({ children }) {
   )
 
   return (
-    <div style={{
-      display: 'flex',
-      minHeight: 'calc(100vh - 70px)',
-    }}>
+    <div className="ew-wrapper">
       <EmergentSidebar
         dimensions={dimensions}
         articles={articlesByDimension}
       />
-      <div style={{ flex: 1, minWidth: 0 }}>
+      <div className="ew-main">
         {children}
       </div>
     </div>

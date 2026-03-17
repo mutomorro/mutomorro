@@ -1,33 +1,70 @@
 'use client'
 
-export default function NavPanel({ isOpen, onClose, children }) {
-  if (!isOpen) return null
+import { useState, useEffect, useRef } from 'react'
+
+export default function NavPanel({ isOpen, onClose, onMouseEnter, onMouseLeave, children }) {
+  const [visible, setVisible] = useState(false)
+  const [animating, setAnimating] = useState(false)
+  const panelRef = useRef(null)
+  const innerRef = useRef(null)
+
+  useEffect(() => {
+    if (isOpen) {
+      // Open: mount then animate in
+      setVisible(true)
+      setAnimating(true)
+      // Force reflow before adding open class
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          if (panelRef.current) panelRef.current.classList.add('nav-panel--open')
+          // Stagger child items
+          if (innerRef.current) {
+            const items = innerRef.current.querySelectorAll('.nav-panel-stagger')
+            items.forEach((el, i) => {
+              el.style.transitionDelay = `${i * 50 + 100}ms`
+              el.classList.add('nav-panel-stagger--in')
+            })
+          }
+          setTimeout(() => setAnimating(false), 500)
+        })
+      })
+    } else if (visible) {
+      // Close: animate out then unmount
+      setAnimating(true)
+      if (panelRef.current) panelRef.current.classList.remove('nav-panel--open')
+      // Remove stagger classes immediately
+      if (innerRef.current) {
+        const items = innerRef.current.querySelectorAll('.nav-panel-stagger')
+        items.forEach((el) => {
+          el.style.transitionDelay = '0ms'
+          el.classList.remove('nav-panel-stagger--in')
+        })
+      }
+      const timer = setTimeout(() => {
+        setVisible(false)
+        setAnimating(false)
+      }, 250)
+      return () => clearTimeout(timer)
+    }
+  }, [isOpen])
+
+  if (!visible && !isOpen) return null
 
   return (
     <>
       {/* Backdrop */}
       <div
         onClick={onClose}
-        style={{
-          position: 'fixed',
-          inset: 0,
-          zIndex: 90,
-          backgroundColor: 'rgba(34, 28, 43, 0.5)',
-          backdropFilter: 'blur(4px)',
-        }}
+        className={`nav-panel-backdrop${isOpen ? ' nav-panel-backdrop--open' : ''}`}
       />
 
       {/* Panel */}
-      <div style={{
-        position: 'fixed',
-        top: '70px',
-        left: 0,
-        right: 0,
-        zIndex: 95,
-        backgroundColor: 'var(--warm)',
-        borderBottom: '1px solid rgba(0,0,0,0.06)',
-        boxShadow: '0 20px 60px rgba(34, 28, 43, 0.15)',
-      }}>
+      <div
+        ref={panelRef}
+        className="nav-panel"
+        onMouseEnter={onMouseEnter}
+        onMouseLeave={onMouseLeave}
+      >
         {/* Close button */}
         <button
           onClick={onClose}
@@ -48,7 +85,7 @@ export default function NavPanel({ isOpen, onClose, children }) {
           ✕
         </button>
 
-        <div className="nav-panel__inner" style={{ maxWidth: '1350px', margin: '0 auto', padding: '4rem 48px 5rem' }}>
+        <div ref={innerRef} className="nav-panel__inner" style={{ maxWidth: '1350px', margin: '0 auto', padding: '4rem 48px 5rem' }}>
           {children}
         </div>
       </div>

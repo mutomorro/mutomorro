@@ -1,17 +1,38 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import Link from 'next/link'
 import NavPanel from './NavPanel'
 
 export default function Nav() {
   const [openPanel, setOpenPanel] = useState(null)
+  const [isCoarse, setIsCoarse] = useState(false)
+  const closeTimer = useRef(null)
+  const navRef = useRef(null)
 
-  const togglePanel = (panel) => {
-    setOpenPanel(openPanel === panel ? null : panel)
+  const clearClose = () => {
+    if (closeTimer.current) {
+      clearTimeout(closeTimer.current)
+      closeTimer.current = null
+    }
   }
 
-  const closePanel = () => setOpenPanel(null)
+  const scheduleClose = useCallback(() => {
+    clearClose()
+    closeTimer.current = setTimeout(() => {
+      setOpenPanel(null)
+    }, 250)
+  }, [])
+
+  const closePanel = () => {
+    clearClose()
+    setOpenPanel(null)
+  }
+
+  // Detect coarse pointer (touch devices)
+  useEffect(() => {
+    setIsCoarse(window.matchMedia('(pointer: coarse)').matches)
+  }, [])
 
   // Close on escape key
   useEffect(() => {
@@ -21,6 +42,38 @@ export default function Nav() {
     window.addEventListener('keydown', handleKey)
     return () => window.removeEventListener('keydown', handleKey)
   }, [])
+
+  // Clean up timer on unmount
+  useEffect(() => {
+    return () => clearClose()
+  }, [])
+
+  const handleLinkEnter = (panel) => {
+    if (isCoarse) return
+    clearClose()
+    setOpenPanel(panel)
+  }
+
+  const handleLinkLeave = () => {
+    if (isCoarse) return
+    scheduleClose()
+  }
+
+  const handlePanelEnter = () => {
+    if (isCoarse) return
+    clearClose()
+  }
+
+  const handlePanelLeave = () => {
+    if (isCoarse) return
+    scheduleClose()
+  }
+
+  const handleClick = (panel) => {
+    if (isCoarse) {
+      setOpenPanel(openPanel === panel ? null : panel)
+    }
+  }
 
   return (
     <>
@@ -66,7 +119,9 @@ export default function Nav() {
               return (
                 <button
                   key={key}
-                  onClick={() => togglePanel(key)}
+                  onClick={() => handleClick(key)}
+                  onMouseEnter={() => handleLinkEnter(key)}
+                  onMouseLeave={handleLinkLeave}
                   className={`nav-link${isActive ? ' nav-link--active' : ''}`}
                 >
                   {item}
@@ -104,7 +159,12 @@ export default function Nav() {
       </nav>
 
       {/* About Panel */}
-      <NavPanel isOpen={openPanel === 'about'} onClose={closePanel}>
+      <NavPanel
+        isOpen={openPanel === 'about'}
+        onClose={closePanel}
+        onMouseEnter={handlePanelEnter}
+        onMouseLeave={handlePanelLeave}
+      >
         <div>
           {[
             { label: 'About us', desc: 'Who we are and why we exist', href: '/about' },
@@ -117,24 +177,29 @@ export default function Nav() {
               key={item.href}
               href={item.href}
               onClick={closePanel}
-              className="nav-contents-row"
+              className="nav-contents-row nav-panel-stagger"
               style={i === 0 ? { borderTop: '1px solid rgba(0,0,0,0.06)' } : undefined}
             >
               <span className="nav-contents-row__title">{item.label}</span>
               <span className="nav-contents-row__desc">{item.desc}</span>
-              <span className="nav-contents-row__arrow">→</span>
+              <span className="nav-contents-row__arrow">›</span>
             </Link>
           ))}
         </div>
       </NavPanel>
 
       {/* How We Help Panel */}
-      <NavPanel isOpen={openPanel === 'how-we-help'} onClose={closePanel}>
+      <NavPanel
+        isOpen={openPanel === 'how-we-help'}
+        onClose={closePanel}
+        onMouseEnter={handlePanelEnter}
+        onMouseLeave={handlePanelLeave}
+      >
         <div>
           <span className="kicker" style={{ marginBottom: '2rem' }}>How We Help</span>
 
           {/* Four application categories */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '2rem', marginBottom: '3rem' }}>
+          <div className="nav-panel-stagger" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '2rem', marginBottom: '3rem' }}>
             {[
               {
                 title: 'Purpose & Direction',
@@ -208,7 +273,7 @@ export default function Nav() {
           </div>
 
           {/* Building Capability - visually distinct lower section */}
-          <div style={{
+          <div className="nav-panel-stagger" style={{
             borderTop: '1px solid rgba(0,0,0,0.06)',
             paddingTop: '2rem',
             display: 'grid',
@@ -262,11 +327,16 @@ export default function Nav() {
       </NavPanel>
 
       {/* Explore Panel */}
-      <NavPanel isOpen={openPanel === 'explore'} onClose={closePanel}>
+      <NavPanel
+        isOpen={openPanel === 'explore'}
+        onClose={closePanel}
+        onMouseEnter={handlePanelEnter}
+        onMouseLeave={handlePanelLeave}
+      >
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4rem' }}>
 
           {/* Read and think */}
-          <div>
+          <div className="nav-panel-stagger">
             <span className="kicker" style={{ marginBottom: '24px' }}>Read and think</span>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0' }}>
               {[
@@ -291,7 +361,7 @@ export default function Nav() {
           </div>
 
           {/* Learn and develop */}
-          <div>
+          <div className="nav-panel-stagger">
             <span className="kicker" style={{ marginBottom: '24px' }}>Learn and develop</span>
             <Link
               href="/courses"

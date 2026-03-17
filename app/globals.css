@@ -365,6 +365,49 @@ a:hover {
   margin: 0 0 16px;
 }
 
+/* --- Nav panel animation --- */
+.nav-panel-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  background-color: rgba(34, 28, 43, 0);
+  backdrop-filter: blur(0px);
+  transition: background-color 0.4s var(--ease), backdrop-filter 0.4s var(--ease);
+  pointer-events: none;
+}
+.nav-panel-backdrop--open {
+  background-color: rgba(34, 28, 43, 0.5);
+  backdrop-filter: blur(4px);
+  pointer-events: auto;
+}
+.nav-panel {
+  position: fixed;
+  top: 70px;
+  left: 0;
+  right: 0;
+  z-index: 95;
+  background-color: var(--warm);
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+  box-shadow: 0 20px 60px rgba(34, 28, 43, 0.15);
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s var(--ease);
+}
+.nav-panel--open {
+  max-height: 80vh;
+  overflow: visible;
+}
+.nav-panel-stagger {
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.2s var(--ease), transform 0.2s var(--ease);
+}
+.nav-panel-stagger--in {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.35s var(--ease), transform 0.35s var(--ease);
+}
+
 /* --- Nav panel links --- */
 .nav-panel-link {
   text-decoration: none;
@@ -402,8 +445,10 @@ a:hover {
 /* --- Nav contents rows (About panel) --- */
 .nav-contents-row {
   text-decoration: none;
-  display: flex;
+  display: grid;
+  grid-template-columns: 40% 1fr auto;
   align-items: center;
+  gap: 2rem;
   padding: 28px 0;
   border-bottom: 1px solid rgba(0,0,0,0.06);
   transition: background-color 0.2s var(--ease);
@@ -412,30 +457,25 @@ a:hover {
   background-color: rgba(155,81,224,0.02);
 }
 .nav-contents-row__title {
-  font-size: clamp(24px, 3vw, 34px);
+  font-size: clamp(20px, 2vw, 26px);
   font-weight: 400;
   line-height: 1.15;
   color: var(--dark);
   transition: color 0.2s var(--ease);
-  flex-shrink: 0;
 }
 .nav-contents-row:hover .nav-contents-row__title {
   color: var(--accent);
 }
 .nav-contents-row__desc {
-  font-size: 15px;
+  font-size: 18px;
   font-weight: 300;
-  color: rgba(0,0,0,0.4);
-  margin-left: auto;
-  padding-left: 2rem;
-  text-align: right;
-  white-space: nowrap;
+  line-height: 1.4;
+  color: rgba(0,0,0,0.45);
 }
 .nav-contents-row__arrow {
   color: var(--accent);
-  font-size: 20px;
+  font-size: 24px;
   opacity: 0.4;
-  margin-left: 2rem;
   flex-shrink: 0;
   transition: opacity 0.2s var(--ease), transform 0.2s var(--ease);
 }

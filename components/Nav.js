@@ -310,49 +310,39 @@ export default function Nav() {
         onMouseEnter={handlePanelEnter}
         onMouseLeave={handlePanelLeave}
       >
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4rem' }}>
-
+        <div style={{ maxWidth: '50%' }}>
           {/* Read and think */}
-          <div className="nav-panel-stagger">
-            <span className="kicker" style={{ marginBottom: '24px' }}>Read and think</span>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0' }}>
-              {[
-                { label: 'The EMERGENT Framework', desc: 'The eight dimensions of organisational health', href: '/emergent-framework' },
-                { label: 'Tools of the Trade', desc: 'Practical models, frameworks and concepts', href: '/tools' },
-                { label: 'Thinking', desc: 'Articles, perspectives and ideas', href: '/article' },
-              ].map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  onClick={closePanel}
-                  className="nav-panel-link"
-                >
-                  <div>
-                    <p className="nav-panel-link__title">{item.label}</p>
-                    <p className="nav-panel-link__desc">{item.desc}</p>
-                  </div>
-                  <span className="nav-panel-link__arrow">→</span>
-                </Link>
-              ))}
-            </div>
+          <div className="nav-panel-stagger nav-menu-col">
+            <span className="kicker" style={{ marginBottom: '20px' }}>Read and think</span>
+            {[
+              { label: 'The EMERGENT Framework', href: '/emergent-framework' },
+              { label: 'Tools of the Trade', href: '/tools' },
+              { label: 'Thinking', href: '/article' },
+            ].map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                onClick={closePanel}
+                className="nav-menu-link"
+              >
+                <span className="nav-menu-link__label">{item.label}</span>
+                <span className="nav-menu-link__chevron">›</span>
+              </Link>
+            ))}
           </div>
 
           {/* Learn and develop */}
-          <div className="nav-panel-stagger">
-            <span className="kicker" style={{ marginBottom: '24px' }}>Learn and develop</span>
+          <div className="nav-panel-stagger nav-menu-col" style={{ marginTop: '32px' }}>
+            <span className="kicker" style={{ marginBottom: '20px' }}>Learn and develop</span>
             <Link
               href="/courses"
               onClick={closePanel}
-              className="nav-panel-link"
+              className="nav-menu-link"
             >
-              <div>
-                <p className="nav-panel-link__title">Courses</p>
-                <p className="nav-panel-link__desc">Ready-made courses on popular topics</p>
-              </div>
-              <span className="nav-panel-link__arrow">→</span>
+              <span className="nav-menu-link__label">Courses</span>
+              <span className="nav-menu-link__chevron">›</span>
             </Link>
           </div>
-
         </div>
       </NavPanel>
 

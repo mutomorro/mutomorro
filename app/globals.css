@@ -57,6 +57,10 @@
    2. BASE RESETS
    ============================================ */
 
+html {
+  scrollbar-gutter: stable;
+}
+
 body {
   background: var(--white);
   color: var(--black);

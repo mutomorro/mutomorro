@@ -197,7 +197,7 @@ export default function Nav() {
       >
         <div>
           {/* Four service categories */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0 2rem' }}>
             {[
               {
                 title: 'Purpose & Direction',
@@ -261,7 +261,7 @@ export default function Nav() {
           {/* Building Capability */}
           <div className="nav-panel-stagger">
             <span className="kicker" style={{ marginBottom: '24px' }}>Building Capability</span>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0', maxWidth: '50%' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0 2rem', maxWidth: '50%' }}>
               <div className="nav-menu-col">
                 <span className="kicker" style={{ marginBottom: '20px' }}>For Leaders</span>
                 {[

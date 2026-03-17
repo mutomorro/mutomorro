@@ -201,7 +201,6 @@ export default function Nav() {
             {[
               {
                 title: 'Purpose & Direction',
-                desc: 'Who we are and where we\'re going',
                 links: ['Culture Change', 'Organisational Purpose', 'Strategic Alignment'],
                 hrefs: [
                   '/services/culture-change-consultancy',
@@ -211,7 +210,6 @@ export default function Nav() {
               },
               {
                 title: 'Structure & Operations',
-                desc: 'How we\'re organised and how work flows',
                 links: ['Post-Merger Integration', 'Organisational Restructuring', 'Operational Effectiveness', 'Organisational Design'],
                 hrefs: [
                   '/services/post-merger-integration-consultancy',
@@ -222,7 +220,6 @@ export default function Nav() {
               },
               {
                 title: 'People & Capability',
-                desc: 'How we develop our collective abilities',
                 links: ['Change Management', 'Employee Experience', 'Capacity Building', 'Organisational Development'],
                 hrefs: [
                   '/services/change-management-consultancy',
@@ -233,7 +230,6 @@ export default function Nav() {
               },
               {
                 title: 'Service & Experience',
-                desc: 'How we deliver value to customers',
                 links: ['Customer Experience', 'Service Design', 'Scaling Operations'],
                 hrefs: [
                   '/services/customer-experience-consultancy',
@@ -243,20 +239,18 @@ export default function Nav() {
               },
             ].map((col) => (
               <div key={col.title} className="nav-panel-stagger nav-menu-col">
-                <p className="nav-menu-col__heading">{col.title}</p>
-                <p className="nav-menu-col__desc">{col.desc}</p>
-                <div className="nav-menu-col__links">
-                  {col.links.map((link, i) => (
-                    <Link
-                      key={link}
-                      href={col.hrefs[i]}
-                      onClick={closePanel}
-                      className="nav-menu-link"
-                    >
-                      {link}
-                    </Link>
-                  ))}
-                </div>
+                <span className="kicker" style={{ marginBottom: '20px' }}>{col.title}</span>
+                {col.links.map((link, i) => (
+                  <Link
+                    key={link}
+                    href={col.hrefs[i]}
+                    onClick={closePanel}
+                    className="nav-menu-link"
+                  >
+                    <span className="nav-menu-link__label">{link}</span>
+                    <span className="nav-menu-link__chevron">›</span>
+                  </Link>
+                ))}
               </div>
             ))}
           </div>
@@ -269,43 +263,41 @@ export default function Nav() {
             <span className="kicker" style={{ marginBottom: '24px' }}>Building Capability</span>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0', maxWidth: '50%' }}>
               <div className="nav-menu-col nav-menu-col--secondary">
-                <p className="nav-menu-col__heading nav-menu-col__heading--dark">For Leaders</p>
-                <div className="nav-menu-col__links">
-                  {[
-                    { label: 'Leadership Programme', href: '/services/leadership-programme' },
-                    { label: 'Executive Coaching', href: '/services/executive-coaching' },
-                    { label: 'Leadership Facilitation', href: '/services/leadership-facilitation' },
-                  ].map((item) => (
-                    <Link
-                      key={item.label}
-                      href={item.href}
-                      onClick={closePanel}
-                      className="nav-menu-link"
-                    >
-                      {item.label}
-                    </Link>
-                  ))}
-                </div>
+                <span className="kicker" style={{ marginBottom: '20px' }}>For Leaders</span>
+                {[
+                  { label: 'Leadership Programme', href: '/services/leadership-programme' },
+                  { label: 'Executive Coaching', href: '/services/executive-coaching' },
+                  { label: 'Leadership Facilitation', href: '/services/leadership-facilitation' },
+                ].map((item) => (
+                  <Link
+                    key={item.label}
+                    href={item.href}
+                    onClick={closePanel}
+                    className="nav-menu-link"
+                  >
+                    <span className="nav-menu-link__label">{item.label}</span>
+                    <span className="nav-menu-link__chevron">›</span>
+                  </Link>
+                ))}
               </div>
               <div className="nav-menu-col nav-menu-col--secondary">
-                <p className="nav-menu-col__heading nav-menu-col__heading--dark">For Teams</p>
-                <div className="nav-menu-col__links">
-                  {[
-                    { label: 'Bespoke Training', href: '/services/bespoke-training' },
-                    { label: 'Problem Solving Workshops', href: '/services/problem-solving-workshops' },
-                    { label: 'Manager Coaching', href: '/services/manager-coaching' },
-                    { label: 'Prebuilt Courses', href: '/courses' },
-                  ].map((item) => (
-                    <Link
-                      key={item.label}
-                      href={item.href}
-                      onClick={closePanel}
-                      className="nav-menu-link"
-                    >
-                      {item.label}
-                    </Link>
-                  ))}
-                </div>
+                <span className="kicker" style={{ marginBottom: '20px' }}>For Teams</span>
+                {[
+                  { label: 'Bespoke Training', href: '/services/bespoke-training' },
+                  { label: 'Problem Solving Workshops', href: '/services/problem-solving-workshops' },
+                  { label: 'Manager Coaching', href: '/services/manager-coaching' },
+                  { label: 'Prebuilt Courses', href: '/courses' },
+                ].map((item) => (
+                  <Link
+                    key={item.label}
+                    href={item.href}
+                    onClick={closePanel}
+                    className="nav-menu-link"
+                  >
+                    <span className="nav-menu-link__label">{item.label}</span>
+                    <span className="nav-menu-link__chevron">›</span>
+                  </Link>
+                ))}
               </div>
             </div>
           </div>

@@ -196,7 +196,7 @@ export default async function ServicePage({ params }) {
           BRIDGE TEXT (mid-dark #423B49)
           ========================================== */}
       {service.recognitionBridge && (
-        <section className="section--full" style={{ padding: '80px 48px', background: '#423B49' }}>
+        <section className="section--full dark-bg" style={{ padding: '80px 48px', background: '#423B49' }}>
           <div className="scroll-in" style={{
             maxWidth: '860px',
             margin: '0 auto',

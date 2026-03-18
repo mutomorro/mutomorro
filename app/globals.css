@@ -1119,6 +1119,10 @@ a:hover {
   margin: 0 0 1.25rem 0;
 }
 
+.dark-bg .portable-text p {
+  color: rgba(255, 255, 255, 0.85);
+}
+
 .portable-text h2 {
   font-size: 1.75rem;
   font-weight: 400;

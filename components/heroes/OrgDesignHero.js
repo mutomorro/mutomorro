@@ -1,0 +1,441 @@
+'use client'
+import { useEffect, useRef } from 'react'
+
+export default function OrgDesignHero() {
+  const canvasRef = useRef(null)
+
+  useEffect(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+    const ctx = canvas.getContext('2d')
+    const dpr = window.devicePixelRatio || 1
+    let animId
+    const parent = canvas.parentElement
+    let W, H, cx, cy
+
+    var colours = [
+      { r: 128, g: 56, b: 143 },
+      { r: 155, g: 81, b: 224 },
+      { r: 255, g: 66, b: 121 },
+      { r: 255, g: 162, b: 0 },
+    ]
+
+    function colourAt(t, alpha) {
+      t = Math.max(0, Math.min(1, t))
+      var idx = t * (colours.length - 1)
+      var i = Math.floor(idx)
+      var f = idx - i
+      if (i >= colours.length - 1) { i = colours.length - 2; f = 1 }
+      var a = colours[i], b = colours[i + 1]
+      return 'rgba(' + Math.round(a.r + (b.r - a.r) * f) + ',' +
+             Math.round(a.g + (b.g - a.g) * f) + ',' +
+             Math.round(a.b + (b.b - a.b) * f) + ',' + alpha + ')'
+    }
+
+    // ---- THE LIVING BUILDING ----
+    var rooms = []
+    var cols = 6
+    var rows = 4
+    var cellW, cellH
+
+    function initRooms() {
+      cellW = W * 0.7 / cols
+      cellH = H * 0.6 / rows
+      var startX = cx - (cols * cellW) / 2
+      var startY = cy - (rows * cellH) / 2
+
+      rooms = []
+      for (var r = 0; r < rows; r++) {
+        for (var c = 0; c < cols; c++) {
+          rooms.push({
+            baseX: startX + c * cellW + cellW / 2,
+            baseY: startY + r * cellH + cellH / 2,
+            baseW: cellW * 0.85,
+            baseH: cellH * 0.85,
+            col: c, row: r,
+            breathPhase: Math.random() * Math.PI * 2,
+            breathSpeed: 0.0006 + Math.random() * 0.0008,
+            breathAmountW: 0.05 + Math.random() * 0.1,
+            breathAmountH: 0.05 + Math.random() * 0.1,
+            colourPos: (c / cols * 0.6 + r / rows * 0.4),
+            activity: 0.3 + Math.random() * 0.7,
+            flexPhase: Math.random() * Math.PI * 2,
+            flexSpeed: 0.0002 + Math.random() * 0.0002
+          })
+        }
+      }
+    }
+
+    // ---- CORRIDORS (connections between rooms) ----
+    var corridors = []
+    function initCorridors() {
+      corridors = []
+      for (var r = 0; r < rows; r++) {
+        for (var c = 0; c < cols; c++) {
+          var idx = r * cols + c
+          if (c < cols - 1) {
+            corridors.push({
+              from: idx, to: idx + 1,
+              type: 'horizontal',
+              flowSpeed: 0.001 + Math.random() * 0.002,
+              flowPhase: Math.random() * Math.PI * 2,
+              width: 0.3 + Math.random() * 0.4,
+              colourPos: (c + 0.5) / cols
+            })
+          }
+          if (r < rows - 1) {
+            corridors.push({
+              from: idx, to: idx + cols,
+              type: 'vertical',
+              flowSpeed: 0.001 + Math.random() * 0.002,
+              flowPhase: Math.random() * Math.PI * 2,
+              width: 0.3 + Math.random() * 0.4,
+              colourPos: (r + 0.5) / rows * 0.5 + c / cols * 0.5
+            })
+          }
+          if (c < cols - 1 && r < rows - 1 && Math.random() > 0.6) {
+            corridors.push({
+              from: idx, to: idx + cols + 1,
+              type: 'diagonal',
+              flowSpeed: 0.0008 + Math.random() * 0.0015,
+              flowPhase: Math.random() * Math.PI * 2,
+              width: 0.2 + Math.random() * 0.2,
+              colourPos: ((c + r) / (cols + rows))
+            })
+          }
+        }
+      }
+    }
+
+    // ---- FLOW PARTICLES ----
+    var flows = []
+    var numFlows = 40
+    function initFlows() {
+      flows = []
+      for (var i = 0; i < numFlows; i++) {
+        var corrIdx = Math.floor(Math.random() * corridors.length)
+        flows.push({
+          corrIdx: corrIdx,
+          progress: Math.random(),
+          speed: 0.002 + Math.random() * 0.003,
+          direction: Math.random() > 0.5 ? 1 : -1,
+          size: 1.2 + Math.random() * 2,
+          colourPos: corridors[corrIdx].colourPos,
+          alpha: 0.3 + Math.random() * 0.4
+        })
+      }
+    }
+
+    // ---- ACTIVITY PULSES ----
+    var activityPulses = []
+    var pulseTimer = 0
+    var pulseInterval = 2000
+
+    // ---- TEXT LABELS ----
+    var labels = [
+      { text: 'how the pieces fit', ring: 0, slot: 0 },
+      { text: 'what connects teams', ring: 0, slot: 1 },
+      { text: 'where decisions sit', ring: 0, slot: 2 },
+      { text: 'how capability builds', ring: 0, slot: 3 },
+      { text: 'whether the structure serves the work', ring: 1, slot: 0 },
+      { text: 'how services reach people', ring: 1, slot: 1 },
+      { text: 'what collaboration looks like', ring: 1, slot: 2 },
+      { text: 'where knowledge concentrates', ring: 1, slot: 3 },
+      { text: 'how the design enables or constrains', ring: 2, slot: 0 },
+      { text: 'what gets easier', ring: 2, slot: 1 },
+      { text: 'what gets harder', ring: 2, slot: 2 },
+      { text: 'how the whole thing holds together', ring: 2, slot: 3 },
+    ]
+
+    var ringRadii = [120, 210, 295]
+    var ringOffsets = [0.2, Math.PI / 4, Math.PI / 6 + 0.3]
+    var ringSizes = [13.5, 14, 14.5]
+
+    var textItems = []
+    function initTextItems() {
+      textItems = []
+      for (var i = 0; i < labels.length; i++) {
+        var l = labels[i]
+        var angle = ringOffsets[l.ring] + (l.slot / 4) * Math.PI * 2
+        textItems.push({
+          text: l.text,
+          baseAngle: angle,
+          radius: ringRadii[l.ring],
+          phase: Math.random() * Math.PI * 2,
+          orbitSpeed: 0.00004 + Math.random() * 0.00003,
+          breathSpeed: 0.0003 + Math.random() * 0.0003,
+          breathAmount: 8 + Math.random() * 8,
+          fadePhase: Math.random() * Math.PI * 2,
+          fadeSpeed: 0.0003 + Math.random() * 0.0003,
+          colourPos: i / labels.length,
+          fontSize: ringSizes[l.ring]
+        })
+      }
+    }
+
+    // ---- DRAW FUNCTIONS ----
+
+    function getRoomBounds(room, time) {
+      var breathW = Math.sin(time * room.breathSpeed + room.breathPhase) * room.breathAmountW
+      var breathH = Math.sin(time * room.breathSpeed * 0.8 + room.breathPhase + 1) * room.breathAmountH
+      var flex = Math.sin(time * room.flexSpeed + room.flexPhase)
+      var flexW = flex * 0.08 * room.activity
+      var flexH = -flex * 0.06 * room.activity
+
+      var w = room.baseW * (1 + breathW + flexW)
+      var h = room.baseH * (1 + breathH + flexH)
+
+      return {
+        x: room.baseX - w / 2,
+        y: room.baseY - h / 2,
+        w: w,
+        h: h,
+        cx: room.baseX,
+        cy: room.baseY
+      }
+    }
+
+    function drawRooms(time) {
+      for (var i = 0; i < rooms.length; i++) {
+        var room = rooms[i]
+        var b = getRoomBounds(room, time)
+        var breathe = Math.sin(time * room.breathSpeed + room.breathPhase)
+
+        var fillAlpha = 0.02 + room.activity * 0.04 + breathe * 0.01
+        ctx.fillStyle = colourAt(room.colourPos, fillAlpha)
+
+        var radius = 4
+        ctx.beginPath()
+        ctx.moveTo(b.x + radius, b.y)
+        ctx.lineTo(b.x + b.w - radius, b.y)
+        ctx.quadraticCurveTo(b.x + b.w, b.y, b.x + b.w, b.y + radius)
+        ctx.lineTo(b.x + b.w, b.y + b.h - radius)
+        ctx.quadraticCurveTo(b.x + b.w, b.y + b.h, b.x + b.w - radius, b.y + b.h)
+        ctx.lineTo(b.x + radius, b.y + b.h)
+        ctx.quadraticCurveTo(b.x, b.y + b.h, b.x, b.y + b.h - radius)
+        ctx.lineTo(b.x, b.y + radius)
+        ctx.quadraticCurveTo(b.x, b.y, b.x + radius, b.y)
+        ctx.closePath()
+        ctx.fill()
+
+        var borderAlpha = 0.06 + room.activity * 0.06 + breathe * 0.02
+        ctx.strokeStyle = colourAt(room.colourPos, borderAlpha)
+        ctx.lineWidth = 0.8
+        ctx.stroke()
+
+        if (room.activity > 0.6) {
+          var glowGrad = ctx.createRadialGradient(b.cx, b.cy, 0, b.cx, b.cy, Math.min(b.w, b.h) * 0.4)
+          glowGrad.addColorStop(0, colourAt(room.colourPos, 0.06 * room.activity))
+          glowGrad.addColorStop(1, colourAt(room.colourPos, 0))
+          ctx.beginPath()
+          ctx.arc(b.cx, b.cy, Math.min(b.w, b.h) * 0.4, 0, Math.PI * 2)
+          ctx.fillStyle = glowGrad
+          ctx.fill()
+        }
+      }
+    }
+
+    function drawCorridors(time) {
+      for (var i = 0; i < corridors.length; i++) {
+        var corr = corridors[i]
+        var fromRoom = rooms[corr.from]
+        var toRoom = rooms[corr.to]
+        var fromB = getRoomBounds(fromRoom, time)
+        var toB = getRoomBounds(toRoom, time)
+
+        var flow = Math.sin(time * corr.flowSpeed + corr.flowPhase)
+        var alpha = 0.04 + corr.width * 0.06 + Math.abs(flow) * 0.03
+
+        ctx.beginPath()
+        ctx.moveTo(fromB.cx, fromB.cy)
+
+        if (corr.type === 'diagonal') {
+          var midX = (fromB.cx + toB.cx) / 2 + Math.sin(time * 0.0004 + i) * 8
+          var midY = (fromB.cy + toB.cy) / 2 + Math.cos(time * 0.0003 + i) * 6
+          ctx.quadraticCurveTo(midX, midY, toB.cx, toB.cy)
+        } else {
+          ctx.lineTo(toB.cx, toB.cy)
+        }
+
+        ctx.strokeStyle = colourAt(corr.colourPos, alpha)
+        ctx.lineWidth = corr.width + Math.abs(flow) * 0.3
+        ctx.stroke()
+      }
+    }
+
+    function drawFlows(time) {
+      for (var i = 0; i < flows.length; i++) {
+        var fl = flows[i]
+        var corr = corridors[fl.corrIdx]
+        var fromRoom = rooms[corr.from]
+        var toRoom = rooms[corr.to]
+        var fromB = getRoomBounds(fromRoom, time)
+        var toB = getRoomBounds(toRoom, time)
+
+        fl.progress += fl.speed * fl.direction * 16
+        if (fl.progress > 1) {
+          fl.progress = 1
+          fl.direction = -1
+          if (Math.random() > 0.5) {
+            var newCorr = Math.floor(Math.random() * corridors.length)
+            fl.corrIdx = newCorr
+            fl.progress = 0
+            fl.direction = 1
+            fl.colourPos = corridors[newCorr].colourPos
+          }
+        }
+        if (fl.progress < 0) {
+          fl.progress = 0
+          fl.direction = 1
+          if (Math.random() > 0.5) {
+            var newCorr = Math.floor(Math.random() * corridors.length)
+            fl.corrIdx = newCorr
+            fl.progress = 1
+            fl.direction = -1
+            fl.colourPos = corridors[newCorr].colourPos
+          }
+        }
+
+        var t = fl.progress
+        var x, y
+        if (corr.type === 'diagonal') {
+          var midX = (fromB.cx + toB.cx) / 2 + Math.sin(time * 0.0004 + fl.corrIdx) * 8
+          var midY = (fromB.cy + toB.cy) / 2 + Math.cos(time * 0.0003 + fl.corrIdx) * 6
+          var mt = 1 - t
+          x = mt * mt * fromB.cx + 2 * mt * t * midX + t * t * toB.cx
+          y = mt * mt * fromB.cy + 2 * mt * t * midY + t * t * toB.cy
+        } else {
+          x = fromB.cx + (toB.cx - fromB.cx) * t
+          y = fromB.cy + (toB.cy - fromB.cy) * t
+        }
+
+        var glowGrad = ctx.createRadialGradient(x, y, 0, x, y, fl.size * 5)
+        glowGrad.addColorStop(0, colourAt(fl.colourPos, fl.alpha * 0.3))
+        glowGrad.addColorStop(1, colourAt(fl.colourPos, 0))
+        ctx.beginPath()
+        ctx.arc(x, y, fl.size * 5, 0, Math.PI * 2)
+        ctx.fillStyle = glowGrad
+        ctx.fill()
+
+        ctx.beginPath()
+        ctx.arc(x, y, fl.size, 0, Math.PI * 2)
+        ctx.fillStyle = colourAt(fl.colourPos, fl.alpha)
+        ctx.fill()
+      }
+    }
+
+    function drawActivityPulses(time) {
+      pulseTimer += 16
+      if (pulseTimer > pulseInterval) {
+        var roomIdx = Math.floor(Math.random() * rooms.length)
+        if (rooms[roomIdx].activity > 0.5) {
+          activityPulses.push({
+            roomIdx: roomIdx,
+            born: time,
+            life: 1500 + Math.random() * 1000
+          })
+        }
+        pulseTimer = 0
+      }
+
+      for (var i = activityPulses.length - 1; i >= 0; i--) {
+        var pulse = activityPulses[i]
+        var age = time - pulse.born
+        if (age > pulse.life) { activityPulses.splice(i, 1); continue }
+
+        var room = rooms[pulse.roomIdx]
+        var b = getRoomBounds(room, time)
+        var progress = age / pulse.life
+        var radius = Math.min(b.w, b.h) * 0.5 * progress
+        var alpha = (1 - progress) * 0.08 * room.activity
+
+        ctx.beginPath()
+        ctx.arc(b.cx, b.cy, radius, 0, Math.PI * 2)
+        ctx.strokeStyle = colourAt(room.colourPos, alpha)
+        ctx.lineWidth = 1.5 * (1 - progress)
+        ctx.stroke()
+      }
+    }
+
+    function drawTextLabels(time) {
+      ctx.textAlign = 'center'
+      ctx.textBaseline = 'middle'
+
+      for (var i = 0; i < textItems.length; i++) {
+        var t = textItems[i]
+        var currentAngle = t.baseAngle + time * t.orbitSpeed
+        var radialBreath = Math.sin(time * t.breathSpeed + t.phase) * t.breathAmount
+        var currentRadius = t.radius + radialBreath
+        var x = cx + Math.cos(currentAngle) * currentRadius
+        var y = cy + Math.sin(currentAngle) * currentRadius
+        var fadeCycle = Math.sin(time * t.fadeSpeed + t.fadePhase)
+        var alpha = 0.4 + fadeCycle * 0.15
+        var tilt = Math.sin(currentAngle) * 0.04
+
+        ctx.save()
+        ctx.translate(x, y)
+        ctx.rotate(tilt)
+
+        ctx.shadowColor = colourAt(t.colourPos, 0.5)
+        ctx.shadowBlur = 20
+        ctx.font = '400 ' + t.fontSize + 'px "Source Sans 3", "Source Sans Pro", sans-serif'
+        ctx.fillStyle = colourAt(t.colourPos, alpha)
+        ctx.fillText(t.text, 0, 0)
+
+        ctx.shadowColor = 'transparent'
+        ctx.shadowBlur = 0
+        ctx.fillStyle = colourAt(t.colourPos, alpha)
+        ctx.fillText(t.text, 0, 0)
+
+        ctx.restore()
+      }
+    }
+
+    function resize() {
+      const rect = parent.getBoundingClientRect()
+      W = rect.width
+      H = rect.height
+      canvas.width = W * dpr
+      canvas.height = H * dpr
+      canvas.style.width = W + 'px'
+      canvas.style.height = H + 'px'
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+      cx = W / 2
+      cy = H / 2
+      initRooms()
+      initCorridors()
+      initFlows()
+      initTextItems()
+    }
+
+    const ro = new ResizeObserver(resize)
+    ro.observe(parent)
+    resize()
+
+    // ---- MAIN LOOP ----
+    function tick(time) {
+      ctx.clearRect(0, 0, W, H)
+
+      drawCorridors(time)
+      drawRooms(time)
+      drawFlows(time)
+      drawActivityPulses(time)
+      drawTextLabels(time)
+
+      animId = requestAnimationFrame(tick)
+    }
+
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      tick(8000)
+    } else {
+      animId = requestAnimationFrame(tick)
+    }
+
+    return () => {
+      cancelAnimationFrame(animId)
+      ro.disconnect()
+    }
+  }, [])
+
+  return <canvas ref={canvasRef} style={{ display: 'block', width: '100%', height: '100%' }} />
+}

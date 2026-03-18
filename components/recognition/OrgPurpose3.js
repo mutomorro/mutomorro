@@ -1,0 +1,112 @@
+'use client'
+import { useEffect, useRef } from 'react'
+
+export default function OrgPurpose3() {
+  const canvasRef = useRef(null)
+
+  useEffect(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+    const ctx = canvas.getContext('2d')
+    const dpr = window.devicePixelRatio || 1
+    let animId
+    const parent = canvas.parentElement
+    let W, H
+
+    var rm = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
+    var cols = [{r:128,g:56,b:143},{r:155,g:81,b:224},{r:255,g:66,b:121},{r:255,g:162,b:0}]
+
+    var people = []
+    for (var i = 0; i < 20; i++) {
+      var angle = Math.random() * Math.PI * 2
+      var dist = 0.12 + Math.random() * 0.3
+      people.push({
+        x: 0.5 + Math.cos(angle) * dist * 1.3,
+        y: 0.5 + Math.sin(angle) * dist,
+        phase: Math.random() * Math.PI * 2,
+        orbitSpeed: 0.2 + Math.random() * 0.3,
+        colIdx: i % 4,
+        size: 2 + Math.random() * 2,
+        threadAlpha: 0.12 + Math.random() * 0.08
+      })
+    }
+    var t = 0
+
+    function resize() {
+      const rect = parent.getBoundingClientRect()
+      W = rect.width
+      H = rect.height
+      canvas.width = W * dpr
+      canvas.height = H * dpr
+      canvas.style.width = W + 'px'
+      canvas.style.height = H + 'px'
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+    }
+
+    const ro = new ResizeObserver(resize)
+    ro.observe(parent)
+    resize()
+
+    function draw() {
+      ctx.clearRect(0, 0, W, H)
+      t += 0.016
+      var cx = 0.5 * W, cy = 0.5 * H
+      var pulse = rm ? 1 : 0.85 + Math.sin(t * 0.4) * 0.15
+      var cg = ctx.createRadialGradient(cx, cy, 0, cx, cy, 25 * pulse)
+      cg.addColorStop(0, 'rgba(255,162,0,0.25)')
+      cg.addColorStop(0.5, 'rgba(255,66,121,0.08)')
+      cg.addColorStop(1, 'rgba(155,81,224,0)')
+      ctx.fillStyle = cg
+      ctx.beginPath()
+      ctx.arc(cx, cy, 25 * pulse, 0, Math.PI * 2)
+      ctx.fill()
+      for (var i = 0; i < people.length; i++) {
+        var p = people[i]
+        var c = cols[p.colIdx]
+        var px2 = p.x * W, py2 = p.y * H
+        if (!rm) {
+          px2 += Math.sin(t * p.orbitSpeed + p.phase) * 5
+          py2 += Math.cos(t * p.orbitSpeed * 0.7 + p.phase) * 4
+        }
+        ctx.beginPath()
+        ctx.moveTo(px2, py2)
+        ctx.lineTo(cx, cy)
+        ctx.strokeStyle = 'rgba(' + c.r + ',' + c.g + ',' + c.b + ',' + p.threadAlpha + ')'
+        ctx.lineWidth = 0.8
+        ctx.stroke()
+        var pg = ctx.createRadialGradient(px2, py2, 0, px2, py2, p.size * 4)
+        pg.addColorStop(0, 'rgba(' + c.r + ',' + c.g + ',' + c.b + ',0.3)')
+        pg.addColorStop(1, 'rgba(' + c.r + ',' + c.g + ',' + c.b + ',0)')
+        ctx.fillStyle = pg
+        ctx.beginPath()
+        ctx.arc(px2, py2, p.size * 4, 0, Math.PI * 2)
+        ctx.fill()
+        ctx.beginPath()
+        ctx.arc(px2, py2, p.size, 0, Math.PI * 2)
+        ctx.fillStyle = 'rgba(' + c.r + ',' + c.g + ',' + c.b + ',0.6)'
+        ctx.fill()
+      }
+      ctx.beginPath()
+      ctx.arc(cx, cy, 4, 0, Math.PI * 2)
+      ctx.fillStyle = 'rgba(255,200,100,0.5)'
+      ctx.fill()
+
+      if (rm) return
+      animId = requestAnimationFrame(draw)
+    }
+
+    if (rm) {
+      draw()
+    } else {
+      animId = requestAnimationFrame(draw)
+    }
+
+    return () => {
+      cancelAnimationFrame(animId)
+      ro.disconnect()
+    }
+  }, [])
+
+  return <canvas ref={canvasRef} style={{ display: 'block', width: '100%', height: '100%' }} />
+}

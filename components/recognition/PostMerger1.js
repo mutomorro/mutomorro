@@ -1,0 +1,94 @@
+'use client'
+import { useEffect, useRef } from 'react'
+
+export default function PostMerger1() {
+  const canvasRef = useRef(null)
+
+  useEffect(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+    const ctx = canvas.getContext('2d')
+    const dpr = window.devicePixelRatio || 1
+    let animId
+    const parent = canvas.parentElement
+    let W, H
+
+    var cols=[{r:128,g:56,b:143},{r:155,g:81,b:224},{r:255,g:66,b:121},{r:255,g:162,b:0}];
+
+    var paletteA=[{r:128,g:56,b:143},{r:155,g:81,b:224},{r:180,g:60,b:160}];
+    var paletteB=[{r:255,g:66,b:121},{r:255,g:162,b:0},{r:255,g:120,b:50}];
+    var particles=[];var N=80;
+    for(var i=0;i<N;i++){
+      var isA=i<N/2;var pal=isA?paletteA:paletteB;
+      var col=pal[Math.floor(Math.random()*pal.length)];
+      var startX=isA?Math.random()*0.35:0.65+Math.random()*0.35;
+      particles.push({x:startX,y:0.15+Math.random()*0.7,homeX:startX,homeY:0.15+Math.random()*0.7,
+        r:col.r,g:col.g,b:col.b,origR:col.r,origG:col.g,origB:col.b,
+        size:2+Math.random()*3,isA:isA,mixProgress:0,phase:Math.random()*Math.PI*2});
+    }
+
+    function resize() {
+      const rect = parent.getBoundingClientRect()
+      W = rect.width
+      H = rect.height
+      canvas.width = W * dpr
+      canvas.height = H * dpr
+      canvas.style.width = W + 'px'
+      canvas.style.height = H + 'px'
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+    }
+
+    const ro = new ResizeObserver(resize)
+    ro.observe(parent)
+    resize()
+
+    var t=0;
+    function tick(){
+      ctx.clearRect(0,0,W,H);t+=0.016;
+      var mixCycle=(Math.sin(t*0.15)+1)/2;var mixTarget=mixCycle*0.7;
+      for(var i=0;i<particles.length;i++){
+        var p=particles[i];
+        var targetX=p.homeX+(0.5-p.homeX)*mixTarget;
+        var targetY=p.homeY+Math.sin(t*0.3+p.phase)*0.04;
+        p.x+=(targetX-p.x)*0.01;p.y+=(targetY-p.y)*0.01;
+        p.x+=Math.sin(t*0.5+p.phase)*0.0005;p.y+=Math.cos(t*0.4+p.phase)*0.0003;
+        p.mixProgress+=(mixTarget-p.mixProgress)*0.008;
+        var blend=p.mixProgress;
+        if(p.isA){p.r=Math.round(p.origR+(255-p.origR)*blend*0.4);p.g=Math.round(p.origG+(120-p.origG)*blend*0.3);p.b=Math.round(p.origB+(80-p.origB)*blend*0.3);}
+        else{p.r=Math.round(p.origR+(160-p.origR)*blend*0.3);p.g=Math.round(p.origG+(70-p.origG)*blend*0.3);p.b=Math.round(p.origB+(180-p.origB)*blend*0.4);}
+        var px=p.x*W,py=p.y*H;var alpha=0.5+p.mixProgress*0.3;
+        var grd=ctx.createRadialGradient(px,py,0,px,py,p.size*4);
+        grd.addColorStop(0,"rgba("+p.r+","+p.g+","+p.b+","+alpha*0.4+")");
+        grd.addColorStop(1,"rgba("+p.r+","+p.g+","+p.b+",0)");
+        ctx.fillStyle=grd;ctx.fillRect(px-p.size*4,py-p.size*4,p.size*8,p.size*8);
+        ctx.beginPath();ctx.arc(px,py,p.size,0,Math.PI*2);
+        ctx.fillStyle="rgba("+p.r+","+p.g+","+p.b+","+alpha+")";ctx.fill();
+      }
+      ctx.lineWidth=0.5;
+      for(var i=0;i<particles.length;i++){
+        for(var j=i+1;j<particles.length;j++){
+          if(particles[i].isA===particles[j].isA)continue;
+          var dx=(particles[i].x-particles[j].x)*W;var dy=(particles[i].y-particles[j].y)*H;
+          var dist=Math.sqrt(dx*dx+dy*dy);
+          if(dist<60){var la=(1-dist/60)*0.15*mixCycle;
+            ctx.beginPath();ctx.moveTo(particles[i].x*W,particles[i].y*H);ctx.lineTo(particles[j].x*W,particles[j].y*H);
+            ctx.strokeStyle="rgba(200,140,200,"+la+")";ctx.stroke();}
+        }
+      }
+      animId=requestAnimationFrame(tick);
+    }
+
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      tick(20000)
+    } else {
+      animId = requestAnimationFrame(tick)
+    }
+
+    return () => {
+      cancelAnimationFrame(animId)
+      ro.disconnect()
+    }
+  }, [])
+
+  return <canvas ref={canvasRef} style={{ display: 'block', width: '100%', height: '100%' }} />
+}

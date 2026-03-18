@@ -1,0 +1,131 @@
+'use client'
+import { useEffect, useRef } from 'react'
+
+export default function EmployeeExp3() {
+  const canvasRef = useRef(null)
+
+  useEffect(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+    const ctx = canvas.getContext('2d')
+    const dpr = window.devicePixelRatio || 1
+    let animId
+    const parent = canvas.parentElement
+    let W, H
+
+    var rm = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
+    // Warm landscape - naturally wide, perfect for 16:9
+    var hills = []
+    for (var i = 0; i < 14; i++) {
+      hills.push({ x: i / 13, height: 0.08 + Math.random() * 0.2, width: 0.06 + Math.random() * 0.1, warm: Math.random() > 0.2 })
+    }
+
+    function resize() {
+      const rect = parent.getBoundingClientRect()
+      W = rect.width
+      H = rect.height
+      canvas.width = W * dpr
+      canvas.height = H * dpr
+      canvas.style.width = W + 'px'
+      canvas.style.height = H + 'px'
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+    }
+
+    const ro = new ResizeObserver(resize)
+    ro.observe(parent)
+    resize()
+
+    var t = 0
+
+    function getTerrainY(x) {
+      var y = 0.65
+      for (var i = 0; i < hills.length; i++) {
+        var h = hills[i]
+        var dx = x - h.x
+        y -= Math.exp(-dx * dx / (2 * h.width * h.width)) * h.height
+      }
+      return y
+    }
+
+    function tick() {
+      ctx.clearRect(0, 0, W, H)
+      t += 0.016
+      ctx.beginPath()
+      ctx.moveTo(0, H)
+      for (var x = 0; x <= 1; x += 0.005) {
+        var y = getTerrainY(x)
+        if (!rm) y += Math.sin(t * 0.3 + x * 5) * 0.003
+        ctx.lineTo(x * W, y * H)
+      }
+      ctx.lineTo(W, H)
+      ctx.closePath()
+      var tg = ctx.createLinearGradient(0, H * 0.3, 0, H)
+      tg.addColorStop(0, 'rgba(155,81,224,0.06)')
+      tg.addColorStop(1, 'rgba(155,81,224,0.02)')
+      ctx.fillStyle = tg
+      ctx.fill()
+      for (var i = 0; i < hills.length; i++) {
+        var h = hills[i]
+        var hx = h.x * W, hy = getTerrainY(h.x) * H
+        if (!rm) hy += Math.sin(t * 0.3 + h.x * 5) * 0.003 * H
+        var lightSize = h.height * H * 1.5
+        var pulse = rm ? 1 : 0.8 + Math.sin(t * 0.4 + i * 1.5) * 0.2
+        var lg = ctx.createRadialGradient(hx, hy - lightSize * 0.3, 0, hx, hy, lightSize * pulse)
+        if (h.warm) {
+          var wc = i % 2 === 0 ? '255,162,0' : '255,66,121'
+          lg.addColorStop(0, 'rgba(' + wc + ',0.2)')
+          lg.addColorStop(0.5, 'rgba(' + wc + ',0.06)')
+          lg.addColorStop(1, 'rgba(' + wc + ',0)')
+        } else {
+          lg.addColorStop(0, 'rgba(100,100,140,0.08)')
+          lg.addColorStop(0.5, 'rgba(100,100,140,0.03)')
+          lg.addColorStop(1, 'rgba(100,100,140,0)')
+        }
+        ctx.fillStyle = lg
+        ctx.beginPath()
+        ctx.arc(hx, hy - lightSize * 0.2, lightSize * pulse, 0, Math.PI * 2)
+        ctx.fill()
+      }
+      ctx.beginPath()
+      for (var x = 0; x <= 1; x += 0.005) {
+        var y = getTerrainY(x)
+        if (!rm) y += Math.sin(t * 0.3 + x * 5) * 0.003
+        if (x === 0) ctx.moveTo(x * W, y * H); else ctx.lineTo(x * W, y * H)
+      }
+      ctx.strokeStyle = 'rgba(155,81,224,0.15)'
+      ctx.lineWidth = 1.5
+      ctx.stroke()
+      if (!rm) {
+        for (var i = 0; i < 15; i++) {
+          var px = (Math.sin(t * 0.2 + i * 2.1) * 0.3 + 0.5)
+          var baseY = getTerrainY(px)
+          var py = baseY - 0.04 - Math.abs(Math.sin(t * 0.3 + i * 1.7)) * 0.08
+          var ppx = px * W, ppy = py * H
+          var pa = 0.15 + Math.sin(t * 0.5 + i) * 0.1
+          var pg = ctx.createRadialGradient(ppx, ppy, 0, ppx, ppy, 6)
+          pg.addColorStop(0, 'rgba(255,162,0,' + pa + ')')
+          pg.addColorStop(1, 'rgba(255,162,0,0)')
+          ctx.fillStyle = pg
+          ctx.beginPath()
+          ctx.arc(ppx, ppy, 6, 0, Math.PI * 2)
+          ctx.fill()
+        }
+      }
+      if (!rm) animId = requestAnimationFrame(tick)
+    }
+
+    if (rm) {
+      tick()
+    } else {
+      animId = requestAnimationFrame(tick)
+    }
+
+    return () => {
+      cancelAnimationFrame(animId)
+      ro.disconnect()
+    }
+  }, [])
+
+  return <canvas ref={canvasRef} style={{ display: 'block', width: '100%', height: '100%' }} />
+}

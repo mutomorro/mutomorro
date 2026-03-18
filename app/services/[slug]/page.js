@@ -3,6 +3,16 @@ import { getService } from '../../../sanity/client'
 import { PortableText } from '@portabletext/react'
 import { notFound } from 'next/navigation'
 import CTA from '../../../components/CTA'
+import { JourneyStrip, ProgressBar } from '../../../components/ApproachJourney'
+import ServiceHero from '../../../components/heroes/ServiceHero'
+import RecognitionCard from '../../../components/recognition/RecognitionCard'
+import LogoStrip from '../../../components/LogoStrip'
+
+// Step colours matching the journey strip
+const STEP_COLOURS = ['#80388F', '#9B51E0', '#FF4279', '#E08F00']
+
+// Bento box colours for outcomes
+const BENTO_COLOURS = ['#80388F', '#9B51E0', '#FF4279', '#E08F00', '#221C2B']
 
 // ============================================
 // SEO METADATA
@@ -35,22 +45,46 @@ export default async function ServicePage({ params }) {
       {/* ==========================================
           SECTION 1: HERO (dark)
           ========================================== */}
-      <section className="section--full dark-bg" style={{ padding: '100px 48px 120px' }}>
-        <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
-          {/* Breadcrumb */}
-          <div className="breadcrumb">
-            <Link href="/services" className="breadcrumb__link">How we help</Link>
-            <span className="breadcrumb__sep">/</span>
-            <span className="breadcrumb__current">{service.categoryLabel}</span>
-          </div>
+      <section className="section--full dark-bg" style={{ padding: '100px 0 120px', position: 'relative', overflow: 'hidden' }}>
+        <div style={{ display: 'flex', maxWidth: '1350px', margin: '0 auto', padding: '0 48px', position: 'relative', zIndex: 2 }}>
+          <div style={{ flex: '1 1 55%', maxWidth: '600px' }}>
+            {/* Breadcrumb */}
+            <div className="breadcrumb">
+              <Link href="/services" className="breadcrumb__link">How we help</Link>
+              <span className="breadcrumb__sep">/</span>
+              <span className="breadcrumb__current">{service.categoryLabel}</span>
+            </div>
 
-          <span className="kicker" style={{ marginBottom: '16px' }}>{service.categoryLabel}</span>
-          <h1 className="heading-gradient heading-display" style={{ margin: '0 0 32px', maxWidth: '900px' }}>
-            {service.heroHeading}
-          </h1>
-          <p className="lead-text" style={{ color: 'rgba(255,255,255,0.6)', maxWidth: '680px' }}>
-            {service.heroTagline}
-          </p>
+            <span className="kicker" style={{ marginBottom: '16px' }}>{service.categoryLabel}</span>
+            <h1 className="heading-gradient heading-display" style={{ margin: '0 0 32px', maxWidth: '900px' }}>
+              {service.heroHeading}
+            </h1>
+            <p className="lead-text" style={{ color: 'rgba(255,255,255,0.6)', maxWidth: '680px' }}>
+              {service.heroTagline}
+            </p>
+          </div>
+        </div>
+
+        {/* Hero animation - right side, left edge at content midpoint, capped width */}
+        <div style={{
+          position: 'absolute',
+          top: 0,
+          left: '50%',
+          width: 'min(50%, 750px)',
+          height: '100%',
+        }}>
+          {/* Fade gradient so animation doesn't compete with text */}
+          <div style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '120px',
+            height: '100%',
+            background: 'linear-gradient(to right, var(--dark), transparent)',
+            zIndex: 1,
+            pointerEvents: 'none',
+          }} />
+          <ServiceHero slug={slug} />
         </div>
       </section>
 
@@ -154,7 +188,7 @@ export default async function ServicePage({ params }) {
             <div style={{
               display: 'grid',
               gridTemplateColumns: 'repeat(2, 1fr)',
-              gap: '28px',
+              gap: '22px',
               marginBottom: '2.5rem',
             }}>
               {service.recognitionItems.slice(0, 4).map((item, i) => (
@@ -163,21 +197,37 @@ export default async function ServicePage({ params }) {
                   className="scroll-in"
                   style={{
                     transitionDelay: `${i * 0.1}s`,
+                    background: 'var(--warm)',
+                    border: '1px solid rgba(0,0,0,0.06)',
+                    display: 'flex',
+                    flexDirection: 'column',
                   }}
                 >
-                  {/* Image placeholder */}
+                  {/* Animation area - contained at top of card */}
                   <div style={{
                     width: '100%',
-                    aspectRatio: '16 / 9',
+                    height: '210px',
                     background: 'var(--warm)',
-                  }} />
-                  {/* Card text */}
-                  <div style={{ padding: '24px 16px' }}>
+                    position: 'relative',
+                    overflow: 'hidden',
+                    flexShrink: 0,
+                  }}>
+                    <RecognitionCard slug={slug} index={i} />
+                  </div>
+                  {/* Text area - bottom of card */}
+                  <div style={{
+                    padding: '28px 28px 32px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    flex: 1,
+                  }}>
                     <p style={{
-                      fontSize: 'clamp(20px, 2vw, 24px)',
-                      fontWeight: '600',
-                      lineHeight: '1.3',
-                      color: 'var(--dark)',
+                      fontSize: '21px',
+                      fontWeight: '400',
+                      lineHeight: '1.35',
+                      color: '#1a1a1a',
                       textAlign: 'center',
                       margin: 0,
                     }}>
@@ -258,43 +308,48 @@ export default async function ServicePage({ params }) {
         </section>
       )}
 
+      {/* Logo strip - after-recognition position (default) */}
+      {service.showLogoStrip !== false && (!service.logoStripPosition || service.logoStripPosition === 'after-recognition') && (
+        <LogoStrip />
+      )}
+
       {/* ==========================================
           SECTION 4: PERSPECTIVE (warm)
           ========================================== */}
       <section id="perspective" className="section--full warm-bg" style={{ padding: '80px 48px' }}>
-        <div style={{
-          maxWidth: '1350px',
-          margin: '0 auto',
-          display: 'grid',
-          gridTemplateColumns: service.perspectiveImageUrl ? '1fr 380px' : '1fr',
-          gap: '4rem',
-          alignItems: 'start',
-        }}>
-          <div className="scroll-in">
-            <span className="kicker" style={{ color: 'var(--accent)', marginBottom: '16px' }}>Perspective</span>
-            <h2 className="heading-h2" style={{ margin: '0 0 24px' }}>
-              {service.perspectiveHeading}
-            </h2>
-            <div className="portable-text">
-              <PortableText value={service.perspectiveBody} />
+        {service.perspectiveImageUrl ? (
+          /* With image: existing two-column layout */
+          <div style={{
+            maxWidth: '1350px',
+            margin: '0 auto',
+            display: 'grid',
+            gridTemplateColumns: '1fr 380px',
+            gap: '4rem',
+            alignItems: 'start',
+          }}>
+            <div className="scroll-in">
+              <span className="kicker" style={{ color: 'var(--accent)', marginBottom: '16px' }}>Perspective</span>
+              <h2 className="heading-h2" style={{ margin: '0 0 24px' }}>
+                {service.perspectiveHeading}
+              </h2>
+              <div className="portable-text">
+                <PortableText value={service.perspectiveBody} />
+              </div>
+              {service.perspectiveLinkLabel && service.perspectiveLinkUrl && (
+                <Link
+                  href={service.perspectiveLinkUrl}
+                  className="inline-link"
+                  style={{
+                    display: 'inline-block',
+                    marginTop: '24px',
+                    fontSize: '15px',
+                    fontWeight: '400',
+                  }}
+                >
+                  {service.perspectiveLinkLabel} →
+                </Link>
+              )}
             </div>
-            {service.perspectiveLinkLabel && service.perspectiveLinkUrl && (
-              <Link
-                href={service.perspectiveLinkUrl}
-                className="inline-link"
-                style={{
-                  display: 'inline-block',
-                  marginTop: '24px',
-                  fontSize: '15px',
-                  fontWeight: '400',
-                }}
-              >
-                {service.perspectiveLinkLabel} →
-              </Link>
-            )}
-          </div>
-
-          {service.perspectiveImageUrl && (
             <div className="scroll-in delay-1 img-offset">
               <img
                 src={service.perspectiveImageUrl}
@@ -302,9 +357,43 @@ export default async function ServicePage({ params }) {
                 style={{ width: '100%', height: 'auto', display: 'block' }}
               />
             </div>
-          )}
-        </div>
+          </div>
+        ) : (
+          /* Without image: H2 full width, body constrained to left column */
+          <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
+            <div className="scroll-in">
+              <span className="kicker" style={{ color: 'var(--accent)', marginBottom: '16px' }}>Perspective</span>
+              <h2 className="heading-h2" style={{ margin: '0 0 24px' }}>
+                {service.perspectiveHeading}
+              </h2>
+            </div>
+            <div className="scroll-in" style={{ maxWidth: '600px' }}>
+              <div className="portable-text">
+                <PortableText value={service.perspectiveBody} />
+              </div>
+              {service.perspectiveLinkLabel && service.perspectiveLinkUrl && (
+                <Link
+                  href={service.perspectiveLinkUrl}
+                  className="inline-link"
+                  style={{
+                    display: 'inline-block',
+                    marginTop: '24px',
+                    fontSize: '15px',
+                    fontWeight: '400',
+                  }}
+                >
+                  {service.perspectiveLinkLabel} →
+                </Link>
+              )}
+            </div>
+          </div>
+        )}
       </section>
+
+      {/* Logo strip - after-perspective position */}
+      {service.showLogoStrip !== false && service.logoStripPosition === 'after-perspective' && (
+        <LogoStrip />
+      )}
 
       {/* ==========================================
           SECTION 5: APPROACH OVERVIEW (white)
@@ -316,56 +405,22 @@ export default async function ServicePage({ params }) {
             <h2 className="heading-h2" style={{ margin: '0 0 24px' }}>
               Approach
             </h2>
-            <div className="portable-text" style={{ maxWidth: '720px', marginBottom: '3rem' }}>
+            <div className="portable-text" style={{ maxWidth: '720px' }}>
               <PortableText value={service.approachIntro} />
             </div>
           </div>
 
-          {/* Journey cards - overview of the four stages */}
+          {/* Journey strip - connected nodes replacing the 4 cards */}
           {service.stages?.length > 0 && (
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: `repeat(${service.stages.length}, 1fr)`,
-              gap: '20px',
-              marginBottom: '1rem',
-            }}>
-              {service.stages.map((stage, i) => (
-                <div
-                  key={stage._key || i}
-                  className="card-a scroll-in"
-                  style={{
-                    textAlign: 'center',
-                    transitionDelay: `${i * 0.1}s`,
-                  }}
-                >
-                  <div className="card-a__corner"></div>
-                  <div className="card-a__body">
-                    <p className="caption-text" style={{
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.1em',
-                      marginBottom: '8px',
-                    }}>
-                      {stage.stageNumber}
-                    </p>
-                    <p className="card-a__title" style={{ fontSize: '18px' }}>
-                      {stage.stageTitle}
-                    </p>
-                    <p className="card-a__text">
-                      {stage.stageSummary}
-                    </p>
-                  </div>
-                  <div className="card-a__footer">
-                    <div className="card-a__footer-bg"></div>
-                    <div className="card-a__action">
-                      Details <span className="arrow">→</span>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
+            <JourneyStrip stages={service.stages} />
           )}
         </div>
       </section>
+
+      {/* Sticky progress bar - rendered at page level so position:sticky works */}
+      {service.stages?.length > 0 && (
+        <ProgressBar stages={service.stages} />
+      )}
 
       {/* ==========================================
           SECTIONS 5a-5d: INDIVIDUAL STAGES
@@ -373,11 +428,11 @@ export default async function ServicePage({ params }) {
       {service.stages?.map((stage, i) => (
         <section
           key={stage._key || i}
+          data-stage-index={i}
           className="section--full"
           style={{
             padding: '60px 48px 80px',
-            background: 'var(--white)',
-            borderTop: '1px solid rgba(0,0,0,0.08)',
+            background: i % 2 === 0 ? 'var(--warm)' : 'var(--white)',
           }}
         >
           <div style={{
@@ -392,7 +447,7 @@ export default async function ServicePage({ params }) {
             {stage.stageImageUrl && i % 2 === 0 && (
               <div className="scroll-in img-offset" style={{
                 position: 'sticky',
-                top: '140px',
+                top: '180px',
               }}>
                 <img
                   src={stage.stageImageUrl}
@@ -404,9 +459,9 @@ export default async function ServicePage({ params }) {
 
             {/* Content */}
             <div className="scroll-in">
-              <span className="kicker" style={{ color: 'var(--accent)', marginBottom: '12px' }}>
+              <p className="stage-number-large" style={{ color: STEP_COLOURS[i] || STEP_COLOURS[0] }}>
                 {stage.stageNumber}
-              </span>
+              </p>
               <h2 className="heading-h3" style={{ margin: '0 0 24px' }}>
                 {stage.stageHeading}
               </h2>
@@ -437,30 +492,16 @@ export default async function ServicePage({ params }) {
                 </div>
               )}
 
-              {/* What you get */}
+              {/* What you get - redesigned outcome box */}
               {stage.stageOutcome && (
                 <div style={{
                   marginTop: '24px',
                   paddingTop: '24px',
                   borderTop: '1px solid rgba(0,0,0,0.08)',
                 }}>
-                  <p style={{
-                    fontSize: '15px',
-                    fontWeight: '400',
-                    color: 'var(--dark)',
-                    margin: '0 0 12px',
-                  }}>
-                    What you get
-                  </p>
-                  <div style={{
-                    background: 'var(--warm)',
-                    padding: '20px 24px',
-                    fontSize: '15px',
-                    lineHeight: '1.6',
-                    fontWeight: '300',
-                    color: 'var(--dark)',
-                  }}>
-                    {stage.stageOutcome}
+                  <div className="stage-outcome-box">
+                    <p className="stage-outcome-box__label">What you get</p>
+                    <p className="stage-outcome-box__text">{stage.stageOutcome}</p>
                   </div>
                 </div>
               )}
@@ -470,7 +511,7 @@ export default async function ServicePage({ params }) {
             {stage.stageImageUrl && i % 2 !== 0 && (
               <div className="scroll-in delay-1 img-offset" style={{
                 position: 'sticky',
-                top: '140px',
+                top: '180px',
               }}>
                 <img
                   src={stage.stageImageUrl}
@@ -489,54 +530,57 @@ export default async function ServicePage({ params }) {
       <section id="outcomes" className="section--full warm-bg" style={{ padding: '80px 48px' }}>
         <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
           <div className="scroll-in">
-            <span className="kicker" style={{ color: 'var(--accent)', marginBottom: '16px' }}>Outcomes</span>
+            <span className="kicker" style={{ color: '#FF4279', marginBottom: '16px' }}>Outcomes</span>
             <h2 className="heading-h2" style={{ margin: '0 0 20px' }}>
               {service.outcomesHeading}
             </h2>
             {service.outcomesIntro && (
-              <p className="lead-text" style={{ maxWidth: '720px', marginBottom: '2.5rem' }}>
+              <p className="lead-text" style={{ maxWidth: '700px', marginBottom: '2.5rem' }}>
                 {service.outcomesIntro}
               </p>
             )}
           </div>
 
+          {/* Bento grid */}
           {service.outcomes?.length > 0 && (
-            <div style={{ margin: '0 0 2.5rem' }}>
+            <div
+              className={`bento-grid ${
+                service.outcomes.length === 3 ? 'bento-grid--3' :
+                service.outcomes.length === 4 ? 'bento-grid--4' : 'bento-grid--5'
+              }`}
+              style={{ marginBottom: '2.5rem' }}
+            >
               {service.outcomes.map((outcome, i) => (
                 <div
                   key={outcome._key || i}
-                  className="scroll-in"
+                  className={`bento-box scroll-in ${i === 0 && service.outcomes.length >= 5 ? 'bento-box--featured' : ''}`}
                   style={{
-                    padding: '20px 0',
-                    borderBottom: i < service.outcomes.length - 1 ? '1px solid rgba(0,0,0,0.08)' : 'none',
-                    transitionDelay: `${Math.min(i, 4) * 0.1}s`,
+                    background: BENTO_COLOURS[i % BENTO_COLOURS.length],
+                    transitionDelay: `${i * 0.1}s`,
                   }}
                 >
-                  <p style={{
-                    fontSize: '18px',
-                    fontWeight: '400',
-                    color: 'var(--dark)',
-                    margin: '0 0 4px',
-                  }}>
+                  <p className={`bento-box__title ${i === 0 && service.outcomes.length >= 5 ? 'bento-box__title--large' : ''}`}>
                     {outcome.outcomeTitle}
                   </p>
-                  <p style={{
-                    fontSize: '15px',
-                    fontWeight: '300',
-                    color: 'rgba(0,0,0,0.55)',
-                    margin: 0,
-                    lineHeight: '1.6',
-                  }}>
-                    {outcome.outcomeDescription}
-                  </p>
+                  {outcome.outcomeDescription && (
+                    <p className="bento-box__desc">{outcome.outcomeDescription}</p>
+                  )}
                 </div>
               ))}
             </div>
           )}
 
           {service.outcomesClosing && (
-            <div className="scroll-in portable-text" style={{ maxWidth: '720px' }}>
-              <p>{service.outcomesClosing}</p>
+            <div className="scroll-in" style={{ maxWidth: '700px' }}>
+              <p style={{
+                fontSize: '18px',
+                fontWeight: '300',
+                lineHeight: '1.75',
+                color: 'rgba(0,0,0,0.55)',
+                margin: 0,
+              }}>
+                {service.outcomesClosing}
+              </p>
             </div>
           )}
         </div>
@@ -632,6 +676,11 @@ export default async function ServicePage({ params }) {
             )}
           </div>
         </section>
+      )}
+
+      {/* Logo strip - after-examples position */}
+      {service.showLogoStrip !== false && service.logoStripPosition === 'after-examples' && (
+        <LogoStrip />
       )}
 
       {/* ==========================================

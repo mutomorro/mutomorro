@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>The experience is designed, not accidental</title>
+<style>*{margin:0;padding:0;box-sizing:border-box}body{background:#FAF6F1;display:flex;align-items:center;justify-content:center;min-height:100vh;overflow:hidden}canvas{display:block;width:100vw;height:56.25vw;max-height:100vh;max-width:177.78vh}</style></head><body><canvas id="c"></canvas>
+<script>
+(function(){
+var canvas=document.getElementById("c"),ctx=canvas.getContext("2d");
+var dpr=window.devicePixelRatio||1,W,H;
+var rm=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+function resize(){W=canvas.parentElement?canvas.parentElement.clientWidth:window.innerWidth;H=canvas.parentElement?canvas.parentElement.clientHeight:window.innerHeight;canvas.width=W*dpr;canvas.height=H*dpr;canvas.style.width=W+"px";canvas.style.height=H+"px";ctx.setTransform(dpr,0,0,dpr,0,0);}
+resize();window.addEventListener("resize",resize);
+var cols=[[128,56,143],[155,81,224],[255,66,121],[255,162,0]];
+
+var points=[];var N=40;
+for(var i=0;i<N;i++){var angle=i*2.399;var r=Math.sqrt(i/N)*0.4;
+  points.push({targetX:0.5+Math.cos(angle)*r*1.2,targetY:0.5+Math.sin(angle)*r*0.85,
+    x:0.5+(Math.random()-0.5)*0.8,y:0.5+(Math.random()-0.5)*0.7,colIdx:i%4,size:2+Math.random()*2});}
+var t=0;
+function draw(){
+  ctx.clearRect(0,0,W,H);t+=0.016;var orderProgress=rm?0.8:Math.min(1,t*0.03);
+  for(var i=0;i<points.length;i++){var p=points[i];var c=cols[p.colIdx];
+    if(!rm){p.x+=(p.targetX-p.x)*orderProgress*0.02;p.y+=(p.targetY-p.y)*orderProgress*0.02;}
+    else{p.x=p.targetX;p.y=p.targetY;}
+    var px=p.x*W,py=p.y*H;var nearTarget=Math.abs(p.x-p.targetX)<0.01&&Math.abs(p.y-p.targetY)<0.01;
+    var alpha=nearTarget?0.5:0.25;var glowR=nearTarget?p.size*4:p.size*2;
+    var g=ctx.createRadialGradient(px,py,0,px,py,glowR);
+    g.addColorStop(0,"rgba("+c[0]+","+c[1]+","+c[2]+","+alpha*0.3+")");g.addColorStop(1,"rgba("+c[0]+","+c[1]+","+c[2]+",0)");
+    ctx.fillStyle=g;ctx.beginPath();ctx.arc(px,py,glowR,0,Math.PI*2);ctx.fill();
+    ctx.beginPath();ctx.arc(px,py,p.size,0,Math.PI*2);ctx.fillStyle="rgba("+c[0]+","+c[1]+","+c[2]+","+alpha+")";ctx.fill();}
+  if(!rm)requestAnimationFrame(draw);
+}draw();
+
+})();
+</script></body></html>

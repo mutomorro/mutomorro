@@ -629,6 +629,255 @@ a:hover {
   border-radius: 50%;
 }
 
+/* --- Journey Strip (approach section) --- */
+.journey-strip {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+  margin-top: 64px;
+  padding: 0 24px;
+}
+.journey-strip__line {
+  position: absolute;
+  top: 25px; /* centre of 50px diamond */
+  left: calc(12.5% + 12px);
+  right: calc(12.5% + 12px);
+  height: 3px;
+  background: linear-gradient(to right, #80388F, #9B51E0, #FF4279, #E08F00);
+  z-index: 0;
+}
+.journey-strip__node {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  font-family: inherit;
+}
+.journey-strip__diamond {
+  width: 50px;
+  height: 50px;
+  background: var(--step-colour);
+  transform: rotate(45deg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  flex-shrink: 0;
+}
+.journey-strip__node:hover .journey-strip__diamond {
+  transform: rotate(45deg) scale(1.05);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+}
+.journey-strip__number {
+  transform: rotate(-45deg);
+  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1;
+}
+.journey-strip__title {
+  margin: 16px 0 4px;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--dark);
+  text-align: center;
+}
+.journey-strip__desc {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 300;
+  color: rgba(0,0,0,0.55);
+  text-align: center;
+  max-width: 240px;
+  line-height: 1.5;
+}
+
+/* --- Sticky Progress Bar --- */
+.progress-bar {
+  position: sticky;
+  top: 118px; /* 70px nav + 48px anchor-nav */
+  z-index: 45;
+  background: #fff;
+  border-bottom: 1px solid rgba(0,0,0,0.08);
+  height: 56px;
+  opacity: 0;
+  transform: translateY(-8px);
+  pointer-events: none;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  padding: 0 48px;
+}
+.progress-bar--visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+.progress-bar__inner {
+  position: relative;
+  max-width: 1350px;
+  margin: 0 auto;
+  height: 100%;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  align-items: center;
+}
+.progress-bar__step {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  position: relative;
+  z-index: 1;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  padding: 0;
+  opacity: 0.4;
+  transition: opacity 0.3s ease;
+}
+.progress-bar__step--active { opacity: 1; }
+.progress-bar__step--completed { opacity: 0.7; }
+.progress-bar__dot {
+  width: 10px;
+  height: 10px;
+  background: var(--step-colour);
+  transform: rotate(45deg);
+  flex-shrink: 0;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.progress-bar__step--active .progress-bar__dot {
+  transform: rotate(45deg) scale(1.3);
+  box-shadow: 0 0 8px rgba(155, 81, 224, 0.3);
+}
+.progress-bar__step-number {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--dark);
+}
+.progress-bar__step--active .progress-bar__step-number {
+  color: var(--accent);
+}
+.progress-bar__step-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--dark);
+}
+
+/* --- Stage section outcome box --- */
+.stage-outcome-box {
+  border-left: 3px solid #9B51E0;
+  background: rgba(155, 81, 224, 0.04);
+  padding: 20px 24px;
+  margin-top: 16px;
+}
+.stage-outcome-box__label {
+  font-size: 13px;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: #9B51E0;
+  margin: 0 0 8px;
+}
+.stage-outcome-box__text {
+  font-size: 16px;
+  font-weight: 300;
+  color: rgba(0,0,0,0.6);
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* --- Stage number (large, coloured) --- */
+.stage-number-large {
+  font-size: 48px;
+  font-weight: 700;
+  line-height: 1;
+  margin: 0 0 8px;
+}
+
+/* --- Bento Grid (outcomes section) --- */
+.bento-grid--5 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+.bento-grid--5 .bento-box--featured {
+  grid-column: span 2;
+}
+.bento-grid--4 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18px;
+}
+.bento-grid--3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+.bento-box {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 48px 40px 40px;
+  min-height: 220px;
+}
+.bento-grid--5 .bento-box:nth-child(-n+2) {
+  min-height: 260px;
+}
+.bento-box__title {
+  color: #fff;
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 1.25;
+  margin: 0 0 8px;
+}
+.bento-box__title--large {
+  font-size: 30px;
+}
+.bento-box__desc {
+  color: rgba(255,255,255,0.75);
+  font-size: 15px;
+  font-weight: 300;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* Bento responsive */
+@media (max-width: 900px) {
+  .bento-grid--5 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .bento-grid--3 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 600px) {
+  .bento-grid--5,
+  .bento-grid--4,
+  .bento-grid--3 {
+    grid-template-columns: 1fr;
+  }
+  .bento-grid--5 .bento-box--featured {
+    grid-column: span 1;
+  }
+  .bento-box { min-height: 180px; padding: 36px 28px 28px; }
+  .bento-box__title { font-size: 22px; }
+  .bento-box__title--large { font-size: 24px; }
+}
+
+/* --- Reduced motion --- */
+@media (prefers-reduced-motion: reduce) {
+  .progress-bar { transition: none; }
+  .progress-bar__fill { transition: none; }
+  .progress-bar__dot { transition: none; }
+  .journey-strip__diamond { transition: none; }
+}
+
 /* ============================================
    7. CARDS
    ============================================ */
@@ -1264,4 +1513,56 @@ a:hover {
   .grid-2, .grid-3 { grid-template-columns: 1fr; }
   .grid-4 { grid-template-columns: 1fr 1fr; }
   .button-row { flex-direction: column; align-items: flex-start; }
+}
+
+/* ============================================
+   LOGO STRIP (scrolling marquee)
+   ============================================ */
+
+@keyframes scroll-logos {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.logo-strip {
+  padding: 55px 0;
+  background: var(--white);
+  border-top: 1px solid rgba(0,0,0,0.06);
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+  overflow: hidden;
+}
+
+.logo-strip__track {
+  display: flex;
+  align-items: center;
+  gap: 64px;
+  width: max-content;
+  animation: scroll-logos 175s linear infinite;
+}
+
+.logo-strip__item {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  filter: grayscale(100%) opacity(0.7);
+  transition: filter 0.3s ease;
+}
+
+.logo-strip__item img {
+  max-width: 132px;
+  max-height: 104px;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+}
+
+@media (max-width: 768px) {
+  .logo-strip { padding: 42px 0; }
+  .logo-strip__track { gap: 46px; }
+  .logo-strip__item img { max-width: 95px; max-height: 74px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .logo-strip__track { animation: none; }
 }

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>The organisation moves as one</title>
+<style>*{margin:0;padding:0;box-sizing:border-box}body{background:#FAF6F1;display:flex;align-items:center;justify-content:center;min-height:100vh;overflow:hidden}canvas{display:block;width:100vw;height:56.25vw;max-height:100vh;max-width:177.78vh}</style></head><body><canvas id="c"></canvas>
+<script>
+(function(){
+var canvas=document.getElementById("c"),ctx=canvas.getContext("2d");
+var dpr=window.devicePixelRatio||1,W,H;
+var rm=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+function resize(){W=canvas.parentElement?canvas.parentElement.clientWidth:window.innerWidth;H=canvas.parentElement?canvas.parentElement.clientHeight:window.innerHeight;canvas.width=W*dpr;canvas.height=H*dpr;canvas.style.width=W+"px";canvas.style.height=H+"px";ctx.setTransform(dpr,0,0,dpr,0,0);}
+resize();window.addEventListener("resize",resize);
+var cols=[[128,56,143],[155,81,224],[255,66,121],[255,162,0]];
+
+var birds=[];for(var i=0;i<120;i++)birds.push({x:0.2+Math.random()*0.6,y:0.15+Math.random()*0.7,
+  vx:(Math.random()-0.5)*0.002,vy:(Math.random()-0.5)*0.002,colIdx:i%4,size:1.5});
+var t=0;
+function draw(){
+  ctx.clearRect(0,0,W,H);t+=0.016;
+  var targetX=0.5+Math.sin(t*0.2)*0.25,targetY=0.5+Math.sin(t*0.4)*0.12;
+  if(!rm){for(var i=0;i<birds.length;i++){var b=birds[i];
+    var dx=targetX-b.x,dy=targetY-b.y;b.vx+=dx*0.0003;b.vy+=dy*0.0003;
+    for(var j=0;j<birds.length;j+=3){if(i===j)continue;var bx=birds[j].x-b.x,by=birds[j].y-b.y;
+      var bd=bx*bx+by*by;if(bd<0.001&&bd>0){b.vx-=bx*0.0001/bd;b.vy-=by*0.0001/bd;}}
+    var avgVX=0,avgVY=0,count=0;
+    for(var j=Math.max(0,i-5);j<Math.min(birds.length,i+5);j++){if(i===j)continue;avgVX+=birds[j].vx;avgVY+=birds[j].vy;count++;}
+    if(count>0){b.vx+=(avgVX/count-b.vx)*0.05;b.vy+=(avgVY/count-b.vy)*0.05;}
+    var spd=Math.sqrt(b.vx*b.vx+b.vy*b.vy);if(spd>0.004){b.vx*=0.004/spd;b.vy*=0.004/spd;}
+    b.x+=b.vx;b.y+=b.vy;if(b.x<0)b.x=1;if(b.x>1)b.x=0;if(b.y<0)b.y=1;if(b.y>1)b.y=0;}}
+  for(var i=0;i<birds.length;i++){var b=birds[i];var c=cols[b.colIdx];var px=b.x*W,py=b.y*H;
+    ctx.beginPath();ctx.arc(px,py,b.size,0,Math.PI*2);ctx.fillStyle="rgba("+c[0]+","+c[1]+","+c[2]+",0.45)";ctx.fill();
+    var tx=(b.x-b.vx*5)*W,ty=(b.y-b.vy*5)*H;ctx.beginPath();ctx.moveTo(tx,ty);ctx.lineTo(px,py);
+    ctx.strokeStyle="rgba("+c[0]+","+c[1]+","+c[2]+",0.1)";ctx.lineWidth=0.8;ctx.stroke();}
+  if(!rm)requestAnimationFrame(draw);
+}draw();
+
+})();
+</script></body></html>

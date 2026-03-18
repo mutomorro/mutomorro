@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hero Animation - Change Management</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #1a1a2e; display: flex; align-items: center; justify-content: center; min-height: 100vh; overflow: hidden; }
+  canvas { display: block; }
+</style>
+</head>
+<body>
+<canvas id="hero"></canvas>
+<script>
+(function() {
+  var canvas = document.getElementById('hero');
+  var ctx = canvas.getContext('2d');
+  var dpr = window.devicePixelRatio || 1;
+  var W, H, cx, cy;
+
+  function resize() {
+    W = window.innerWidth;
+    H = window.innerHeight;
+    canvas.width = W * dpr;
+    canvas.height = H * dpr;
+    canvas.style.width = W + 'px';
+    canvas.style.height = H + 'px';
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    cx = W / 2;
+    cy = H / 2;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  var colours = [
+    { r: 128, g: 56, b: 143 },
+    { r: 155, g: 81, b: 224 },
+    { r: 255, g: 66, b: 121 },
+    { r: 255, g: 162, b: 0 },
+  ];
+
+  function colourAt(t, alpha) {
+    t = Math.max(0, Math.min(1, t));
+    var idx = t * (colours.length - 1);
+    var i = Math.floor(idx);
+    var f = idx - i;
+    if (i >= colours.length - 1) { i = colours.length - 2; f = 1; }
+    var a = colours[i], b = colours[i + 1];
+    return 'rgba(' + Math.round(a.r + (b.r - a.r) * f) + ',' +
+           Math.round(a.g + (b.g - a.g) * f) + ',' +
+           Math.round(a.b + (b.b - a.b) * f) + ',' + alpha + ')';
+  }
+
+  // ---- TERRAIN ----
+  // A landscape of gentle hills and valleys that the water must navigate.
+  // These are permanent - the terrain doesn't change, the water adapts.
+  var terrainPoints = [];
+  var numTerrain = 12;
+  for (var i = 0; i < numTerrain; i++) {
+    terrainPoints.push({
+      x: W * (0.1 + 0.8 * (i / (numTerrain - 1))),
+      y: cy + (Math.random() - 0.5) * H * 0.4,
+      radius: 30 + Math.random() * 60,
+      strength: 0.5 + Math.random() * 0.5,
+      breathPhase: Math.random() * Math.PI * 2,
+      breathSpeed: 0.0003 + Math.random() * 0.0003
+    });
+  }
+
+  // Get terrain influence at a point - pushes water away
+  function terrainInfluence(x, y) {
+    var fx = 0, fy = 0;
+    for (var i = 0; i < terrainPoints.length; i++) {
+      var tp = terrainPoints[i];
+      var dx = x - tp.x;
+      var dy = y - tp.y;
+      var dist = Math.sqrt(dx * dx + dy * dy);
+      var influence = tp.radius * tp.strength;
+      if (dist < influence) {
+        var push = (1 - dist / influence);
+        push = push * push; // quadratic falloff
+        var norm = dist > 0 ? 1 / dist : 0;
+        fx += dx * norm * push * 2;
+        fy += dy * norm * push * 2;
+      }
+    }
+    return { x: fx, y: fy };
+  }
+
+  // ---- WATER PARTICLES ----
+  // Main flow particles that navigate the terrain
+  var waterParticles = [];
+  var numWater = 80;
+
+  function spawnWater() {
+    return {
+      x: -10 + Math.random() * 20,
+      y: cy + (Math.random() - 0.5) * H * 0.6,
+      vx: 0.4 + Math.random() * 0.3,
+      vy: (Math.random() - 0.5) * 0.2,
+      size: 1.5 + Math.random() * 2.5,
+      colourPos: 0.1 + Math.random() * 0.8,
+      alpha: 0.2 + Math.random() * 0.35,
+      trail: [],
+      trailMax: 15 + Math.floor(Math.random() * 15),
+      age: 0
+    };
+  }
+
+  for (var i = 0; i < numWater; i++) {
+    var wp = spawnWater();
+    wp.x = Math.random() * W; // Distribute across screen initially
+    waterParticles.push(wp);
+  }
+
+  // ---- POOLING ZONES ----
+  // Low points in the terrain where water collects before finding a way out
+  var pools = [];
+  for (var i = 0; i < 4; i++) {
+    pools.push({
+      x: W * (0.2 + i * 0.2) + (Math.random() - 0.5) * W * 0.08,
+      y: cy + (Math.random() - 0.3) * H * 0.3,
+      radius: 25 + Math.random() * 20,
+      colourPos: 0.2 + i * 0.2,
+      breathPhase: Math.random() * Math.PI * 2,
+      breathSpeed: 0.0006 + Math.random() * 0.0006,
+      particles: 0 // count of particles currently nearby
+    });
+  }
+
+  // ---- ESTABLISHED PATHS ----
+  // As water finds good routes, those routes glow brighter
+  // Track where particles travel most often
+  var pathGrid = {};
+  var pathCellSize = 20;
+
+  function recordPath(x, y) {
+    var gx = Math.floor(x / pathCellSize);
+    var gy = Math.floor(y / pathCellSize);
+    var key = gx + ',' + gy;
+    if (!pathGrid[key]) pathGrid[key] = 0;
+    pathGrid[key] = Math.min(pathGrid[key] + 0.005, 1);
+  }
+
+  // Fade paths slowly
+  function fadePaths() {
+    for (var key in pathGrid) {
+      pathGrid[key] *= 0.9997;
+      if (pathGrid[key] < 0.001) delete pathGrid[key];
+    }
+  }
+
+  // ---- TEXT LABELS ----
+  var labels = [
+    { text: 'how people feel about it', ring: 0, slot: 0 },
+    { text: 'what they\'re asked to give up', ring: 0, slot: 1 },
+    { text: 'whether it makes sense', ring: 0, slot: 2 },
+    { text: 'who was asked', ring: 0, slot: 3 },
+    { text: 'where resistance comes from', ring: 1, slot: 0 },
+    { text: 'what the system protects', ring: 1, slot: 1 },
+    { text: 'how fast is too fast', ring: 1, slot: 2 },
+    { text: 'when to push and when to pause', ring: 1, slot: 3 },
+    { text: 'how the plan meets reality', ring: 2, slot: 0 },
+    { text: 'what adapts and what holds', ring: 2, slot: 1 },
+    { text: 'whether trust was built first', ring: 2, slot: 2 },
+    { text: 'what people actually do differently', ring: 2, slot: 3 },
+  ];
+
+  var ringRadii = [115, 200, 285];
+  var ringOffsets = [0.15, Math.PI / 3, Math.PI / 5 + 0.4];
+  var ringSizes = [13.5, 14, 14.5];
+
+  var textItems = [];
+  for (var i = 0; i < labels.length; i++) {
+    var l = labels[i];
+    var angle = ringOffsets[l.ring] + (l.slot / 4) * Math.PI * 2;
+    textItems.push({
+      text: l.text,
+      baseAngle: angle,
+      radius: ringRadii[l.ring],
+      phase: Math.random() * Math.PI * 2,
+      orbitSpeed: 0.00004 + Math.random() * 0.00003,
+      breathSpeed: 0.0003 + Math.random() * 0.0003,
+      breathAmount: 8 + Math.random() * 8,
+      fadePhase: Math.random() * Math.PI * 2,
+      fadeSpeed: 0.0003 + Math.random() * 0.0003,
+      colourPos: i / labels.length,
+      fontSize: ringSizes[l.ring]
+    });
+  }
+
+  // ---- DRAW FUNCTIONS ----
+
+  function drawTerrain(time) {
+    for (var i = 0; i < terrainPoints.length; i++) {
+      var tp = terrainPoints[i];
+      var breathe = Math.sin(time * tp.breathSpeed + tp.breathPhase) * 0.1;
+      var r = tp.radius * tp.strength * (1 + breathe);
+
+      // Subtle, dark terrain shapes - just visible enough to see the landscape
+      var grad = ctx.createRadialGradient(tp.x, tp.y, 0, tp.x, tp.y, r);
+      grad.addColorStop(0, 'rgba(20, 16, 35, 0.25)');
+      grad.addColorStop(0.6, 'rgba(20, 16, 35, 0.1)');
+      grad.addColorStop(1, 'rgba(20, 16, 35, 0)');
+      ctx.beginPath();
+      ctx.arc(tp.x, tp.y, r, 0, Math.PI * 2);
+      ctx.fillStyle = grad;
+      ctx.fill();
+
+      // Very subtle border to show the shape
+      ctx.beginPath();
+      ctx.arc(tp.x, tp.y, r * 0.7, 0, Math.PI * 2);
+      ctx.strokeStyle = 'rgba(60, 50, 80, 0.08)';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    }
+  }
+
+  function drawEstablishedPaths(time) {
+    for (var key in pathGrid) {
+      var parts = key.split(',');
+      var gx = parseInt(parts[0]);
+      var gy = parseInt(parts[1]);
+      var strength = pathGrid[key];
+
+      if (strength > 0.05) {
+        var x = gx * pathCellSize + pathCellSize / 2;
+        var y = gy * pathCellSize + pathCellSize / 2;
+        var colPos = ((x / W) * 0.8 + 0.1);
+        var alpha = strength * 0.04;
+
+        ctx.fillStyle = colourAt(colPos, alpha);
+        ctx.fillRect(
+          gx * pathCellSize,
+          gy * pathCellSize,
+          pathCellSize,
+          pathCellSize
+        );
+      }
+    }
+  }
+
+  function drawPools(time) {
+    for (var i = 0; i < pools.length; i++) {
+      var pool = pools[i];
+      var breathe = Math.sin(time * pool.breathSpeed + pool.breathPhase);
+      var r = pool.radius * (0.8 + breathe * 0.2);
+      var intensity = Math.min(pool.particles / 5, 1); // brighter with more particles
+
+      if (intensity > 0.1) {
+        var grad = ctx.createRadialGradient(pool.x, pool.y, 0, pool.x, pool.y, r);
+        grad.addColorStop(0, colourAt(pool.colourPos, 0.08 * intensity));
+        grad.addColorStop(0.5, colourAt(pool.colourPos, 0.03 * intensity));
+        grad.addColorStop(1, colourAt(pool.colourPos, 0));
+        ctx.beginPath();
+        ctx.arc(pool.x, pool.y, r, 0, Math.PI * 2);
+        ctx.fillStyle = grad;
+        ctx.fill();
+      }
+
+      pool.particles = 0; // reset count each frame
+    }
+  }
+
+  function updateAndDrawWater(time) {
+    for (var i = 0; i < waterParticles.length; i++) {
+      var wp = waterParticles[i];
+
+      // Terrain influence - pushes water around obstacles
+      var ti = terrainInfluence(wp.x, wp.y);
+
+      // Base flow direction: left to right with slight downward pull
+      var baseVX = 0.5;
+      var baseVY = Math.sin(wp.x * 0.005 + time * 0.0001) * 0.15;
+
+      // Apply terrain deflection
+      wp.vx = wp.vx * 0.92 + (baseVX + ti.x * 1.5) * 0.08;
+      wp.vy = wp.vy * 0.92 + (baseVY + ti.y * 1.5) * 0.08;
+
+      // Pool attraction - if near a pool, slow down and circle
+      for (var p = 0; p < pools.length; p++) {
+        var pool = pools[p];
+        var dx = pool.x - wp.x;
+        var dy = pool.y - wp.y;
+        var dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < pool.radius * 1.5) {
+          pool.particles++;
+          // Gentle circular motion in pool
+          wp.vx += (-dy / dist) * 0.03 + dx / dist * 0.01;
+          wp.vy += (dx / dist) * 0.03 + dy / dist * 0.01;
+          // Slow down in pool
+          wp.vx *= 0.98;
+          wp.vy *= 0.98;
+        }
+      }
+
+      // Update position
+      wp.x += wp.vx;
+      wp.y += wp.vy;
+      wp.age++;
+
+      // Record established path
+      if (wp.age > 50) { // only after finding its route
+        recordPath(wp.x, wp.y);
+      }
+
+      // Trail
+      wp.trail.push({ x: wp.x, y: wp.y });
+      if (wp.trail.length > wp.trailMax) wp.trail.shift();
+
+      // Respawn if off screen
+      if (wp.x > W + 20 || wp.y < -50 || wp.y > H + 50) {
+        waterParticles[i] = spawnWater();
+        continue;
+      }
+
+      // Draw trail
+      if (wp.trail.length > 2) {
+        ctx.beginPath();
+        ctx.moveTo(wp.trail[0].x, wp.trail[0].y);
+        for (var t = 1; t < wp.trail.length; t++) {
+          ctx.lineTo(wp.trail[t].x, wp.trail[t].y);
+        }
+        var trailGrad = ctx.createLinearGradient(
+          wp.trail[0].x, wp.trail[0].y,
+          wp.trail[wp.trail.length-1].x, wp.trail[wp.trail.length-1].y
+        );
+        trailGrad.addColorStop(0, colourAt(wp.colourPos, 0));
+        trailGrad.addColorStop(1, colourAt(wp.colourPos, wp.alpha * 0.3));
+        ctx.strokeStyle = trailGrad;
+        ctx.lineWidth = wp.size * 0.5;
+        ctx.stroke();
+      }
+
+      // Draw particle glow
+      var glowGrad = ctx.createRadialGradient(wp.x, wp.y, 0, wp.x, wp.y, wp.size * 4);
+      glowGrad.addColorStop(0, colourAt(wp.colourPos, wp.alpha * 0.3));
+      glowGrad.addColorStop(1, colourAt(wp.colourPos, 0));
+      ctx.beginPath();
+      ctx.arc(wp.x, wp.y, wp.size * 4, 0, Math.PI * 2);
+      ctx.fillStyle = glowGrad;
+      ctx.fill();
+
+      // Core
+      ctx.beginPath();
+      ctx.arc(wp.x, wp.y, wp.size, 0, Math.PI * 2);
+      ctx.fillStyle = colourAt(wp.colourPos, wp.alpha);
+      ctx.fill();
+    }
+  }
+
+  function drawTextLabels(time) {
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+
+    for (var i = 0; i < textItems.length; i++) {
+      var t = textItems[i];
+      var currentAngle = t.baseAngle + time * t.orbitSpeed;
+      var radialBreath = Math.sin(time * t.breathSpeed + t.phase) * t.breathAmount;
+      var currentRadius = t.radius + radialBreath;
+      var x = cx + Math.cos(currentAngle) * currentRadius;
+      var y = cy + Math.sin(currentAngle) * currentRadius;
+      var fadeCycle = Math.sin(time * t.fadeSpeed + t.fadePhase);
+      var alpha = 0.4 + fadeCycle * 0.15;
+      var tilt = Math.sin(currentAngle) * 0.04;
+
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.rotate(tilt);
+
+      ctx.shadowColor = colourAt(t.colourPos, 0.5);
+      ctx.shadowBlur = 20;
+      ctx.font = '400 ' + t.fontSize + 'px "Source Sans 3", "Source Sans Pro", sans-serif';
+      ctx.fillStyle = colourAt(t.colourPos, alpha);
+      ctx.fillText(t.text, 0, 0);
+
+      ctx.shadowColor = 'transparent';
+      ctx.shadowBlur = 0;
+      ctx.fillStyle = colourAt(t.colourPos, alpha);
+      ctx.fillText(t.text, 0, 0);
+
+      ctx.restore();
+    }
+  }
+
+  // ---- MAIN LOOP ----
+  function tick(time) {
+    ctx.clearRect(0, 0, W, H);
+
+    fadePaths();
+    drawEstablishedPaths(time);
+    drawTerrain(time);
+    drawPools(time);
+    updateAndDrawWater(time);
+    drawTextLabels(time);
+
+    requestAnimationFrame(tick);
+  }
+
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    tick(20000);
+  } else {
+    requestAnimationFrame(tick);
+  }
+})();
+</script>
+</body>
+</html>

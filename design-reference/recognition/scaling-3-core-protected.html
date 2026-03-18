@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>What made you good is protected</title>
+<style>*{margin:0;padding:0;box-sizing:border-box}body{background:#FAF6F1;display:flex;align-items:center;justify-content:center;min-height:100vh;overflow:hidden}canvas{display:block;width:100vw;height:56.25vw;max-height:100vh;max-width:177.78vh}</style></head><body><canvas id="c"></canvas>
+<script>
+(function(){
+var canvas=document.getElementById("c"),ctx=canvas.getContext("2d");
+var dpr=window.devicePixelRatio||1,W,H;
+var rm=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+function resize(){W=canvas.parentElement?canvas.parentElement.clientWidth:window.innerWidth;H=canvas.parentElement?canvas.parentElement.clientHeight:window.innerHeight;canvas.width=W*dpr;canvas.height=H*dpr;canvas.style.width=W+"px";canvas.style.height=H+"px";ctx.setTransform(dpr,0,0,dpr,0,0);}
+resize();window.addEventListener("resize",resize);
+
+var outerR=0.1;var maxOuter=0.42;var coreR=0.08;var t=0;
+function draw(){
+  ctx.clearRect(0,0,W,H);t+=0.016;var cx=W*0.5,cy=H*0.5;
+  if(!rm)outerR=Math.min(maxOuter,outerR+0.0002);else outerR=0.35;
+  var or2=outerR*H;var cr=coreR*H;var breathe=rm?1:1+Math.sin(t*0.4)*0.02;
+  ctx.beginPath();ctx.arc(cx,cy,or2*breathe,0,Math.PI*2);
+  ctx.strokeStyle="rgba(155,81,224,0.12)";ctx.lineWidth=2;ctx.stroke();
+  ctx.strokeStyle="rgba(155,81,224,0.03)";ctx.lineWidth=10;ctx.stroke();
+  for(var i=1;i<4;i++){var ir=cr+(or2-cr)*(i/4);ctx.beginPath();ctx.arc(cx,cy,ir*breathe,0,Math.PI*2);
+    ctx.strokeStyle="rgba(155,81,224,0.04)";ctx.lineWidth=1;ctx.stroke();}
+  var pulse=rm?1:0.9+Math.sin(t*0.5)*0.1;
+  var cg=ctx.createRadialGradient(cx,cy,0,cx,cy,cr*2*pulse);
+  cg.addColorStop(0,"rgba(255,200,100,0.3)");cg.addColorStop(0.3,"rgba(255,162,0,0.2)");
+  cg.addColorStop(0.6,"rgba(255,66,121,0.1)");cg.addColorStop(1,"rgba(155,81,224,0)");
+  ctx.fillStyle=cg;ctx.beginPath();ctx.arc(cx,cy,cr*2*pulse,0,Math.PI*2);ctx.fill();
+  ctx.beginPath();ctx.arc(cx,cy,5*pulse,0,Math.PI*2);ctx.fillStyle="rgba(255,220,150,0.6)";ctx.fill();
+  if(!rm)requestAnimationFrame(draw);
+}draw();
+
+})();
+</script></body></html>

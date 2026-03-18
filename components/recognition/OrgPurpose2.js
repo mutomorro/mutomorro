@@ -1,0 +1,123 @@
+'use client'
+import { useEffect, useRef } from 'react'
+
+export default function OrgPurpose2() {
+  const canvasRef = useRef(null)
+
+  useEffect(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+    const ctx = canvas.getContext('2d')
+    const dpr = window.devicePixelRatio || 1
+    let animId
+    const parent = canvas.parentElement
+    let W, H
+
+    var rm = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
+    var cols = [[128,56,143],[155,81,224],[255,66,121],[255,162,0]]
+
+    var arrows = []
+    for (var i = 0; i < 28; i++) {
+      var angle = Math.random() * Math.PI * 2
+      var dist = 0.08 + Math.random() * 0.38
+      arrows.push({
+        x: 0.5 + Math.cos(angle) * dist * 1.3,
+        y: 0.5 + Math.sin(angle) * dist,
+        currentAngle: Math.random() * Math.PI * 2,
+        targetAngle: 0,
+        size: 5 + Math.random() * 5,
+        alignSpeed: 0.01 + Math.random() * 0.02,
+        delay: Math.random() * 3,
+        colIdx: i % 4
+      })
+    }
+    var t = 0
+
+    function resize() {
+      const rect = parent.getBoundingClientRect()
+      W = rect.width
+      H = rect.height
+      canvas.width = W * dpr
+      canvas.height = H * dpr
+      canvas.style.width = W + 'px'
+      canvas.style.height = H + 'px'
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+    }
+
+    const ro = new ResizeObserver(resize)
+    ro.observe(parent)
+    resize()
+
+    function draw() {
+      ctx.clearRect(0, 0, W, H)
+      t += 0.016
+      var cx = 0.5 * W, cy = 0.5 * H
+      var pulse = rm ? 1 : 0.8 + Math.sin(t * 0.5) * 0.2
+      var cg = ctx.createRadialGradient(cx, cy, 0, cx, cy, 15 * pulse)
+      cg.addColorStop(0, 'rgba(255,162,0,0.3)')
+      cg.addColorStop(1, 'rgba(255,162,0,0)')
+      ctx.fillStyle = cg
+      ctx.beginPath()
+      ctx.arc(cx, cy, 15 * pulse, 0, Math.PI * 2)
+      ctx.fill()
+      ctx.beginPath()
+      ctx.arc(cx, cy, 3, 0, Math.PI * 2)
+      ctx.fillStyle = 'rgba(255,200,100,0.6)'
+      ctx.fill()
+      for (var i = 0; i < arrows.length; i++) {
+        var a = arrows[i]
+        a.targetAngle = Math.atan2(0.5 - a.y, 0.5 - a.x)
+        var elapsed = Math.max(0, t - a.delay)
+        if (!rm && elapsed > 0) {
+          var diff = a.targetAngle - a.currentAngle
+          while (diff > Math.PI) diff -= Math.PI * 2
+          while (diff < -Math.PI) diff += Math.PI * 2
+          a.currentAngle += diff * a.alignSpeed
+        } else if (rm) {
+          a.currentAngle = a.targetAngle
+        }
+        var px = a.x * W, py = a.y * H
+        var c = cols[a.colIdx]
+        var aligned = Math.abs(a.currentAngle - a.targetAngle) < 0.2
+        var alpha = aligned ? 0.5 : 0.25
+        ctx.save()
+        ctx.translate(px, py)
+        ctx.rotate(a.currentAngle)
+        ctx.beginPath()
+        ctx.moveTo(a.size, 0)
+        ctx.lineTo(-a.size * 0.5, -a.size * 0.3)
+        ctx.lineTo(-a.size * 0.5, a.size * 0.3)
+        ctx.closePath()
+        ctx.fillStyle = 'rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',' + alpha + ')'
+        ctx.fill()
+        ctx.restore()
+        if (aligned) {
+          var ag = ctx.createRadialGradient(px, py, 0, px, py, a.size)
+          ag.addColorStop(0, 'rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',0.1)')
+          ag.addColorStop(1, 'rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',0)')
+          ctx.fillStyle = ag
+          ctx.beginPath()
+          ctx.arc(px, py, a.size, 0, Math.PI * 2)
+          ctx.fill()
+        }
+      }
+
+      if (rm) return
+      animId = requestAnimationFrame(draw)
+    }
+
+    if (rm) {
+      draw()
+    } else {
+      animId = requestAnimationFrame(draw)
+    }
+
+    return () => {
+      cancelAnimationFrame(animId)
+      ro.disconnect()
+    }
+  }, [])
+
+  return <canvas ref={canvasRef} style={{ display: 'block', width: '100%', height: '100%' }} />
+}

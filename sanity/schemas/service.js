@@ -533,6 +533,43 @@ export default defineType({
     }),
 
     // ===========================
+    // MID-PAGE CTAs
+    // (lightweight inline buttons at two fixed points on the page)
+    // ===========================
+
+    defineField({
+      name: 'midCtaAfterProofText',
+      title: 'Mid-page CTA after proof - text (optional)',
+      type: 'string',
+      description: 'Short prompt line above the button after the Examples section. Leave blank for default: "Want to explore what this could look like for your organisation?"',
+      group: 'cta',
+    }),
+
+    defineField({
+      name: 'midCtaAfterProofButton',
+      title: 'Mid-page CTA after proof - button label (optional)',
+      type: 'string',
+      description: 'Button label after the Examples section. Leave blank for default: "Let\'s talk"',
+      group: 'cta',
+    }),
+
+    defineField({
+      name: 'midCtaAfterOutcomesText',
+      title: 'Mid-page CTA after outcomes - text (optional)',
+      type: 'string',
+      description: 'Short prompt line above the button after the Outcomes section. Leave blank for default: "Ready to make this happen?"',
+      group: 'cta',
+    }),
+
+    defineField({
+      name: 'midCtaAfterOutcomesButton',
+      title: 'Mid-page CTA after outcomes - button label (optional)',
+      type: 'string',
+      description: 'Button label after the Outcomes section. Leave blank for default: "Get in touch"',
+      group: 'cta',
+    }),
+
+    // ===========================
     // LOGO STRIP
     // ===========================
 

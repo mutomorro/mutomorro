@@ -1,0 +1,144 @@
+'use client'
+import { useEffect, useRef } from 'react'
+
+export default function Restructuring1() {
+  const canvasRef = useRef(null)
+
+  useEffect(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+    const ctx = canvas.getContext('2d')
+    const dpr = window.devicePixelRatio || 1
+    let animId
+    const parent = canvas.parentElement
+    let W, H
+
+    var rm = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    var cols = [{ r: 128, g: 56, b: 143 }, { r: 155, g: 81, b: 224 }, { r: 255, g: 66, b: 121 }, { r: 255, g: 162, b: 0 }]
+
+    var pieces = []
+    var N = 12
+    var grid = 4
+
+    function initPieces() {
+      pieces = []
+      for (var i = 0; i < N; i++) {
+        var row = Math.floor(i / grid), col2 = i % grid
+        var tX = 0.15 + col2 * 0.22, tY = 0.25 + row * 0.28
+        var c = cols[i % 4]
+        pieces.push({
+          x: Math.random(), y: Math.random(),
+          targetX: tX, targetY: tY, col: c,
+          rotation: Math.random() * Math.PI * 2, targetRot: 0,
+          size: 0.04 + Math.random() * 0.015,
+          delay: Math.random() * 4, settled: false, settleTime: 0,
+          wobblePhase: Math.random() * Math.PI * 2,
+          shape: Math.floor(Math.random() * 3)
+        })
+      }
+    }
+
+    function resize() {
+      const rect = parent.getBoundingClientRect()
+      W = rect.width
+      H = rect.height
+      canvas.width = W * dpr
+      canvas.height = H * dpr
+      canvas.style.width = W + 'px'
+      canvas.style.height = H + 'px'
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+    }
+
+    const ro = new ResizeObserver(resize)
+    ro.observe(parent)
+    resize()
+    initPieces()
+
+    var t = 0
+
+    function drawPiece(x, y, size, shape, rot, col, alpha) {
+      ctx.save()
+      ctx.translate(x, y)
+      ctx.rotate(rot)
+      var s = size * Math.min(W, H)
+      ctx.beginPath()
+      if (shape === 0) ctx.arc(0, 0, s, 0, Math.PI * 2)
+      else if (shape === 1) {
+        var r2 = s * 0.3
+        ctx.moveTo(-s + r2, -s)
+        ctx.lineTo(s - r2, -s)
+        ctx.quadraticCurveTo(s, -s, s, -s + r2)
+        ctx.lineTo(s, s - r2)
+        ctx.quadraticCurveTo(s, s, s - r2, s)
+        ctx.lineTo(-s + r2, s)
+        ctx.quadraticCurveTo(-s, s, -s, s - r2)
+        ctx.lineTo(-s, -s + r2)
+        ctx.quadraticCurveTo(-s, -s, -s + r2, -s)
+      } else {
+        for (var a = 0; a < Math.PI * 2; a += 0.3) {
+          var d = s * (0.8 + Math.sin(a * 3) * 0.2)
+          if (a === 0) ctx.moveTo(Math.cos(a) * d, Math.sin(a) * d)
+          else ctx.lineTo(Math.cos(a) * d, Math.sin(a) * d)
+        }
+        ctx.closePath()
+      }
+      ctx.fillStyle = 'rgba(' + col.r + ',' + col.g + ',' + col.b + ',' + alpha * 0.3 + ')'
+      ctx.fill()
+      ctx.strokeStyle = 'rgba(' + col.r + ',' + col.g + ',' + col.b + ',' + alpha * 0.5 + ')'
+      ctx.lineWidth = 1.5
+      ctx.stroke()
+      ctx.restore()
+    }
+
+    function tick() {
+      ctx.clearRect(0, 0, W, H)
+      t += 0.016
+      for (var i = 0; i < pieces.length; i++) {
+        var p = pieces[i]
+        var elapsed = Math.max(0, t - p.delay)
+        if (!rm && elapsed > 0) {
+          p.x += (p.targetX - p.x) * 0.015
+          p.y += (p.targetY - p.y) * 0.015
+          p.rotation += (p.targetRot - p.rotation) * 0.015
+          if (Math.abs(p.x - p.targetX) < 0.005 && Math.abs(p.y - p.targetY) < 0.005 && !p.settled) {
+            p.settled = true
+            p.settleTime = t
+          }
+          if (p.settled) {
+            p.x = p.targetX + Math.sin(t * 0.3 + p.wobblePhase) * 0.003
+            p.y = p.targetY + Math.cos(t * 0.25 + p.wobblePhase) * 0.002
+          }
+        } else if (rm) {
+          p.x = p.targetX
+          p.y = p.targetY
+          p.settled = true
+        }
+        var alpha = p.settled ? 0.7 + Math.sin(t * 0.5 + i) * 0.1 : 0.4
+        drawPiece(p.x * W, p.y * H, p.size, p.shape, p.rotation, p.col, alpha)
+        if (p.settled) {
+          var g = ctx.createRadialGradient(p.x * W, p.y * H, 0, p.x * W, p.y * H, p.size * Math.min(W, H) * 2)
+          g.addColorStop(0, 'rgba(' + p.col.r + ',' + p.col.g + ',' + p.col.b + ',0.1)')
+          g.addColorStop(1, 'rgba(' + p.col.r + ',' + p.col.g + ',' + p.col.b + ',0)')
+          ctx.fillStyle = g
+          ctx.beginPath()
+          ctx.arc(p.x * W, p.y * H, p.size * Math.min(W, H) * 2, 0, Math.PI * 2)
+          ctx.fill()
+        }
+      }
+      if (!rm) animId = requestAnimationFrame(tick)
+    }
+
+    if (rm) {
+      tick()
+    } else {
+      animId = requestAnimationFrame(tick)
+    }
+
+    return () => {
+      cancelAnimationFrame(animId)
+      ro.disconnect()
+    }
+  }, [])
+
+  return <canvas ref={canvasRef} style={{ display: 'block', width: '100%', height: '100%' }} />
+}

@@ -196,18 +196,13 @@ export default async function ServicePage({ params }) {
           BRIDGE TEXT (mid-dark #423B49)
           ========================================== */}
       {service.recognitionBridge && (
-        <section className="section--full dark-bg" style={{ padding: '80px 48px', background: '#423B49' }}>
+        <section className="section--full dark-bg bridge-text" style={{ padding: '80px 48px', background: '#423B49' }}>
           <div className="scroll-in" style={{
             maxWidth: '860px',
             margin: '0 auto',
             textAlign: 'center',
           }}>
-            <div className="portable-text" style={{
-              fontSize: 'clamp(20px, 2vw, 23px)',
-              fontWeight: '300',
-              lineHeight: '1.65',
-              color: 'rgba(255,255,255,0.85)',
-            }}>
+            <div className="portable-text">
               <PortableText value={service.recognitionBridge} components={{
                 marks: {
                   em: ({ children }) => (

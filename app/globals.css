@@ -1123,6 +1123,12 @@ a:hover {
   color: rgba(255, 255, 255, 0.85);
 }
 
+.bridge-text .portable-text p {
+  font-size: clamp(20px, 2vw, 23px);
+  line-height: 1.65;
+  color: rgba(255, 255, 255, 0.85);
+}
+
 .portable-text h2 {
   font-size: 1.75rem;
   font-weight: 400;

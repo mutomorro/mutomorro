@@ -110,8 +110,8 @@ export default async function Home() {
                   flexShrink: 0,
                 }} />
                 <div>
-                  <p className="body-text" style={{ margin: '0 0 0.25rem', fontSize: '0.95rem' }}>{item.label}</p>
-                  <p style={{ color: '#666', fontWeight: '300', margin: 0, fontSize: '0.9rem' }}>{item.desc}</p>
+                  <p className="body-text" style={{ margin: '0 0 0.25rem', fontSize: '16px' }}>{item.label}</p>
+                  <p style={{ color: 'rgba(0,0,0,0.75)', fontWeight: '300', margin: 0, fontSize: '16px' }}>{item.desc}</p>
                 </div>
               </div>
             ))}

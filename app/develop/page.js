@@ -84,7 +84,7 @@ export default async function DevelopLandingPage() {
                 <p style={{
                   fontSize: '16px',
                   lineHeight: 1.6,
-                  color: 'rgba(0,0,0,0.55)',
+                  color: 'rgba(0,0,0,0.75)',
                   fontWeight: 300,
                   margin: 0,
                 }}>
@@ -144,7 +144,7 @@ export default async function DevelopLandingPage() {
                 <p style={{
                   fontSize: '16px',
                   lineHeight: 1.6,
-                  color: 'rgba(0,0,0,0.55)',
+                  color: 'rgba(0,0,0,0.75)',
                   fontWeight: 300,
                   margin: 0,
                 }}>

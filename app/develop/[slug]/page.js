@@ -136,10 +136,13 @@ export default async function CapabilityServicePage({ params }) {
           <div style={{ maxWidth: '1350px', margin: '0 auto', position: 'relative' }}>
             <div className="scroll-in">
               <span className="kicker" style={{ color: 'var(--accent)', marginBottom: '16px' }}>
-                {service.audienceHeading || 'Who this is for'}
+                Who it's for
               </span>
+              <h2 className="heading-h3" style={{ margin: '0 0 24px' }}>
+                {service.audienceHeading || 'Who this is for'}
+              </h2>
               <div style={{ maxWidth: '750px' }}>
-                <div className="portable-text" style={{ fontSize: '18px', lineHeight: '1.75', fontWeight: '300' }}>
+                <div className="portable-text">
                   <PortableText value={service.audienceBody} />
                 </div>
               </div>
@@ -156,8 +159,11 @@ export default async function CapabilityServicePage({ params }) {
           <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
             <div className="scroll-in">
               <span className="kicker" style={{ color: 'var(--accent)', marginBottom: '16px' }}>
-                {service.structureHeading || 'How it works'}
+                How it works
               </span>
+              <h2 className="heading-h3" style={{ margin: '0 0 24px' }}>
+                {service.structureHeading || 'How the programme works'}
+              </h2>
               {service.structureIntro && (
                 <p className="lead-text" style={{ maxWidth: '700px', marginBottom: '3rem' }}>
                   {service.structureIntro}
@@ -193,20 +199,14 @@ export default async function CapabilityServicePage({ params }) {
 
                   {/* Content */}
                   <div>
-                    <h3 style={{
-                      fontSize: '20px',
-                      fontWeight: '600',
-                      color: 'var(--dark)',
-                      margin: '0 0 12px',
-                      lineHeight: '1.3',
-                    }}>
+                    <h3 className="heading-h4" style={{ margin: '0 0 12px' }}>
                       {item.itemTitle}
                     </h3>
                     <p style={{
                       fontSize: '16px',
                       fontWeight: '300',
                       lineHeight: '1.75',
-                      color: 'rgba(0,0,0,0.55)',
+                      color: 'var(--dark)',
                       margin: 0,
                       maxWidth: '640px',
                     }}>
@@ -252,8 +252,11 @@ export default async function CapabilityServicePage({ params }) {
           <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
             <div className="scroll-in">
               <span className="kicker" style={{ color: '#FF4279', marginBottom: '16px' }}>
-                {service.differenceHeading || 'What makes this different'}
+                What's different
               </span>
+              <h2 className="heading-h3" style={{ margin: '0 0 24px' }}>
+                {service.differenceHeading || 'What makes this different'}
+              </h2>
               {service.differenceIntro && (
                 <p className="lead-text" style={{ maxWidth: '700px', marginBottom: '3rem' }}>
                   {service.differenceIntro}
@@ -279,20 +282,14 @@ export default async function CapabilityServicePage({ params }) {
                     transitionDelay: `${i * 0.1}s`,
                   }}
                 >
-                  <h3 style={{
-                    fontSize: '18px',
-                    fontWeight: '600',
-                    color: 'var(--dark)',
-                    margin: '0 0 12px',
-                    lineHeight: '1.3',
-                  }}>
+                  <h3 className="heading-h4" style={{ margin: '0 0 12px' }}>
                     {item.itemTitle}
                   </h3>
                   <p style={{
                     fontSize: '16px',
                     fontWeight: '300',
                     lineHeight: '1.75',
-                    color: 'rgba(0,0,0,0.55)',
+                    color: 'rgba(0,0,0,0.75)',
                     margin: 0,
                   }}>
                     {item.itemDescription}
@@ -312,8 +309,11 @@ export default async function CapabilityServicePage({ params }) {
           <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
             <div className="scroll-in">
               <span className="kicker" style={{ color: '#FF4279', marginBottom: '16px' }}>
-                {service.takeawayHeading || 'What you take away'}
+                What you take away
               </span>
+              <h2 className="heading-h3" style={{ margin: '0 0 24px' }}>
+                {service.takeawayHeading || 'What you take away'}
+              </h2>
               {service.takeawayIntro && (
                 <p className="lead-text" style={{ maxWidth: '700px', marginBottom: '3rem' }}>
                   {service.takeawayIntro}
@@ -326,7 +326,7 @@ export default async function CapabilityServicePage({ params }) {
               className={`bento-grid ${
                 service.takeawayItems.length <= 3 ? 'bento-grid--3' :
                 service.takeawayItems.length <= 4 ? 'bento-grid--4' :
-                service.takeawayItems.length <= 5 ? 'bento-grid--5' : ''
+                service.takeawayItems.length <= 5 ? 'bento-grid--5' : 'bento-grid--large'
               }`}
             >
               {service.takeawayItems.map((item, i) => (

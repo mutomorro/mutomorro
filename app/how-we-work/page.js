@@ -178,9 +178,9 @@ export default function HowWeWorkPage() {
                                 position: 'relative',
                                 paddingLeft: '18px',
                                 marginBottom: '6px',
-                                fontSize: '15px',
+                                fontSize: '16px',
                                 fontWeight: '300',
-                                color: 'rgba(0,0,0,0.6)',
+                                color: 'var(--dark)',
                               }}
                             >
                               {item}

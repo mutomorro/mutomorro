@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import CTA from '../../components/CTA'
+import BackgroundPattern from '@/components/animations/BackgroundPattern'
 
 export const metadata = {
   title: 'Our Philosophy - Mutomorro',
@@ -93,8 +94,8 @@ export default function PhilosophyPage() {
     <main>
 
       {/* Hero */}
-      <section className="section--full dark-bg" style={{ padding: '100px 48px 120px' }}>
-        <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
+      <BackgroundPattern variant="network" className="section--full dark-bg" style={{ padding: '100px 48px 120px' }}>
+        <div style={{ maxWidth: '1350px', margin: '0 auto', position: 'relative' }}>
           <span className="kicker" style={{ marginBottom: '20px' }}>Philosophy</span>
           <h1 className="heading-display heading-gradient" style={{ maxWidth: '900px', margin: '0 0 32px' }}>
             Designing intentional ecosystems
@@ -103,7 +104,7 @@ export default function PhilosophyPage() {
             Every organisation is a living ecosystem. We help you see it clearly, design it intentionally, and build the capability to lead change from within.
           </p>
         </div>
-      </section>
+      </BackgroundPattern>
 
       {/* Opening - the shift */}
       <section className="section--full" style={{ padding: '80px 48px', background: 'var(--white)' }}>

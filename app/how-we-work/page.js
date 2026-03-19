@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import CTA from '../../components/CTA'
+import BackgroundPattern from '@/components/animations/BackgroundPattern'
 
 export const metadata = {
   title: 'How We Work - Mutomorro',
@@ -67,8 +68,8 @@ export default function HowWeWorkPage() {
     <main>
 
       {/* Hero */}
-      <section className="section--full dark-bg" style={{ padding: '100px 48px 120px' }}>
-        <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
+      <BackgroundPattern variant="network" className="section--full dark-bg" style={{ padding: '100px 48px 120px' }}>
+        <div style={{ maxWidth: '1350px', margin: '0 auto', position: 'relative' }}>
           <span className="kicker" style={{ marginBottom: '20px' }}>How we work</span>
           <h1 className="heading-display heading-gradient" style={{ maxWidth: '900px', margin: '0 0 32px' }}>
             A partner, not a programme
@@ -77,7 +78,7 @@ export default function HowWeWorkPage() {
             We work alongside you through the complete journey - from understanding where you are now, through collaborative design, to embedded change and lasting internal capability.
           </p>
         </div>
-      </section>
+      </BackgroundPattern>
 
       {/* Intro */}
       <section className="section--full" style={{ padding: '80px 48px', background: 'var(--white)' }}>

@@ -8,6 +8,7 @@ import { JourneyStrip, ProgressBar } from '../../../components/ApproachJourney'
 import ServiceHero from '../../../components/heroes/ServiceHero'
 import RecognitionRow from '../../../components/RecognitionRow'
 import LogoStrip from '../../../components/LogoStrip'
+import BackgroundPattern from '@/components/animations/BackgroundPattern'
 
 // Step colours matching the journey strip
 const STEP_COLOURS = ['#80388F', '#9B51E0', '#FF4279', '#E08F00']
@@ -143,7 +144,7 @@ export default async function ServicePage({ params }) {
       {/* ==========================================
           SECTION 2: CONTEXT (warm)
           ========================================== */}
-      <section id="context" className="section--full" style={{ padding: '80px 48px', background: 'var(--warm)', position: 'relative' }}>
+      <BackgroundPattern variant="woven" className="section--full" style={{ padding: '80px 48px', background: '#FAF6F1', position: 'relative' }}>
         {/* Shadow gradient from anchor nav dark zone */}
         <div style={{
           position: 'absolute',
@@ -155,7 +156,7 @@ export default async function ServicePage({ params }) {
           pointerEvents: 'none',
         }} />
 
-        <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
+        <div id="context" style={{ maxWidth: '1350px', margin: '0 auto' }}>
           {/* Kicker + heading always full width */}
           <div className="scroll-in">
             <span className="kicker" style={{ color: '#FF4279', marginBottom: '16px' }}>Context</span>
@@ -199,7 +200,7 @@ export default async function ServicePage({ params }) {
             )}
           </div>
         </div>
-      </section>
+      </BackgroundPattern>
 
       {/* ==========================================
           SECTION 3: LOGO STRIP (single fixed placement)
@@ -375,7 +376,7 @@ export default async function ServicePage({ params }) {
           SECTION 6: STATS STRIP (full dark #221C2B)
           ========================================== */}
       {service.stats?.length > 0 && (
-        <section className="section--full dark-bg" style={{ padding: '72px 48px' }}>
+        <BackgroundPattern variant="constellation" className="section--full dark-bg" style={{ background: '#221C2B', padding: '72px 48px' }}>
           <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
             <div style={{
               display: 'grid',
@@ -411,14 +412,14 @@ export default async function ServicePage({ params }) {
               ))}
             </div>
           </div>
-        </section>
+        </BackgroundPattern>
       )}
 
       {/* ==========================================
           SECTION 8: APPROACH OVERVIEW (white)
           ========================================== */}
-      <section id="approach" className="section--full" style={{ padding: '80px 48px', background: 'var(--white)' }}>
-        <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
+      <BackgroundPattern variant="network" className="section--full" style={{ padding: '80px 48px', background: '#FFFFFF' }}>
+        <div id="approach" style={{ maxWidth: '1350px', margin: '0 auto' }}>
           <div className="scroll-in">
             <span className="kicker" style={{ color: 'var(--accent)', marginBottom: '16px' }}>Approach</span>
             <h2 className="heading-h2" style={{ margin: '0 0 24px' }}>
@@ -434,7 +435,7 @@ export default async function ServicePage({ params }) {
             <JourneyStrip stages={service.stages} />
           )}
         </div>
-      </section>
+      </BackgroundPattern>
 
       {/* Sticky progress bar - rendered at page level so position:sticky works */}
       {service.stages?.length > 0 && (

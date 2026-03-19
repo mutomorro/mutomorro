@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { getAllProjects } from '../../sanity/client'
 import CTA from '../../components/CTA'
+import BackgroundPattern from '@/components/animations/BackgroundPattern'
 
 export default async function Projects() {
   const projects = await getAllProjects()
@@ -13,8 +14,8 @@ export default async function Projects() {
     <main>
 
       {/* Hero */}
-      <section className="section--full dark-bg" style={{ padding: '100px 48px 120px' }}>
-        <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
+      <BackgroundPattern variant="network" className="section--full dark-bg" style={{ padding: '100px 48px 120px' }}>
+        <div style={{ maxWidth: '1350px', margin: '0 auto', position: 'relative' }}>
           <span className="kicker" style={{ marginBottom: '20px' }}>Projects and experience</span>
           <h1 className="heading-h1 heading-gradient" style={{
             margin: '0 0 32px',
@@ -26,7 +27,7 @@ export default async function Projects() {
             A selection of projects and experiences that show our approach in action.
           </p>
         </div>
-      </section>
+      </BackgroundPattern>
 
       {/* Featured project */}
       {featured && (

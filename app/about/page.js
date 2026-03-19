@@ -1,33 +1,45 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import CTA from '../../components/CTA'
-
-const logos = [
-  'Singapore University', 'Royal College of Anaesthetists', 'FCDO',
-  'Disney', 'HM Courts Service', 'Elrha', 'Capella', 'Virgin Atlantic',
-  'Value Retail', 'Unite Students', 'Warburtons', 'PayPal', 'Nandos',
-  'Aston Martin', 'London City Airport', 'Environment Agency',
-  'Simply Business', 'Nominet', 'Next', 'Electoral Commission',
-]
+import LogoStrip from '../../components/LogoStrip'
+import BackgroundPattern from '@/components/animations/BackgroundPattern'
 
 export default function About() {
   return (
     <main>
 
-      {/* Hero */}
-      <section className="section--full dark-bg" style={{ padding: '100px 48px 120px' }}>
-        <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
+      {/* Section 1: Hero */}
+      <BackgroundPattern variant="network" className="section--full dark-bg" style={{ padding: '100px 48px 120px' }}>
+        <div style={{ maxWidth: '1350px', margin: '0 auto', position: 'relative' }}>
           <span className="kicker" style={{ marginBottom: '20px' }}>About Mutomorro</span>
           <h1 className="heading-display heading-gradient" style={{ maxWidth: '900px', margin: '0 0 32px' }}>
-            Designing thriving organisations for the new world of work
+            We help leaders redesign how their organisations work
           </h1>
           <p className="lead-text" style={{ color: 'rgba(255,255,255,0.6)', maxWidth: '680px' }}>
-            We partner with leaders who want to build something better.
+            The structures, the culture, the operations, the way people experience change. We work across the whole system - because that's where lasting change happens.
           </p>
+        </div>
+      </BackgroundPattern>
+
+      {/* Section 2: The short version */}
+      <section className="section--full warm-bg" style={{ padding: '80px 48px' }}>
+        <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
+          <div className="scroll-in" style={{ maxWidth: '780px', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+            <p className="body-text">
+              Mutomorro is an organisational development consultancy. We work with leaders to improve how their organisations are designed, how they develop, and how they handle change.
+            </p>
+            <p className="body-text">
+              We take a whole-system view - looking at how purpose, structure, culture, operations and service all connect - rather than treating problems in isolation. And we build capability inside your organisation rather than creating dependency on ours.
+            </p>
+            <p className="body-text">
+              We've worked across the private, public and third sectors - from startups to government departments, charities to global brands. Every engagement is different, but the approach is consistent: understand the system, design with your people, build something that lasts.
+            </p>
+          </div>
         </div>
       </section>
 
-      {/* The world leaders are navigating */}
-      <section className="section--full warm-bg" style={{ padding: '80px 48px' }}>
+      {/* Section 3: Who we are */}
+      <section className="section--full" style={{ padding: '80px 48px', background: 'var(--white)' }}>
         <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
           <div style={{
             display: 'grid',
@@ -35,175 +47,74 @@ export default function About() {
             gap: '5rem',
             alignItems: 'start',
           }}>
-
-            {/* Pull quote - left */}
-            <div className="scroll-in">
-              <blockquote className="pull-quote" style={{ margin: 0 }}>
-                The leaders we work with aren't asking how to fix what's broken.
-                They're asking how to build something that works better - for their
-                people, their customers, and the world they're operating in.
-              </blockquote>
-              <p style={{
-                fontSize: '13px',
-                fontWeight: '400',
-                letterSpacing: '0.08em',
-                textTransform: 'uppercase',
-                color: 'var(--coral)',
-                marginTop: '1.5rem',
-              }}>
-                James Freeman-Gray, Founder
-              </p>
-            </div>
-
-            {/* Body - right */}
-            <div className="scroll-in delay-1" style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-              <p className="body-text">
-                The world of work has fundamentally changed. Complexity isn't occasional
-                - it's constant. Expectations from people and customers are higher.
-                The pace of change keeps accelerating.
-              </p>
-              <p className="body-text">
-                Leaders are asking bigger questions than ever before. How do we build
-                organisations that adapt without burning people out? How do we create
-                environments where people bring their best? How do we move from
-                reacting to designing?
-              </p>
-              <p className="body-text">
-                These aren't questions with easy answers. They're questions worth
-                taking seriously.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* A different way of thinking */}
-      <section className="section--full" style={{ padding: '80px 48px', background: 'var(--white)' }}>
-        <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
-          <div className="scroll-in" style={{ maxWidth: '720px' }}>
-            <span className="kicker" style={{ color: 'var(--accent)', marginBottom: '20px' }}>
-              A different way of thinking
-            </span>
-            <h2 className="heading-h2" style={{ margin: '0 0 24px' }}>
-              Organisations aren't machines. They're living systems.
-            </h2>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', marginBottom: '2.5rem' }}>
-              <p className="body-text">
-                Most approaches to organisational development were designed for a different
-                era - one where organisations were predictable, change was episodic, and
-                the right answer could be found by the right expert.
-              </p>
-              <p className="body-text" style={{ fontWeight: '400', fontSize: '1.05rem' }}>
-                That world no longer exists.
-              </p>
-              <p className="body-text">
-                We work with organisations as living ecosystems. Complex, adaptive,
-                interconnected. Health comes from relationships and patterns, not just
-                individual components. Change happens through cultivating the right
-                conditions - not forcing the right outcomes.
-              </p>
-            </div>
-
-            <blockquote className="pull-quote">
-              When you understand the patterns beneath the surface, transformation
-              becomes possible in a way it never could be from the outside.
-            </blockquote>
-
-            <p className="body-text" style={{ color: 'rgba(0,0,0,0.5)', marginTop: '2rem' }}>
-              This isn't a methodology. It's a fundamentally different way of seeing
-              - and once you see it, you can't unsee it.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* Logo strip */}
-      <section className="section--full warm-bg" style={{ padding: '4rem 48px' }}>
-        <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
-          <div style={{
-            display: 'flex',
-            flexWrap: 'wrap',
-            gap: '1rem',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}>
-            {logos.map((logo) => (
-              <div key={logo} style={{
-                width: '120px',
-                height: '60px',
-                backgroundColor: 'rgba(0,0,0,0.04)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}>
-                <span className="caption-text" style={{ textAlign: 'center', padding: '0 8px' }}>
-                  {logo}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Who we are */}
-      <section className="section--full" style={{ padding: '80px 48px', background: 'var(--white)' }}>
-        <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: '1fr 1fr',
-            gap: '5rem',
-            alignItems: 'center',
-          }}>
             <div className="scroll-in">
               <span className="kicker" style={{ color: 'var(--accent)', marginBottom: '20px' }}>
                 Who we are
               </span>
               <h2 className="heading-h2" style={{ margin: '0 0 24px' }}>
-                Founded on a belief that organisations can be better
+                Built for organisations that care about getting this right
               </h2>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
                 <p className="body-text">
-                  Mutomorro was founded by James Freeman-Gray. With over 20 years of
-                  experience working with organisations across the private, public and
-                  third sectors, James brings a systems-informed perspective to every
-                  engagement - one shaped by real work with real organisations,
-                  not theory alone.
+                  We've worked with organisations of 12 people and organisations of 80,000. Global brands and local charities. Government departments and startups finding their feet. The challenges are remarkably similar - and the approach works the same way.
                 </p>
                 <p className="body-text">
-                  We work with a collective of specialist collaborators - experienced
-                  practitioners in their fields - who join projects where their expertise
-                  adds most value. You get the right people for your situation, working
-                  with a consistent approach and a shared set of values.
+                  Every project gets senior-level thinking from day one. When specialist expertise is needed, we bring in experienced collaborators who share our approach and values. You get the right people for your situation - and a partner who's genuinely invested in getting it right.
                 </p>
               </div>
             </div>
 
-            {/* Photo placeholder */}
+            {/* Photo + bio card */}
             <div className="scroll-in delay-1">
-              <div className="img-offset" style={{
-                width: '100%',
-                aspectRatio: '4/5',
-                backgroundColor: '#e8e3dc',
+              <Image
+                src="https://cdn.sanity.io/images/c6pg4t4h/production/ff6e02cb52c63ce401da07f4d81eb74fe0e1f1eb-1944x1944.jpg?w=800&h=1000&fit=crop"
+                alt="James Freeman-Gray"
+                width={800}
+                height={1000}
+                style={{ width: '100%', height: 'auto', display: 'block' }}
+              />
+              <div style={{
+                marginTop: '16px',
                 display: 'flex',
                 alignItems: 'center',
-                justifyContent: 'center',
+                justifyContent: 'space-between',
               }}>
-                <p className="caption-text">Photo coming soon</p>
+                <div>
+                  <p style={{
+                    fontSize: '16px',
+                    fontWeight: '400',
+                    color: 'var(--dark)',
+                    margin: '0 0 2px',
+                  }}>
+                    James Freeman-Gray
+                  </p>
+                  <p style={{
+                    fontSize: '14px',
+                    fontWeight: '300',
+                    color: 'rgba(0,0,0,0.5)',
+                    margin: 0,
+                  }}>
+                    Founder. Over 20 years working with organisations across every sector.
+                  </p>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* What we work on - four areas */}
-      <section className="section--full warm-bg" style={{ padding: '80px 48px' }}>
+      {/* Section 4: Logo strip */}
+      <LogoStrip />
+
+      {/* Section 5: What we work on */}
+      <section className="section--full" style={{ padding: '80px 48px', background: 'var(--white)' }}>
         <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
           <div className="scroll-in" style={{ marginBottom: '3rem' }}>
             <span className="kicker" style={{ color: 'var(--accent)', marginBottom: '20px' }}>
-              Where we work
+              What we work on
             </span>
             <h2 className="heading-h2" style={{ margin: '0 0 16px', maxWidth: '600px' }}>
-              Four interconnected areas of organisational life
+              Four areas of organisational life
             </h2>
           </div>
 
@@ -211,76 +122,87 @@ export default function About() {
             {[
               {
                 title: 'Purpose & Direction',
-                body: 'Helping organisations get clear on why they exist, where they\'re going, and how strategy becomes something people actually live - not just a document on a shelf.',
+                body: 'Getting clear on why you exist, where you\'re going, and how strategy becomes something people actually live - not just a document on a shelf.',
+                href: '/services/purpose-direction',
               },
               {
                 title: 'Structure & Operations',
-                body: 'Designing how work flows, decisions get made, and operations function. The architecture that lets your organisation move with clarity and confidence.',
+                body: 'Designing how work flows, how decisions get made, and how operations function. The architecture that lets your organisation move with clarity and confidence.',
+                href: '/services/structure-operations',
               },
               {
                 title: 'People & Capability',
-                body: 'Building the skills, cultures, and conditions where people bring their best. Growing the capacity for continuous learning and adaptation.',
+                body: 'Building the skills, culture, and conditions where people do their best work. Growing the capacity for continuous learning and adaptation.',
+                href: '/services/people-capability',
               },
               {
                 title: 'Service & Experience',
-                body: 'How value is created and delivered - for customers, service users, and communities. Improving what organisations do for the people they exist to serve.',
+                body: 'Improving how value is created and delivered - for customers, service users, and communities. Making what you do match what people actually need.',
+                href: '/services/service-experience',
               },
             ].map((item, index) => (
-              <div
+              <Link
                 key={item.title}
+                href={item.href}
                 className="scroll-in"
                 style={{
                   borderTop: '2px solid var(--coral)',
                   paddingTop: '1.25rem',
                   animationDelay: `${index * 0.1}s`,
+                  textDecoration: 'none',
+                  color: 'inherit',
+                  display: 'block',
                 }}
               >
                 <h3 className="heading-h4" style={{ margin: '0 0 10px' }}>{item.title}</h3>
-                <p className="body-small" style={{ margin: 0, color: 'rgba(0,0,0,0.55)' }}>
+                <p className="body-small" style={{ margin: 0 }}>
                   {item.body}
                 </p>
-              </div>
+              </Link>
             ))}
           </div>
 
-          <p className="body-small" style={{
-            color: 'rgba(0,0,0,0.4)',
+          <p className="body-text" style={{
+            color: 'rgba(0,0,0,0.5)',
             fontStyle: 'italic',
             marginTop: '2rem',
+            fontSize: '16px',
           }}>
-            We rarely work in just one area. Organisations are systems - and real
-            change touches all four.
+            We rarely work in just one area. Organisations are systems - real change usually touches all four.
           </p>
         </div>
       </section>
 
-      {/* How we partner */}
+      {/* Section 6: How we work */}
       <section className="section--full dark-bg" style={{ padding: '80px 48px' }}>
         <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
-          <div className="scroll-in" style={{ marginBottom: '3rem' }}>
-            <span className="kicker" style={{ marginBottom: '20px' }}>How we work together</span>
-            <h2 className="heading-h2" style={{ color: '#ffffff', margin: 0 }}>
-              Partners. Not consultants.
+          <div className="scroll-in" style={{ marginBottom: '3rem', maxWidth: '720px' }}>
+            <span className="kicker" style={{ marginBottom: '20px' }}>How we work</span>
+            <h2 className="heading-h2" style={{ color: '#ffffff', margin: '0 0 24px' }}>
+              Partners, not consultants
             </h2>
+            <p className="body-text" style={{ color: 'rgba(255,255,255,0.85)', margin: 0 }}>
+              Most organisational challenges get treated as isolated problems - fix the culture, restructure the team, improve the process. But organisations don't work in parts. Everything connects. We work differently.
+            </p>
           </div>
 
           <div className="grid-2">
             {[
               {
-                title: "We'll help you see the full picture",
-                body: "Together, we'll look beyond the immediate problem to the patterns creating it. Small changes in the right places create big shifts across the whole system.",
+                title: 'We work across the whole system',
+                body: 'Not just the part that seems broken. We look at how purpose, structure, culture, operations and service interact - and find where small changes in the right place create the biggest shift.',
               },
               {
-                title: "We'll build capability that lasts",
-                body: "We won't just solve today's challenge. We'll work with you to develop the skills your team needs to keep designing and adapting long after we're gone.",
+                title: 'We design with you, not for you',
+                body: 'Your people understand your organisation better than any outside consultant. We bring the frameworks and facilitation. You bring the knowledge. Together, that\'s how lasting solutions get built.',
               },
               {
-                title: "Your people will own the change",
-                body: "We create conditions where your team helps design the solutions - so they make them work. Change sticks because people genuinely want it to succeed.",
+                title: 'Your people will own the change',
+                body: 'We create conditions where your team helps design the solutions - so they make them work. Change sticks because people genuinely want it to succeed.',
               },
               {
-                title: "We'll work ourselves out of a job",
-                body: "Success looks like you not needing us. When your people are facilitating their own conversations and designing their own interventions - that's the outcome we're working towards.",
+                title: 'We\'ll work ourselves out of a job',
+                body: 'Success looks like you not needing us. When your people are facilitating their own conversations and designing their own interventions - that\'s the outcome we\'re working towards.',
               },
             ].map((item, index) => (
               <div
@@ -309,7 +231,7 @@ export default function About() {
         </div>
       </section>
 
-      {/* Explore further */}
+      {/* Section 7: Explore further */}
       <section className="section--full warm-bg" style={{ padding: '80px 48px' }}>
         <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
           <div className="grid-3">
@@ -360,6 +282,7 @@ export default function About() {
         </div>
       </section>
 
+      {/* Section 8: CTA */}
       <CTA
         label="Ready to explore?"
         heading="Start with a conversation"

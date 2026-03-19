@@ -282,6 +282,7 @@ export async function getService(slug) {
         slug,
         clientSector,
         shortSummary,
+        "heroImageUrl": heroImage.asset->url,
       },
       testimonialQuote,
       testimonialAttribution,
@@ -291,6 +292,12 @@ export async function getService(slug) {
       ctaBody,
       ctaButtonLabel,
       ctaButtonUrl,
+
+      // Mid-page CTAs
+      midCtaAfterProofText,
+      midCtaAfterProofButton,
+      midCtaAfterOutcomesText,
+      midCtaAfterOutcomesButton,
 
       // Logo strip
       showLogoStrip,

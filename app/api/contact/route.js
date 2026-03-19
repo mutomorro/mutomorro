@@ -9,7 +9,7 @@ const supabase = createClient(
 
 export async function POST(request) {
   try {
-    const { name, email, organisation, message } = await request.json()
+    const { name, email, organisation, message, service } = await request.json()
 
     if (!name || !email || !message) {
       return Response.json(
@@ -28,7 +28,7 @@ export async function POST(request) {
       from: 'Mutomorro Website <hello@mutomorro.com>',
       to: 'hello@mutomorro.com',
       replyTo: email,
-      subject: `New enquiry from ${name}`,
+      subject: service ? `New enquiry from ${name} - ${service}` : `New enquiry from ${name}`,
       html: `
         <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
           <h2 style="color: #221C2B;">New enquiry from the Mutomorro website</h2>
@@ -45,6 +45,12 @@ export async function POST(request) {
             <tr>
               <td style="padding: 0.75rem 0; border-bottom: 1px solid #eee; font-weight: 600;">Organisation</td>
               <td style="padding: 0.75rem 0; border-bottom: 1px solid #eee;">${organisation}</td>
+            </tr>
+            ` : ''}
+            ${service ? `
+            <tr>
+              <td style="padding: 0.75rem 0; border-bottom: 1px solid #eee; font-weight: 600;">Service interest</td>
+              <td style="padding: 0.75rem 0; border-bottom: 1px solid #eee;">${service}</td>
             </tr>
             ` : ''}
             <tr>
@@ -93,7 +99,9 @@ export async function POST(request) {
         .insert({
           contact_id: contact.id,
           type: 'inbound-enquiry',
-          detail: message.substring(0, 500),
+          detail: service
+            ? `[${service}] ${message.substring(0, 500)}`
+            : message.substring(0, 500),
           strength: 'high',
         })
 

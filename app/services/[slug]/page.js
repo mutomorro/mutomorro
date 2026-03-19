@@ -3,9 +3,10 @@ import { getService } from '../../../sanity/client'
 import { PortableText } from '@portabletext/react'
 import { notFound } from 'next/navigation'
 import CTA from '../../../components/CTA'
+import EcosystemVisual from '../../../components/EcosystemVisual'
 import { JourneyStrip, ProgressBar } from '../../../components/ApproachJourney'
 import ServiceHero from '../../../components/heroes/ServiceHero'
-import RecognitionCard from '../../../components/recognition/RecognitionCard'
+import RecognitionRow from '../../../components/RecognitionRow'
 import LogoStrip from '../../../components/LogoStrip'
 
 // Step colours matching the journey strip
@@ -13,6 +14,33 @@ const STEP_COLOURS = ['#80388F', '#9B51E0', '#FF4279', '#E08F00']
 
 // Bento box colours for outcomes
 const BENTO_COLOURS = ['#80388F', '#9B51E0', '#FF4279', '#E08F00', '#221C2B']
+
+// Mid-page CTA - lightweight inline prompt + button
+function MidPageCta({ text, buttonLabel, serviceTitle }) {
+  return (
+    <div style={{
+      padding: '12px 48px 68px',
+      textAlign: 'center',
+    }}>
+      <p style={{
+        fontSize: '18px',
+        fontWeight: '300',
+        fontStyle: 'italic',
+        color: 'rgba(0,0,0,0.55)',
+        margin: '0 0 20px',
+        lineHeight: '1.5',
+      }}>
+        {text}
+      </p>
+      <a
+        href={`/contact?service=${encodeURIComponent(serviceTitle)}`}
+        className="btn-primary"
+      >
+        {buttonLabel}
+      </a>
+    </div>
+  )
+}
 
 // ============================================
 // SEO METADATA
@@ -45,8 +73,8 @@ export default async function ServicePage({ params }) {
       {/* ==========================================
           SECTION 1: HERO (dark)
           ========================================== */}
-      <section className="section--full dark-bg" style={{ padding: '100px 0 120px', position: 'relative', overflow: 'hidden' }}>
-        <div style={{ display: 'flex', maxWidth: '1350px', margin: '0 auto', padding: '0 48px', position: 'relative', zIndex: 2 }}>
+      <section className="section--full dark-bg" style={{ padding: '100px 48px 120px', position: 'relative', overflow: 'hidden' }}>
+        <div style={{ display: 'flex', maxWidth: '1350px', margin: '0 auto', position: 'relative', zIndex: 2 }}>
           <div style={{ flex: '1 1 55%', maxWidth: '600px' }}>
             {/* Breadcrumb */}
             <div className="breadcrumb">
@@ -93,7 +121,14 @@ export default async function ServicePage({ params }) {
           ========================================== */}
       <nav className="anchor-nav">
         <div className="anchor-nav__inner">
-          {['Context', 'Perspective', 'Approach', 'Outcomes', 'Examples'].map((label) => (
+          {(() => {
+            const navItems = ['Context', 'Recognition']
+            if (service.relatedProjects?.length > 0 || service.testimonialQuote) {
+              navItems.push('Examples')
+            }
+            navItems.push('Approach', 'Perspective', 'Outcomes')
+            return navItems
+          })().map((label) => (
             <a
               key={label}
               href={`#${label.toLowerCase()}`}
@@ -167,9 +202,16 @@ export default async function ServicePage({ params }) {
       </section>
 
       {/* ==========================================
-          SECTION 3: RECOGNITION (white)
+          SECTION 3: LOGO STRIP (single fixed placement)
           ========================================== */}
-      <section className="section--full" style={{ padding: '80px 48px', background: 'var(--white)' }}>
+      {service.showLogoStrip !== false && (
+        <LogoStrip />
+      )}
+
+      {/* ==========================================
+          SECTION 4: RECOGNITION (white)
+          ========================================== */}
+      <section id="recognition" className="section--full" style={{ padding: '80px 48px', background: 'var(--white)' }}>
         <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
           <div className="scroll-in">
             <span className="kicker" style={{ color: '#FF4279', marginBottom: '16px' }}>Recognition</span>
@@ -183,58 +225,22 @@ export default async function ServicePage({ params }) {
             )}
           </div>
 
-          {/* Recognition cards - 2x2 grid, capped at 4 */}
+          {/* Recognition rows - horizontal stacked boxes, capped at 4 */}
           {service.recognitionItems?.length > 0 && (
             <div style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(2, 1fr)',
-              gap: '22px',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '20px',
               marginBottom: '2.5rem',
             }}>
               {service.recognitionItems.slice(0, 4).map((item, i) => (
-                <div
+                <RecognitionRow
                   key={item._key || i}
-                  className="scroll-in"
-                  style={{
-                    transitionDelay: `${i * 0.1}s`,
-                    background: 'var(--warm)',
-                    border: '1px solid rgba(0,0,0,0.06)',
-                    display: 'flex',
-                    flexDirection: 'column',
-                  }}
-                >
-                  {/* Animation area - contained at top of card */}
-                  <div style={{
-                    width: '100%',
-                    height: '210px',
-                    background: 'var(--warm)',
-                    position: 'relative',
-                    overflow: 'hidden',
-                    flexShrink: 0,
-                  }}>
-                    <RecognitionCard slug={slug} index={i} />
-                  </div>
-                  {/* Text area - bottom of card */}
-                  <div style={{
-                    padding: '28px 28px 32px',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    flex: 1,
-                  }}>
-                    <p style={{
-                      fontSize: '21px',
-                      fontWeight: '400',
-                      lineHeight: '1.35',
-                      color: '#1a1a1a',
-                      textAlign: 'center',
-                      margin: 0,
-                    }}>
-                      {item.text}
-                    </p>
-                  </div>
-                </div>
+                  item={item}
+                  index={i}
+                  slug={slug}
+                  delay={i * 0.1}
+                />
               ))}
             </div>
           )}
@@ -266,7 +272,107 @@ export default async function ServicePage({ params }) {
       )}
 
       {/* ==========================================
-          STATS STRIP (full dark #221C2B)
+          SECTION 5: EXAMPLES (white)
+          ========================================== */}
+      {(service.relatedProjects?.length > 0 || service.testimonialQuote) && (
+        <section id="examples" className="section--full" style={{ padding: '80px 48px', background: 'var(--white)' }}>
+          <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
+            <div className="scroll-in">
+              <span className="kicker" style={{ color: 'var(--accent)', marginBottom: '16px' }}>Proof in practice</span>
+              <h2 className="heading-h2" style={{ margin: '0 0 2rem' }}>
+                See how this works in real organisations
+              </h2>
+            </div>
+
+            {/* Related projects */}
+            {service.relatedProjects?.length > 0 && (
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: service.relatedProjects.length > 1 ? '1fr 1fr' : '1fr',
+                gap: '24px',
+                marginBottom: service.testimonialQuote ? '3rem' : 0,
+              }}>
+                {service.relatedProjects.map((project, i) => (
+                  <Link
+                    key={project._id}
+                    href={`/projects/${project.slug.current}`}
+                    className="card-a scroll-in"
+                    style={{ transitionDelay: `${i * 0.1}s`, overflow: 'hidden' }}
+                  >
+                    {project.heroImageUrl && (
+                      <div style={{
+                        width: '100%',
+                        height: '200px',
+                        overflow: 'hidden',
+                      }}>
+                        <img
+                          src={project.heroImageUrl}
+                          alt=""
+                          style={{
+                            width: '100%',
+                            height: '100%',
+                            objectFit: 'cover',
+                          }}
+                        />
+                      </div>
+                    )}
+                    <div className="card-a__corner"></div>
+                    <div className="card-a__body">
+                      {project.clientSector && (
+                        <span className="card-a__tag">{project.clientSector}</span>
+                      )}
+                      <p className="card-a__title">{project.title}</p>
+                      {project.shortSummary && (
+                        <p className="card-a__text">{project.shortSummary}</p>
+                      )}
+                    </div>
+                    <div className="card-a__footer">
+                      <div className="card-a__footer-bg"></div>
+                      <div className="card-a__action">
+                        Read the full story <span className="arrow">→</span>
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            )}
+
+            {/* Testimonial */}
+            {service.testimonialQuote && (
+              <div className="scroll-in pull-quote">
+                <blockquote style={{ margin: 0, fontStyle: 'italic' }}>
+                  "{service.testimonialQuote}"
+                </blockquote>
+                {service.testimonialAttribution && (
+                  <cite style={{
+                    display: 'block',
+                    marginTop: '12px',
+                    fontSize: '14px',
+                    fontStyle: 'normal',
+                    color: 'rgba(0,0,0,0.45)',
+                  }}>
+                    — {service.testimonialAttribution}
+                  </cite>
+                )}
+              </div>
+            )}
+          </div>
+        </section>
+      )}
+
+      {/* ==========================================
+          MID-PAGE CTA: AFTER PROOF
+          ========================================== */}
+      {(service.relatedProjects?.length > 0 || service.testimonialQuote) && (
+        <MidPageCta
+          text={service.midCtaAfterProofText || "Want to explore what this could look like for your organisation?"}
+          buttonLabel={service.midCtaAfterProofButton || "Let\u2019s talk"}
+          serviceTitle={service.title}
+        />
+      )}
+
+      {/* ==========================================
+          SECTION 6: STATS STRIP (full dark #221C2B)
           ========================================== */}
       {service.stats?.length > 0 && (
         <section className="section--full dark-bg" style={{ padding: '72px 48px' }}>
@@ -308,95 +414,8 @@ export default async function ServicePage({ params }) {
         </section>
       )}
 
-      {/* Logo strip - after-recognition position (default) */}
-      {service.showLogoStrip !== false && (!service.logoStripPosition || service.logoStripPosition === 'after-recognition') && (
-        <LogoStrip />
-      )}
-
       {/* ==========================================
-          SECTION 4: PERSPECTIVE (warm)
-          ========================================== */}
-      <section id="perspective" className="section--full warm-bg" style={{ padding: '80px 48px' }}>
-        {service.perspectiveImageUrl ? (
-          /* With image: existing two-column layout */
-          <div style={{
-            maxWidth: '1350px',
-            margin: '0 auto',
-            display: 'grid',
-            gridTemplateColumns: '1fr 380px',
-            gap: '4rem',
-            alignItems: 'start',
-          }}>
-            <div className="scroll-in">
-              <span className="kicker" style={{ color: 'var(--accent)', marginBottom: '16px' }}>Perspective</span>
-              <h2 className="heading-h2" style={{ margin: '0 0 24px' }}>
-                {service.perspectiveHeading}
-              </h2>
-              <div className="portable-text">
-                <PortableText value={service.perspectiveBody} />
-              </div>
-              {service.perspectiveLinkLabel && service.perspectiveLinkUrl && (
-                <Link
-                  href={service.perspectiveLinkUrl}
-                  className="inline-link"
-                  style={{
-                    display: 'inline-block',
-                    marginTop: '24px',
-                    fontSize: '15px',
-                    fontWeight: '400',
-                  }}
-                >
-                  {service.perspectiveLinkLabel} →
-                </Link>
-              )}
-            </div>
-            <div className="scroll-in delay-1 img-offset">
-              <img
-                src={service.perspectiveImageUrl}
-                alt={service.perspectiveHeading}
-                style={{ width: '100%', height: 'auto', display: 'block' }}
-              />
-            </div>
-          </div>
-        ) : (
-          /* Without image: H2 full width, body constrained to left column */
-          <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
-            <div className="scroll-in">
-              <span className="kicker" style={{ color: 'var(--accent)', marginBottom: '16px' }}>Perspective</span>
-              <h2 className="heading-h2" style={{ margin: '0 0 24px' }}>
-                {service.perspectiveHeading}
-              </h2>
-            </div>
-            <div className="scroll-in" style={{ maxWidth: '600px' }}>
-              <div className="portable-text">
-                <PortableText value={service.perspectiveBody} />
-              </div>
-              {service.perspectiveLinkLabel && service.perspectiveLinkUrl && (
-                <Link
-                  href={service.perspectiveLinkUrl}
-                  className="inline-link"
-                  style={{
-                    display: 'inline-block',
-                    marginTop: '24px',
-                    fontSize: '15px',
-                    fontWeight: '400',
-                  }}
-                >
-                  {service.perspectiveLinkLabel} →
-                </Link>
-              )}
-            </div>
-          </div>
-        )}
-      </section>
-
-      {/* Logo strip - after-perspective position */}
-      {service.showLogoStrip !== false && service.logoStripPosition === 'after-perspective' && (
-        <LogoStrip />
-      )}
-
-      {/* ==========================================
-          SECTION 5: APPROACH OVERVIEW (white)
+          SECTION 8: APPROACH OVERVIEW (white)
           ========================================== */}
       <section id="approach" className="section--full" style={{ padding: '80px 48px', background: 'var(--white)' }}>
         <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
@@ -423,7 +442,7 @@ export default async function ServicePage({ params }) {
       )}
 
       {/* ==========================================
-          SECTIONS 5a-5d: INDIVIDUAL STAGES
+          SECTIONS 9a-9d: INDIVIDUAL STAGES
           ========================================== */}
       {service.stages?.map((stage, i) => (
         <section
@@ -525,7 +544,96 @@ export default async function ServicePage({ params }) {
       ))}
 
       {/* ==========================================
-          SECTION 6: OUTCOMES (warm)
+          SECTION 9: PERSPECTIVE (warm)
+          ========================================== */}
+      <section id="perspective" className="section--full warm-bg" style={{ padding: '80px 48px' }}>
+        {service.perspectiveImageUrl ? (
+          /* With image: existing two-column layout */
+          <div style={{
+            maxWidth: '1350px',
+            margin: '0 auto',
+            display: 'grid',
+            gridTemplateColumns: '1fr 380px',
+            gap: '4rem',
+            alignItems: 'start',
+          }}>
+            <div className="scroll-in">
+              <span className="kicker" style={{ color: 'var(--accent)', marginBottom: '16px' }}>Perspective</span>
+              <h2 className="heading-h2" style={{ margin: '0 0 24px' }}>
+                {service.perspectiveHeading}
+              </h2>
+              <div className="portable-text">
+                <PortableText value={service.perspectiveBody} />
+              </div>
+              {service.perspectiveLinkLabel && service.perspectiveLinkUrl && (
+                <Link
+                  href={service.perspectiveLinkUrl}
+                  className="inline-link"
+                  style={{
+                    display: 'inline-block',
+                    marginTop: '24px',
+                    fontSize: '15px',
+                    fontWeight: '400',
+                  }}
+                >
+                  {service.perspectiveLinkLabel} →
+                </Link>
+              )}
+            </div>
+            <div className="scroll-in delay-1 img-offset">
+              <img
+                src={service.perspectiveImageUrl}
+                alt={service.perspectiveHeading}
+                style={{ width: '100%', height: 'auto', display: 'block' }}
+              />
+            </div>
+          </div>
+        ) : (
+          /* Without image: H2 full width, then text left + ecosystem right 50/50 */
+          <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
+            {/* Heading full width */}
+            <div className="scroll-in">
+              <span className="kicker" style={{ color: 'var(--accent)', marginBottom: '16px' }}>Perspective</span>
+              <h2 className="heading-h2" style={{ margin: '0 0 32px' }}>
+                {service.perspectiveHeading}
+              </h2>
+            </div>
+            {/* Two columns: text left, animation right - 50/50 */}
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: '1fr 1fr',
+              gap: '4rem',
+              alignItems: 'start',
+            }}>
+              <div className="scroll-in">
+                <div className="portable-text" style={{ maxWidth: '600px' }}>
+                  <PortableText value={service.perspectiveBody} />
+                </div>
+                {service.perspectiveLinkLabel && service.perspectiveLinkUrl && (
+                  <Link
+                    href={service.perspectiveLinkUrl}
+                    className="inline-link"
+                    style={{
+                      display: 'inline-block',
+                      marginTop: '24px',
+                      fontSize: '15px',
+                      fontWeight: '400',
+                    }}
+                  >
+                    {service.perspectiveLinkLabel} →
+                  </Link>
+                )}
+              </div>
+              <div className="scroll-in delay-1">
+                <EcosystemVisual />
+              </div>
+            </div>
+          </div>
+        )}
+      </section>
+
+      {/* ==========================================
+          SECTION 10: OUTCOMES (warm)
           ========================================== */}
       <section id="outcomes" className="section--full warm-bg" style={{ padding: '80px 48px' }}>
         <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
@@ -587,101 +695,13 @@ export default async function ServicePage({ params }) {
       </section>
 
       {/* ==========================================
-          SECTION 7: EXAMPLES (white)
+          MID-PAGE CTA: AFTER OUTCOMES
           ========================================== */}
-      {(service.relatedProjects?.length > 0 || service.testimonialQuote) && (
-        <section id="examples" className="section--full" style={{ padding: '80px 48px', background: 'var(--white)' }}>
-          <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
-            <div className="scroll-in">
-              <span className="kicker" style={{ color: 'var(--accent)', marginBottom: '16px' }}>Examples</span>
-              <h2 className="heading-h2" style={{ margin: '0 0 2rem' }}>
-                Examples
-              </h2>
-            </div>
-
-            {/* Related projects */}
-            {service.relatedProjects?.length > 0 && (
-              <div style={{
-                display: 'grid',
-                gridTemplateColumns: service.relatedProjects.length > 1 ? '1fr 1fr' : '1fr',
-                gap: '24px',
-                marginBottom: service.testimonialQuote ? '3rem' : 0,
-              }}>
-                {service.relatedProjects.map((project, i) => (
-                  <Link
-                    key={project._id}
-                    href={`/projects/${project.slug.current}`}
-                    className={`${i === 0 && service.relatedProjects.length > 1 ? 'card-c' : 'card-a'} scroll-in`}
-                    style={{ transitionDelay: `${i * 0.1}s` }}
-                  >
-                    {i === 0 && service.relatedProjects.length > 1 ? (
-                      <>
-                        <div className="card-c__fill"></div>
-                        <div className="card-c__body">
-                          {project.clientSector && (
-                            <span className="card-c__tag">{project.clientSector}</span>
-                          )}
-                          <p className="card-c__title">{project.title}</p>
-                          {project.shortSummary && (
-                            <p className="card-c__text">{project.shortSummary}</p>
-                          )}
-                          <p className="card-c__action">
-                            Read the full story <span className="arrow">→</span>
-                          </p>
-                        </div>
-                      </>
-                    ) : (
-                      <>
-                        <div className="card-a__corner"></div>
-                        <div className="card-a__body">
-                          {project.clientSector && (
-                            <span className="card-a__tag">{project.clientSector}</span>
-                          )}
-                          <p className="card-a__title">{project.title}</p>
-                          {project.shortSummary && (
-                            <p className="card-a__text">{project.shortSummary}</p>
-                          )}
-                        </div>
-                        <div className="card-a__footer">
-                          <div className="card-a__footer-bg"></div>
-                          <div className="card-a__action">
-                            Read the full story <span className="arrow">→</span>
-                          </div>
-                        </div>
-                      </>
-                    )}
-                  </Link>
-                ))}
-              </div>
-            )}
-
-            {/* Testimonial */}
-            {service.testimonialQuote && (
-              <div className="scroll-in pull-quote">
-                <blockquote style={{ margin: 0, fontStyle: 'italic' }}>
-                  "{service.testimonialQuote}"
-                </blockquote>
-                {service.testimonialAttribution && (
-                  <cite style={{
-                    display: 'block',
-                    marginTop: '12px',
-                    fontSize: '14px',
-                    fontStyle: 'normal',
-                    color: 'rgba(0,0,0,0.45)',
-                  }}>
-                    — {service.testimonialAttribution}
-                  </cite>
-                )}
-              </div>
-            )}
-          </div>
-        </section>
-      )}
-
-      {/* Logo strip - after-examples position */}
-      {service.showLogoStrip !== false && service.logoStripPosition === 'after-examples' && (
-        <LogoStrip />
-      )}
+      <MidPageCta
+        text={service.midCtaAfterOutcomesText || "Ready to make this happen?"}
+        buttonLabel={service.midCtaAfterOutcomesButton || "Get in touch"}
+        serviceTitle={service.title}
+      />
 
       {/* ==========================================
           RELATED DIMENSIONS
@@ -772,7 +792,7 @@ export default async function ServicePage({ params }) {
       )}
 
       {/* ==========================================
-          SECTION 8: CTA (dark)
+          SECTION 11: CTA (dark)
           ========================================== */}
       <CTA
         heading={service.ctaHeading || 'Want to explore how this could work for your organisation?'}

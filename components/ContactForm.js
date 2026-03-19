@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 
-export default function ContactForm() {
+export default function ContactForm({ service }) {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -25,7 +25,7 @@ export default function ContactForm() {
       const res = await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({ ...formData, service }),
       })
 
       if (!res.ok) {

@@ -84,7 +84,7 @@ export default function NavPanel({ isOpen, onClose, onMouseEnter, onMouseLeave, 
           style={{
             position: 'absolute',
             top: '1.5rem',
-            right: '2rem',
+            right: '48px',
             background: 'none',
             border: 'none',
             fontSize: '1.5rem',
@@ -98,7 +98,7 @@ export default function NavPanel({ isOpen, onClose, onMouseEnter, onMouseLeave, 
           ✕
         </button>
 
-        <div ref={innerRef} className="nav-panel__inner" style={{ maxWidth: '1350px', margin: '0 auto', padding: '4rem 0 5rem' }}>
+        <div ref={innerRef} className="nav-panel__inner" style={{ maxWidth: 'calc(1350px + 96px)', margin: '0 auto', padding: '4rem 48px 5rem' }}>
           {children}
         </div>
       </div>

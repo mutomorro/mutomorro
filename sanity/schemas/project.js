@@ -127,6 +127,14 @@ export default {
       type: 'date',
       group: 'core',
     },
+    {
+      name: 'relatedServices',
+      title: 'Related services',
+      type: 'array',
+      group: 'core',
+      of: [{ type: 'reference', to: [{ type: 'service' }] }],
+      description: 'Which services does this case study relate to? Used for two-way linking between services and case studies.',
+    },
 
     // ── Content sections ─────────────────────────────────────────────────────
     {

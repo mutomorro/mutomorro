@@ -403,7 +403,6 @@ a:hover {
   background-color: var(--warm);
   border-bottom: 1px solid rgba(0,0,0,0.06);
   box-shadow: 0 20px 60px rgba(34, 28, 43, 0.15);
-  padding: 0 48px;
   max-height: 0;
   overflow: hidden;
   transition: max-height 0.6s var(--ease);
@@ -1509,7 +1508,7 @@ a:hover {
   .section__inner { padding: 0 24px; }
   .wrap, .wrap--narrow, .wrap--wide { padding: 0 24px; }
   .nav-bar { padding: 0 24px; }
-  .nav-panel { padding: 0 24px; }
+  .nav-panel .nav-panel__inner { padding-left: 24px; padding-right: 24px; }
   .grid-2, .grid-3 { grid-template-columns: 1fr; }
   .grid-4 { grid-template-columns: 1fr 1fr; }
   .button-row { flex-direction: column; align-items: flex-start; }

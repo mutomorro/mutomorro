@@ -5,7 +5,9 @@ export const metadata = {
   description: 'Every conversation starts with listening. Tell us what you\'re working on and we\'ll explore it together.',
 }
 
-export default function ContactPage() {
+export default async function ContactPage({ searchParams }) {
+  const params = await searchParams
+  const service = params?.service || null
   return (
     <main>
 
@@ -47,7 +49,7 @@ export default function ContactPage() {
               No pitch, no obligation - just an honest discussion about
               where you are and whether our approach feels right.
             </p>
-            <ContactForm />
+            <ContactForm service={service} />
           </div>
 
           {/* Right: sidebar */}

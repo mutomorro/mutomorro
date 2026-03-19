@@ -134,6 +134,7 @@ export default function Nav() {
           height: '70px',
           padding: '0 48px',
           transition: 'background-color 0.4s var(--ease), border-color 0.4s var(--ease)',
+          willChange: 'transform',
         }}
       >
         <div className="nav-bar__inner" style={{

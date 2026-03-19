@@ -9,6 +9,7 @@ import article from './sanity/schemas/article'
 import course from './sanity/schemas/course'
 import service from './sanity/schemas/service'
 import frameworkOverview from './sanity/schemas/frameworkOverview'
+import capabilityService from './sanity/schemas/capabilityService'
 
 export default defineConfig({
   name: 'mutomorro',
@@ -18,6 +19,6 @@ export default defineConfig({
   dataset: 'production',
   plugins: [structureTool(), media()],
   schema: {
-    types: [project, tool, dimension, dimensionArticle, article, course, service, frameworkOverview],
+    types: [project, tool, dimension, dimensionArticle, article, course, service, frameworkOverview, capabilityService],
   },
 })

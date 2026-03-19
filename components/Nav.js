@@ -322,9 +322,10 @@ export default function Nav() {
               <div className="nav-menu-col">
                 <span className="kicker" style={{ marginBottom: '20px' }}>For Leaders</span>
                 {[
-                  { label: 'Leadership Programme', href: '/services/leadership-programme' },
-                  { label: 'Executive Coaching', href: '/services/executive-coaching' },
-                  { label: 'Leadership Facilitation', href: '/services/leadership-facilitation' },
+                  { label: 'Deeper Ground', href: '/develop/deeper-ground' },
+                  { label: 'Executive Coaching', href: '/develop/executive-coaching' },
+                  { label: 'Leadership Facilitation', href: '/develop/leadership-facilitation' },
+                  { label: 'Senior Leader Support', href: '/develop/senior-leader-support' },
                 ].map((item) => (
                   <Link
                     key={item.label}
@@ -340,9 +341,9 @@ export default function Nav() {
               <div className="nav-menu-col">
                 <span className="kicker" style={{ marginBottom: '20px' }}>For Teams</span>
                 {[
-                  { label: 'Bespoke Training', href: '/services/bespoke-training' },
-                  { label: 'Problem Solving Workshops', href: '/services/problem-solving-workshops' },
-                  { label: 'Manager Coaching', href: '/services/manager-coaching' },
+                  { label: 'Bespoke Training', href: '/develop/bespoke-training' },
+                  { label: 'Team Sessions', href: '/develop/team-sessions' },
+                  { label: 'Manager Coaching', href: '/develop/manager-coaching' },
                 ].map((item) => (
                   <Link
                     key={item.label}

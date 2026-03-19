@@ -326,3 +326,79 @@ export async function getService(slug) {
     }
   `, { slug })
 }
+
+// ============================================
+// CAPABILITY SERVICES (Building Capability)
+// ============================================
+
+// Get all capability services (for landing page listing)
+export async function getAllCapabilityServices() {
+  return client.fetch(`
+    *[_type == "capabilityService"] | order(order asc) {
+      _id,
+      title,
+      slug,
+      audience,
+      audienceLabel,
+      order,
+      heroTagline,
+    }
+  `)
+}
+
+// Get single capability service - full page content
+export async function getCapabilityService(slug) {
+  return client.fetch(`
+    *[_type == "capabilityService" && slug.current == $slug][0] {
+      _id,
+      title,
+      slug,
+      audience,
+      audienceLabel,
+      order,
+
+      // Hero
+      heroHeading,
+      heroTagline,
+
+      // Audience
+      audienceHeading,
+      audienceBody,
+
+      // Structure
+      structureHeading,
+      structureIntro,
+      structureItems[] {
+        itemTitle,
+        itemDescription,
+      },
+
+      // Difference
+      differenceHeading,
+      differenceIntro,
+      differenceItems[] {
+        itemTitle,
+        itemDescription,
+      },
+
+      // Takeaways
+      takeawayHeading,
+      takeawayIntro,
+      takeawayItems[] {
+        itemTitle,
+        itemDescription,
+      },
+
+      // CTA
+      ctaHeading,
+      ctaBody,
+      ctaButtonLabel,
+      ctaButtonUrl,
+
+      // SEO
+      seoTitle,
+      seoDescription,
+      seoKeywords,
+    }
+  `, { slug })
+}

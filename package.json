@@ -23,7 +23,8 @@
     "react-dom": "19.2.3",
     "resend": "^6.9.3",
     "sanity": "^5.13.0",
-    "sanity-plugin-media": "^4.1.1"
+    "sanity-plugin-media": "^4.1.1",
+    "styled-components": "^6.3.12"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",

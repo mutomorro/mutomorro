@@ -18,7 +18,8 @@ export async function getAllProjects() {
     slug,
     clientSector,
     challenge,
-    shortSummary
+    shortSummary,
+    "heroImageUrl": heroImage.asset->url
   }`)
 }
 

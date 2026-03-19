@@ -3,6 +3,7 @@ import { getCapabilityService, getAllCapabilityServices } from '../../../sanity/
 import { PortableText } from '@portabletext/react'
 import { notFound } from 'next/navigation'
 import CTA from '../../../components/CTA'
+import NetworkIllustration from '../../../components/NetworkIllustration'
 
 // Accent colours for numbered items
 const ACCENT_COLOURS = ['#80388F', '#9B51E0', '#FF4279', '#E08F00', '#221C2B', '#80388F', '#9B51E0', '#FF4279']
@@ -179,9 +180,10 @@ export default async function CapabilityServicePage({ params }) {
                   className="scroll-in"
                   style={{
                     display: 'grid',
-                    gridTemplateColumns: '60px 1fr',
+                    gridTemplateColumns: '60px 1fr 180px',
                     gap: '24px',
                     padding: '32px 0',
+                    alignItems: 'start',
                     borderBottom: i < service.structureItems.length - 1 ? '1px solid rgba(0,0,0,0.06)' : 'none',
                     transitionDelay: `${i * 0.08}s`,
                   }}
@@ -212,6 +214,15 @@ export default async function CapabilityServicePage({ params }) {
                     }}>
                       {item.itemDescription}
                     </p>
+                  </div>
+
+                  {/* Network illustration */}
+                  <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'flex-start', paddingTop: '4px' }}>
+                    <NetworkIllustration
+                      index={i}
+                      color={ACCENT_COLOURS[i % ACCENT_COLOURS.length]}
+                      slug={slug}
+                    />
                   </div>
                 </div>
               ))}

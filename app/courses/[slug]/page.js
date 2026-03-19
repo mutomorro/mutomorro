@@ -59,7 +59,7 @@ export default async function CoursePage({ params }) {
       {/* Body */}
       <section className="section--full" style={{ padding: '80px 48px', background: 'var(--white)' }}>
         <div className="wrap--narrow">
-          <div className="portable-text scroll-in">
+          <div className="portable-text">
             <PortableText
               value={course.body}
               components={{

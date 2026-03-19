@@ -23,10 +23,17 @@ export default function About() {
 
       {/* Section 2: The short version */}
       <section className="section--full warm-bg" style={{ padding: '80px 48px' }}>
-        <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
-          <div className="scroll-in" style={{ maxWidth: '780px', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-            <p className="body-text">
-              Mutomorro is an organisational development consultancy. We work with leaders to improve how their organisations are designed, how they develop, and how they handle change.
+        <div style={{
+          maxWidth: '1350px',
+          margin: '0 auto',
+          display: 'grid',
+          gridTemplateColumns: '1fr 460px',
+          gap: '4rem',
+          alignItems: 'center',
+        }}>
+          <div className="scroll-in" style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+            <p className="body-text" style={{ fontWeight: '400' }}>
+              Mutomorro is an organisational design, development and strategic change consultancy. We work with leaders to improve how their organisations are designed, how they develop, and how they handle change.
             </p>
             <p className="body-text">
               We take a whole-system view - looking at how purpose, structure, culture, operations and service all connect - rather than treating problems in isolation. And we build capability inside your organisation rather than creating dependency on ours.
@@ -35,16 +42,28 @@ export default function About() {
               We've worked across the private, public and third sectors - from startups to government departments, charities to global brands. Every engagement is different, but the approach is consistent: understand the system, design with your people, build something that lasts.
             </p>
           </div>
+          <div className="scroll-in delay-1" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginLeft: '-175px' }}>
+            <Image
+              src="/about-network.svg"
+              alt=""
+              width={552}
+              height={552}
+              style={{ width: '100%', maxWidth: '552px', height: 'auto', opacity: 0.85 }}
+            />
+          </div>
         </div>
       </section>
 
-      {/* Section 3: Who we are */}
+      {/* Section 3: Logo strip */}
+      <LogoStrip />
+
+      {/* Section 4: Who we are */}
       <section className="section--full" style={{ padding: '80px 48px', background: 'var(--white)' }}>
         <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
           <div style={{
             display: 'grid',
-            gridTemplateColumns: '1fr 1fr',
-            gap: '5rem',
+            gridTemplateColumns: '1fr 300px',
+            gap: '4rem',
             alignItems: 'start',
           }}>
             <div className="scroll-in">
@@ -52,7 +71,7 @@ export default function About() {
                 Who we are
               </span>
               <h2 className="heading-h2" style={{ margin: '0 0 24px' }}>
-                Built for organisations that care about getting this right
+                Built for organisations that care about getting it right
               </h2>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
                 <p className="body-text">
@@ -67,47 +86,48 @@ export default function About() {
             {/* Photo + bio card */}
             <div className="scroll-in delay-1">
               <Image
-                src="https://cdn.sanity.io/images/c6pg4t4h/production/ff6e02cb52c63ce401da07f4d81eb74fe0e1f1eb-1944x1944.jpg?w=800&h=1000&fit=crop"
+                src="https://cdn.sanity.io/images/c6pg4t4h/production/ff6e02cb52c63ce401da07f4d81eb74fe0e1f1eb-1944x1944.jpg?w=600&h=750&fit=crop"
                 alt="James Freeman-Gray"
-                width={800}
-                height={1000}
-                style={{ width: '100%', height: 'auto', display: 'block' }}
+                width={600}
+                height={750}
+                style={{ width: '100%', maxWidth: '300px', height: 'auto', display: 'block' }}
               />
-              <div style={{
-                marginTop: '16px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-              }}>
-                <div>
-                  <p style={{
-                    fontSize: '16px',
-                    fontWeight: '400',
-                    color: 'var(--dark)',
-                    margin: '0 0 2px',
-                  }}>
-                    James Freeman-Gray
-                  </p>
-                  <p style={{
-                    fontSize: '14px',
-                    fontWeight: '300',
-                    color: 'rgba(0,0,0,0.5)',
-                    margin: 0,
-                  }}>
-                    Founder. Over 20 years working with organisations across every sector.
-                  </p>
-                </div>
+              <div style={{ marginTop: '12px', maxWidth: '300px' }}>
+                <p style={{
+                  fontSize: '15px',
+                  fontWeight: '400',
+                  color: 'var(--dark)',
+                  margin: '0 0 2px',
+                }}>
+                  James Freeman-Gray
+                </p>
+                <p style={{
+                  fontSize: '13px',
+                  fontWeight: '300',
+                  color: 'rgba(0,0,0,0.5)',
+                  margin: '0 0 8px',
+                }}>
+                  Founder. Over 20 years working with organisations across every sector.
+                </p>
+                <a
+                  href="https://www.linkedin.com/in/jamesbfg/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ display: 'inline-block', opacity: 0.4, transition: 'opacity 0.2s' }}
+                  onMouseEnter={undefined}
+                >
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" style={{ color: 'var(--dark)' }}>
+                    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                  </svg>
+                </a>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Section 4: Logo strip */}
-      <LogoStrip />
-
       {/* Section 5: What we work on */}
-      <section className="section--full" style={{ padding: '80px 48px', background: 'var(--white)' }}>
+      <section className="section--full" style={{ padding: '80px 48px', background: 'var(--warm)' }}>
         <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
           <div className="scroll-in" style={{ marginBottom: '3rem' }}>
             <span className="kicker" style={{ color: 'var(--accent)', marginBottom: '20px' }}>
@@ -144,20 +164,20 @@ export default function About() {
               <Link
                 key={item.title}
                 href={item.href}
-                className="scroll-in"
-                style={{
-                  borderTop: '2px solid var(--coral)',
-                  paddingTop: '1.25rem',
-                  animationDelay: `${index * 0.1}s`,
-                  textDecoration: 'none',
-                  color: 'inherit',
-                  display: 'block',
-                }}
+                className="card-a scroll-in"
+                style={{ animationDelay: `${index * 0.1}s` }}
               >
-                <h3 className="heading-h4" style={{ margin: '0 0 10px' }}>{item.title}</h3>
-                <p className="body-small" style={{ margin: 0 }}>
-                  {item.body}
-                </p>
+                <div className="card-a__corner" />
+                <div className="card-a__body">
+                  <p className="card-a__title">{item.title}</p>
+                  <p className="card-a__text">{item.body}</p>
+                </div>
+                <div className="card-a__footer">
+                  <div className="card-a__footer-bg" />
+                  <div className="card-a__action">
+                    Explore <span className="arrow">→</span>
+                  </div>
+                </div>
               </Link>
             ))}
           </div>

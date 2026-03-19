@@ -34,27 +34,18 @@ export default async function Home() {
         }}>
           <div style={{ maxWidth: '1350px', margin: '0 auto', width: '100%' }}>
             <h1 style={{
-              fontSize: 'clamp(48px, 8vw, 120px)',
+              fontSize: 'clamp(40px, 6.5vw, 96px)',
               fontWeight: 400,
               lineHeight: 1.05,
-              maxWidth: '65%',
+              letterSpacing: '-0.025em',
+              maxWidth: '75%',
               background: 'linear-gradient(135deg, #80388F 0%, #FF4279 50%, #FFA200 100%)',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
               backgroundClip: 'text',
             }}>
-              Cultivating thriving organisations
+              Designing thriving organisations for the new world of work
             </h1>
-            <p style={{
-              fontSize: 'clamp(16px, 1.8vw, 22px)',
-              fontWeight: 300,
-              color: 'rgba(255,255,255,0.6)',
-              marginTop: '24px',
-              maxWidth: '480px',
-              lineHeight: 1.6,
-            }}>
-              Designing living systems for the new world of work
-            </p>
           </div>
         </div>
       </section>

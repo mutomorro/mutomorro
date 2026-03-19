@@ -16,7 +16,17 @@ export default function NavPanel({ isOpen, onClose, onMouseEnter, onMouseLeave, 
       // Force reflow before adding open class
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
-          if (panelRef.current) panelRef.current.classList.add('nav-panel--open')
+          const panel = panelRef.current
+          if (panel) {
+            panel.classList.add('nav-panel--open')
+            // Enable scrolling only after max-height transition ends
+            const handleTransitionEnd = (e) => {
+              if (e.propertyName === 'max-height' && panel) {
+                panel.style.overflowY = 'auto'
+              }
+            }
+            panel.addEventListener('transitionend', handleTransitionEnd, { once: true })
+          }
           // Stagger child items
           if (innerRef.current) {
             const items = innerRef.current.querySelectorAll('.nav-panel-stagger')
@@ -31,7 +41,10 @@ export default function NavPanel({ isOpen, onClose, onMouseEnter, onMouseLeave, 
     } else if (visible) {
       if (instantClose) {
         // Instant close (switching panels) — no animation
-        if (panelRef.current) panelRef.current.classList.remove('nav-panel--open')
+        if (panelRef.current) {
+          panelRef.current.style.overflowY = ''
+          panelRef.current.classList.remove('nav-panel--open')
+        }
         if (innerRef.current) {
           const items = innerRef.current.querySelectorAll('.nav-panel-stagger')
           items.forEach((el) => {
@@ -44,7 +57,10 @@ export default function NavPanel({ isOpen, onClose, onMouseEnter, onMouseLeave, 
       } else {
         // Animated close
         setAnimating(true)
-        if (panelRef.current) panelRef.current.classList.remove('nav-panel--open')
+        if (panelRef.current) {
+          panelRef.current.style.overflowY = ''
+          panelRef.current.classList.remove('nav-panel--open')
+        }
         if (innerRef.current) {
           const items = innerRef.current.querySelectorAll('.nav-panel-stagger')
           items.forEach((el) => {

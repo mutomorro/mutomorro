@@ -6,10 +6,6 @@ import BackgroundPattern from '@/components/animations/BackgroundPattern'
 export default async function Projects() {
   const projects = await getAllProjects()
 
-  // First project is featured, rest are standard cards
-  const featured = projects[0]
-  const remaining = projects.slice(1)
-
   return (
     <main>
 
@@ -29,50 +25,35 @@ export default async function Projects() {
         </div>
       </BackgroundPattern>
 
-      {/* Featured project */}
-      {featured && (
+      {/* All projects */}
+      {projects.length > 0 && (
         <section className="section--full" style={{ padding: '80px 48px', background: 'var(--white)' }}>
           <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
-            <Link
-              href={`/projects/${featured.slug.current}`}
-              className="card-c scroll-in"
-              style={{ maxWidth: '800px' }}
-            >
-              <div className="card-c__fill" />
-              <div className="card-c__body">
-                {featured.clientSector && (
-                  <span className="card-c__tag">{featured.clientSector}</span>
-                )}
-                <div className="card-c__title" style={{ fontSize: '28px' }}>
-                  {featured.title}
-                </div>
-                <p className="card-c__text">
-                  {featured.shortSummary || featured.challenge}
-                </p>
-                <div className="card-c__action">
-                  Read case study <span className="arrow">→</span>
-                </div>
-              </div>
-            </Link>
-          </div>
-        </section>
-      )}
-
-      {/* Remaining projects */}
-      {remaining.length > 0 && (
-        <section className="section--full" style={{
-          padding: featured ? '0 48px 80px' : '80px 48px',
-          background: 'var(--white)',
-        }}>
-          <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
             <div className="grid-3">
-              {remaining.map((project, index) => (
+              {projects.map((project, index) => (
                 <Link
                   key={project._id}
                   href={`/projects/${project.slug.current}`}
                   className="card-a scroll-in"
-                  style={{ animationDelay: `${index * 0.1}s` }}
+                  style={{ animationDelay: `${index * 0.1}s`, overflow: 'hidden' }}
                 >
+                  {project.heroImageUrl && (
+                    <div style={{
+                      width: '100%',
+                      height: '200px',
+                      overflow: 'hidden',
+                    }}>
+                      <img
+                        src={`${project.heroImageUrl}?w=600&h=400&fit=crop`}
+                        alt=""
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                          objectFit: 'cover',
+                        }}
+                      />
+                    </div>
+                  )}
                   <div className="card-a__corner" />
                   <div className="card-a__body">
                     {project.clientSector && (

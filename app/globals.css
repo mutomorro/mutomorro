@@ -409,7 +409,6 @@ a:hover {
 }
 .nav-panel--open {
   max-height: calc(100vh - 70px);
-  overflow-y: auto;
 }
 .nav-panel-stagger {
   opacity: 0;
@@ -454,6 +453,18 @@ a:hover {
 .nav-panel-link:hover .nav-panel-link__arrow {
   opacity: 1;
   transform: translateX(4px);
+}
+
+/* --- Building Capability bar (full-width bleed) --- */
+.nav-capability-bar {
+  background: #EDE9E1;
+  margin-top: 32px;
+  margin-bottom: -5rem;
+  padding: 32px 0 40px;
+  width: 100vw;
+  position: relative;
+  left: 50%;
+  margin-left: -50vw;
 }
 
 /* --- Nav contents rows (About panel) --- */

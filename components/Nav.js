@@ -110,9 +110,8 @@ export default function Nav() {
   }
 
   const handleClick = (panel) => {
-    if (isCoarse) {
-      setOpenPanel(openPanel === panel ? null : panel)
-    }
+    // Toggle on both touch and desktop: click opens or closes
+    setOpenPanel(openPanel === panel ? null : panel)
   }
 
   // Transparent when on homepage, not scrolled, and no panel open
@@ -312,17 +311,42 @@ export default function Nav() {
             ))}
           </div>
 
-          {/* Divider */}
-          <div style={{ borderTop: '1px solid rgba(0,0,0,0.08)', margin: '32px 0' }} />
-
-          {/* Building Capability */}
-          <div className="nav-panel-stagger">
-            <span className="kicker" style={{ marginBottom: '24px' }}>Building Capability</span>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0 2rem', maxWidth: '50%' }}>
+          {/* Building Capability - tonal shift background, full-width bleed */}
+          <div className="nav-panel-stagger nav-capability-bar">
+            <div style={{ maxWidth: 'calc(1350px + 96px)', margin: '0 auto', padding: '0 48px', display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0 2rem' }}>
+              {/* Leadership Programme - featured card */}
               <div className="nav-menu-col">
-                <span className="kicker" style={{ marginBottom: '20px' }}>For Leaders</span>
+                <span className="kicker" style={{ marginBottom: '20px' }}>Leadership Programme</span>
+                <div style={{
+                  background: '#FAF6F1',
+                  padding: '8px 18px 18px',
+                  borderRadius: '4px',
+                }}>
+                  <Link
+                    href="/develop/deeper-ground"
+                    onClick={closePanel}
+                    className="nav-menu-link"
+                    style={{ marginBottom: '14px' }}
+                  >
+                    <span className="nav-menu-link__label">Deeper Ground</span>
+                    <span className="nav-menu-link__chevron">›</span>
+                  </Link>
+                  <p style={{
+                    fontSize: '13px',
+                    fontWeight: 300,
+                    lineHeight: 1.6,
+                    color: 'rgba(34,28,43,0.6)',
+                    margin: '0',
+                  }}>
+                    A transformative programme for senior leaders navigating complexity - building the inner capacity to lead with clarity and courage.
+                  </p>
+                </div>
+              </div>
+
+              {/* Support for Leaders */}
+              <div className="nav-menu-col">
+                <span className="kicker" style={{ marginBottom: '20px' }}>Support for Leaders</span>
                 {[
-                  { label: 'Deeper Ground', href: '/develop/deeper-ground' },
                   { label: 'Executive Coaching', href: '/develop/executive-coaching' },
                   { label: 'Leadership Facilitation', href: '/develop/leadership-facilitation' },
                   { label: 'Senior Leader Support', href: '/develop/senior-leader-support' },
@@ -338,8 +362,10 @@ export default function Nav() {
                   </Link>
                 ))}
               </div>
+
+              {/* For Teams */}
               <div className="nav-menu-col">
-                <span className="kicker" style={{ marginBottom: '20px' }}>For Teams</span>
+                <span className="kicker" style={{ marginBottom: '20px' }}>Support for Teams</span>
                 {[
                   { label: 'Bespoke Training', href: '/develop/bespoke-training' },
                   { label: 'Team Sessions', href: '/develop/team-sessions' },
@@ -356,6 +382,9 @@ export default function Nav() {
                   </Link>
                 ))}
               </div>
+
+              {/* Empty 4th column for alignment with service grid above */}
+              <div />
             </div>
           </div>
         </div>

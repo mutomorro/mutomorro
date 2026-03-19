@@ -72,7 +72,7 @@ export default async function ToolPage({ params }) {
       <section className="section--full" style={{ padding: '80px 48px', background: 'var(--white)' }}>
         <div className="wrap--narrow">
           {tool.body && (
-            <div className="portable-text scroll-in">
+            <div className="portable-text">
               <PortableText
                 value={tool.body}
                 components={{

@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import BackgroundPattern from '@/components/animations/BackgroundPattern'
 
 export default function CTA({
   label = 'Let\'s talk',
@@ -10,14 +11,14 @@ export default function CTA({
   secondaryLink,
 }) {
   return (
-    <section className="section--full dark-bg" style={{
+    <BackgroundPattern variant="network" className="section--full dark-bg" style={{
       padding: '7rem 48px',
       textAlign: 'center',
+      background: '#423B49',
     }}>
-      <div style={{ maxWidth: '620px', margin: '0 auto' }}>
+      <div style={{ maxWidth: '620px', margin: '0 auto', position: 'relative' }}>
         <span className="kicker" style={{ marginBottom: '20px' }}>{label}</span>
-        <h2 className="heading-h2" style={{
-          color: '#ffffff',
+        <h2 className="heading-h2 heading-gradient" style={{
           margin: '0 0 1.5rem',
         }}>{heading}</h2>
         <p style={{
@@ -38,6 +39,6 @@ export default function CTA({
           )}
         </div>
       </div>
-    </section>
+    </BackgroundPattern>
   )
 }

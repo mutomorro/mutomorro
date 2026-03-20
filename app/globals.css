@@ -306,6 +306,9 @@ a:hover {
 
 .button-row { display: flex; align-items: center; gap: 24px; flex-wrap: wrap; }
 
+/* --- Nav bar base padding --- */
+.nav-bar { padding: 0 48px; }
+
 /* --- Nav links: diagonal fill on hover --- */
 .nav-link {
   position: relative;
@@ -2143,6 +2146,7 @@ a:hover {
 
 /* --- Mobile breakpoint --- */
 @media (max-width: 767px) {
+  .nav-bar { padding: 0 24px; }
   .mobile-nav__hamburger { display: flex; align-items: center; justify-content: center; }
   .nav-bar__links { display: none !important; }
   .nav-bar__ctas  { display: none !important; }

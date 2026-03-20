@@ -14,6 +14,9 @@ export default function Nav() {
   const [isSwitching, setIsSwitching] = useState(false)
   const [isCoarse, setIsCoarse] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
+  const [mobileOpen, setMobileOpen] = useState(false)
+  const [mobileAccordion, setMobileAccordion] = useState(null)
+  const scrollPosRef = useRef(0)
   const closeTimer = useRef(null)
   const navRef = useRef(null)
   const prevPanelRef = useRef(null)
@@ -88,6 +91,52 @@ export default function Nav() {
     return () => clearClose()
   }, [])
 
+  // Body scroll lock for mobile overlay
+  useEffect(() => {
+    if (mobileOpen) {
+      scrollPosRef.current = window.scrollY
+      document.body.style.position = 'fixed'
+      document.body.style.top = `-${scrollPosRef.current}px`
+      document.body.style.left = '0'
+      document.body.style.right = '0'
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.position = ''
+      document.body.style.top = ''
+      document.body.style.left = ''
+      document.body.style.right = ''
+      document.body.style.overflow = ''
+      window.scrollTo(0, scrollPosRef.current)
+    }
+    return () => {
+      document.body.style.position = ''
+      document.body.style.top = ''
+      document.body.style.left = ''
+      document.body.style.right = ''
+      document.body.style.overflow = ''
+    }
+  }, [mobileOpen])
+
+  // Close mobile menu on route change
+  useEffect(() => {
+    setMobileOpen(false)
+    setMobileAccordion(null)
+  }, [pathname])
+
+  const toggleMobile = () => {
+    setMobileOpen(prev => !prev)
+    if (mobileOpen) setMobileAccordion(null)
+  }
+
+  const closeMobile = () => {
+    setMobileOpen(false)
+    setMobileAccordion(null)
+  }
+
+  const toggleAccordion = (key) => {
+    setMobileAccordion(prev => prev === key ? null : key)
+  }
+
   const handleLinkEnter = (panel) => {
     if (isCoarse) return
     clearClose()
@@ -114,8 +163,8 @@ export default function Nav() {
     setOpenPanel(openPanel === panel ? null : panel)
   }
 
-  // Transparent when on homepage, not scrolled, and no panel open
-  const isTransparent = isHomepage && !isScrolled && !openPanel
+  // Transparent when on homepage, not scrolled, no panel open, and mobile menu closed
+  const isTransparent = isHomepage && !isScrolled && !openPanel && !mobileOpen
 
   return (
     <>
@@ -131,7 +180,6 @@ export default function Nav() {
           backgroundColor: isTransparent ? 'transparent' : 'var(--white)',
           borderBottom: isTransparent ? '1px solid transparent' : '1px solid rgba(0,0,0,0.06)',
           height: '70px',
-          padding: '0 48px',
           transition: 'background-color 0.4s var(--ease), border-color 0.4s var(--ease)',
           willChange: 'transform',
         }}
@@ -157,9 +205,8 @@ export default function Nav() {
             />
           </Link>
 
-          {/* Nav links - left group */}
-          <div style={{
-            display: 'flex',
+          {/* Nav links - left group (hidden on mobile) */}
+          <div className="nav-bar__links" style={{
             alignItems: 'center',
             gap: '4px',
             marginLeft: '3rem',
@@ -181,9 +228,8 @@ export default function Nav() {
             })}
           </div>
 
-          {/* CTAs - right group */}
-          <div style={{
-            display: 'flex',
+          {/* CTAs - right group (hidden on mobile) */}
+          <div className="nav-bar__ctas" style={{
             alignItems: 'center',
             gap: '12px',
             marginLeft: 'auto',
@@ -205,6 +251,17 @@ export default function Nav() {
               Talk to us
             </Link>
           </div>
+
+          {/* Hamburger button (mobile only) */}
+          <button
+            className={`mobile-nav__hamburger${mobileOpen ? ' mobile-nav__hamburger--open' : ''}`}
+            onClick={toggleMobile}
+            aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
+            aria-expanded={mobileOpen}
+          >
+            <span />
+            <span />
+          </button>
 
         </div>
       </nav>
@@ -433,6 +490,144 @@ export default function Nav() {
           </div>
         </div>
       </NavPanel>
+
+      {/* Mobile overlay */}
+      <div className={`mobile-nav__overlay${mobileOpen ? ' mobile-nav__overlay--open' : ''}`}>
+        <div className="mobile-nav__content">
+          {/* About accordion */}
+          <div>
+            <button className="mobile-nav__accordion-trigger" onClick={() => toggleAccordion('about')}>
+              <span className="mobile-nav__accordion-label">About</span>
+              <svg className={`mobile-nav__accordion-chevron${mobileAccordion === 'about' ? ' mobile-nav__accordion-chevron--open' : ''}`} viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M2 4l4 4 4-4" /></svg>
+            </button>
+            <div className={`mobile-nav__accordion-panel${mobileAccordion === 'about' ? ' mobile-nav__accordion-panel--open' : ''}`}>
+              <div className="mobile-nav__accordion-inner">
+                {[
+                  { label: 'About us', desc: 'Who we are and why we exist', href: '/about' },
+                  { label: 'Philosophy', desc: 'Intentional Ecosystems - how we think about organisations', href: '/philosophy' },
+                  { label: 'The EMERGENT Framework', desc: 'Eight dimensions of organisational health', href: '/emergent-framework' },
+                  { label: 'How we work', desc: 'Our four-stage approach to working together', href: '/how-we-work' },
+                  { label: 'Projects and experience', desc: 'What working with us leads to', href: '/projects' },
+                ].map((item) => (
+                  <Link key={item.href} href={item.href} onClick={closeMobile} className="mobile-nav__about-item">
+                    <span className="mobile-nav__about-title">{item.label}</span>
+                    <span className="mobile-nav__about-desc">{item.desc}</span>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* How We Help accordion */}
+          <div>
+            <button className="mobile-nav__accordion-trigger" onClick={() => toggleAccordion('how-we-help')}>
+              <span className="mobile-nav__accordion-label">How We Help</span>
+              <svg className={`mobile-nav__accordion-chevron${mobileAccordion === 'how-we-help' ? ' mobile-nav__accordion-chevron--open' : ''}`} viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M2 4l4 4 4-4" /></svg>
+            </button>
+            <div className={`mobile-nav__accordion-panel${mobileAccordion === 'how-we-help' ? ' mobile-nav__accordion-panel--open' : ''}`}>
+              <div className="mobile-nav__accordion-inner">
+                {[
+                  {
+                    title: 'Purpose & Direction',
+                    links: [
+                      { label: 'Culture Change', href: '/services/culture-change-consultancy' },
+                      { label: 'Organisational Purpose', href: '/services/organisational-purpose-consultancy' },
+                      { label: 'Strategic Alignment', href: '/services/strategic-alignment-consultancy' },
+                    ],
+                  },
+                  {
+                    title: 'Structure & Operations',
+                    links: [
+                      { label: 'Post-Merger Integration', href: '/services/post-merger-integration-consultancy' },
+                      { label: 'Organisational Restructuring', href: '/services/organisational-restructuring-consultancy' },
+                      { label: 'Operational Effectiveness', href: '/services/operational-effectiveness-consultancy' },
+                      { label: 'Organisational Design', href: '/services/organisational-design-consultancy' },
+                    ],
+                  },
+                  {
+                    title: 'People & Capability',
+                    links: [
+                      { label: 'Change Management', href: '/services/change-management-consultancy' },
+                      { label: 'Employee Experience', href: '/services/employee-experience-consultancy' },
+                      { label: 'Capacity Building', href: '/services/organisational-capacity-building' },
+                      { label: 'Organisational Development', href: '/services/organisational-development-consultancy' },
+                    ],
+                  },
+                  {
+                    title: 'Service & Experience',
+                    links: [
+                      { label: 'Customer Experience', href: '/services/customer-experience-consultancy' },
+                      { label: 'Service Design', href: '/services/service-design-consultancy' },
+                      { label: 'Scaling Operations', href: '/services/scaling-operations-consultancy' },
+                    ],
+                  },
+                ].map((cat) => (
+                  <div key={cat.title} className="mobile-nav__service-category">
+                    <span className="kicker" style={{ marginBottom: '8px' }}>{cat.title}</span>
+                    {cat.links.map((link) => (
+                      <Link key={link.href} href={link.href} onClick={closeMobile} className="mobile-nav__service-link">{link.label}</Link>
+                    ))}
+                  </div>
+                ))}
+
+                {/* Building Capability */}
+                <div className="mobile-nav__service-category">
+                  <span className="kicker" style={{ marginBottom: '8px' }}>Leadership Programme</span>
+                  <Link href="/develop/deeper-ground" onClick={closeMobile} className="mobile-nav__service-link">Deeper Ground</Link>
+                </div>
+                <div className="mobile-nav__service-category">
+                  <span className="kicker" style={{ marginBottom: '8px' }}>Support for Leaders</span>
+                  {[
+                    { label: 'Executive Coaching', href: '/develop/executive-coaching' },
+                    { label: 'Leadership Facilitation', href: '/develop/leadership-facilitation' },
+                    { label: 'Senior Leader Support', href: '/develop/senior-leader-support' },
+                  ].map((item) => (
+                    <Link key={item.href} href={item.href} onClick={closeMobile} className="mobile-nav__service-link">{item.label}</Link>
+                  ))}
+                </div>
+                <div className="mobile-nav__service-category">
+                  <span className="kicker" style={{ marginBottom: '8px' }}>Support for Teams</span>
+                  {[
+                    { label: 'Bespoke Training', href: '/develop/bespoke-training' },
+                    { label: 'Team Sessions', href: '/develop/team-sessions' },
+                    { label: 'Manager Coaching', href: '/develop/manager-coaching' },
+                  ].map((item) => (
+                    <Link key={item.href} href={item.href} onClick={closeMobile} className="mobile-nav__service-link">{item.label}</Link>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Explore accordion */}
+          <div>
+            <button className="mobile-nav__accordion-trigger" onClick={() => toggleAccordion('explore')}>
+              <span className="mobile-nav__accordion-label">Explore</span>
+              <svg className={`mobile-nav__accordion-chevron${mobileAccordion === 'explore' ? ' mobile-nav__accordion-chevron--open' : ''}`} viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M2 4l4 4 4-4" /></svg>
+            </button>
+            <div className={`mobile-nav__accordion-panel${mobileAccordion === 'explore' ? ' mobile-nav__accordion-panel--open' : ''}`}>
+              <div className="mobile-nav__accordion-inner">
+                <span className="kicker" style={{ marginBottom: '8px' }}>Read and think</span>
+                {[
+                  { label: 'The EMERGENT Framework', href: '/emergent-framework' },
+                  { label: 'Tools of the Trade', href: '/tools' },
+                  { label: 'Thinking', href: '/article' },
+                ].map((item) => (
+                  <Link key={item.href} href={item.href} onClick={closeMobile} className="mobile-nav__explore-link">{item.label}</Link>
+                ))}
+                <span className="kicker" style={{ marginTop: '20px', marginBottom: '8px' }}>Learn and develop</span>
+                <Link href="/courses" onClick={closeMobile} className="mobile-nav__explore-link">Courses</Link>
+              </div>
+            </div>
+          </div>
+
+          {/* CTA buttons */}
+          <div className="mobile-nav__ctas">
+            <Link href="/states-of-vitality" onClick={closeMobile} className="btn-sec">States of Vitality</Link>
+            <Link href="/contact" onClick={closeMobile} className="btn-primary">Talk to us</Link>
+          </div>
+        </div>
+      </div>
 
     </>
   )

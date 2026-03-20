@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1920, height=1080">
+<title>Operational Mapping View - Ridgeway Manufacturing</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;500;600;700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    width: 1920px;
+    height: 1080px;
+    font-family: 'Source Sans 3', sans-serif;
+    background: #FFFFFF;
+    color: #1a1a1a;
+    overflow: hidden;
+  }
+
+  .container {
+    width: 100%;
+    height: 100%;
+    padding: 52px 64px 48px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Header */
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 40px;
+  }
+
+  .header-left h1 {
+    font-size: 30px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 6px;
+  }
+
+  .header-left .subtitle {
+    font-size: 17px;
+    font-weight: 400;
+    color: #666;
+  }
+
+  .header-right {
+    text-align: right;
+  }
+
+  .org-name {
+    font-size: 15px;
+    font-weight: 600;
+    color: #9B51E0;
+  }
+
+  .report-date {
+    font-size: 13px;
+    font-weight: 400;
+    color: #999;
+    margin-top: 2px;
+  }
+
+  /* Main grid */
+  .main-grid {
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 40px;
+    flex: 1;
+  }
+
+  /* Process flow section */
+  .flow-section {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .section-label {
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: #999;
+    margin-bottom: 20px;
+  }
+
+  .flow-diagram {
+    background: #FAFAFA;
+    border: 1px solid #E8E8E8;
+    padding: 32px;
+    flex: 1;
+    position: relative;
+  }
+
+  /* Process steps */
+  .process-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+
+  .process-row:last-child {
+    margin-bottom: 0;
+  }
+
+  .process-step {
+    background: #fff;
+    border: 2px solid #E0E0E0;
+    padding: 14px 20px;
+    min-width: 160px;
+    text-align: center;
+    position: relative;
+  }
+
+  .process-step.healthy {
+    border-color: #2D9F4F;
+  }
+
+  .process-step.bottleneck {
+    border-color: #D43A6A;
+    background: #FFF5F7;
+  }
+
+  .process-step.slow {
+    border-color: #C07800;
+    background: #FFFBF0;
+  }
+
+  .step-name {
+    font-size: 15px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin-bottom: 3px;
+  }
+
+  .step-time {
+    font-size: 12px;
+    font-weight: 400;
+    color: #888;
+  }
+
+  .flow-arrow {
+    width: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+
+  .flow-arrow svg {
+    width: 36px;
+    height: 16px;
+  }
+
+  .handoff-label {
+    position: absolute;
+    bottom: -16px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 10px;
+    font-weight: 500;
+    color: #D43A6A;
+    white-space: nowrap;
+  }
+
+  /* Flow rows */
+  .flow-main {
+    margin-bottom: 16px;
+  }
+
+  .flow-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    width: 100px;
+    flex-shrink: 0;
+  }
+
+  /* Cycle time strip */
+  .cycle-strip {
+    display: flex;
+    gap: 24px;
+    margin-top: 24px;
+    padding-top: 24px;
+    border-top: 1px solid #E8E8E8;
+  }
+
+  .cycle-item {
+    flex: 1;
+  }
+
+  .cycle-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: #888;
+    margin-bottom: 6px;
+  }
+
+  .cycle-bar-bg {
+    height: 8px;
+    background: #EEEEEE;
+    width: 100%;
+    position: relative;
+  }
+
+  .cycle-bar-fill {
+    height: 100%;
+    position: absolute;
+    left: 0;
+    top: 0;
+  }
+
+  .cycle-bar-fill.good { background: #2D9F4F; }
+  .cycle-bar-fill.warn { background: #C07800; }
+  .cycle-bar-fill.bad { background: #D43A6A; }
+
+  .cycle-values {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 5px;
+  }
+
+  .cycle-actual {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1a1a1a;
+  }
+
+  .cycle-target {
+    font-size: 12px;
+    font-weight: 400;
+    color: #999;
+  }
+
+  /* Right column */
+  .right-column {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+  }
+
+  /* Friction points */
+  .friction-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .friction-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 16px;
+    background: #FAFAFA;
+    border-left: 3px solid #D43A6A;
+  }
+
+  .friction-icon {
+    width: 24px;
+    height: 24px;
+    background: #FFF0F3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .friction-icon svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .friction-text {
+    font-size: 14px;
+    font-weight: 400;
+    color: #1a1a1a;
+    line-height: 1.45;
+  }
+
+  .friction-location {
+    font-size: 12px;
+    font-weight: 500;
+    color: #D43A6A;
+    margin-top: 3px;
+  }
+
+  /* Resource utilisation */
+  .util-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .util-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .util-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: #1a1a1a;
+    width: 120px;
+    flex-shrink: 0;
+  }
+
+  .util-bar-bg {
+    flex: 1;
+    height: 20px;
+    background: #F0F0F0;
+    position: relative;
+  }
+
+  .util-bar-fill {
+    height: 100%;
+    position: absolute;
+    left: 0;
+    top: 0;
+  }
+
+  .util-value {
+    font-size: 13px;
+    font-weight: 600;
+    color: #fff;
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  .util-value.dark {
+    color: #1a1a1a;
+    right: auto;
+    left: calc(100% + 8px);
+  }
+
+  /* Summary strip */
+  .summary-strip {
+    display: flex;
+    gap: 0;
+    margin-top: auto;
+  }
+
+  .summary-item {
+    flex: 1;
+    padding: 20px 24px;
+    border-top: 3px solid;
+  }
+
+  .summary-item.green { border-color: #2D9F4F; background: #F0FAF2; }
+  .summary-item.amber { border-color: #C07800; background: #FFFBF0; }
+  .summary-item.red { border-color: #D43A6A; background: #FFF5F7; }
+
+  .summary-count {
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .summary-item.green .summary-count { color: #2D9F4F; }
+  .summary-item.amber .summary-count { color: #C07800; }
+  .summary-item.red .summary-count { color: #D43A6A; }
+
+  .summary-label {
+    font-size: 14px;
+    font-weight: 400;
+    color: #666;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <div class="header-left">
+      <h1>Operational Mapping View</h1>
+      <div class="subtitle">Where value flows - and where it gets stuck</div>
+    </div>
+    <div class="header-right">
+      <div class="org-name">Ridgeway Manufacturing</div>
+      <div class="report-date">Assessment completed March 2026</div>
+    </div>
+  </div>
+
+  <div class="main-grid">
+    <!-- Left: Process flow -->
+    <div class="flow-section">
+      <div class="section-label">End-to-end process flow</div>
+      <div class="flow-diagram">
+
+        <!-- Primary flow -->
+        <div class="process-row">
+          <div class="flow-label">Primary</div>
+          <div class="process-step healthy">
+            <div class="step-name">Order intake</div>
+            <div class="step-time">0.5 days avg</div>
+          </div>
+          <div class="flow-arrow">
+            <svg viewBox="0 0 36 16"><path d="M0 8 L28 8 M22 2 L28 8 L22 14" fill="none" stroke="#CCC" stroke-width="2"/></svg>
+          </div>
+          <div class="process-step bottleneck">
+            <div class="step-name">Specification</div>
+            <div class="step-time">4.2 days avg</div>
+          </div>
+          <div class="flow-arrow">
+            <svg viewBox="0 0 36 16"><path d="M0 8 L28 8 M22 2 L28 8 L22 14" fill="none" stroke="#CCC" stroke-width="2"/></svg>
+            <div class="handoff-label">3 team handoffs</div>
+          </div>
+          <div class="process-step slow">
+            <div class="step-name">Scheduling</div>
+            <div class="step-time">2.1 days avg</div>
+          </div>
+          <div class="flow-arrow">
+            <svg viewBox="0 0 36 16"><path d="M0 8 L28 8 M22 2 L28 8 L22 14" fill="none" stroke="#CCC" stroke-width="2"/></svg>
+          </div>
+          <div class="process-step healthy">
+            <div class="step-name">Production</div>
+            <div class="step-time">3.0 days avg</div>
+          </div>
+          <div class="flow-arrow">
+            <svg viewBox="0 0 36 16"><path d="M0 8 L28 8 M22 2 L28 8 L22 14" fill="none" stroke="#CCC" stroke-width="2"/></svg>
+          </div>
+          <div class="process-step healthy">
+            <div class="step-name">Quality check</div>
+            <div class="step-time">0.5 days avg</div>
+          </div>
+        </div>
+
+        <!-- Support flow -->
+        <div class="process-row" style="margin-top: 28px;">
+          <div class="flow-label">Support</div>
+          <div class="process-step healthy">
+            <div class="step-name">Materials</div>
+            <div class="step-time">1.0 days avg</div>
+          </div>
+          <div class="flow-arrow">
+            <svg viewBox="0 0 36 16"><path d="M0 8 L28 8 M22 2 L28 8 L22 14" fill="none" stroke="#CCC" stroke-width="2"/></svg>
+          </div>
+          <div class="process-step slow">
+            <div class="step-name">Procurement</div>
+            <div class="step-time">3.8 days avg</div>
+          </div>
+          <div class="flow-arrow">
+            <svg viewBox="0 0 36 16"><path d="M0 8 L28 8 M22 2 L28 8 L22 14" fill="none" stroke="#CCC" stroke-width="2"/></svg>
+            <div class="handoff-label">manual rework</div>
+          </div>
+          <div class="process-step bottleneck">
+            <div class="step-name">Approvals</div>
+            <div class="step-time">2.5 days avg</div>
+          </div>
+        </div>
+
+        <!-- Cycle time strip -->
+        <div class="cycle-strip">
+          <div class="cycle-item">
+            <div class="cycle-label">Order to delivery</div>
+            <div class="cycle-bar-bg">
+              <div class="cycle-bar-fill bad" style="width: 82%;"></div>
+            </div>
+            <div class="cycle-values">
+              <span class="cycle-actual">14.2 days</span>
+              <span class="cycle-target">Target: 8 days</span>
+            </div>
+          </div>
+          <div class="cycle-item">
+            <div class="cycle-label">Value-adding time</div>
+            <div class="cycle-bar-bg">
+              <div class="cycle-bar-fill warn" style="width: 38%;"></div>
+            </div>
+            <div class="cycle-values">
+              <span class="cycle-actual">38%</span>
+              <span class="cycle-target">62% is waiting or rework</span>
+            </div>
+          </div>
+          <div class="cycle-item">
+            <div class="cycle-label">First-time-right rate</div>
+            <div class="cycle-bar-bg">
+              <div class="cycle-bar-fill warn" style="width: 67%;"></div>
+            </div>
+            <div class="cycle-values">
+              <span class="cycle-actual">67%</span>
+              <span class="cycle-target">Target: 90%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right column -->
+    <div class="right-column">
+      <div>
+        <div class="section-label">Friction points identified</div>
+        <div class="friction-list">
+          <div class="friction-item">
+            <div class="friction-icon">
+              <svg viewBox="0 0 14 14"><circle cx="7" cy="7" r="6" fill="none" stroke="#D43A6A" stroke-width="1.5"/><line x1="7" y1="4" x2="7" y2="8" stroke="#D43A6A" stroke-width="1.5"/><circle cx="7" cy="10.5" r="0.8" fill="#D43A6A"/></svg>
+            </div>
+            <div>
+              <div class="friction-text">Specification stage requires input from 3 teams with no shared system</div>
+              <div class="friction-location">Specification → Scheduling handoff</div>
+            </div>
+          </div>
+          <div class="friction-item">
+            <div class="friction-icon">
+              <svg viewBox="0 0 14 14"><circle cx="7" cy="7" r="6" fill="none" stroke="#D43A6A" stroke-width="1.5"/><line x1="7" y1="4" x2="7" y2="8" stroke="#D43A6A" stroke-width="1.5"/><circle cx="7" cy="10.5" r="0.8" fill="#D43A6A"/></svg>
+            </div>
+            <div>
+              <div class="friction-text">Approvals process requires signatures from people who lack context</div>
+              <div class="friction-location">Procurement → Approvals</div>
+            </div>
+          </div>
+          <div class="friction-item">
+            <div class="friction-icon">
+              <svg viewBox="0 0 14 14"><circle cx="7" cy="7" r="6" fill="none" stroke="#C07800" stroke-width="1.5"/><line x1="7" y1="4" x2="7" y2="8" stroke="#C07800" stroke-width="1.5"/><circle cx="7" cy="10.5" r="0.8" fill="#C07800"/></svg>
+            </div>
+            <div>
+              <div class="friction-text">Teams have built workarounds that bypass the documented process</div>
+              <div class="friction-location">Across scheduling and procurement</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="section-label">Resource utilisation</div>
+        <div class="util-grid">
+          <div class="util-row">
+            <div class="util-label">Engineering</div>
+            <div class="util-bar-bg">
+              <div class="util-bar-fill" style="width: 92%; background: #D43A6A;">
+                <span class="util-value">92%</span>
+              </div>
+            </div>
+          </div>
+          <div class="util-row">
+            <div class="util-label">Production</div>
+            <div class="util-bar-bg">
+              <div class="util-bar-fill" style="width: 78%; background: #C07800;">
+                <span class="util-value">78%</span>
+              </div>
+            </div>
+          </div>
+          <div class="util-row">
+            <div class="util-label">Quality</div>
+            <div class="util-bar-bg">
+              <div class="util-bar-fill" style="width: 61%; background: #2D9F4F;">
+                <span class="util-value">61%</span>
+              </div>
+            </div>
+          </div>
+          <div class="util-row">
+            <div class="util-label">Admin</div>
+            <div class="util-bar-bg">
+              <div class="util-bar-fill" style="width: 85%; background: #C07800;">
+                <span class="util-value">85%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Summary strip -->
+  <div class="summary-strip">
+    <div class="summary-item green">
+      <div class="summary-count">4</div>
+      <div class="summary-label">Processes flowing well</div>
+    </div>
+    <div class="summary-item amber">
+      <div class="summary-count">3</div>
+      <div class="summary-label">Showing strain</div>
+    </div>
+    <div class="summary-item red">
+      <div class="summary-count">2</div>
+      <div class="summary-label">Significant bottlenecks</div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

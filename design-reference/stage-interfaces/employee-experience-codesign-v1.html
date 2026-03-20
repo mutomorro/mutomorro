@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1920">
+<title>Employee Experience - Co-design Stage</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;500;600;700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    width: 1920px;
+    height: 1080px;
+    overflow: hidden;
+    font-family: 'Source Sans 3', sans-serif;
+    background: #FFFFFF;
+    color: #221C2B;
+  }
+
+  .dashboard {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto 1fr auto;
+    height: 1080px;
+    padding: 44px 52px;
+    gap: 0;
+  }
+
+  .topbar {
+    grid-column: 1 / -1;
+    display: flex; align-items: center; justify-content: space-between;
+    padding-bottom: 32px; border-bottom: 1px solid rgba(34,28,43,0.07); margin-bottom: 36px;
+  }
+  .topbar-left { display: flex; align-items: center; gap: 20px; }
+  .topbar-logo { font-weight: 700; font-size: 18px; letter-spacing: 0.03em; background: linear-gradient(135deg, #80388F, #FF4279, #FFA200); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .topbar-sep { width: 1px; height: 28px; background: rgba(34,28,43,0.1); }
+  .topbar-context { display: flex; flex-direction: column; }
+  .topbar-type { font-size: 13px; font-weight: 500; color: rgba(34,28,43,0.4); letter-spacing: 0.04em; text-transform: uppercase; }
+  .topbar-org { font-size: 20px; font-weight: 700; color: #221C2B; }
+  .topbar-right { display: flex; align-items: center; gap: 28px; }
+  .topbar-tab { font-size: 15px; font-weight: 500; color: rgba(34,28,43,0.3); }
+  .topbar-tab--active { color: #221C2B; font-weight: 600; border-bottom: 2px solid #9B51E0; padding-bottom: 4px; }
+  .topbar-meta { font-size: 13px; color: rgba(34,28,43,0.3); }
+
+  .section-label { font-size: 12px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(34,28,43,0.35); margin-bottom: 16px; }
+
+  .headline-strip {
+    grid-column: 1 / -1; display: grid; grid-template-columns: repeat(5, 1fr);
+    gap: 14px; margin-bottom: 36px;
+  }
+  .headline-card { padding: 22px 20px; background: rgba(34,28,43,0.015); border: 1px solid rgba(34,28,43,0.05); text-align: center; }
+  .headline-value { font-size: 38px; font-weight: 700; line-height: 1; margin-bottom: 6px; }
+  .headline-label { font-size: 13px; font-weight: 500; color: rgba(34,28,43,0.45); line-height: 1.3; }
+  .headline-sub { font-size: 11px; font-weight: 600; margin-top: 6px; }
+
+  .col-left { padding-right: 36px; display: flex; flex-direction: column; gap: 24px; }
+
+  /* Improvement priorities */
+  .improvement-list { display: flex; flex-direction: column; gap: 6px; }
+
+  .improvement-card {
+    display: grid; grid-template-columns: 44px 1fr auto;
+    gap: 16px; align-items: start;
+    padding: 16px 18px; border: 1px solid rgba(34,28,43,0.05);
+    background: rgba(34,28,43,0.01);
+  }
+
+  .improvement-rank {
+    width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;
+    font-size: 16px; font-weight: 700; color: white;
+    background: linear-gradient(135deg, #80388F, #FF4279);
+  }
+
+  .improvement-content { display: flex; flex-direction: column; gap: 4px; }
+
+  .improvement-title { font-size: 15px; font-weight: 600; color: #221C2B; }
+  .improvement-desc { font-size: 12px; color: rgba(34,28,43,0.45); line-height: 1.4; }
+
+  .improvement-tags { display: flex; gap: 6px; margin-top: 4px; }
+
+  .improvement-tag {
+    font-size: 10px; font-weight: 600; padding: 2px 7px;
+    text-transform: uppercase; letter-spacing: 0.04em;
+  }
+
+  .tag-systemic { background: rgba(155,81,224,0.08); color: #7B3FA0; }
+  .tag-touchpoint { background: rgba(74,143,231,0.08); color: #3A7AD4; }
+  .tag-quick { background: rgba(45,159,79,0.08); color: #2D9F4F; }
+  .tag-deep { background: rgba(212,58,106,0.08); color: #D43A6A; }
+
+  .improvement-impact {
+    display: flex; flex-direction: column; align-items: center; gap: 2px;
+    padding: 8px 12px;
+  }
+
+  .impact-label { font-size: 10px; font-weight: 600; color: rgba(34,28,43,0.3); text-transform: uppercase; letter-spacing: 0.04em; }
+  .impact-touchpoints { font-size: 20px; font-weight: 700; }
+
+  /* What changes for people / in the system */
+  .changes-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+  .changes-card { padding: 18px; border: 1px solid rgba(34,28,43,0.06); }
+
+  .changes-header {
+    font-size: 13px; font-weight: 600; color: #221C2B;
+    margin-bottom: 10px; padding-bottom: 8px;
+    border-bottom: 1px solid rgba(34,28,43,0.06);
+  }
+
+  .changes-item {
+    display: flex; gap: 8px; padding: 6px 0;
+    font-size: 12px; color: rgba(34,28,43,0.55); line-height: 1.4;
+    border-bottom: 1px solid rgba(34,28,43,0.03);
+  }
+  .changes-item:last-child { border-bottom: none; }
+  .changes-icon { flex-shrink: 0; font-size: 11px; margin-top: 2px; }
+
+  /* RIGHT COLUMN */
+  .col-right {
+    padding-left: 36px; border-left: 1px solid rgba(34,28,43,0.06);
+    display: flex; flex-direction: column; gap: 24px;
+  }
+
+  /* Workstreams */
+  .workstream-list { display: flex; flex-direction: column; gap: 8px; }
+
+  .workstream-card {
+    padding: 16px 18px; border-left: 3px solid;
+    background: rgba(34,28,43,0.015);
+  }
+
+  .workstream-header { display: flex; justify-content: space-between; align-items: start; margin-bottom: 6px; }
+  .workstream-title { font-size: 14px; font-weight: 600; color: #221C2B; }
+  .workstream-phase { font-size: 10px; font-weight: 600; padding: 2px 7px; text-transform: uppercase; letter-spacing: 0.04em; }
+
+  .workstream-desc { font-size: 12px; color: rgba(34,28,43,0.45); line-height: 1.4; margin-bottom: 6px; }
+  .workstream-owner { font-size: 11px; color: rgba(34,28,43,0.35); }
+  .workstream-touches { font-size: 11px; font-weight: 600; color: rgba(34,28,43,0.3); margin-top: 4px; }
+
+  /* Design participants */
+  .participants-strip {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;
+  }
+
+  .participant-card {
+    padding: 14px; text-align: center;
+    background: rgba(34,28,43,0.015); border: 1px solid rgba(34,28,43,0.05);
+  }
+
+  .participant-count { font-size: 24px; font-weight: 700; color: #221C2B; }
+  .participant-group { font-size: 11px; font-weight: 500; color: rgba(34,28,43,0.45); margin-top: 2px; }
+
+  /* FOOTER */
+  .footer {
+    grid-column: 1 / -1; margin-top: 24px; padding: 28px 32px;
+    background: linear-gradient(135deg, rgba(128,56,143,0.04), rgba(255,66,121,0.03), rgba(255,162,0,0.04));
+    border: 1px solid rgba(34,28,43,0.06);
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .footer-message { flex: 1; }
+  .footer-title { font-size: 20px; font-weight: 700; color: #221C2B; margin-bottom: 6px; }
+  .footer-desc { font-size: 14px; color: rgba(34,28,43,0.5); line-height: 1.5; max-width: 700px; }
+  .footer-stat { text-align: right; }
+  .footer-stat-value { font-size: 42px; font-weight: 700; background: linear-gradient(135deg, #80388F, #FF4279, #FFA200); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .footer-stat-label { font-size: 13px; color: rgba(34,28,43,0.4); }
+</style>
+</head>
+<body>
+<div class="dashboard">
+
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="topbar-logo">MUTOMORRO</div>
+      <div class="topbar-sep"></div>
+      <div class="topbar-context">
+        <span class="topbar-type">Experience improvement plan</span>
+        <span class="topbar-org">Pennine Housing Group</span>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <div class="topbar-tab topbar-tab--active">Priorities</div>
+      <div class="topbar-tab">Workstreams</div>
+      <div class="topbar-tab">Touchpoints</div>
+      <div class="topbar-tab">Ownership</div>
+      <div class="topbar-meta">Co-designed · May 2026</div>
+    </div>
+  </div>
+
+  <div class="headline-strip">
+    <div class="headline-card">
+      <div class="headline-value" style="color: #221C2B;">6</div>
+      <div class="headline-label">Improvement priorities</div>
+      <div class="headline-sub" style="color: #9B51E0;">Ranked by impact on experience</div>
+    </div>
+    <div class="headline-card">
+      <div class="headline-value" style="color: #221C2B;">4</div>
+      <div class="headline-label">Workstreams designed</div>
+      <div class="headline-sub" style="color: rgba(34,28,43,0.35);">Each with named owners</div>
+    </div>
+    <div class="headline-card">
+      <div class="headline-value" style="color: #2D9F4F;">89</div>
+      <div class="headline-label">People involved in design</div>
+      <div class="headline-sub" style="color: #2D9F4F;">From every team and level</div>
+    </div>
+    <div class="headline-card">
+      <div class="headline-value" style="color: #9B51E0;">4</div>
+      <div class="headline-label">Systemic changes designed</div>
+      <div class="headline-sub" style="color: #9B51E0;">Not just surface fixes</div>
+    </div>
+    <div class="headline-card">
+      <div class="headline-value" style="color: #221C2B;">6</div>
+      <div class="headline-label">Touchpoints addressed</div>
+      <div class="headline-sub" style="color: rgba(34,28,43,0.35);">All touchpoints improved</div>
+    </div>
+  </div>
+
+  <div class="col-left">
+
+    <div>
+      <div class="section-label">Improvement priorities by impact</div>
+      <div class="improvement-list">
+        <div class="improvement-card">
+          <div class="improvement-rank">1</div>
+          <div class="improvement-content">
+            <div class="improvement-title">Free managers to lead people</div>
+            <div class="improvement-desc">Redistribute operational tasks so managers have protected time for development conversations, recognition and team support</div>
+            <div class="improvement-tags">
+              <span class="improvement-tag tag-systemic">Systemic</span>
+              <span class="improvement-tag tag-deep">Deep work</span>
+            </div>
+          </div>
+          <div class="improvement-impact">
+            <div class="impact-label">Improves</div>
+            <div class="impact-touchpoints" style="color: #9B51E0;">5</div>
+            <div class="impact-label">touchpoints</div>
+          </div>
+        </div>
+        <div class="improvement-card">
+          <div class="improvement-rank">2</div>
+          <div class="improvement-content">
+            <div class="improvement-title">Redesign communication flow</div>
+            <div class="improvement-desc">Create direct channels from leadership to frontline. Important news reaches people through official routes first, not the grapevine</div>
+            <div class="improvement-tags">
+              <span class="improvement-tag tag-systemic">Systemic</span>
+              <span class="improvement-tag tag-quick">Quick win</span>
+            </div>
+          </div>
+          <div class="improvement-impact">
+            <div class="impact-label">Improves</div>
+            <div class="impact-touchpoints" style="color: #9B51E0;">3</div>
+            <div class="impact-label">touchpoints</div>
+          </div>
+        </div>
+        <div class="improvement-card">
+          <div class="improvement-rank">3</div>
+          <div class="improvement-content">
+            <div class="improvement-title">Build recognition into the rhythm</div>
+            <div class="improvement-desc">Move from individual manager discretion to team-level practices that make recognition a normal part of how work happens</div>
+            <div class="improvement-tags">
+              <span class="improvement-tag tag-touchpoint">Touchpoint</span>
+              <span class="improvement-tag tag-quick">Quick win</span>
+            </div>
+          </div>
+          <div class="improvement-impact">
+            <div class="impact-label">Improves</div>
+            <div class="impact-touchpoints" style="color: #9B51E0;">2</div>
+            <div class="impact-label">touchpoints</div>
+          </div>
+        </div>
+        <div class="improvement-card">
+          <div class="improvement-rank">4</div>
+          <div class="improvement-content">
+            <div class="improvement-title">Make development real and practical</div>
+            <div class="improvement-desc">Replace tick-box online modules with on-the-job learning, peer coaching and development built into daily work</div>
+            <div class="improvement-tags">
+              <span class="improvement-tag tag-systemic">Systemic</span>
+              <span class="improvement-tag tag-deep">Deep work</span>
+            </div>
+          </div>
+          <div class="improvement-impact">
+            <div class="impact-label">Improves</div>
+            <div class="impact-touchpoints" style="color: #9B51E0;">2</div>
+            <div class="impact-label">touchpoints</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section-label">What changes for people vs what changes in the system</div>
+      <div class="changes-grid">
+        <div class="changes-card" style="border-top: 3px solid #2D9F4F;">
+          <div class="changes-header">What people will feel</div>
+          <div class="changes-item"><span class="changes-icon">→</span> My manager has time for me</div>
+          <div class="changes-item"><span class="changes-icon">→</span> I hear important news directly</div>
+          <div class="changes-item"><span class="changes-icon">→</span> My work gets noticed</div>
+          <div class="changes-item"><span class="changes-icon">→</span> I am actually developing</div>
+        </div>
+        <div class="changes-card" style="border-top: 3px solid #9B51E0;">
+          <div class="changes-header">What shifts in the system</div>
+          <div class="changes-item"><span class="changes-icon">→</span> Manager role redesigned around people</div>
+          <div class="changes-item"><span class="changes-icon">→</span> Communication architecture rebuilt</div>
+          <div class="changes-item"><span class="changes-icon">→</span> Recognition built into team practice</div>
+          <div class="changes-item"><span class="changes-icon">→</span> Development embedded in how work happens</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-right">
+
+    <div>
+      <div class="section-label">Workstreams</div>
+      <div class="workstream-list">
+        <div class="workstream-card" style="border-left-color: #D43A6A;">
+          <div class="workstream-header">
+            <div class="workstream-title">Manager role and capacity</div>
+            <div class="workstream-phase" style="background: rgba(212,58,106,0.08); color: #D43A6A;">Deep work</div>
+          </div>
+          <div class="workstream-desc">Redesigning the manager role to create protected people-leadership time. Redistributing operational tasks. New expectations set.</div>
+          <div class="workstream-owner">Lead: Karen Walsh, Director of Operations</div>
+          <div class="workstream-touches">Touches: Development, Communication, Recognition, Daily work, Onboarding</div>
+        </div>
+        <div class="workstream-card" style="border-left-color: #2D9F4F;">
+          <div class="workstream-title">Communication and trust</div>
+          <div class="workstream-desc">New communication channels from leadership to frontline. Honest, direct, timely. Building trust by closing the grapevine gap.</div>
+          <div class="workstream-owner">Lead: James Hartley, Chief Executive</div>
+          <div class="workstream-touches">Touches: Communication, Daily work, Exit</div>
+        </div>
+        <div class="workstream-card" style="border-left-color: #9B51E0;">
+          <div class="workstream-title">Recognition practices</div>
+          <div class="workstream-desc">Team-level recognition rhythms designed and piloted. Moving from individual manager discretion to embedded organisational practice.</div>
+          <div class="workstream-owner">Lead: Fola Adebayo, People and Culture Manager</div>
+          <div class="workstream-touches">Touches: Recognition, Daily work</div>
+        </div>
+        <div class="workstream-card" style="border-left-color: #C07800;">
+          <div class="workstream-title">Development that works</div>
+          <div class="workstream-desc">Replacing tick-box modules with practical, on-the-job development. Peer learning, coaching, and growth built into the working week.</div>
+          <div class="workstream-owner">Lead: Priya Sandhu, Head of Learning</div>
+          <div class="workstream-touches">Touches: Development, Onboarding</div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section-label">Who designed this</div>
+      <div class="participants-strip">
+        <div class="participant-card">
+          <div class="participant-count">32</div>
+          <div class="participant-group">Frontline staff</div>
+        </div>
+        <div class="participant-card">
+          <div class="participant-count">28</div>
+          <div class="participant-group">Managers</div>
+        </div>
+        <div class="participant-card">
+          <div class="participant-count">18</div>
+          <div class="participant-group">Support teams</div>
+        </div>
+        <div class="participant-card">
+          <div class="participant-count">11</div>
+          <div class="participant-group">Senior leaders</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div class="footer-message">
+      <div class="footer-title">Designed with the people who live with the experience</div>
+      <div class="footer-desc">89 people from every team and level shaped these priorities. The plan addresses the systemic patterns, not just the symptoms. Four workstreams, four owners, one connected approach.</div>
+    </div>
+    <div class="footer-stat">
+      <div class="footer-stat-value">89</div>
+      <div class="footer-stat-label">people shaped<br>this plan</div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

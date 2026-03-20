@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1920">
+<title>Strategic Alignment - Implement Stage Interface</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;500;600;700&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { width: 1920px; height: 1080px; overflow: hidden; font-family: 'Source Sans 3', sans-serif; background: #FFFFFF; color: #221C2B; }
+
+  .dashboard { display: grid; grid-template-columns: 1fr 1fr 360px; grid-template-rows: auto 1fr auto; height: 1080px; padding: 44px 52px; }
+  .topbar { grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; padding-bottom: 32px; border-bottom: 1px solid rgba(34,28,43,0.07); margin-bottom: 32px; }
+  .topbar-left { display: flex; align-items: center; gap: 20px; }
+  .topbar-logo { font-weight: 700; font-size: 18px; letter-spacing: 0.03em; background: linear-gradient(135deg, #80388F, #FF4279, #FFA200); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .topbar-sep { width: 1px; height: 28px; background: rgba(34,28,43,0.1); }
+  .topbar-type { font-size: 13px; font-weight: 500; color: rgba(34,28,43,0.4); letter-spacing: 0.04em; text-transform: uppercase; }
+  .topbar-org { font-size: 20px; font-weight: 700; }
+  .topbar-right { display: flex; align-items: center; gap: 28px; }
+  .topbar-tab { font-size: 15px; font-weight: 500; color: rgba(34,28,43,0.3); }
+  .topbar-tab--active { color: #221C2B; font-weight: 600; border-bottom: 2px solid #9B51E0; padding-bottom: 4px; }
+  .topbar-meta { font-size: 13px; color: rgba(34,28,43,0.3); }
+  .section-label { font-size: 12px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(34,28,43,0.35); margin-bottom: 14px; }
+
+  .col-1 { padding-right: 28px; display: flex; flex-direction: column; gap: 20px; }
+  .col-2 { padding: 0 28px; border-left: 1px solid rgba(34,28,43,0.06); display: flex; flex-direction: column; gap: 20px; }
+  .col-3 { padding-left: 28px; border-left: 1px solid rgba(34,28,43,0.06); display: flex; flex-direction: column; gap: 20px; }
+
+  /* Alignment closure tracker */
+  .closure-list { display: flex; flex-direction: column; gap: 5px; }
+  .closure-item { padding: 14px 16px; background: rgba(34,28,43,0.015); border: 1px solid rgba(34,28,43,0.05); }
+  .cl-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .cl-area { font-size: 14px; font-weight: 600; }
+  .cl-status { font-size: 10px; font-weight: 600; padding: 3px 8px; text-transform: uppercase; letter-spacing: 0.04em; }
+  .s-closed { background: rgba(78,203,113,0.1); color: #2D9F4F; }
+  .s-closing { background: rgba(255,162,0,0.1); color: #C07800; }
+  .s-open { background: rgba(212,58,106,0.08); color: #D43A6A; }
+  .s-starting { background: rgba(155,81,224,0.08); color: #7B3FA0; }
+  .cl-bars { display: flex; gap: 8px; align-items: center; }
+  .cl-bar-group { flex: 1; }
+  .cl-bar-label { font-size: 10px; color: rgba(34,28,43,0.3); margin-bottom: 3px; }
+  .cl-bar-track { height: 5px; background: rgba(34,28,43,0.04); }
+  .cl-bar-fill { height: 100%; }
+  .cl-detail { font-size: 11px; color: rgba(34,28,43,0.4); margin-top: 6px; line-height: 1.4; }
+
+  /* Function alignment */
+  .func-list { display: flex; flex-direction: column; gap: 3px; }
+  .func-header { display: grid; grid-template-columns: 130px 1fr 50px; gap: 10px; padding: 0 10px 6px; }
+  .func-header span { font-size: 10px; font-weight: 600; color: rgba(34,28,43,0.25); text-transform: uppercase; letter-spacing: 0.06em; }
+  .func-header span:last-child { text-align: right; }
+  .func-row { display: grid; grid-template-columns: 130px 1fr 50px; gap: 10px; align-items: center; padding: 8px 10px; background: rgba(34,28,43,0.01); border: 1px solid rgba(34,28,43,0.03); }
+  .func-name { font-size: 13px; font-weight: 600; }
+  .func-track { height: 5px; background: rgba(34,28,43,0.04); }
+  .func-fill { height: 100%; }
+  .func-score { font-size: 13px; font-weight: 700; text-align: right; font-variant-numeric: tabular-nums; }
+
+  /* Friction indicators */
+  .friction-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .friction-card { padding: 14px; background: rgba(34,28,43,0.015); border: 1px solid rgba(34,28,43,0.05); }
+  .fr-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4px; }
+  .fr-label { font-size: 12px; color: rgba(34,28,43,0.5); line-height: 1.3; }
+  .fr-change { font-size: 11px; font-weight: 600; padding: 2px 6px; }
+  .t-up { color: #2D9F4F; background: rgba(78,203,113,0.08); }
+  .t-flat { color: #C07800; background: rgba(255,162,0,0.08); }
+  .fr-value { font-size: 26px; font-weight: 700; line-height: 1; margin-bottom: 2px; }
+  .fr-baseline { font-size: 10px; color: rgba(34,28,43,0.3); }
+
+  /* Right panel */
+  .week-box { padding: 18px; background: linear-gradient(135deg, rgba(128,56,143,0.03), rgba(255,66,121,0.03)); border: 1px solid rgba(34,28,43,0.06); }
+  .week-title { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+  .week-sub { font-size: 12px; color: rgba(34,28,43,0.4); margin-bottom: 12px; }
+  .week-item { padding: 10px 12px; border-left: 3px solid; margin-bottom: 5px; background: rgba(255,255,255,0.7); }
+  .week-item-title { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
+  .week-item-desc { font-size: 11px; color: rgba(34,28,43,0.45); line-height: 1.4; }
+
+  .signal-list { display: flex; flex-direction: column; gap: 4px; }
+  .sig-item { padding: 10px 12px; background: rgba(34,28,43,0.015); border: 1px solid rgba(34,28,43,0.04); display: flex; gap: 10px; align-items: flex-start; }
+  .sig-icon { width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 11px; flex-shrink: 0; }
+  .sig-text { font-size: 12px; color: rgba(34,28,43,0.6); line-height: 1.4; }
+  .sig-text strong { color: #221C2B; font-weight: 600; }
+
+  .attn-list { display: flex; flex-direction: column; gap: 5px; margin-top: auto; }
+  .attn-item { padding: 12px 14px; border-left: 3px solid #C07800; background: rgba(255,162,0,0.03); }
+  .attn-title { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
+  .attn-desc { font-size: 11px; color: rgba(34,28,43,0.45); line-height: 1.4; }
+
+  .health-footer { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; padding-top: 24px; border-top: 1px solid rgba(34,28,43,0.06); margin-top: 8px; }
+  .hf-card { text-align: center; padding: 12px; background: rgba(34,28,43,0.015); border: 1px solid rgba(34,28,43,0.04); }
+  .hf-value { font-size: 24px; font-weight: 700; line-height: 1; margin-bottom: 3px; }
+  .hf-label { font-size: 10px; color: rgba(34,28,43,0.4); line-height: 1.3; }
+  .hf-change { font-size: 10px; font-weight: 600; margin-top: 3px; }
+</style>
+</head>
+<body>
+<div class="dashboard">
+
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="topbar-logo">MUTOMORRO</div>
+      <div class="topbar-sep"></div>
+      <div>
+        <span class="topbar-type">Alignment progress</span>
+        <div class="topbar-org">Northfield Health</div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <div class="topbar-tab topbar-tab--active">Gap closure</div>
+      <div class="topbar-tab">By function</div>
+      <div class="topbar-tab">Friction</div>
+      <div class="topbar-tab">Signals</div>
+      <div class="topbar-meta">Month 4 of 9 · July 2026</div>
+    </div>
+  </div>
+
+  <!-- COL 1: Gap closure -->
+  <div class="col-1">
+    <div class="section-label">Alignment gap closure</div>
+    <div class="closure-list">
+      <div class="closure-item">
+        <div class="cl-header">
+          <span class="cl-area">Performance measures</span>
+          <span class="cl-status s-closing">Closing</span>
+        </div>
+        <div class="cl-bars">
+          <div class="cl-bar-group">
+            <div class="cl-bar-label">Before</div>
+            <div class="cl-bar-track"><div class="cl-bar-fill" style="width: 31%; background: #D43A6A;"></div></div>
+          </div>
+          <div class="cl-bar-group">
+            <div class="cl-bar-label">Now</div>
+            <div class="cl-bar-track"><div class="cl-bar-fill" style="width: 62%; background: linear-gradient(90deg, #C07800, #FFA200);"></div></div>
+          </div>
+        </div>
+        <div class="cl-detail">New KPIs launched for 4 of 6 strategic priorities. Remaining 2 in design. First quarter under new measures complete.</div>
+      </div>
+
+      <div class="closure-item">
+        <div class="cl-header">
+          <span class="cl-area">Team priorities</span>
+          <span class="cl-status s-closing">Closing</span>
+        </div>
+        <div class="cl-bars">
+          <div class="cl-bar-group">
+            <div class="cl-bar-label">Before</div>
+            <div class="cl-bar-track"><div class="cl-bar-fill" style="width: 45%; background: #D43A6A;"></div></div>
+          </div>
+          <div class="cl-bar-group">
+            <div class="cl-bar-label">Now</div>
+            <div class="cl-bar-track"><div class="cl-bar-fill" style="width: 71%; background: linear-gradient(90deg, #2D9F4F, #4ECB71);"></div></div>
+          </div>
+        </div>
+        <div class="cl-detail">Quarterly alignment sessions running. 10 of 14 functions have updated priorities. Cross-functional conflicts down 45%.</div>
+      </div>
+
+      <div class="closure-item">
+        <div class="cl-header">
+          <span class="cl-area">Communication</span>
+          <span class="cl-status s-closed">Closed</span>
+        </div>
+        <div class="cl-bars">
+          <div class="cl-bar-group">
+            <div class="cl-bar-label">Before</div>
+            <div class="cl-bar-track"><div class="cl-bar-fill" style="width: 56%; background: #C07800;"></div></div>
+          </div>
+          <div class="cl-bar-group">
+            <div class="cl-bar-label">Now</div>
+            <div class="cl-bar-track"><div class="cl-bar-fill" style="width: 78%; background: linear-gradient(90deg, #2D9F4F, #4ECB71);"></div></div>
+          </div>
+        </div>
+        <div class="cl-detail">Strategy translation programme live. 84% of middle managers can now articulate how their team connects to strategic direction.</div>
+      </div>
+
+      <div class="closure-item">
+        <div class="cl-header">
+          <span class="cl-area">Operational patterns</span>
+          <span class="cl-status s-starting">Starting</span>
+        </div>
+        <div class="cl-bars">
+          <div class="cl-bar-group">
+            <div class="cl-bar-label">Before</div>
+            <div class="cl-bar-track"><div class="cl-bar-fill" style="width: 38%; background: #D43A6A;"></div></div>
+          </div>
+          <div class="cl-bar-group">
+            <div class="cl-bar-label">Now</div>
+            <div class="cl-bar-track"><div class="cl-bar-fill" style="width: 46%; background: #C07800;"></div></div>
+          </div>
+        </div>
+        <div class="cl-detail">Meeting rhythm review complete. New governance structure designed. Implementation starting this month across pilot functions.</div>
+      </div>
+
+      <div class="closure-item">
+        <div class="cl-header">
+          <span class="cl-area">Resource allocation</span>
+          <span class="cl-status s-starting">Starting</span>
+        </div>
+        <div class="cl-bars">
+          <div class="cl-bar-group">
+            <div class="cl-bar-label">Before</div>
+            <div class="cl-bar-track"><div class="cl-bar-fill" style="width: 68%; background: #C07800;"></div></div>
+          </div>
+          <div class="cl-bar-group">
+            <div class="cl-bar-label">Now</div>
+            <div class="cl-bar-track"><div class="cl-bar-fill" style="width: 72%; background: linear-gradient(90deg, #C07800, #2D9F4F);"></div></div>
+          </div>
+        </div>
+        <div class="cl-detail">Legacy commitments review underway. CFO targeting 40% of discretionary spend redirected to strategic priorities by Q3.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- COL 2: Function alignment + friction -->
+  <div class="col-2">
+    <div>
+      <div class="section-label">Alignment by function</div>
+      <div class="func-header">
+        <span>Function</span>
+        <span>Alignment level</span>
+        <span>Score</span>
+      </div>
+      <div class="func-list">
+        <div class="func-row">
+          <span class="func-name">Strategy</span>
+          <div class="func-track"><div class="func-fill" style="width: 88%; background: linear-gradient(90deg, #2D9F4F, #4ECB71);"></div></div>
+          <span class="func-score" style="color: #2D9F4F;">88</span>
+        </div>
+        <div class="func-row">
+          <span class="func-name">Clinical ops</span>
+          <div class="func-track"><div class="func-fill" style="width: 76%; background: linear-gradient(90deg, #2D9F4F, #4ECB71);"></div></div>
+          <span class="func-score" style="color: #2D9F4F;">76</span>
+        </div>
+        <div class="func-row">
+          <span class="func-name">People</span>
+          <div class="func-track"><div class="func-fill" style="width: 74%; background: linear-gradient(90deg, #2D9F4F, #4ECB71);"></div></div>
+          <span class="func-score" style="color: #2D9F4F;">74</span>
+        </div>
+        <div class="func-row">
+          <span class="func-name">Communications</span>
+          <div class="func-track"><div class="func-fill" style="width: 72%; background: linear-gradient(90deg, #2D9F4F, #4ECB71);"></div></div>
+          <span class="func-score" style="color: #2D9F4F;">72</span>
+        </div>
+        <div class="func-row">
+          <span class="func-name">Digital</span>
+          <div class="func-track"><div class="func-fill" style="width: 68%; background: linear-gradient(90deg, #C07800, #FFA200);"></div></div>
+          <span class="func-score" style="color: #C07800;">68</span>
+        </div>
+        <div class="func-row">
+          <span class="func-name">Finance</span>
+          <div class="func-track"><div class="func-fill" style="width: 61%; background: linear-gradient(90deg, #C07800, #FFA200);"></div></div>
+          <span class="func-score" style="color: #C07800;">61</span>
+        </div>
+        <div class="func-row">
+          <span class="func-name">Estates</span>
+          <div class="func-track"><div class="func-fill" style="width: 52%; background: linear-gradient(90deg, #C07800, #FFA200);"></div></div>
+          <span class="func-score" style="color: #C07800;">52</span>
+        </div>
+        <div class="func-row">
+          <span class="func-name">Procurement</span>
+          <div class="func-track"><div class="func-fill" style="width: 44%; background: linear-gradient(90deg, #D43A6A, #FF4279);"></div></div>
+          <span class="func-score" style="color: #D43A6A;">44</span>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section-label">Friction indicators</div>
+      <div class="friction-grid">
+        <div class="friction-card">
+          <div class="fr-header">
+            <span class="fr-label">Cross-functional<br>project stalls</span>
+            <span class="fr-change t-up">↓ 45%</span>
+          </div>
+          <div class="fr-value" style="color: #2D9F4F;">3</div>
+          <div class="fr-baseline">Per month. Was 5.5</div>
+        </div>
+        <div class="friction-card">
+          <div class="fr-header">
+            <span class="fr-label">Strategy translation<br>confidence</span>
+            <span class="fr-change t-up">↑ 32pts</span>
+          </div>
+          <div class="fr-value" style="color: #2D9F4F;">84%</div>
+          <div class="fr-baseline">Managers who can articulate connection</div>
+        </div>
+        <div class="friction-card">
+          <div class="fr-header">
+            <span class="fr-label">Priority<br>conflicts</span>
+            <span class="fr-change t-up">↓ 38%</span>
+          </div>
+          <div class="fr-value" style="color: #2D9F4F;">4</div>
+          <div class="fr-baseline">Reported this quarter. Was 6.5</div>
+        </div>
+        <div class="friction-card">
+          <div class="fr-header">
+            <span class="fr-label">Decision<br>speed</span>
+            <span class="fr-change t-flat">→ +8%</span>
+          </div>
+          <div class="fr-value" style="color: #C07800;">+8%</div>
+          <div class="fr-baseline">Modest improvement. Governance changes pending</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- COL 3 -->
+  <div class="col-3">
+    <div class="week-box">
+      <div class="week-title">Month 4 highlights</div>
+      <div class="week-sub">July 2026</div>
+      <div class="week-item" style="border-left-color: #2D9F4F;">
+        <div class="week-item-title">Communication gap officially closed</div>
+        <div class="week-item-desc">84% of middle managers passed the strategy articulation benchmark. Translation programme self-sustaining.</div>
+      </div>
+      <div class="week-item" style="border-left-color: #9B51E0;">
+        <div class="week-item-title">First quarterly alignment session completed</div>
+        <div class="week-item-desc">All 14 functions participated. Four competing priorities identified and resolved in session rather than escalated.</div>
+      </div>
+      <div class="week-item" style="border-left-color: #C07800;">
+        <div class="week-item-title">New KPIs showing early behaviour change</div>
+        <div class="week-item-desc">Teams are starting to reference strategic priorities in their planning. Language shift visible in team meeting notes.</div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section-label">Signals</div>
+      <div class="signal-list">
+        <div class="sig-item">
+          <div class="sig-icon" style="background: rgba(78,203,113,0.1); color: #2D9F4F;">↑</div>
+          <div class="sig-text"><strong>Teams referencing strategy</strong> in planning without being prompted</div>
+        </div>
+        <div class="sig-item">
+          <div class="sig-icon" style="background: rgba(78,203,113,0.1); color: #2D9F4F;">↑</div>
+          <div class="sig-text"><strong>Cross-functional conversations</strong> happening before escalation</div>
+        </div>
+        <div class="sig-item">
+          <div class="sig-icon" style="background: rgba(155,81,224,0.08); color: #7B3FA0;">●</div>
+          <div class="sig-text"><strong>Middle managers</strong> becoming strategy translators, not just cascaders</div>
+        </div>
+        <div class="sig-item">
+          <div class="sig-icon" style="background: rgba(255,162,0,0.1); color: #C07800;">!</div>
+          <div class="sig-text"><strong>Procurement and Estates</strong> still feel disconnected from strategic direction</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="attn-list">
+      <div class="section-label">Needs attention</div>
+      <div class="attn-item">
+        <div class="attn-title">Procurement alignment at 44%</div>
+        <div class="attn-desc">Procurement processes still reflect old strategy. Needs targeted work in Phase 2 to connect purchasing decisions to strategic priorities.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="health-footer">
+    <div class="hf-card">
+      <div class="hf-value" style="color: #C07800;">67%</div>
+      <div class="hf-label">Overall alignment</div>
+      <div class="hf-change" style="color: #2D9F4F;">↑ 11% from baseline</div>
+    </div>
+    <div class="hf-card">
+      <div class="hf-value" style="color: #2D9F4F;">1</div>
+      <div class="hf-label">Gaps closed</div>
+      <div class="hf-change" style="color: #2D9F4F;">Communication</div>
+    </div>
+    <div class="hf-card">
+      <div class="hf-value" style="color: #C07800;">2</div>
+      <div class="hf-label">Gaps closing</div>
+      <div class="hf-change" style="color: rgba(34,28,43,0.35);">Measures + Priorities</div>
+    </div>
+    <div class="hf-card">
+      <div class="hf-value" style="color: #221C2B;">4</div>
+      <div class="hf-label">Months in</div>
+      <div class="hf-change" style="color: rgba(34,28,43,0.35);">of 9 planned</div>
+    </div>
+    <div class="hf-card">
+      <div class="hf-value" style="color: #2D9F4F;">84%</div>
+      <div class="hf-label">Strategy translation</div>
+      <div class="hf-change" style="color: #2D9F4F;">↑ from 52%</div>
+    </div>
+    <div class="hf-card">
+      <div class="hf-value" style="color: #2D9F4F;">↓45%</div>
+      <div class="hf-label">Cross-functional stalls</div>
+      <div class="hf-change" style="color: #2D9F4F;">Biggest single win</div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

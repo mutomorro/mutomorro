@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1920">
+<title>OD - Implement Stage Interface</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;500;600;700&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { width: 1920px; height: 1080px; overflow: hidden; font-family: 'Source Sans 3', sans-serif; background: #FFFFFF; color: #221C2B; }
+
+  .dashboard { display: grid; grid-template-columns: 1fr 1fr 360px; grid-template-rows: auto 1fr auto; height: 1080px; padding: 44px 52px; }
+
+  .topbar { grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; padding-bottom: 32px; border-bottom: 1px solid rgba(34,28,43,0.07); margin-bottom: 32px; }
+  .topbar-left { display: flex; align-items: center; gap: 20px; }
+  .topbar-logo { font-weight: 700; font-size: 18px; letter-spacing: 0.03em; background: linear-gradient(135deg, #80388F, #FF4279, #FFA200); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .topbar-sep { width: 1px; height: 28px; background: rgba(34,28,43,0.1); }
+  .topbar-type { font-size: 13px; font-weight: 500; color: rgba(34,28,43,0.4); letter-spacing: 0.04em; text-transform: uppercase; }
+  .topbar-org { font-size: 20px; font-weight: 700; }
+  .topbar-right { display: flex; align-items: center; gap: 28px; }
+  .topbar-tab { font-size: 15px; font-weight: 500; color: rgba(34,28,43,0.3); }
+  .topbar-tab--active { color: #221C2B; font-weight: 600; border-bottom: 2px solid #9B51E0; padding-bottom: 4px; }
+  .topbar-meta { font-size: 13px; color: rgba(34,28,43,0.3); }
+  .section-label { font-size: 12px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(34,28,43,0.35); margin-bottom: 14px; }
+
+  /* Col 1 - Initiative progress */
+  .col-1 { padding-right: 28px; display: flex; flex-direction: column; gap: 20px; }
+  .init-list { display: flex; flex-direction: column; gap: 5px; }
+  .init-card { padding: 14px 16px; background: rgba(34,28,43,0.015); border: 1px solid rgba(34,28,43,0.05); border-left: 4px solid; }
+  .init-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .init-name { font-size: 14px; font-weight: 600; color: #221C2B; }
+  .init-status { font-size: 10px; font-weight: 600; padding: 3px 8px; text-transform: uppercase; letter-spacing: 0.04em; }
+  .s-on { background: rgba(78,203,113,0.1); color: #2D9F4F; }
+  .s-build { background: rgba(255,162,0,0.1); color: #C07800; }
+  .s-early { background: rgba(155,81,224,0.08); color: #7B3FA0; }
+  .init-bar { display: flex; align-items: center; gap: 10px; }
+  .init-track { flex: 1; height: 6px; background: rgba(34,28,43,0.04); }
+  .init-fill { height: 100%; }
+  .init-pct { font-size: 13px; font-weight: 700; min-width: 36px; text-align: right; font-variant-numeric: tabular-nums; }
+  .init-detail { font-size: 12px; color: rgba(34,28,43,0.4); margin-top: 6px; line-height: 1.4; }
+
+  /* Col 2 - Health trends + compounding */
+  .col-2 { padding: 0 28px; border-left: 1px solid rgba(34,28,43,0.06); display: flex; flex-direction: column; gap: 20px; }
+
+  .trend-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .trend-card { padding: 14px 16px; background: rgba(34,28,43,0.015); border: 1px solid rgba(34,28,43,0.05); }
+  .trend-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px; }
+  .trend-label { font-size: 12px; font-weight: 500; color: rgba(34,28,43,0.5); line-height: 1.3; }
+  .trend-change { font-size: 11px; font-weight: 600; padding: 2px 6px; }
+  .t-up { color: #2D9F4F; background: rgba(78,203,113,0.08); }
+  .t-flat { color: #C07800; background: rgba(255,162,0,0.08); }
+  .trend-value { font-size: 28px; font-weight: 700; line-height: 1; margin-bottom: 2px; }
+  .trend-baseline { font-size: 10px; color: rgba(34,28,43,0.3); }
+  .spark-row { display: flex; align-items: flex-end; gap: 2px; height: 24px; margin-top: 6px; }
+  .spark-bar { flex: 1; min-height: 2px; }
+
+  /* Compounding effects */
+  .compound-list { display: flex; flex-direction: column; gap: 4px; }
+  .compound-item { padding: 12px 14px; background: rgba(34,28,43,0.015); border: 1px solid rgba(34,28,43,0.04); display: flex; gap: 10px; align-items: flex-start; }
+  .compound-icon { width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; font-size: 12px; flex-shrink: 0; background: rgba(78,203,113,0.1); color: #2D9F4F; }
+  .compound-text { font-size: 13px; color: rgba(34,28,43,0.6); line-height: 1.4; }
+  .compound-text strong { color: #221C2B; font-weight: 600; }
+
+  /* Col 3 - Right panel */
+  .col-3 { padding-left: 28px; border-left: 1px solid rgba(34,28,43,0.06); display: flex; flex-direction: column; gap: 20px; }
+
+  .week-box { padding: 18px; background: linear-gradient(135deg, rgba(128,56,143,0.03), rgba(255,66,121,0.03)); border: 1px solid rgba(34,28,43,0.06); }
+  .week-title { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+  .week-sub { font-size: 12px; color: rgba(34,28,43,0.4); margin-bottom: 14px; }
+  .week-item { padding: 10px 12px; border-left: 3px solid; margin-bottom: 6px; background: rgba(255,255,255,0.7); }
+  .week-item-title { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
+  .week-item-desc { font-size: 11px; color: rgba(34,28,43,0.45); line-height: 1.4; }
+
+  .attention-list { display: flex; flex-direction: column; gap: 6px; margin-top: auto; }
+  .attn-item { padding: 12px 14px; border-left: 3px solid #C07800; background: rgba(255,162,0,0.03); }
+  .attn-title { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
+  .attn-desc { font-size: 11px; color: rgba(34,28,43,0.45); line-height: 1.4; }
+
+  /* Footer */
+  .health-footer { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; padding-top: 24px; border-top: 1px solid rgba(34,28,43,0.06); margin-top: 8px; }
+  .hf-card { text-align: center; padding: 12px; background: rgba(34,28,43,0.015); border: 1px solid rgba(34,28,43,0.04); }
+  .hf-value { font-size: 24px; font-weight: 700; line-height: 1; margin-bottom: 3px; }
+  .hf-label { font-size: 10px; color: rgba(34,28,43,0.4); line-height: 1.3; }
+  .hf-change { font-size: 10px; font-weight: 600; margin-top: 3px; }
+</style>
+</head>
+<body>
+<div class="dashboard">
+
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="topbar-logo">MUTOMORRO</div>
+      <div class="topbar-sep"></div>
+      <div>
+        <span class="topbar-type">Development progress</span>
+        <div class="topbar-org">Clearwater Trust</div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <div class="topbar-tab topbar-tab--active">Progress</div>
+      <div class="topbar-tab">By dimension</div>
+      <div class="topbar-tab">Compounding</div>
+      <div class="topbar-tab">Signals</div>
+      <div class="topbar-tab">Timeline</div>
+      <div class="topbar-meta">Month 5 of 12 · June 2026</div>
+    </div>
+  </div>
+
+  <!-- COL 1: Initiative progress -->
+  <div class="col-1">
+    <div class="section-label">Initiative progress</div>
+    <div class="init-list">
+      <div class="init-card" style="border-left-color: #D43A6A;">
+        <div class="init-header">
+          <span class="init-name">Core workflow redesign</span>
+          <span class="init-status s-on">On track</span>
+        </div>
+        <div class="init-bar">
+          <div class="init-track"><div class="init-fill" style="width: 68%; background: linear-gradient(90deg, #D43A6A, #FF4279);"></div></div>
+          <span class="init-pct" style="color: #D43A6A;">68%</span>
+        </div>
+        <div class="init-detail">Three key processes redesigned. Teams reporting 40% less friction on priority workflows.</div>
+      </div>
+
+      <div class="init-card" style="border-left-color: #9B51E0;">
+        <div class="init-header">
+          <span class="init-name">Multi-level capability programme</span>
+          <span class="init-status s-build">Building</span>
+        </div>
+        <div class="init-bar">
+          <div class="init-track"><div class="init-fill" style="width: 52%; background: linear-gradient(90deg, #7B3FA0, #9B51E0);"></div></div>
+          <span class="init-pct" style="color: #9B51E0;">52%</span>
+        </div>
+        <div class="init-detail">Module 3 of 5 complete. Cohort feedback scores averaging 8.4/10. Practice-based assignments showing real application.</div>
+      </div>
+
+      <div class="init-card" style="border-left-color: #C07800;">
+        <div class="init-header">
+          <span class="init-name">Cross-team learning practices</span>
+          <span class="init-status s-on">On track</span>
+        </div>
+        <div class="init-bar">
+          <div class="init-track"><div class="init-fill" style="width: 74%; background: linear-gradient(90deg, #C07800, #FFA200);"></div></div>
+          <span class="init-pct" style="color: #C07800;">74%</span>
+        </div>
+        <div class="init-detail">Monthly sessions running with 82% attendance. Two teams now running their own topic-specific sessions independently.</div>
+      </div>
+
+      <div class="init-card" style="border-left-color: #2D9F4F;">
+        <div class="init-header">
+          <span class="init-name">Structural adjustments</span>
+          <span class="init-status s-on">On track</span>
+        </div>
+        <div class="init-bar">
+          <div class="init-track"><div class="init-fill" style="width: 60%; background: linear-gradient(90deg, #2D9F4F, #4ECB71);"></div></div>
+          <span class="init-pct" style="color: #2D9F4F;">60%</span>
+        </div>
+        <div class="init-detail">Decision flow simplified in 3 of 5 target areas. Reporting lines adjusted to reflect how work actually moves.</div>
+      </div>
+
+      <div class="init-card" style="border-left-color: #D43A6A;">
+        <div class="init-header">
+          <span class="init-name">Continuous improvement rhythm</span>
+          <span class="init-status s-early">Early stage</span>
+        </div>
+        <div class="init-bar">
+          <div class="init-track"><div class="init-fill" style="width: 28%; background: linear-gradient(90deg, #7B3FA0, #9B51E0);"></div></div>
+          <span class="init-pct" style="color: #7B3FA0;">28%</span>
+        </div>
+        <div class="init-detail">Retrospective practices piloted in 4 teams. Format being refined based on feedback before wider rollout.</div>
+      </div>
+
+      <div class="init-card" style="border-left-color: #C07800;">
+        <div class="init-header">
+          <span class="init-name">Service delivery redesign</span>
+          <span class="init-status s-early">Early stage</span>
+        </div>
+        <div class="init-bar">
+          <div class="init-track"><div class="init-fill" style="width: 22%; background: linear-gradient(90deg, #C07800, #FFA200);"></div></div>
+          <span class="init-pct" style="color: #C07800;">22%</span>
+        </div>
+        <div class="init-detail">Service review complete. Three priority areas identified for redesign. Design sessions starting next month.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- COL 2: Health trends + compounding -->
+  <div class="col-2">
+    <div>
+      <div class="section-label">Dimension health trends</div>
+      <div class="trend-grid">
+        <div class="trend-card">
+          <div class="trend-header">
+            <span class="trend-label">Operations</span>
+            <span class="trend-change t-up">↑ 14</span>
+          </div>
+          <div class="trend-value" style="color: #C07800;">58</div>
+          <div class="trend-baseline">Baseline: 44</div>
+          <div class="spark-row">
+            <div class="spark-bar" style="height: 44%; background: rgba(212,58,106,0.2);"></div>
+            <div class="spark-bar" style="height: 46%; background: rgba(212,58,106,0.18);"></div>
+            <div class="spark-bar" style="height: 48%; background: rgba(192,120,0,0.15);"></div>
+            <div class="spark-bar" style="height: 50%; background: rgba(192,120,0,0.18);"></div>
+            <div class="spark-bar" style="height: 54%; background: rgba(192,120,0,0.2);"></div>
+            <div class="spark-bar" style="height: 58%; background: rgba(192,120,0,0.25);"></div>
+          </div>
+        </div>
+        <div class="trend-card">
+          <div class="trend-header">
+            <span class="trend-label">Capability</span>
+            <span class="trend-change t-up">↑ 11</span>
+          </div>
+          <div class="trend-value" style="color: #C07800;">46</div>
+          <div class="trend-baseline">Baseline: 35</div>
+          <div class="spark-row">
+            <div class="spark-bar" style="height: 35%; background: rgba(212,58,106,0.2);"></div>
+            <div class="spark-bar" style="height: 37%; background: rgba(212,58,106,0.18);"></div>
+            <div class="spark-bar" style="height: 39%; background: rgba(192,120,0,0.15);"></div>
+            <div class="spark-bar" style="height: 41%; background: rgba(192,120,0,0.18);"></div>
+            <div class="spark-bar" style="height: 44%; background: rgba(192,120,0,0.2);"></div>
+            <div class="spark-bar" style="height: 46%; background: rgba(192,120,0,0.25);"></div>
+          </div>
+        </div>
+        <div class="trend-card">
+          <div class="trend-header">
+            <span class="trend-label">Adaptability</span>
+            <span class="trend-change t-up">↑ 8</span>
+          </div>
+          <div class="trend-value" style="color: #C07800;">48</div>
+          <div class="trend-baseline">Baseline: 40</div>
+          <div class="spark-row">
+            <div class="spark-bar" style="height: 40%; background: rgba(212,58,106,0.15);"></div>
+            <div class="spark-bar" style="height: 41%; background: rgba(212,58,106,0.13);"></div>
+            <div class="spark-bar" style="height: 42%; background: rgba(192,120,0,0.12);"></div>
+            <div class="spark-bar" style="height: 44%; background: rgba(192,120,0,0.15);"></div>
+            <div class="spark-bar" style="height: 46%; background: rgba(192,120,0,0.18);"></div>
+            <div class="spark-bar" style="height: 48%; background: rgba(192,120,0,0.2);"></div>
+          </div>
+        </div>
+        <div class="trend-card">
+          <div class="trend-header">
+            <span class="trend-label">Learning</span>
+            <span class="trend-change t-up">↑ 12</span>
+          </div>
+          <div class="trend-value" style="color: #C07800;">60</div>
+          <div class="trend-baseline">Baseline: 48</div>
+          <div class="spark-row">
+            <div class="spark-bar" style="height: 48%; background: rgba(192,120,0,0.15);"></div>
+            <div class="spark-bar" style="height: 50%; background: rgba(192,120,0,0.18);"></div>
+            <div class="spark-bar" style="height: 52%; background: rgba(192,120,0,0.2);"></div>
+            <div class="spark-bar" style="height: 55%; background: rgba(192,120,0,0.22);"></div>
+            <div class="spark-bar" style="height: 58%; background: rgba(45,159,79,0.2);"></div>
+            <div class="spark-bar" style="height: 60%; background: rgba(45,159,79,0.25);"></div>
+          </div>
+        </div>
+        <div class="trend-card">
+          <div class="trend-header">
+            <span class="trend-label">Service delivery</span>
+            <span class="trend-change t-flat">→ +3</span>
+          </div>
+          <div class="trend-value" style="color: #C07800;">55</div>
+          <div class="trend-baseline">Baseline: 52</div>
+          <div class="spark-row">
+            <div class="spark-bar" style="height: 52%; background: rgba(192,120,0,0.15);"></div>
+            <div class="spark-bar" style="height: 52%; background: rgba(192,120,0,0.15);"></div>
+            <div class="spark-bar" style="height: 53%; background: rgba(192,120,0,0.15);"></div>
+            <div class="spark-bar" style="height: 54%; background: rgba(192,120,0,0.18);"></div>
+            <div class="spark-bar" style="height: 54%; background: rgba(192,120,0,0.18);"></div>
+            <div class="spark-bar" style="height: 55%; background: rgba(192,120,0,0.2);"></div>
+          </div>
+        </div>
+        <div class="trend-card">
+          <div class="trend-header">
+            <span class="trend-label">Structure</span>
+            <span class="trend-change t-up">↑ 7</span>
+          </div>
+          <div class="trend-value" style="color: #C07800;">65</div>
+          <div class="trend-baseline">Baseline: 58</div>
+          <div class="spark-row">
+            <div class="spark-bar" style="height: 58%; background: rgba(192,120,0,0.15);"></div>
+            <div class="spark-bar" style="height: 59%; background: rgba(192,120,0,0.15);"></div>
+            <div class="spark-bar" style="height: 61%; background: rgba(192,120,0,0.18);"></div>
+            <div class="spark-bar" style="height: 62%; background: rgba(192,120,0,0.2);"></div>
+            <div class="spark-bar" style="height: 64%; background: rgba(45,159,79,0.18);"></div>
+            <div class="spark-bar" style="height: 65%; background: rgba(45,159,79,0.22);"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section-label">Compounding effects</div>
+      <div class="compound-list">
+        <div class="compound-item">
+          <div class="compound-icon">→</div>
+          <div class="compound-text"><strong>Workflow fixes freed capacity</strong> that teams are now using for the capability programme. Operations improvement is enabling development.</div>
+        </div>
+        <div class="compound-item">
+          <div class="compound-icon">→</div>
+          <div class="compound-text"><strong>Cross-team learning is accelerating structural change.</strong> Teams sharing practice means the structural adjustments are landing faster.</div>
+        </div>
+        <div class="compound-item">
+          <div class="compound-icon">→</div>
+          <div class="compound-text"><strong>Capability building is improving operational quality.</strong> People with better skills are improving processes as they work, not waiting for formal redesign.</div>
+        </div>
+        <div class="compound-item">
+          <div class="compound-icon">→</div>
+          <div class="compound-text"><strong>Culture scores rising without direct intervention</strong> because the work environment is genuinely improving. Culture follows conditions.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- COL 3: Right panel -->
+  <div class="col-3">
+    <div class="week-box">
+      <div class="week-title">Month 5 highlights</div>
+      <div class="week-sub">June 2026</div>
+      <div class="week-item" style="border-left-color: #2D9F4F;">
+        <div class="week-item-title">Operations score crossed 55 for first time</div>
+        <div class="week-item-desc">The workflow redesigns are having measurable impact. Teams report less time on workarounds.</div>
+      </div>
+      <div class="week-item" style="border-left-color: #9B51E0;">
+        <div class="week-item-title">Two teams running learning sessions independently</div>
+        <div class="week-item-desc">Organic demand emerging. Teams adapting the format to their own context - a good sign of ownership.</div>
+      </div>
+      <div class="week-item" style="border-left-color: #2D9F4F;">
+        <div class="week-item-title">Capability programme participants applying skills</div>
+        <div class="week-item-desc">Manager feedback shows cohort 1 participants are already changing how they approach team development.</div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section-label">Signals we are watching</div>
+      <div class="compound-list">
+        <div class="compound-item">
+          <div class="compound-icon" style="background: rgba(78,203,113,0.1); color: #2D9F4F;">↑</div>
+          <div class="compound-text"><strong>Informal problem-solving</strong> across team boundaries increasing</div>
+        </div>
+        <div class="compound-item">
+          <div class="compound-icon" style="background: rgba(78,203,113,0.1); color: #2D9F4F;">↑</div>
+          <div class="compound-text"><strong>Internal promotion confidence</strong> growing - people see development pathways</div>
+        </div>
+        <div class="compound-item">
+          <div class="compound-icon" style="background: rgba(155,81,224,0.08); color: #7B3FA0;">●</div>
+          <div class="compound-text"><strong>Middle managers</strong> starting to coach rather than direct</div>
+        </div>
+        <div class="compound-item">
+          <div class="compound-icon" style="background: rgba(255,162,0,0.1); color: #C07800;">!</div>
+          <div class="compound-text"><strong>Service delivery</strong> improvement slower than expected - may need more attention</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="attention-list">
+      <div class="section-label">Needs attention</div>
+      <div class="attn-item">
+        <div class="attn-title">Service delivery only +3 from baseline</div>
+        <div class="attn-desc">Redesign work starts next month but operational improvements have not yet reached the front line as strongly as hoped.</div>
+      </div>
+      <div class="attn-item">
+        <div class="attn-title">CI rhythm adoption uneven</div>
+        <div class="attn-desc">Retrospectives working well in pilot teams but format needs simplifying before wider rollout.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="health-footer">
+    <div class="hf-card">
+      <div class="hf-value" style="color: #C07800;">55</div>
+      <div class="hf-label">Overall health</div>
+      <div class="hf-change" style="color: #2D9F4F;">↑ 9 from baseline</div>
+    </div>
+    <div class="hf-card">
+      <div class="hf-value" style="color: #2D9F4F;">67%</div>
+      <div class="hf-label">Initiatives on track</div>
+      <div class="hf-change" style="color: #2D9F4F;">↑ from 58%</div>
+    </div>
+    <div class="hf-card">
+      <div class="hf-value" style="color: #221C2B;">5</div>
+      <div class="hf-label">Months in</div>
+      <div class="hf-change" style="color: rgba(34,28,43,0.35);">of 12 planned</div>
+    </div>
+    <div class="hf-card">
+      <div class="hf-value" style="color: #2D9F4F;">4</div>
+      <div class="hf-label">Compounding effects</div>
+      <div class="hf-change" style="color: #9B51E0;">New this month: 1</div>
+    </div>
+    <div class="hf-card">
+      <div class="hf-value" style="color: #2D9F4F;">82%</div>
+      <div class="hf-label">Staff engagement</div>
+      <div class="hf-change" style="color: #2D9F4F;">↑ 14%</div>
+    </div>
+    <div class="hf-card">
+      <div class="hf-value" style="color: #C07800;">2</div>
+      <div class="hf-label">Areas needing attention</div>
+      <div class="hf-change" style="color: #2D9F4F;">↓ from 4</div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

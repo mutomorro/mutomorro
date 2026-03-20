@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1920">
+<title>Post-Merger Integration - Understand Stage</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;500;600;700&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { width: 1920px; height: 1080px; overflow: hidden; font-family: 'Source Sans 3', sans-serif; background: #FFFFFF; color: #221C2B; }
+  .dashboard { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: auto auto 1fr auto; height: 1080px; padding: 44px 52px; gap: 0; }
+  .topbar { grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; padding-bottom: 32px; border-bottom: 1px solid rgba(34,28,43,0.07); margin-bottom: 36px; }
+  .topbar-left { display: flex; align-items: center; gap: 20px; }
+  .topbar-logo { font-weight: 700; font-size: 18px; letter-spacing: 0.03em; background: linear-gradient(135deg, #80388F, #FF4279, #FFA200); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .topbar-sep { width: 1px; height: 28px; background: rgba(34,28,43,0.1); }
+  .topbar-context { display: flex; flex-direction: column; }
+  .topbar-type { font-size: 13px; font-weight: 500; color: rgba(34,28,43,0.4); letter-spacing: 0.04em; text-transform: uppercase; }
+  .topbar-org { font-size: 20px; font-weight: 700; color: #221C2B; }
+  .topbar-right { display: flex; align-items: center; gap: 28px; }
+  .topbar-tab { font-size: 15px; font-weight: 500; color: rgba(34,28,43,0.3); }
+  .topbar-tab--active { color: #221C2B; font-weight: 600; border-bottom: 2px solid #9B51E0; padding-bottom: 4px; }
+  .topbar-meta { font-size: 13px; color: rgba(34,28,43,0.3); }
+  .section-label { font-size: 12px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(34,28,43,0.35); margin-bottom: 16px; }
+  .headline-strip { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; margin-bottom: 36px; }
+  .headline-card { padding: 22px 20px; background: rgba(34,28,43,0.015); border: 1px solid rgba(34,28,43,0.05); text-align: center; }
+  .headline-value { font-size: 38px; font-weight: 700; line-height: 1; margin-bottom: 6px; }
+  .headline-label { font-size: 13px; font-weight: 500; color: rgba(34,28,43,0.45); line-height: 1.3; }
+  .headline-sub { font-size: 11px; font-weight: 600; margin-top: 6px; }
+  .col-left { padding-right: 36px; display: flex; flex-direction: column; gap: 24px; }
+
+  /* Two-org comparison */
+  .comparison-table { display: flex; flex-direction: column; gap: 3px; }
+  .comp-header { display: grid; grid-template-columns: 120px 1fr 40px 1fr; gap: 3px; }
+  .comp-header-cell { font-size: 10px; font-weight: 600; color: rgba(34,28,43,0.3); text-transform: uppercase; letter-spacing: 0.04em; text-align: center; padding: 8px 4px; }
+  .comp-header-cell:first-child { text-align: left; }
+  .comp-row { display: grid; grid-template-columns: 120px 1fr 40px 1fr; gap: 3px; align-items: stretch; }
+  .comp-dim { font-size: 13px; font-weight: 600; color: #221C2B; padding: 12px 8px; display: flex; align-items: center; }
+  .comp-cell { padding: 12px 10px; font-size: 12px; color: rgba(34,28,43,0.55); line-height: 1.3; }
+  .comp-vs { display: flex; align-items: center; justify-content: center; font-size: 11px; color: rgba(34,28,43,0.2); font-weight: 600; }
+
+  /* Synergy / complexity */
+  .synergy-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .synergy-card { padding: 16px; border: 1px solid rgba(34,28,43,0.06); border-top: 3px solid; }
+  .synergy-title { font-size: 13px; font-weight: 600; color: #221C2B; margin-bottom: 4px; }
+  .synergy-desc { font-size: 12px; color: rgba(34,28,43,0.45); line-height: 1.4; }
+
+  .col-right { padding-left: 36px; border-left: 1px solid rgba(34,28,43,0.06); display: flex; flex-direction: column; gap: 24px; }
+
+  /* Alignment/work needed */
+  .alignment-list { display: flex; flex-direction: column; gap: 6px; }
+  .alignment-item { padding: 14px 16px; border-left: 3px solid; background: rgba(34,28,43,0.015); }
+  .alignment-title { font-size: 14px; font-weight: 600; color: #221C2B; margin-bottom: 4px; }
+  .alignment-desc { font-size: 12px; color: rgba(34,28,43,0.45); line-height: 1.4; }
+  .alignment-tag { font-size: 10px; font-weight: 600; padding: 2px 7px; margin-top: 6px; display: inline-block; text-transform: uppercase; letter-spacing: 0.04em; }
+
+  /* Cultural compatibility */
+  .culture-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .culture-card { padding: 18px; border: 1px solid rgba(34,28,43,0.06); }
+  .culture-header { font-size: 13px; font-weight: 600; color: #221C2B; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid rgba(34,28,43,0.06); }
+  .culture-item { font-size: 12px; color: rgba(34,28,43,0.55); padding: 6px 0; line-height: 1.4; border-bottom: 1px solid rgba(34,28,43,0.03); }
+  .culture-item:last-child { border-bottom: none; }
+
+  .footer { grid-column: 1 / -1; margin-top: 24px; padding: 28px 32px; background: linear-gradient(135deg, rgba(128,56,143,0.04), rgba(255,66,121,0.03), rgba(255,162,0,0.04)); border: 1px solid rgba(34,28,43,0.06); display: flex; justify-content: space-between; align-items: center; }
+  .footer-message { flex: 1; }
+  .footer-title { font-size: 20px; font-weight: 700; color: #221C2B; margin-bottom: 6px; }
+  .footer-desc { font-size: 14px; color: rgba(34,28,43,0.5); line-height: 1.5; max-width: 700px; }
+  .footer-stat { text-align: right; }
+  .footer-stat-value { font-size: 42px; font-weight: 700; background: linear-gradient(135deg, #80388F, #FF4279, #FFA200); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .footer-stat-label { font-size: 13px; color: rgba(34,28,43,0.4); }
+</style>
+</head>
+<body>
+<div class="dashboard">
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="topbar-logo">MUTOMORRO</div><div class="topbar-sep"></div>
+      <div class="topbar-context"><span class="topbar-type">Integration diagnostic</span><span class="topbar-org">Meridian Trust + Lakeside Foundation</span></div>
+    </div>
+    <div class="topbar-right">
+      <div class="topbar-tab topbar-tab--active">Comparison</div><div class="topbar-tab">Culture</div><div class="topbar-tab">Synergies</div><div class="topbar-tab">Priorities</div>
+      <div class="topbar-meta">Assessment period · March 2026</div>
+    </div>
+  </div>
+
+  <div class="headline-strip">
+    <div class="headline-card"><div class="headline-value" style="color: #221C2B;">2</div><div class="headline-label">Organisations becoming one</div><div class="headline-sub" style="color: rgba(34,28,43,0.35);">520 + 340 people</div></div>
+    <div class="headline-card"><div class="headline-value" style="color: #2D9F4F;">64%</div><div class="headline-label">Cultural compatibility</div><div class="headline-sub" style="color: #2D9F4F;">Strong foundation to build on</div></div>
+    <div class="headline-card"><div class="headline-value" style="color: #C07800;">38%</div><div class="headline-label">Operational overlap</div><div class="headline-sub" style="color: #C07800;">Significant but manageable</div></div>
+    <div class="headline-card"><div class="headline-value" style="color: #9B51E0;">6</div><div class="headline-label">Areas needing careful work</div><div class="headline-sub" style="color: #9B51E0;">Where integration is complex</div></div>
+    <div class="headline-card"><div class="headline-value" style="color: #221C2B;">412</div><div class="headline-label">People heard from</div><div class="headline-sub" style="color: rgba(34,28,43,0.35);">From both organisations</div></div>
+  </div>
+
+  <div class="col-left">
+    <div>
+      <div class="section-label">Two-organisation comparison</div>
+      <div class="comp-header">
+        <div class="comp-header-cell">Dimension</div>
+        <div class="comp-header-cell">Meridian Trust</div>
+        <div class="comp-header-cell"></div>
+        <div class="comp-header-cell">Lakeside Foundation</div>
+      </div>
+      <div class="comparison-table">
+        <div class="comp-row">
+          <div class="comp-dim">Leadership</div>
+          <div class="comp-cell" style="background: rgba(45,159,79,0.04);">Distributed. Leaders trusted to make decisions. Low hierarchy.</div>
+          <div class="comp-vs">vs</div>
+          <div class="comp-cell" style="background: rgba(192,120,0,0.04);">Centralised. Key decisions go through CEO. More formal layers.</div>
+        </div>
+        <div class="comp-row">
+          <div class="comp-dim">Operations</div>
+          <div class="comp-cell" style="background: rgba(192,120,0,0.04);">Flexible but inconsistent. Each team has its own approach.</div>
+          <div class="comp-vs">vs</div>
+          <div class="comp-cell" style="background: rgba(45,159,79,0.04);">Standardised. Clear processes. Well documented.</div>
+        </div>
+        <div class="comp-row">
+          <div class="comp-dim">Culture</div>
+          <div class="comp-cell" style="background: rgba(45,159,79,0.04);">Collaborative. High trust. People-first. Informal.</div>
+          <div class="comp-vs">vs</div>
+          <div class="comp-cell" style="background: rgba(45,159,79,0.04);">Purpose-driven. High commitment. Formal but warm.</div>
+        </div>
+        <div class="comp-row">
+          <div class="comp-dim">Service delivery</div>
+          <div class="comp-cell" style="background: rgba(45,159,79,0.04);">Relationship-based. Strong on tailored solutions.</div>
+          <div class="comp-vs">vs</div>
+          <div class="comp-cell" style="background: rgba(45,159,79,0.04);">Programme-based. Strong on reaching more people.</div>
+        </div>
+        <div class="comp-row">
+          <div class="comp-dim">Capability</div>
+          <div class="comp-cell" style="background: rgba(45,159,79,0.04);">Deep expertise in community development.</div>
+          <div class="comp-vs">vs</div>
+          <div class="comp-cell" style="background: rgba(45,159,79,0.04);">Strong fundraising and impact measurement.</div>
+        </div>
+        <div class="comp-row">
+          <div class="comp-dim">Technology</div>
+          <div class="comp-cell" style="background: rgba(212,58,106,0.04);">Underinvested. Manual processes. Multiple systems.</div>
+          <div class="comp-vs">vs</div>
+          <div class="comp-cell" style="background: rgba(192,120,0,0.04);">Better but ageing. One main platform, limited integration.</div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section-label">Synergy potential vs integration complexity</div>
+      <div class="synergy-grid">
+        <div class="synergy-card" style="border-top-color: #2D9F4F;">
+          <div class="synergy-title">High synergy, lower complexity</div>
+          <div class="synergy-desc">Fundraising capability (Lakeside) + community relationships (Meridian). Impact measurement + local knowledge. Combined geographic reach.</div>
+        </div>
+        <div class="synergy-card" style="border-top-color: #C07800;">
+          <div class="synergy-title">High synergy, higher complexity</div>
+          <div class="synergy-desc">Operational integration (different systems, different processes). Leadership model harmonisation. Technology platform decision.</div>
+        </div>
+        <div class="synergy-card" style="border-top-color: #9B51E0;">
+          <div class="synergy-title">Worth preserving from Meridian</div>
+          <div class="synergy-desc">Distributed decision-making. Community relationships. Tailored service approach. Collaborative culture. Deep local knowledge.</div>
+        </div>
+        <div class="synergy-card" style="border-top-color: #9B51E0;">
+          <div class="synergy-title">Worth preserving from Lakeside</div>
+          <div class="synergy-desc">Operational rigour. Impact measurement. Fundraising capability. Programme reach. Clear documentation.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-right">
+    <div>
+      <div class="section-label">Where alignment exists and where careful work is needed</div>
+      <div class="alignment-list">
+        <div class="alignment-item" style="border-left-color: #2D9F4F;">
+          <div class="alignment-title">Shared purpose and values</div>
+          <div class="alignment-desc">Both organisations deeply committed to community impact. Values are expressed differently but point in the same direction. This is the strongest foundation.</div>
+          <div class="alignment-tag" style="background: rgba(45,159,79,0.08); color: #2D9F4F;">Already aligned</div>
+        </div>
+        <div class="alignment-item" style="border-left-color: #2D9F4F;">
+          <div class="alignment-title">Complementary capabilities</div>
+          <div class="alignment-desc">What one is strong at, the other needs. Community depth + programme reach. Relationships + measurement. Genuine complementarity.</div>
+          <div class="alignment-tag" style="background: rgba(45,159,79,0.08); color: #2D9F4F;">Ready to combine</div>
+        </div>
+        <div class="alignment-item" style="border-left-color: #C07800;">
+          <div class="alignment-title">Leadership model needs designing</div>
+          <div class="alignment-desc">Distributed vs centralised. Neither is wrong. The new organisation needs to find its own model - probably closer to Meridian's but with Lakeside's clarity.</div>
+          <div class="alignment-tag" style="background: rgba(192,120,0,0.08); color: #C07800;">Needs designing</div>
+        </div>
+        <div class="alignment-item" style="border-left-color: #C07800;">
+          <div class="alignment-title">Operational integration is real work</div>
+          <div class="alignment-desc">Different systems, different processes, different rhythms. This will take time. Getting it right matters more than getting it fast.</div>
+          <div class="alignment-tag" style="background: rgba(192,120,0,0.08); color: #C07800;">Needs time</div>
+        </div>
+        <div class="alignment-item" style="border-left-color: #D43A6A;">
+          <div class="alignment-title">Identity and belonging are fragile</div>
+          <div class="alignment-desc">People in both organisations are anxious about losing what makes their place special. If the merger feels like a takeover, trust will collapse.</div>
+          <div class="alignment-tag" style="background: rgba(212,58,106,0.08); color: #D43A6A;">Handle with care</div>
+        </div>
+        <div class="alignment-item" style="border-left-color: #D43A6A;">
+          <div class="alignment-title">Technology decisions will be symbolic</div>
+          <div class="alignment-desc">Whichever platform is chosen, it will feel like "their system won." Needs to be framed as designing something new together, not picking a winner.</div>
+          <div class="alignment-tag" style="background: rgba(212,58,106,0.08); color: #D43A6A;">Handle with care</div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section-label">Cultural compatibility</div>
+      <div class="culture-grid">
+        <div class="culture-card" style="border-top: 3px solid #2D9F4F;">
+          <div class="culture-header">What the cultures share</div>
+          <div class="culture-item">Deep commitment to community impact</div>
+          <div class="culture-item">Genuine care for the people they serve</div>
+          <div class="culture-item">Pride in doing meaningful work</div>
+          <div class="culture-item">Strong team bonds and loyalty</div>
+        </div>
+        <div class="culture-card" style="border-top: 3px solid #C07800;">
+          <div class="culture-header">Where the cultures differ</div>
+          <div class="culture-item">Formality level (Lakeside more formal)</div>
+          <div class="culture-item">Decision speed (Meridian faster, less documented)</div>
+          <div class="culture-item">Risk appetite (Meridian higher, Lakeside cautious)</div>
+          <div class="culture-item">Communication style (informal vs structured)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div class="footer-message">
+      <div class="footer-title">Two strong organisations that can become something better together</div>
+      <div class="footer-desc">The shared purpose is real. The capabilities are complementary. The cultural foundation is strong. But integration needs to be done with care - protecting what makes each organisation valuable while building something genuinely new.</div>
+    </div>
+    <div class="footer-stat">
+      <div class="footer-stat-value">860</div>
+      <div class="footer-stat-label">people building<br>one organisation</div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

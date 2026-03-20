@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1920">
+<title>Strategic Alignment - Co-design Stage Interface</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;500;600;700&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    width: 1920px; height: 1080px; overflow: hidden;
+    font-family: 'Source Sans 3', sans-serif;
+    background: #FFFFFF; color: #221C2B;
+  }
+
+  .dashboard {
+    display: grid;
+    grid-template-columns: 1fr 400px;
+    grid-template-rows: auto 1fr auto;
+    height: 1080px;
+    padding: 44px 52px;
+  }
+
+  .topbar {
+    grid-column: 1 / -1;
+    display: flex; align-items: center; justify-content: space-between;
+    padding-bottom: 32px; border-bottom: 1px solid rgba(34,28,43,0.07); margin-bottom: 36px;
+  }
+  .topbar-left { display: flex; align-items: center; gap: 20px; }
+  .topbar-logo { font-weight: 700; font-size: 18px; letter-spacing: 0.03em; background: linear-gradient(135deg, #80388F, #FF4279, #FFA200); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .topbar-sep { width: 1px; height: 28px; background: rgba(34,28,43,0.1); }
+  .topbar-type { font-size: 13px; font-weight: 500; color: rgba(34,28,43,0.4); letter-spacing: 0.04em; text-transform: uppercase; }
+  .topbar-org { font-size: 20px; font-weight: 700; color: #221C2B; }
+  .topbar-right { display: flex; align-items: center; gap: 28px; }
+  .topbar-tab { font-size: 15px; font-weight: 500; color: rgba(34,28,43,0.3); }
+  .topbar-tab--active { color: #221C2B; font-weight: 600; border-bottom: 2px solid #9B51E0; padding-bottom: 4px; }
+  .topbar-meta { font-size: 13px; color: rgba(34,28,43,0.3); }
+  .section-label { font-size: 12px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(34,28,43,0.35); margin-bottom: 16px; }
+
+  /* Main */
+  .main { padding-right: 36px; display: flex; flex-direction: column; gap: 18px; }
+
+  /* Gap-to-action table */
+  .gap-table { display: flex; flex-direction: column; }
+  .gt-header {
+    display: grid; grid-template-columns: 170px 1fr 200px 120px;
+    gap: 0; padding: 10px 0;
+    border-bottom: 2px solid rgba(34,28,43,0.08);
+  }
+  .gt-header span {
+    font-size: 11px; font-weight: 600; color: rgba(34,28,43,0.3);
+    text-transform: uppercase; letter-spacing: 0.06em; padding: 0 12px;
+  }
+  .gt-rows { display: flex; flex-direction: column; gap: 0; }
+  .gt-row {
+    display: grid; grid-template-columns: 170px 1fr 200px 120px;
+    gap: 0; border-bottom: 1px solid rgba(34,28,43,0.04);
+    align-items: center;
+  }
+  .gt-cell { padding: 12px 12px; }
+  .gt-area { font-size: 14px; font-weight: 600; color: #221C2B; }
+  .gt-gap { font-size: 13px; color: rgba(34,28,43,0.55); line-height: 1.4; }
+  .gt-action {
+    font-size: 13px; font-weight: 600; color: #221C2B; line-height: 1.3;
+  }
+  .gt-action-sub { font-size: 11px; color: rgba(34,28,43,0.4); margin-top: 2px; }
+  .gt-phase {
+    display: flex; align-items: center; justify-content: center;
+  }
+  .phase-pill {
+    font-size: 10px; font-weight: 600; padding: 4px 12px;
+    text-transform: uppercase; letter-spacing: 0.04em;
+  }
+  .pill-1 { background: rgba(212,58,106,0.08); color: #D43A6A; }
+  .pill-2 { background: rgba(192,120,0,0.08); color: #C07800; }
+  .pill-3 { background: rgba(45,159,79,0.08); color: #2D9F4F; }
+
+  .gt-status-bar {
+    height: 3px; margin-top: 4px;
+  }
+
+  /* Alignment groups */
+  .groups-strip {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
+  }
+  .group-card {
+    padding: 18px; border-top: 3px solid;
+    background: rgba(34,28,43,0.015); border-bottom: 1px solid rgba(34,28,43,0.05);
+    border-left: 1px solid rgba(34,28,43,0.05); border-right: 1px solid rgba(34,28,43,0.05);
+  }
+  .group-name { font-size: 15px; font-weight: 600; color: #221C2B; margin-bottom: 4px; }
+  .group-lead { font-size: 12px; color: rgba(34,28,43,0.4); margin-bottom: 10px; }
+  .group-focus {
+    font-size: 12px; color: rgba(34,28,43,0.5); line-height: 1.4;
+    padding-left: 12px; position: relative;
+  }
+  .group-focus::before {
+    content: ''; position: absolute; left: 0; top: 5px;
+    width: 5px; height: 5px; background: rgba(34,28,43,0.15);
+  }
+
+  /* Right panel */
+  .right-panel {
+    padding-left: 36px; border-left: 1px solid rgba(34,28,43,0.06);
+    display: flex; flex-direction: column; gap: 24px;
+  }
+
+  .session-box {
+    padding: 22px; background: rgba(34,28,43,0.02); border: 1px solid rgba(34,28,43,0.06);
+  }
+  .session-title { font-size: 16px; font-weight: 700; color: #221C2B; margin-bottom: 14px; }
+  .session-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .session-stat { text-align: center; }
+  .session-stat-value { font-size: 28px; font-weight: 700; line-height: 1; }
+  .session-stat-label { font-size: 12px; color: rgba(34,28,43,0.4); margin-top: 4px; }
+
+  /* Sequence */
+  .sequence-list { display: flex; flex-direction: column; gap: 6px; flex: 1; }
+  .seq-item {
+    padding: 14px 16px; border-left: 4px solid;
+    background: rgba(34,28,43,0.015);
+  }
+  .seq-phase {
+    font-size: 10px; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 0.06em; margin-bottom: 4px;
+  }
+  .seq-title { font-size: 14px; font-weight: 600; color: #221C2B; margin-bottom: 2px; }
+  .seq-desc { font-size: 12px; color: rgba(34,28,43,0.45); line-height: 1.4; }
+  .seq-depends {
+    font-size: 11px; color: rgba(155,81,224,0.5); font-weight: 500; margin-top: 6px;
+  }
+
+  /* Principles */
+  .principles {
+    padding: 16px 18px; margin-top: auto;
+    background: linear-gradient(135deg, rgba(128,56,143,0.04), rgba(255,66,121,0.04));
+    border: 1px solid rgba(34,28,43,0.05);
+  }
+  .principles-title { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: rgba(34,28,43,0.3); margin-bottom: 8px; }
+  .principle {
+    font-size: 13px; font-weight: 500; color: rgba(34,28,43,0.5);
+    padding: 4px 0 4px 14px; position: relative;
+  }
+  .principle::before {
+    content: ''; position: absolute; left: 0; top: 10px;
+    width: 6px; height: 6px; background: linear-gradient(135deg, #80388F, #FF4279);
+  }
+</style>
+</head>
+<body>
+<div class="dashboard">
+
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="topbar-logo">MUTOMORRO</div>
+      <div class="topbar-sep"></div>
+      <div>
+        <span class="topbar-type">Alignment action plan</span>
+        <div class="topbar-org">Northfield Health</div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <div class="topbar-tab topbar-tab--active">Gap-to-action map</div>
+      <div class="topbar-tab">Sequencing</div>
+      <div class="topbar-tab">Dependencies</div>
+      <div class="topbar-tab">Groups</div>
+      <div class="topbar-meta">Co-designed with 34 people · April 2026</div>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="gap-table">
+      <div class="section-label">Misalignment to action - every gap has a plan</div>
+      <div class="gt-header">
+        <span>Area</span>
+        <span>What is misaligned</span>
+        <span>Action agreed</span>
+        <span>Phase</span>
+      </div>
+      <div class="gt-rows">
+        <div class="gt-row">
+          <div class="gt-cell"><span class="gt-area">Performance measures</span></div>
+          <div class="gt-cell"><span class="gt-gap">KPIs still reward old strategy. New priorities unmeasured.</span></div>
+          <div class="gt-cell"><span class="gt-action">Redesign KPIs around strategic priorities</span><div class="gt-action-sub">Led by Strategy + Finance</div></div>
+          <div class="gt-cell gt-phase"><span class="phase-pill pill-1">Phase 1</span></div>
+        </div>
+        <div class="gt-row">
+          <div class="gt-cell"><span class="gt-area">Team priorities</span></div>
+          <div class="gt-cell"><span class="gt-gap">Each function sets priorities locally. No strategic connection.</span></div>
+          <div class="gt-cell"><span class="gt-action">Quarterly priority alignment sessions</span><div class="gt-action-sub">Led by COO + Function heads</div></div>
+          <div class="gt-cell gt-phase"><span class="phase-pill pill-1">Phase 1</span></div>
+        </div>
+        <div class="gt-row">
+          <div class="gt-cell"><span class="gt-area">Operational patterns</span></div>
+          <div class="gt-cell"><span class="gt-gap">Meeting rhythms and reporting designed for previous model.</span></div>
+          <div class="gt-cell"><span class="gt-action">Operational rhythm redesign</span><div class="gt-action-sub">Led by Ops directors</div></div>
+          <div class="gt-cell gt-phase"><span class="phase-pill pill-2">Phase 2</span></div>
+        </div>
+        <div class="gt-row">
+          <div class="gt-cell"><span class="gt-area">Decision-making</span></div>
+          <div class="gt-cell"><span class="gt-gap">Decisions default to hierarchy, not strategic priority.</span></div>
+          <div class="gt-cell"><span class="gt-action">Decision rights framework</span><div class="gt-action-sub">Led by CEO + SLT</div></div>
+          <div class="gt-cell gt-phase"><span class="phase-pill pill-2">Phase 2</span></div>
+        </div>
+        <div class="gt-row">
+          <div class="gt-cell"><span class="gt-area">Communication</span></div>
+          <div class="gt-cell"><span class="gt-gap">Strategy was communicated once, not translated ongoing.</span></div>
+          <div class="gt-cell"><span class="gt-action">Strategy translation programme</span><div class="gt-action-sub">Led by Comms + Middle mgmt</div></div>
+          <div class="gt-cell gt-phase"><span class="phase-pill pill-1">Phase 1</span></div>
+        </div>
+        <div class="gt-row">
+          <div class="gt-cell"><span class="gt-area">Resource allocation</span></div>
+          <div class="gt-cell"><span class="gt-gap">Legacy commitments absorb 72% of discretionary spend.</span></div>
+          <div class="gt-cell"><span class="gt-action">Strategic budget rebalancing</span><div class="gt-action-sub">Led by CFO + Strategy</div></div>
+          <div class="gt-cell gt-phase"><span class="phase-pill pill-2">Phase 2</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Alignment groups -->
+    <div>
+      <div class="section-label" style="margin-top: 16px;">Cross-functional alignment groups formed</div>
+      <div class="groups-strip">
+        <div class="group-card" style="border-top-color: #D43A6A;">
+          <div class="group-name">Measurement</div>
+          <div class="group-lead">Strategy + Finance + HR</div>
+          <div class="group-focus">Redesign KPIs and incentives to reflect strategic priorities</div>
+        </div>
+        <div class="group-card" style="border-top-color: #9B51E0;">
+          <div class="group-name">Translation</div>
+          <div class="group-lead">Comms + Middle management</div>
+          <div class="group-focus">Make strategy visible and actionable at every level</div>
+        </div>
+        <div class="group-card" style="border-top-color: #C07800;">
+          <div class="group-name">Operations</div>
+          <div class="group-lead">COO + Function heads</div>
+          <div class="group-focus">Redesign meeting rhythms and reporting to serve the strategy</div>
+        </div>
+        <div class="group-card" style="border-top-color: #2D9F4F;">
+          <div class="group-name">Resources</div>
+          <div class="group-lead">CFO + Strategy director</div>
+          <div class="group-focus">Shift budget allocation toward strategic priorities</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div class="right-panel">
+    <div class="session-box">
+      <div class="session-title">Co-design summary</div>
+      <div class="session-stats">
+        <div class="session-stat">
+          <div class="session-stat-value" style="color: #221C2B;">34</div>
+          <div class="session-stat-label">People involved</div>
+        </div>
+        <div class="session-stat">
+          <div class="session-stat-value" style="color: #221C2B;">4</div>
+          <div class="session-stat-label">Sessions held</div>
+        </div>
+        <div class="session-stat">
+          <div class="session-stat-value" style="color: #9B51E0;">6</div>
+          <div class="session-stat-label">Actions agreed</div>
+        </div>
+        <div class="session-stat">
+          <div class="session-stat-value" style="color: #9B51E0;">4</div>
+          <div class="session-stat-label">Alignment groups</div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section-label">Implementation sequence</div>
+      <div class="sequence-list">
+        <div class="seq-item" style="border-left-color: #D43A6A;">
+          <div class="seq-phase" style="color: #D43A6A;">Phase 1 - Months 1-3</div>
+          <div class="seq-title">Make the strategy visible and measurable</div>
+          <div class="seq-desc">Redesign KPIs, launch quarterly alignment sessions, begin strategy translation programme. These create the foundation.</div>
+        </div>
+        <div class="seq-item" style="border-left-color: #C07800;">
+          <div class="seq-phase" style="color: #C07800;">Phase 2 - Months 3-6</div>
+          <div class="seq-title">Realign how the organisation operates</div>
+          <div class="seq-desc">Redesign operational rhythms, establish decision rights framework, begin budget rebalancing.</div>
+          <div class="seq-depends">Depends on: Phase 1 KPIs in place</div>
+        </div>
+        <div class="seq-item" style="border-left-color: #2D9F4F;">
+          <div class="seq-phase" style="color: #2D9F4F;">Phase 3 - Months 6-9</div>
+          <div class="seq-title">Embed and build internal capability</div>
+          <div class="seq-desc">Alignment becomes self-monitoring. Teams run their own alignment checks. Strategy translation is continuous, not periodic.</div>
+          <div class="seq-depends">Depends on: Phase 2 operational changes bedded in</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="principles">
+      <div class="principles-title">Alignment principles agreed</div>
+      <div class="principle">Align the system, not just the people</div>
+      <div class="principle">Measure what the strategy needs, not what is easy</div>
+      <div class="principle">Translate, do not cascade</div>
+      <div class="principle">Build alignment as a capability, not a project</div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

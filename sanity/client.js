@@ -19,7 +19,8 @@ export async function getAllProjects() {
     clientSector,
     challenge,
     shortSummary,
-    "heroImageUrl": heroImage.asset->url
+    "heroImageUrl": heroImage.asset->url,
+    "relatedServices": relatedServices[]->{_id, title, "slug": slug.current}
   }`)
 }
 
@@ -41,7 +42,8 @@ export async function getAllTools() {
     slug,
     category,
     shortSummary,
-    heroImage
+    heroImage,
+    "relatedServices": relatedServices[]->{_id, title, "slug": slug.current}
   }`)
 }
 
@@ -135,7 +137,8 @@ export async function getAllArticles() {
     publishedAt,
     category,
     shortSummary,
-    heroImage
+    heroImage,
+    "relatedServices": relatedServices[]->{_id, title, "slug": slug.current}
   }`)
 }
 
@@ -168,7 +171,8 @@ export async function getAllCourses() {
     format,
     duration,
     shortSummary,
-    heroImage
+    heroImage,
+    "relatedServices": relatedServices[]->{_id, title, "slug": slug.current}
   }`)
 }
 

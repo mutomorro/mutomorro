@@ -7,6 +7,7 @@ export default function NewsletterSignup({ variant = 'inline' }) {
   const [status, setStatus] = useState('idle') // idle | sending | success | error
 
   const isFooter = variant === 'footer'
+  const isHomepage = variant === 'homepage'
 
   function handleChange(e) {
     setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }))
@@ -34,16 +35,71 @@ export default function NewsletterSignup({ variant = 'inline' }) {
   // ── Success state ──
   if (status === 'success') {
     return (
-      <div className="feedback-success" style={isFooter ? { borderLeftColor: 'var(--accent)' } : undefined}>
+      <div className="feedback-success" style={(isFooter || isHomepage) ? { borderLeftColor: 'var(--accent)' } : undefined}>
         <p style={{
-          fontSize: isFooter ? '15px' : '17px',
+          fontSize: (isFooter || isHomepage) ? '15px' : '17px',
           fontWeight: '400',
           lineHeight: '1.5',
-          color: isFooter ? 'rgba(255,255,255,0.9)' : 'var(--dark)',
+          color: (isFooter || isHomepage) ? 'rgba(255,255,255,0.9)' : 'var(--dark)',
           margin: 0,
         }}>
           You're in. We'll be in touch.
         </p>
+      </div>
+    )
+  }
+
+  // ── Homepage variant: on dark, slightly larger than footer ──
+  if (isHomepage) {
+    return (
+      <div>
+        <form onSubmit={handleSubmit} style={{
+          display: 'flex',
+          gap: '10px',
+          flexWrap: 'wrap',
+          maxWidth: '440px',
+        }}>
+          <input
+            type="text"
+            name="firstName"
+            value={formData.firstName}
+            onChange={handleChange}
+            placeholder="First name"
+            className="form-input form-input--dark"
+            style={{ width: '130px', fontSize: '15px', padding: '14px 16px' }}
+          />
+          <input
+            type="email"
+            name="email"
+            required
+            value={formData.email}
+            onChange={handleChange}
+            placeholder="Email address"
+            className="form-input form-input--dark"
+            style={{ flex: '1', minWidth: '170px', fontSize: '15px', padding: '14px 16px' }}
+          />
+          <button
+            type="submit"
+            disabled={status === 'sending'}
+            className="btn-primary btn-primary--dark"
+            style={{
+              fontSize: '15px',
+              padding: '14px 28px',
+              ...(status === 'sending' ? { background: 'rgba(255,255,255,0.5)', cursor: 'default' } : {}),
+            }}
+          >
+            {status === 'sending' ? '...' : 'Subscribe'}
+          </button>
+        </form>
+        {status === 'error' && (
+          <p style={{
+            fontSize: '13px',
+            color: 'var(--pink)',
+            margin: '12px 0 0',
+          }}>
+            Something went wrong - please try again.
+          </p>
+        )}
       </div>
     )
   }

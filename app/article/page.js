@@ -1,7 +1,6 @@
-import Link from 'next/link'
 import { getAllArticles } from '../../sanity/client'
-import { urlFor } from '../../sanity/image'
 import CTA from '../../components/CTA'
+import ArticlesGrid from './ArticlesGrid'
 
 export default async function Articles() {
   const articles = await getAllArticles()
@@ -33,55 +32,7 @@ export default async function Articles() {
               No articles yet - check back soon.
             </p>
           ) : (
-            <div className="grid-3">
-              {articles.map((article, index) => (
-                <Link
-                  key={article._id}
-                  href={`/article/${article.slug.current}`}
-                  className="card-d scroll-in"
-                  style={{ animationDelay: `${index * 0.05}s` }}
-                >
-                  {/* Category badge */}
-                  {article.category && (
-                    <div className="card-d__badge">{article.category}</div>
-                  )}
-
-                  {/* Image */}
-                  {article.heroImage && (
-                    <div className="card-d__image">
-                      <img
-                        className="card-d__image-inner"
-                        src={urlFor(article.heroImage).width(600).height(338).url()}
-                        alt={article.heroImage.alt || article.title}
-                      />
-                    </div>
-                  )}
-
-                  <div className="card-d__body" style={article.category && !article.heroImage ? { paddingTop: '40px' } : undefined}>
-                    <div className="card-d__title">{article.title}</div>
-                    {article.shortSummary && (
-                      <p className="card-d__text">{article.shortSummary}</p>
-                    )}
-                    {article.publishedAt && (
-                      <p className="card-d__meta">
-                        {new Date(article.publishedAt).toLocaleDateString('en-GB', {
-                          day: 'numeric',
-                          month: 'long',
-                          year: 'numeric',
-                        })}
-                      </p>
-                    )}
-                  </div>
-
-                  <div className="card-d__footer">
-                    <div className="card-d__footer-fill" />
-                    <div className="card-d__action">
-                      Read article <span className="arrow">→</span>
-                    </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
+            <ArticlesGrid items={articles} />
           )}
         </div>
       </section>

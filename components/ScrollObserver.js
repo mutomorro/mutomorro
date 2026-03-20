@@ -19,7 +19,7 @@ export default function ScrollObserver() {
     )
 
     function observeElements() {
-      const elements = document.querySelectorAll('.scroll-in:not(.visible), .scroll-scale:not(.visible)')
+      const elements = document.querySelectorAll('.scroll-in:not(.visible), .scroll-scale:not(.visible), .scroll-fade:not(.visible), .scroll-screenshot:not(.visible), .scroll-screenshot-flat:not(.visible)')
       elements.forEach((el) => {
         if (prefersReducedMotion) {
           el.classList.add('visible')

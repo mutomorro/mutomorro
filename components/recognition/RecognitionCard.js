@@ -80,6 +80,12 @@ const cardMap = {
     dynamic(() => import('./Scaling3')),
     dynamic(() => import('./Scaling4')),
   ],
+  'culture-change-consultancy': [
+    dynamic(() => import('./CultureChange1')),
+    dynamic(() => import('./CultureChange2')),
+    dynamic(() => import('./CultureChange3')),
+    dynamic(() => import('./CultureChange4')),
+  ],
 }
 
 export default function RecognitionCard({ slug, index }) {

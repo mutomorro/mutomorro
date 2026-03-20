@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1920, height=1080">
+<title>Scale Readiness Assessment - Greenfield Collective</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;500;600;700&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { width: 1920px; height: 1080px; font-family: 'Source Sans 3', sans-serif; background: #FFFFFF; color: #1a1a1a; overflow: hidden; }
+  .container { width: 100%; height: 100%; padding: 52px 64px 48px; display: flex; flex-direction: column; }
+
+  .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 36px; }
+  .header-left h1 { font-size: 30px; font-weight: 700; margin-bottom: 6px; }
+  .header-left .subtitle { font-size: 17px; font-weight: 400; color: #666; }
+  .org-name { font-size: 15px; font-weight: 600; color: #9B51E0; }
+  .report-date { font-size: 13px; font-weight: 400; color: #999; margin-top: 2px; }
+  .section-label { font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.2px; color: #999; margin-bottom: 16px; }
+
+  /* Scale context strip */
+  .scale-context { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; margin-bottom: 32px; background: #FAFAFA; border: 1px solid #E8E8E8; }
+  .scale-item { padding: 20px 28px; border-right: 1px solid #E8E8E8; }
+  .scale-item:last-child { border-right: none; }
+  .scale-label { font-size: 12px; font-weight: 500; color: #888; margin-bottom: 4px; }
+  .scale-value { font-size: 22px; font-weight: 700; color: #1a1a1a; }
+  .scale-detail { font-size: 13px; font-weight: 400; color: #999; margin-top: 2px; }
+
+  .main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; flex: 1; }
+
+  /* Strain assessment */
+  .strain-list { display: flex; flex-direction: column; gap: 12px; }
+  .strain-row { display: grid; grid-template-columns: 180px 1fr 90px; align-items: center; gap: 16px; padding: 14px 18px; background: #FAFAFA; border: 1px solid #E8E8E8; }
+  .strain-name { font-size: 14px; font-weight: 600; }
+  .strain-bar-bg { height: 10px; background: #EEE; position: relative; }
+  .strain-bar-fill { height: 100%; position: absolute; left: 0; top: 0; }
+  .strain-level { font-size: 13px; font-weight: 600; }
+  .strain-level.high { color: #D43A6A; }
+  .strain-level.moderate { color: #C07800; }
+  .strain-level.low { color: #2D9F4F; }
+
+  /* Protect vs evolve */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
+  .protect-list, .evolve-list { display: flex; flex-direction: column; gap: 8px; }
+  .protect-item { display: flex; align-items: flex-start; gap: 10px; padding: 12px 14px; background: #F0FAF2; border-left: 3px solid #2D9F4F; }
+  .evolve-item { display: flex; align-items: flex-start; gap: 10px; padding: 12px 14px; background: #FFF5F7; border-left: 3px solid #D43A6A; }
+
+  .pe-dot { width: 8px; height: 8px; flex-shrink: 0; margin-top: 5px; }
+  .pe-dot.protect { background: #2D9F4F; }
+  .pe-dot.evolve { background: #D43A6A; }
+  .pe-text { font-size: 14px; font-weight: 400; color: #444; line-height: 1.4; }
+
+  .col-title { font-size: 15px; font-weight: 600; margin-bottom: 12px; }
+  .col-title.protect { color: #2D9F4F; }
+  .col-title.evolve { color: #D43A6A; }
+
+  /* Culture health */
+  .culture-section { margin-top: 20px; }
+  .culture-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  .culture-card { padding: 16px; background: #FAFAFA; border: 1px solid #E8E8E8; text-align: center; }
+  .culture-score { font-size: 26px; font-weight: 700; }
+  .culture-score.green { color: #2D9F4F; }
+  .culture-score.amber { color: #C07800; }
+  .culture-label { font-size: 13px; font-weight: 400; color: #666; margin-top: 4px; }
+
+  /* Summary */
+  .summary-strip { display: flex; gap: 0; margin-top: auto; }
+  .summary-item { flex: 1; padding: 20px 24px; border-top: 3px solid; }
+  .summary-item.green { border-color: #2D9F4F; background: #F0FAF2; }
+  .summary-item.amber { border-color: #C07800; background: #FFFBF0; }
+  .summary-item.red { border-color: #D43A6A; background: #FFF5F7; }
+  .summary-count { font-size: 32px; font-weight: 700; line-height: 1; margin-bottom: 4px; }
+  .summary-item.green .summary-count { color: #2D9F4F; }
+  .summary-item.amber .summary-count { color: #C07800; }
+  .summary-item.red .summary-count { color: #D43A6A; }
+  .summary-label { font-size: 14px; font-weight: 400; color: #666; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <div class="header-left">
+      <h1>Scale Readiness Assessment</h1>
+      <div class="subtitle">Current operations mapped against growth targets</div>
+    </div>
+    <div class="header-right">
+      <div class="org-name">Greenfield Collective</div>
+      <div class="report-date">Assessment completed March 2026</div>
+    </div>
+  </div>
+
+  <div class="scale-context">
+    <div class="scale-item">
+      <div class="scale-label">Current headcount</div>
+      <div class="scale-value">48</div>
+      <div class="scale-detail">Growing from 28 in 18 months</div>
+    </div>
+    <div class="scale-item">
+      <div class="scale-label">Projected headcount (12 months)</div>
+      <div class="scale-value">85</div>
+      <div class="scale-detail">Growth rate: 77%</div>
+    </div>
+    <div class="scale-item">
+      <div class="scale-label">Current way of working designed for</div>
+      <div class="scale-value">~30 people</div>
+      <div class="scale-detail">Already beyond the design point</div>
+    </div>
+  </div>
+
+  <div class="main-grid">
+    <div>
+      <div class="section-label">Where the strain is showing</div>
+      <div class="strain-list">
+        <div class="strain-row">
+          <div class="strain-name">Decision-making</div>
+          <div class="strain-bar-bg"><div class="strain-bar-fill" style="width: 88%; background: #D43A6A;"></div></div>
+          <div class="strain-level high">High strain</div>
+        </div>
+        <div class="strain-row">
+          <div class="strain-name">Communication</div>
+          <div class="strain-bar-bg"><div class="strain-bar-fill" style="width: 82%; background: #D43A6A;"></div></div>
+          <div class="strain-level high">High strain</div>
+        </div>
+        <div class="strain-row">
+          <div class="strain-name">Onboarding</div>
+          <div class="strain-bar-bg"><div class="strain-bar-fill" style="width: 75%; background: #C07800;"></div></div>
+          <div class="strain-level moderate">Moderate</div>
+        </div>
+        <div class="strain-row">
+          <div class="strain-name">Team coordination</div>
+          <div class="strain-bar-bg"><div class="strain-bar-fill" style="width: 70%; background: #C07800;"></div></div>
+          <div class="strain-level moderate">Moderate</div>
+        </div>
+        <div class="strain-row">
+          <div class="strain-name">Service delivery</div>
+          <div class="strain-bar-bg"><div class="strain-bar-fill" style="width: 55%; background: #C07800;"></div></div>
+          <div class="strain-level moderate">Moderate</div>
+        </div>
+        <div class="strain-row">
+          <div class="strain-name">Quality</div>
+          <div class="strain-bar-bg"><div class="strain-bar-fill" style="width: 35%; background: #2D9F4F;"></div></div>
+          <div class="strain-level low">Holding</div>
+        </div>
+        <div class="strain-row">
+          <div class="strain-name">Purpose clarity</div>
+          <div class="strain-bar-bg"><div class="strain-bar-fill" style="width: 25%; background: #2D9F4F;"></div></div>
+          <div class="strain-level low">Strong</div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="two-col">
+        <div>
+          <div class="col-title protect">What to protect</div>
+          <div class="protect-list">
+            <div class="protect-item"><div class="pe-dot protect"></div><div class="pe-text">Collaborative culture and flat relationships</div></div>
+            <div class="protect-item"><div class="pe-dot protect"></div><div class="pe-text">Strong social purpose connection</div></div>
+            <div class="protect-item"><div class="pe-dot protect"></div><div class="pe-text">High autonomy for experienced team members</div></div>
+            <div class="protect-item"><div class="pe-dot protect"></div><div class="pe-text">Close connection to service users</div></div>
+          </div>
+        </div>
+        <div>
+          <div class="col-title evolve">What needs to evolve</div>
+          <div class="evolve-list">
+            <div class="evolve-item"><div class="pe-dot evolve"></div><div class="pe-text">Everything routes through founders for decisions</div></div>
+            <div class="evolve-item"><div class="pe-dot evolve"></div><div class="pe-text">No team structure - everyone connects to everyone</div></div>
+            <div class="evolve-item"><div class="pe-dot evolve"></div><div class="pe-text">Informal communication only - nothing is documented</div></div>
+            <div class="evolve-item"><div class="pe-dot evolve"></div><div class="pe-text">Onboarding relies on shadowing with no structure</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="culture-section">
+        <div class="section-label">Culture health at current scale</div>
+        <div class="culture-grid">
+          <div class="culture-card">
+            <div class="culture-score green">8.4</div>
+            <div class="culture-label">Purpose</div>
+          </div>
+          <div class="culture-card">
+            <div class="culture-score green">7.8</div>
+            <div class="culture-label">Trust</div>
+          </div>
+          <div class="culture-card">
+            <div class="culture-score amber">6.2</div>
+            <div class="culture-label">Clarity</div>
+          </div>
+          <div class="culture-card">
+            <div class="culture-score amber">5.8</div>
+            <div class="culture-label">Coordination</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="summary-strip">
+    <div class="summary-item green">
+      <div class="summary-count">3</div>
+      <div class="summary-label">Areas working well at current scale</div>
+    </div>
+    <div class="summary-item amber">
+      <div class="summary-count">3</div>
+      <div class="summary-label">Showing growth strain</div>
+    </div>
+    <div class="summary-item red">
+      <div class="summary-count">2</div>
+      <div class="summary-label">Will break at 85 people</div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

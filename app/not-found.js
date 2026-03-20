@@ -1,6 +1,29 @@
+'use client'
+
+import { useEffect } from 'react'
 import Link from 'next/link'
 
 export default function NotFound() {
+
+  useEffect(() => {
+    const logMiss = async () => {
+      try {
+        await fetch('/api/log-404', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            path: window.location.pathname,
+            referrer: document.referrer || null,
+            userAgent: navigator.userAgent || null,
+          }),
+        })
+      } catch (e) {
+        // Silent fail - don't break the page if logging fails
+      }
+    }
+    logMiss()
+  }, [])
+
   return (
     <section className="section--full" style={{
       padding: '80px 48px',

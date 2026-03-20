@@ -22,13 +22,13 @@ export default function EcosystemVisual({ centreLabel = 'Intentional', centreSub
 
     // EMERGENT Framework dimensions
     var dims = [
-      { name: 'Embedded Strategy',     color: '#d4735e', angle: -90 },
-      { name: 'Momentum through Work', color: '#4a9ad4', angle: -45 },
-      { name: 'Evolving Service',      color: '#7ab84e', angle: 0 },
-      { name: 'Resonant Purpose',      color: '#d4a830', angle: 45 },
-      { name: 'Generative Capacity',   color: '#a06cc0', angle: 90 },
-      { name: 'Enacted Culture',       color: '#3aaa9e', angle: 135 },
-      { name: 'Narrative Connections',  color: '#d45a7a', angle: 180 },
+      { name: 'Embedded Strategy',     color: '#FF707C', angle: -90 },
+      { name: 'Momentum through Work', color: '#FFAC51', angle: -45 },
+      { name: 'Evolving Service',      color: '#FFC23B', angle: 0 },
+      { name: 'Resonant Purpose',      color: '#A7D957', angle: 45 },
+      { name: 'Generative Capacity',   color: '#3AD377', angle: 90 },
+      { name: 'Enacted Culture',       color: '#00C3D8', angle: 135 },
+      { name: 'Narrative Connections',  color: '#5A70C2', angle: 180 },
       { name: 'Tuned to Change',       color: '#d48a3a', angle: 225 },
     ]
 

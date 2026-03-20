@@ -1,7 +1,6 @@
-import Link from 'next/link'
 import { getAllCourses } from '../../sanity/client'
-import { urlFor } from '../../sanity/image'
 import CTA from '../../components/CTA'
+import CoursesGrid from './CoursesGrid'
 
 export default async function Courses() {
   const courses = await getAllCourses()
@@ -33,51 +32,7 @@ export default async function Courses() {
               No courses yet - check back soon.
             </p>
           ) : (
-            <div className="grid-3">
-              {courses.map((course, index) => (
-                <Link
-                  key={course._id}
-                  href={`/courses/${course.slug.current}`}
-                  className="card-d scroll-in"
-                  style={{ animationDelay: `${index * 0.1}s` }}
-                >
-                  {/* Category badge */}
-                  {course.category && (
-                    <div className="card-d__badge">{course.category}</div>
-                  )}
-
-                  {/* Image */}
-                  {course.heroImage && (
-                    <div className="card-d__image">
-                      <img
-                        className="card-d__image-inner"
-                        src={urlFor(course.heroImage).width(600).height(338).url()}
-                        alt={course.heroImage.alt || course.title}
-                      />
-                    </div>
-                  )}
-
-                  <div className="card-d__body" style={course.category && !course.heroImage ? { paddingTop: '40px' } : undefined}>
-                    <div className="card-d__title">{course.title}</div>
-                    {course.shortSummary && (
-                      <p className="card-d__text">{course.shortSummary}</p>
-                    )}
-                    {(course.duration || course.format) && (
-                      <p className="card-d__meta">
-                        {course.duration}{course.duration && course.format ? ' · ' : ''}{course.format}
-                      </p>
-                    )}
-                  </div>
-
-                  <div className="card-d__footer">
-                    <div className="card-d__footer-fill" />
-                    <div className="card-d__action">
-                      View course <span className="arrow">→</span>
-                    </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
+            <CoursesGrid items={courses} />
           )}
         </div>
       </section>

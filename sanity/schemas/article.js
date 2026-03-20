@@ -19,6 +19,12 @@ export default defineType({
       validation: Rule => Rule.required(),
     }),
     defineField({
+      name: 'subtitle',
+      title: 'Subtitle',
+      type: 'string',
+      description: 'Displayed below the title on the article page',
+    }),
+    defineField({
       name: 'publishedAt',
       title: 'Published date',
       type: 'date',
@@ -30,12 +36,21 @@ export default defineType({
       type: 'string',
       options: {
         list: [
-          { title: 'Organisational Health', value: 'organisational-health' },
-          { title: 'Leadership', value: 'leadership' },
+          { title: 'Change Management', value: 'change-management' },
+          { title: 'Culture Change', value: 'culture-change' },
           { title: 'Culture', value: 'culture' },
+          { title: 'Organisational Purpose', value: 'organisational-purpose' },
+          { title: 'Organisational Health', value: 'organisational-health' },
+          { title: 'Organisational Design', value: 'organisational-design' },
+          { title: 'Organisational Development', value: 'organisational-development' },
+          { title: 'Operational Effectiveness', value: 'operational-effectiveness' },
+          { title: 'Strategic Alignment', value: 'strategic-alignment' },
           { title: 'Strategy', value: 'strategy' },
-          { title: 'Change', value: 'change' },
+          { title: 'Leadership', value: 'leadership' },
+          { title: 'Capacity Building', value: 'capacity-building' },
+          { title: 'Service Design', value: 'service-design' },
           { title: 'Systems Thinking', value: 'systems-thinking' },
+          { title: 'Change', value: 'change' },
         ],
       },
       validation: Rule => Rule.required(),
@@ -53,6 +68,14 @@ export default defineType({
       title: 'Hero image',
       type: 'image',
       options: { hotspot: true },
+      fields: [
+        defineField({
+          name: 'alt',
+          title: 'Alt text',
+          type: 'string',
+          description: 'Describe the image for accessibility and SEO',
+        }),
+      ],
     }),
     defineField({
       name: 'body',
@@ -63,6 +86,71 @@ export default defineType({
         { type: 'image', options: { hotspot: true } },
       ],
       validation: Rule => Rule.required(),
+    }),
+
+    // --- SEO fields ---
+    defineField({
+      name: 'seoTitle',
+      title: 'SEO title',
+      type: 'string',
+      description: 'Overrides the page title in search results (50-60 characters ideal)',
+      group: 'seo',
+    }),
+    defineField({
+      name: 'seoDescription',
+      title: 'SEO description',
+      type: 'text',
+      rows: 3,
+      description: 'Displayed in search results below the title (120-160 characters ideal)',
+      group: 'seo',
+    }),
+    defineField({
+      name: 'seoKeywords',
+      title: 'SEO keywords',
+      type: 'string',
+      description: 'Comma-separated keywords for internal reference',
+      group: 'seo',
+    }),
+
+    // --- Cross-references ---
+    defineField({
+      name: 'relatedArticles',
+      title: 'Related Articles',
+      type: 'array',
+      of: [
+        {
+          type: 'reference',
+          to: [{ type: 'article' }],
+        },
+      ],
+      description: 'Other articles shown as related content',
+      group: 'references',
+    }),
+    defineField({
+      name: 'relatedServices',
+      title: 'Related Services',
+      type: 'array',
+      of: [
+        {
+          type: 'reference',
+          to: [{ type: 'service' }],
+        },
+      ],
+      description: 'Which services relate to this content',
+      group: 'references',
+    }),
+    defineField({
+      name: 'relatedTools',
+      title: 'Related Tools',
+      type: 'array',
+      of: [
+        {
+          type: 'reference',
+          to: [{ type: 'tool' }],
+        },
+      ],
+      description: 'Which tools relate to this content',
+      group: 'references',
     }),
     defineField({
       name: 'relatedDimensions',
@@ -75,8 +163,15 @@ export default defineType({
           to: [{ type: 'dimension' }],
         },
       ],
+      group: 'references',
     }),
   ],
+
+  groups: [
+    { name: 'seo', title: 'SEO' },
+    { name: 'references', title: 'Related content' },
+  ],
+
   orderings: [
     {
       title: 'Newest first',

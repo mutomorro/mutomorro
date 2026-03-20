@@ -19,14 +19,14 @@
   --ew-font: var(--font);
 
   /* Dimension colours - spectrum order through EMERGENT */
-  --dim-es: #d4735e;
-  --dim-mw: #d4a830;
-  --dim-ev: #7ab84e;
-  --dim-rp: #3aaa9e;
-  --dim-gc: #4a9ad4;
-  --dim-ec: #5a6cc0;
-  --dim-nc: #a06cc0;
-  --dim-tc: #d45a7a;
+  --dim-es: #FF707C;
+  --dim-mw: #FFAC51;
+  --dim-ev: #FFC23B;
+  --dim-rp: #A7D957;
+  --dim-gc: #3AD377;
+  --dim-ec: #00C3D8;
+  --dim-nc: #5A70C2;
+  --dim-tc: #755E7F;
 
   --active-dim: var(--accent);
 
@@ -836,8 +836,8 @@
 }
 
 .ew-comparison-header-cell--strain {
-  background: rgba(212, 90, 122, 0.08);
-  color: #d45a7a;
+  background: rgba(117, 94, 127, 0.08);
+  color: #755E7F;
 }
 
 .ew-comparison-row {

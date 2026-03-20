@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1920, height=1080">
+<title>Capability Assessment - Ferndale Association</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;500;600;700&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { width: 1920px; height: 1080px; font-family: 'Source Sans 3', sans-serif; background: #FFFFFF; color: #1a1a1a; overflow: hidden; }
+  .container { width: 100%; height: 100%; padding: 52px 64px 48px; display: flex; flex-direction: column; }
+
+  .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 36px; }
+  .header-left h1 { font-size: 30px; font-weight: 700; margin-bottom: 6px; }
+  .header-left .subtitle { font-size: 17px; font-weight: 400; color: #666; }
+  .org-name { font-size: 15px; font-weight: 600; color: #9B51E0; }
+  .report-date { font-size: 13px; font-weight: 400; color: #999; margin-top: 2px; }
+  .section-label { font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.2px; color: #999; margin-bottom: 16px; }
+
+  .main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; flex: 1; }
+
+  /* Capability heatmap */
+  .heatmap { width: 100%; border-collapse: collapse; }
+  .heatmap th { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; color: #999; padding: 12px 14px; text-align: center; border-bottom: 2px solid #E8E8E8; }
+  .heatmap th:first-child { text-align: left; }
+  .heatmap td { padding: 12px 14px; border-bottom: 1px solid #F0F0F0; text-align: center; }
+  .heatmap td:first-child { text-align: left; font-size: 14px; font-weight: 600; }
+
+  .heat-cell { display: inline-block; width: 48px; padding: 6px 0; font-size: 14px; font-weight: 600; text-align: center; }
+  .heat-cell.strong { background: #E8F5E9; color: #2D9F4F; }
+  .heat-cell.adequate { background: #F0FAF2; color: #2D9F4F; }
+  .heat-cell.developing { background: #FFF3E0; color: #C07800; }
+  .heat-cell.gap { background: #FFF0F3; color: #D43A6A; }
+
+  /* Legend */
+  .heat-legend { display: flex; gap: 16px; margin-top: 16px; }
+  .heat-legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #888; }
+  .heat-legend-swatch { width: 14px; height: 10px; }
+
+  /* Learning culture */
+  .learning-section { margin-top: 24px; }
+  .learn-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .learn-card { padding: 16px; background: #FAFAFA; border: 1px solid #E8E8E8; }
+  .learn-score { font-size: 22px; font-weight: 700; }
+  .learn-score.green { color: #2D9F4F; }
+  .learn-score.amber { color: #C07800; }
+  .learn-score.red { color: #D43A6A; }
+  .learn-label { font-size: 13px; font-weight: 400; color: #666; margin-top: 4px; }
+
+  /* Priority areas */
+  .priority-list { display: flex; flex-direction: column; gap: 12px; }
+  .priority-card { padding: 18px; background: #FAFAFA; border: 1px solid #E8E8E8; }
+  .priority-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .priority-name { font-size: 15px; font-weight: 600; }
+  .priority-impact { font-size: 12px; font-weight: 600; padding: 2px 10px; }
+  .priority-impact.high { background: #F3E5F5; color: #9B51E0; }
+  .priority-impact.medium { background: #FFF3E0; color: #C07800; }
+  .priority-desc { font-size: 14px; font-weight: 400; color: #555; line-height: 1.4; margin-bottom: 6px; }
+  .priority-levels { font-size: 12px; font-weight: 500; color: #888; }
+
+  /* Strengths strip */
+  .strengths-box { padding: 18px; background: #F0FAF2; border: 1px solid #C8E6C9; margin-top: auto; }
+  .strengths-title { font-size: 14px; font-weight: 600; color: #2D9F4F; margin-bottom: 10px; }
+  .strengths-items { display: flex; gap: 24px; }
+  .strength-item { display: flex; gap: 8px; font-size: 14px; font-weight: 400; color: #444; }
+  .strength-dot { width: 8px; height: 8px; background: #2D9F4F; flex-shrink: 0; margin-top: 5px; }
+
+  /* Summary */
+  .summary-strip { display: flex; gap: 0; margin-top: 20px; }
+  .summary-item { flex: 1; padding: 20px 24px; border-top: 3px solid; }
+  .summary-item.green { border-color: #2D9F4F; background: #F0FAF2; }
+  .summary-item.amber { border-color: #C07800; background: #FFFBF0; }
+  .summary-item.red { border-color: #D43A6A; background: #FFF5F7; }
+  .summary-count { font-size: 32px; font-weight: 700; line-height: 1; margin-bottom: 4px; }
+  .summary-item.green .summary-count { color: #2D9F4F; }
+  .summary-item.amber .summary-count { color: #C07800; }
+  .summary-item.red .summary-count { color: #D43A6A; }
+  .summary-label { font-size: 14px; font-weight: 400; color: #666; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <div class="header-left">
+      <h1>Capability Assessment</h1>
+      <div class="subtitle">Where capability is strong - and where development will have most impact</div>
+    </div>
+    <div class="header-right">
+      <div class="org-name">Ferndale Association</div>
+      <div class="report-date">Assessment completed March 2026</div>
+    </div>
+  </div>
+
+  <div class="main-grid">
+    <div>
+      <div class="section-label">Capability by level and area</div>
+      <table class="heatmap">
+        <thead>
+          <tr>
+            <th style="width: 160px;">Area</th>
+            <th>Individual</th>
+            <th>Team</th>
+            <th>Leadership</th>
+            <th>Organisational</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Technical skills</td>
+            <td><span class="heat-cell strong">8.2</span></td>
+            <td><span class="heat-cell adequate">7.0</span></td>
+            <td><span class="heat-cell developing">5.8</span></td>
+            <td><span class="heat-cell developing">5.5</span></td>
+          </tr>
+          <tr>
+            <td>Collaboration</td>
+            <td><span class="heat-cell adequate">6.8</span></td>
+            <td><span class="heat-cell gap">4.2</span></td>
+            <td><span class="heat-cell developing">5.5</span></td>
+            <td><span class="heat-cell gap">3.8</span></td>
+          </tr>
+          <tr>
+            <td>Strategic thinking</td>
+            <td><span class="heat-cell developing">5.0</span></td>
+            <td><span class="heat-cell gap">3.5</span></td>
+            <td><span class="heat-cell developing">5.2</span></td>
+            <td><span class="heat-cell gap">4.0</span></td>
+          </tr>
+          <tr>
+            <td>Service delivery</td>
+            <td><span class="heat-cell strong">7.8</span></td>
+            <td><span class="heat-cell adequate">6.5</span></td>
+            <td><span class="heat-cell adequate">6.2</span></td>
+            <td><span class="heat-cell developing">5.0</span></td>
+          </tr>
+          <tr>
+            <td>Adaptability</td>
+            <td><span class="heat-cell adequate">6.5</span></td>
+            <td><span class="heat-cell developing">5.0</span></td>
+            <td><span class="heat-cell developing">5.5</span></td>
+            <td><span class="heat-cell gap">3.5</span></td>
+          </tr>
+          <tr>
+            <td>People development</td>
+            <td><span class="heat-cell developing">5.2</span></td>
+            <td><span class="heat-cell gap">3.8</span></td>
+            <td><span class="heat-cell gap">4.0</span></td>
+            <td><span class="heat-cell gap">3.2</span></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="heat-legend">
+        <div class="heat-legend-item"><div class="heat-legend-swatch" style="background: #E8F5E9;"></div>Strong (7+)</div>
+        <div class="heat-legend-item"><div class="heat-legend-swatch" style="background: #F0FAF2;"></div>Adequate (6-7)</div>
+        <div class="heat-legend-item"><div class="heat-legend-swatch" style="background: #FFF3E0;"></div>Developing (5-6)</div>
+        <div class="heat-legend-item"><div class="heat-legend-swatch" style="background: #FFF0F3;"></div>Gap (below 5)</div>
+      </div>
+
+      <div class="learning-section">
+        <div class="section-label">Learning culture assessment</div>
+        <div class="learn-grid">
+          <div class="learn-card"><div class="learn-score amber">5.4</div><div class="learn-label">Time for learning</div></div>
+          <div class="learn-card"><div class="learn-score red">3.8</div><div class="learn-label">Peer learning practice</div></div>
+          <div class="learn-card"><div class="learn-score amber">5.0</div><div class="learn-label">Reflection habits</div></div>
+          <div class="learn-card"><div class="learn-score green">7.2</div><div class="learn-label">Willingness to develop</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section-label">Where development will have most impact</div>
+      <div class="priority-list">
+        <div class="priority-card">
+          <div class="priority-header"><div class="priority-name">Cross-team collaboration</div><div class="priority-impact high">High impact</div></div>
+          <div class="priority-desc">Teams work well internally but struggle to collaborate across the organisation. This affects service quality and strategic delivery.</div>
+          <div class="priority-levels">Affects: team (4.2), organisational (3.8)</div>
+        </div>
+        <div class="priority-card">
+          <div class="priority-header"><div class="priority-name">People development capability</div><div class="priority-impact high">High impact</div></div>
+          <div class="priority-desc">Managers lack the skills to develop their own teams. Development happens through courses, not through work. No coaching culture.</div>
+          <div class="priority-levels">Affects: all levels (3.2 - 5.2)</div>
+        </div>
+        <div class="priority-card">
+          <div class="priority-header"><div class="priority-name">Strategic thinking beyond leadership</div><div class="priority-impact high">High impact</div></div>
+          <div class="priority-desc">Strategic capability concentrated in senior team. Teams cannot connect their work to wider organisational direction.</div>
+          <div class="priority-levels">Affects: team (3.5), organisational (4.0)</div>
+        </div>
+        <div class="priority-card">
+          <div class="priority-header"><div class="priority-name">Organisational adaptability</div><div class="priority-impact medium">Medium impact</div></div>
+          <div class="priority-desc">The organisation is slow to adapt. Individual adaptability is reasonable but the system resists change.</div>
+          <div class="priority-levels">Affects: organisational (3.5)</div>
+        </div>
+      </div>
+
+      <div class="strengths-box">
+        <div class="strengths-title">Where capability is already strong</div>
+        <div class="strengths-items">
+          <div class="strength-item"><div class="strength-dot"></div>Individual technical expertise</div>
+          <div class="strength-item"><div class="strength-dot"></div>Service delivery at individual level</div>
+          <div class="strength-item"><div class="strength-dot"></div>High willingness to develop</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="summary-strip">
+    <div class="summary-item green"><div class="summary-count">4</div><div class="summary-label">Capability areas at strength</div></div>
+    <div class="summary-item amber"><div class="summary-count">8</div><div class="summary-label">Areas developing</div></div>
+    <div class="summary-item red"><div class="summary-count">6</div><div class="summary-label">Significant gaps</div></div>
+  </div>
+
+</div>
+</body>
+</html>

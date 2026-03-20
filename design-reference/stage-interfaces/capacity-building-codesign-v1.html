@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1920, height=1080">
+<title>Development Design - Ferndale Association</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;500;600;700&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { width: 1920px; height: 1080px; font-family: 'Source Sans 3', sans-serif; background: #FFFFFF; color: #1a1a1a; overflow: hidden; }
+  .container { width: 100%; height: 100%; padding: 52px 64px 48px; display: flex; flex-direction: column; }
+
+  .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 36px; }
+  .header-left h1 { font-size: 30px; font-weight: 700; margin-bottom: 6px; }
+  .header-left .subtitle { font-size: 17px; font-weight: 400; color: #666; }
+  .org-name { font-size: 15px; font-weight: 600; color: #9B51E0; }
+  .report-date { font-size: 13px; font-weight: 400; color: #999; margin-top: 2px; }
+  .section-label { font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.2px; color: #999; margin-bottom: 16px; }
+
+  .main-grid { display: grid; grid-template-columns: 1fr 360px; gap: 40px; flex: 1; }
+
+  /* Multi-level plan */
+  .level-cards { display: flex; flex-direction: column; gap: 14px; }
+  .level-card { padding: 20px; background: #FAFAFA; border: 1px solid #E8E8E8; border-left: 4px solid #9B51E0; }
+  .level-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .level-name { font-size: 16px; font-weight: 600; }
+  .level-focus { font-size: 11px; font-weight: 600; padding: 3px 10px; background: #F3E5F5; color: #9B51E0; text-transform: uppercase; letter-spacing: 0.6px; }
+
+  .level-areas { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+  .level-area { font-size: 13px; font-weight: 500; padding: 5px 12px; background: #fff; border: 1px solid #E0E0E0; }
+  .level-area.priority { border-color: #9B51E0; background: #F8F0FF; }
+
+  .level-approach { font-size: 14px; font-weight: 400; color: #555; line-height: 1.4; }
+
+  /* Right column */
+  .right-column { display: flex; flex-direction: column; gap: 24px; }
+
+  /* Learning approaches */
+  .approach-list { display: flex; flex-direction: column; gap: 10px; }
+  .approach-item { padding: 14px 16px; background: #FAFAFA; border: 1px solid #E8E8E8; }
+  .approach-name { font-size: 14px; font-weight: 600; color: #1a1a1a; margin-bottom: 4px; }
+  .approach-desc { font-size: 13px; font-weight: 400; color: #666; line-height: 1.4; }
+  .approach-pct { font-size: 12px; font-weight: 500; color: #9B51E0; margin-top: 6px; }
+
+  /* Coaching plan */
+  .coaching-box { padding: 18px; background: #F8F0FF; border: 1px solid #E8D5F5; }
+  .coaching-title { font-size: 14px; font-weight: 600; color: #9B51E0; margin-bottom: 12px; }
+  .coaching-items { display: flex; flex-direction: column; gap: 10px; }
+  .coaching-item { display: flex; gap: 10px; }
+  .coaching-dot { width: 8px; height: 8px; background: #9B51E0; flex-shrink: 0; margin-top: 5px; }
+  .coaching-text { font-size: 14px; font-weight: 400; color: #444; }
+
+  /* Practice opportunities */
+  .practice-box { padding: 18px; background: #F0FAF2; border: 1px solid #C8E6C9; }
+  .practice-title { font-size: 14px; font-weight: 600; color: #2D9F4F; margin-bottom: 12px; }
+  .practice-items { display: flex; flex-direction: column; gap: 8px; }
+  .practice-item { display: flex; gap: 10px; font-size: 14px; font-weight: 400; color: #444; }
+  .practice-dot { width: 8px; height: 8px; background: #2D9F4F; flex-shrink: 0; margin-top: 5px; }
+
+  /* Summary strip */
+  .summary-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; margin-top: auto; }
+  .sum-item { padding: 18px 20px; background: #FAFAFA; border-right: 1px solid #E8E8E8; text-align: center; }
+  .sum-item:last-child { border-right: none; }
+  .sum-value { font-size: 24px; font-weight: 700; color: #9B51E0; }
+  .sum-label { font-size: 13px; font-weight: 400; color: #666; margin-top: 4px; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <div class="header-left">
+      <h1>Development Design</h1>
+      <div class="subtitle">Multi-level development plan</div>
+    </div>
+    <div class="header-right">
+      <div class="org-name">Ferndale Association</div>
+      <div class="report-date">Co-designed March 2026</div>
+    </div>
+  </div>
+
+  <div class="main-grid">
+    <div>
+      <div class="section-label">Development plan by level</div>
+      <div class="level-cards">
+        <div class="level-card">
+          <div class="level-header"><div class="level-name">Individual</div><div class="level-focus">Skills + confidence</div></div>
+          <div class="level-areas">
+            <div class="level-area priority">People development skills</div>
+            <div class="level-area priority">Strategic thinking</div>
+            <div class="level-area">Adaptability</div>
+          </div>
+          <div class="level-approach">Coaching triads. On-the-job practice with reflection. Peer learning pairs for strategic thinking development.</div>
+        </div>
+        <div class="level-card">
+          <div class="level-header"><div class="level-name">Team</div><div class="level-focus">Collaboration + practice</div></div>
+          <div class="level-areas">
+            <div class="level-area priority">Cross-team collaboration</div>
+            <div class="level-area priority">Peer learning practice</div>
+            <div class="level-area">Team reflection habits</div>
+          </div>
+          <div class="level-approach">Cross-functional project groups. Monthly inter-team learning sessions. Structured reflection built into team rhythms.</div>
+        </div>
+        <div class="level-card">
+          <div class="level-header"><div class="level-name">Leadership</div><div class="level-focus">Developing others</div></div>
+          <div class="level-areas">
+            <div class="level-area priority">Coaching capability</div>
+            <div class="level-area">Strategic communication</div>
+            <div class="level-area">Creating conditions for learning</div>
+          </div>
+          <div class="level-approach">Leadership coaching programme. Practice coaching with feedback. Designing team development as part of the leadership role.</div>
+        </div>
+        <div class="level-card">
+          <div class="level-header"><div class="level-name">Organisational</div><div class="level-focus">Conditions + culture</div></div>
+          <div class="level-areas">
+            <div class="level-area priority">Learning time protected</div>
+            <div class="level-area priority">Coaching culture</div>
+            <div class="level-area">Knowledge sharing systems</div>
+          </div>
+          <div class="level-approach">Protected development time in schedules. Internal coaching and mentoring programme. Knowledge sharing platform and rhythm.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="right-column">
+      <div>
+        <div class="section-label">Learning approaches</div>
+        <div class="approach-list">
+          <div class="approach-item">
+            <div class="approach-name">On-the-job application</div>
+            <div class="approach-desc">Real work projects and challenges as the primary learning vehicle</div>
+            <div class="approach-pct">50% of development time</div>
+          </div>
+          <div class="approach-item">
+            <div class="approach-name">Coaching and reflection</div>
+            <div class="approach-desc">Individual and group coaching with structured reflection</div>
+            <div class="approach-pct">25% of development time</div>
+          </div>
+          <div class="approach-item">
+            <div class="approach-name">Peer learning</div>
+            <div class="approach-desc">Cross-team sessions, learning pairs, and knowledge sharing</div>
+            <div class="approach-pct">15% of development time</div>
+          </div>
+          <div class="approach-item">
+            <div class="approach-name">Facilitated sessions</div>
+            <div class="approach-desc">Structured learning on specific skills and approaches</div>
+            <div class="approach-pct">10% of development time</div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="coaching-box">
+          <div class="coaching-title">Coaching plan</div>
+          <div class="coaching-items">
+            <div class="coaching-item"><div class="coaching-dot"></div><div class="coaching-text">6 leaders in coaching development programme</div></div>
+            <div class="coaching-item"><div class="coaching-dot"></div><div class="coaching-text">12 coaching triads formed across teams</div></div>
+            <div class="coaching-item"><div class="coaching-dot"></div><div class="coaching-text">Monthly coaching practice supervision</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="practice-box">
+          <div class="practice-title">Practice opportunities designed</div>
+          <div class="practice-items">
+            <div class="practice-item"><div class="practice-dot"></div>3 cross-functional projects launched</div>
+            <div class="practice-item"><div class="practice-dot"></div>Bi-weekly inter-team learning sessions</div>
+            <div class="practice-item"><div class="practice-dot"></div>Peer observation programme for managers</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="summary-strip">
+    <div class="sum-item"><div class="sum-value">4</div><div class="sum-label">Levels addressed</div></div>
+    <div class="sum-item"><div class="sum-value">8</div><div class="sum-label">Priority areas</div></div>
+    <div class="sum-item"><div class="sum-value">50:25:15:10</div><div class="sum-label">Practice : coaching : peer : formal</div></div>
+    <div class="sum-item"><div class="sum-value">6 months</div><div class="sum-label">Initial programme duration</div></div>
+  </div>
+
+</div>
+</body>
+</html>

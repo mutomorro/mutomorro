@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1920, height=1080">
+<title>Change Capability View - Millbrook Academy Trust</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;500;600;700&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { width: 1920px; height: 1080px; font-family: 'Source Sans 3', sans-serif; background: #FFFFFF; color: #1a1a1a; overflow: hidden; }
+  .container { width: 100%; height: 100%; padding: 52px 64px 48px; display: flex; flex-direction: column; }
+
+  .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 36px; }
+  .header-left h1 { font-size: 30px; font-weight: 700; margin-bottom: 6px; }
+  .header-left .subtitle { font-size: 17px; font-weight: 400; color: #666; }
+  .org-name { font-size: 15px; font-weight: 600; color: #9B51E0; }
+  .report-date { font-size: 13px; font-weight: 400; color: #999; margin-top: 2px; }
+  .section-label { font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.2px; color: #999; margin-bottom: 16px; }
+
+  .main-grid { display: grid; grid-template-columns: 1fr 360px; gap: 40px; flex: 1; }
+
+  /* Maturity table */
+  .maturity-table { width: 100%; border-collapse: collapse; }
+  .maturity-table th { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; color: #999; padding: 12px 16px; text-align: left; border-bottom: 2px solid #E8E8E8; }
+  .maturity-table td { padding: 14px 16px; border-bottom: 1px solid #F0F0F0; }
+  .m-area { font-size: 15px; font-weight: 600; }
+  .m-stages { display: flex; gap: 4px; }
+  .m-dot { width: 32px; height: 10px; background: #EEE; }
+  .m-dot.filled { background: #9B51E0; }
+  .m-dot.partial { background: linear-gradient(90deg, #9B51E0 50%, #EEE 50%); }
+  .m-status { font-size: 13px; font-weight: 500; padding: 3px 10px; display: inline-block; }
+  .m-status.strong { background: #F0FAF2; color: #2D9F4F; }
+  .m-status.good { background: #E8F5E9; color: #2D9F4F; }
+  .m-status.developing { background: #FFF3E0; color: #C07800; }
+  .m-status.established { background: #F3E5F5; color: #9B51E0; }
+
+  /* Change as normal indicators */
+  .normal-section { margin-top: 28px; }
+  .normal-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .normal-card { padding: 16px; text-align: center; }
+  .normal-card.yes { background: #F0FAF2; border: 1px solid #C8E6C9; }
+  .normal-card.partial { background: #FFFBF0; border: 1px solid #F0E0C0; }
+  .normal-indicator { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+  .normal-card.yes .normal-indicator { color: #2D9F4F; }
+  .normal-card.partial .normal-indicator { color: #C07800; }
+  .normal-label { font-size: 13px; font-weight: 400; color: #666; }
+
+  /* Practitioners */
+  .prac-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 24px; }
+  .prac-card { padding: 16px; background: #FAFAFA; border: 1px solid #E8E8E8; text-align: center; }
+  .prac-count { font-size: 28px; font-weight: 700; color: #9B51E0; }
+  .prac-label { font-size: 13px; font-weight: 400; color: #666; margin-top: 4px; }
+
+  /* Right column */
+  .right-column { display: flex; flex-direction: column; gap: 24px; }
+
+  .checklist { display: flex; flex-direction: column; gap: 10px; }
+  .check-item { display: flex; align-items: flex-start; gap: 12px; padding: 12px 16px; background: #FAFAFA; }
+  .check-box { width: 20px; height: 20px; border: 2px solid; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .check-box.done { border-color: #2D9F4F; background: #2D9F4F; }
+  .check-box.done svg { display: block; }
+  .check-box.partial { border-color: #C07800; background: #FFFBF0; }
+  .check-box svg { display: none; }
+  .check-text { font-size: 14px; font-weight: 400; color: #444; line-height: 1.4; }
+
+  .next-box { padding: 20px; background: #F8F0FF; border: 1px solid #E8D5F5; }
+  .next-title { font-size: 14px; font-weight: 600; color: #9B51E0; margin-bottom: 12px; }
+  .next-items { display: flex; flex-direction: column; gap: 8px; }
+  .next-item { display: flex; gap: 10px; font-size: 14px; font-weight: 400; color: #444; }
+  .next-dot { width: 8px; height: 8px; background: #9B51E0; flex-shrink: 0; margin-top: 5px; }
+
+  /* Readiness */
+  .readiness-strip { display: flex; align-items: center; gap: 32px; margin-top: auto; padding: 24px 32px; background: #F8F0FF; border: 1px solid #E8D5F5; }
+  .readiness-score { font-size: 48px; font-weight: 700; color: #9B51E0; }
+  .readiness-label { font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; color: #9B51E0; }
+  .readiness-detail { font-size: 15px; font-weight: 400; color: #555; margin-top: 4px; line-height: 1.4; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <div class="header-left">
+      <h1>Change Capability View</h1>
+      <div class="subtitle">The organisation's ability to manage the next change itself</div>
+    </div>
+    <div class="header-right">
+      <div class="org-name">Millbrook Academy Trust</div>
+      <div class="report-date">Assessment March 2026</div>
+    </div>
+  </div>
+
+  <div class="main-grid">
+    <div>
+      <div class="section-label">Change leadership maturity</div>
+      <table class="maturity-table">
+        <thead><tr><th style="width: 220px;">Capability</th><th style="width: 170px;">Maturity</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td><div class="m-area">Change sequencing</div></td><td><div class="m-stages"><div class="m-dot filled"></div><div class="m-dot filled"></div><div class="m-dot filled"></div><div class="m-dot filled"></div></div></td><td><span class="m-status strong">Self-sustaining</span></td></tr>
+          <tr><td><div class="m-area">Stakeholder engagement</div></td><td><div class="m-stages"><div class="m-dot filled"></div><div class="m-dot filled"></div><div class="m-dot filled"></div><div class="m-dot partial"></div></div></td><td><span class="m-status good">Embedded</span></td></tr>
+          <tr><td><div class="m-area">Communication practice</div></td><td><div class="m-stages"><div class="m-dot filled"></div><div class="m-dot filled"></div><div class="m-dot filled"></div><div class="m-dot"></div></div></td><td><span class="m-status established">Established</span></td></tr>
+          <tr><td><div class="m-area">Resistance reading</div></td><td><div class="m-stages"><div class="m-dot filled"></div><div class="m-dot filled"></div><div class="m-dot filled"></div><div class="m-dot"></div></div></td><td><span class="m-status established">Established</span></td></tr>
+          <tr><td><div class="m-area">Pilot and scale approach</div></td><td><div class="m-stages"><div class="m-dot filled"></div><div class="m-dot filled"></div><div class="m-dot partial"></div><div class="m-dot"></div></div></td><td><span class="m-status developing">Developing</span></td></tr>
+          <tr><td><div class="m-area">Impact assessment</div></td><td><div class="m-stages"><div class="m-dot filled"></div><div class="m-dot filled"></div><div class="m-dot partial"></div><div class="m-dot"></div></div></td><td><span class="m-status developing">Developing</span></td></tr>
+        </tbody>
+      </table>
+
+      <div class="normal-section">
+        <div class="section-label">"Change as normal" indicators</div>
+        <div class="normal-grid">
+          <div class="normal-card yes"><div class="normal-indicator">Yes</div><div class="normal-label">Change load is managed deliberately</div></div>
+          <div class="normal-card yes"><div class="normal-indicator">Yes</div><div class="normal-label">Staff involved in change design</div></div>
+          <div class="normal-card partial"><div class="normal-indicator">Partly</div><div class="normal-label">Changes piloted before scaling</div></div>
+        </div>
+      </div>
+
+      <div class="prac-grid">
+        <div class="prac-card"><div class="prac-count">6</div><div class="prac-label">Change-confident middle leaders</div></div>
+        <div class="prac-card"><div class="prac-count">3</div><div class="prac-label">Design group facilitators</div></div>
+        <div class="prac-card"><div class="prac-count">2</div><div class="prac-label">Internal comms champions</div></div>
+      </div>
+    </div>
+
+    <div class="right-column">
+      <div>
+        <div class="section-label">Handover checklist</div>
+        <div class="checklist">
+          <div class="check-item"><div class="check-box done"><svg width="12" height="12" viewBox="0 0 12 12"><path d="M2 6 L5 9 L10 3" fill="none" stroke="#fff" stroke-width="2"/></svg></div><div class="check-text">Change sequencing approach understood and used by senior leaders</div></div>
+          <div class="check-item"><div class="check-box done"><svg width="12" height="12" viewBox="0 0 12 12"><path d="M2 6 L5 9 L10 3" fill="none" stroke="#fff" stroke-width="2"/></svg></div><div class="check-text">Communication rhythms running without external support</div></div>
+          <div class="check-item"><div class="check-box done"><svg width="12" height="12" viewBox="0 0 12 12"><path d="M2 6 L5 9 L10 3" fill="none" stroke="#fff" stroke-width="2"/></svg></div><div class="check-text">Middle leaders confident to lead change in their schools</div></div>
+          <div class="check-item"><div class="check-box done"><svg width="12" height="12" viewBox="0 0 12 12"><path d="M2 6 L5 9 L10 3" fill="none" stroke="#fff" stroke-width="2"/></svg></div><div class="check-text">Teacher design group approach embedded as standard practice</div></div>
+          <div class="check-item"><div class="check-box partial"></div><div class="check-text">Pilot-then-scale approach used consistently for new changes</div></div>
+          <div class="check-item"><div class="check-box partial"></div><div class="check-text">Impact assessment done before every new change initiative</div></div>
+        </div>
+      </div>
+
+      <div>
+        <div class="section-label">Ready for the next change</div>
+        <div class="next-box">
+          <div class="next-title">Internal capability for future changes</div>
+          <div class="next-items">
+            <div class="next-item"><div class="next-dot"></div>Senior leaders can sequence and prioritise changes</div>
+            <div class="next-item"><div class="next-dot"></div>Middle leaders can facilitate change in their teams</div>
+            <div class="next-item"><div class="next-dot"></div>Staff expect to be involved in designing changes</div>
+            <div class="next-item"><div class="next-dot"></div>Organisation can manage the next change without external support</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="readiness-strip">
+    <div><div class="readiness-score">76%</div></div>
+    <div>
+      <div class="readiness-label">Change independence readiness</div>
+      <div class="readiness-detail">Millbrook Academy Trust can manage future changes independently. Pilot discipline and impact assessment are the remaining areas for development before full independence.</div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

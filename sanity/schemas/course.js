@@ -81,6 +81,18 @@ export default defineType({
       validation: Rule => Rule.required(),
     }),
     defineField({
+      name: 'relatedServices',
+      title: 'Related Services',
+      type: 'array',
+      of: [
+        {
+          type: 'reference',
+          to: [{ type: 'service' }],
+        },
+      ],
+      description: 'Which services relate to this content (used for filtering on list pages)',
+    }),
+    defineField({
       name: 'relatedDimensions',
       title: 'Related dimensions',
       type: 'array',
@@ -91,6 +103,19 @@ export default defineType({
           to: [{ type: 'dimension' }],
         },
       ],
+    }),
+    defineField({
+      name: 'seoTitle',
+      title: 'SEO Title',
+      type: 'string',
+      description: 'Custom page title for search engines. Falls back to course title if blank.',
+    }),
+    defineField({
+      name: 'seoDescription',
+      title: 'SEO Description',
+      type: 'text',
+      rows: 2,
+      description: 'Meta description for search results. Falls back to short summary if blank.',
     }),
   ],
   preview: {

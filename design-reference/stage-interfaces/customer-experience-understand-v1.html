@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1920">
+<title>Customer Experience - Understand Stage</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;500;600;700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body { width: 1920px; height: 1080px; overflow: hidden; font-family: 'Source Sans 3', sans-serif; background: #FFFFFF; color: #221C2B; }
+
+  .dashboard { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: auto auto 1fr auto; height: 1080px; padding: 44px 52px; gap: 0; }
+
+  .topbar { grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; padding-bottom: 32px; border-bottom: 1px solid rgba(34,28,43,0.07); margin-bottom: 36px; }
+  .topbar-left { display: flex; align-items: center; gap: 20px; }
+  .topbar-logo { font-weight: 700; font-size: 18px; letter-spacing: 0.03em; background: linear-gradient(135deg, #80388F, #FF4279, #FFA200); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .topbar-sep { width: 1px; height: 28px; background: rgba(34,28,43,0.1); }
+  .topbar-context { display: flex; flex-direction: column; }
+  .topbar-type { font-size: 13px; font-weight: 500; color: rgba(34,28,43,0.4); letter-spacing: 0.04em; text-transform: uppercase; }
+  .topbar-org { font-size: 20px; font-weight: 700; color: #221C2B; }
+  .topbar-right { display: flex; align-items: center; gap: 28px; }
+  .topbar-tab { font-size: 15px; font-weight: 500; color: rgba(34,28,43,0.3); }
+  .topbar-tab--active { color: #221C2B; font-weight: 600; border-bottom: 2px solid #9B51E0; padding-bottom: 4px; }
+  .topbar-meta { font-size: 13px; color: rgba(34,28,43,0.3); }
+  .section-label { font-size: 12px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(34,28,43,0.35); margin-bottom: 16px; }
+
+  .headline-strip { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; margin-bottom: 36px; }
+  .headline-card { padding: 22px 20px; background: rgba(34,28,43,0.015); border: 1px solid rgba(34,28,43,0.05); text-align: center; }
+  .headline-value { font-size: 38px; font-weight: 700; line-height: 1; margin-bottom: 6px; }
+  .headline-label { font-size: 13px; font-weight: 500; color: rgba(34,28,43,0.45); line-height: 1.3; }
+  .headline-sub { font-size: 11px; font-weight: 600; margin-top: 6px; }
+
+  .col-left { padding-right: 36px; display: flex; flex-direction: column; gap: 24px; }
+
+  /* Journey quality map */
+  .journey-list { display: flex; flex-direction: column; gap: 6px; }
+
+  .journey-row {
+    display: grid; grid-template-columns: 130px 1fr 50px;
+    gap: 14px; align-items: center;
+    padding: 14px 16px; background: rgba(34,28,43,0.01); border: 1px solid rgba(34,28,43,0.04);
+  }
+
+  .journey-stage { font-size: 14px; font-weight: 600; color: #221C2B; }
+
+  .journey-bars { display: flex; flex-direction: column; gap: 4px; }
+
+  .journey-bar-row { display: flex; align-items: center; gap: 8px; }
+  .journey-bar-label { font-size: 10px; font-weight: 500; color: rgba(34,28,43,0.35); width: 56px; flex-shrink: 0; text-align: right; }
+  .journey-bar-track { flex: 1; height: 8px; background: rgba(34,28,43,0.04); }
+  .journey-bar-fill { height: 100%; }
+
+  .journey-score { font-size: 20px; font-weight: 700; text-align: center; }
+
+  .journey-connector {
+    display: flex; align-items: center; justify-content: center;
+    padding: 2px 0; color: rgba(34,28,43,0.15); font-size: 18px;
+  }
+
+  /* Failure demand */
+  .failure-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .failure-card { padding: 18px 20px; border: 1px solid rgba(34,28,43,0.06); border-top: 3px solid; }
+  .failure-label { font-size: 12px; font-weight: 500; color: rgba(34,28,43,0.45); margin-bottom: 6px; line-height: 1.3; }
+  .failure-value { font-size: 28px; font-weight: 700; line-height: 1; margin-bottom: 4px; }
+  .failure-context { font-size: 11px; color: rgba(34,28,43,0.35); }
+
+  .col-right { padding-left: 36px; border-left: 1px solid rgba(34,28,43,0.06); display: flex; flex-direction: column; gap: 24px; }
+
+  /* Inside-out root causes */
+  .rootcause-list { display: flex; flex-direction: column; gap: 6px; }
+
+  .rootcause-item { padding: 14px 16px; border-left: 3px solid; background: rgba(34,28,43,0.015); }
+  .rootcause-header { display: flex; justify-content: space-between; align-items: start; margin-bottom: 4px; }
+  .rootcause-title { font-size: 14px; font-weight: 600; color: #221C2B; }
+  .rootcause-tag { font-size: 10px; font-weight: 600; padding: 2px 7px; text-transform: uppercase; letter-spacing: 0.04em; }
+  .rootcause-desc { font-size: 12px; color: rgba(34,28,43,0.45); line-height: 1.4; margin-bottom: 6px; }
+  .rootcause-impact { font-size: 11px; font-weight: 600; color: rgba(34,28,43,0.5); }
+
+  /* Experience gap */
+  .gap-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .gap-card { padding: 18px; border: 1px solid rgba(34,28,43,0.06); }
+  .gap-header { font-size: 13px; font-weight: 600; color: #221C2B; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid rgba(34,28,43,0.06); }
+  .gap-item { font-size: 12px; color: rgba(34,28,43,0.55); padding: 6px 0; line-height: 1.4; border-bottom: 1px solid rgba(34,28,43,0.03); }
+  .gap-item:last-child { border-bottom: none; }
+
+  .footer { grid-column: 1 / -1; margin-top: 24px; padding: 28px 32px; background: linear-gradient(135deg, rgba(128,56,143,0.04), rgba(255,66,121,0.03), rgba(255,162,0,0.04)); border: 1px solid rgba(34,28,43,0.06); display: flex; justify-content: space-between; align-items: center; }
+  .footer-message { flex: 1; }
+  .footer-title { font-size: 20px; font-weight: 700; color: #221C2B; margin-bottom: 6px; }
+  .footer-desc { font-size: 14px; color: rgba(34,28,43,0.5); line-height: 1.5; max-width: 700px; }
+  .footer-score { display: flex; gap: 24px; align-items: center; }
+  .score-ring { width: 100px; height: 100px; position: relative; }
+  .score-ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+  .score-ring-bg { fill: none; stroke: rgba(34,28,43,0.05); stroke-width: 8; }
+  .score-ring-fill { fill: none; stroke: url(#ringGrad); stroke-width: 8; stroke-linecap: square; stroke-dasharray: 264; stroke-dashoffset: 126; /* 264 * (1 - 0.52) */ }
+  .score-ring-value { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 28px; font-weight: 700; color: #221C2B; }
+  .score-label { font-size: 14px; font-weight: 600; color: rgba(34,28,43,0.5); }
+  .score-sub { font-size: 12px; color: rgba(34,28,43,0.35); margin-top: 2px; }
+</style>
+</head>
+<body>
+<div class="dashboard">
+
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="topbar-logo">MUTOMORRO</div>
+      <div class="topbar-sep"></div>
+      <div class="topbar-context">
+        <span class="topbar-type">Customer experience diagnostic</span>
+        <span class="topbar-org">Crestfield Mutual</span>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <div class="topbar-tab topbar-tab--active">Journey</div>
+      <div class="topbar-tab">Root causes</div>
+      <div class="topbar-tab">Failure demand</div>
+      <div class="topbar-tab">Priorities</div>
+      <div class="topbar-meta">Assessment period · February-March 2026</div>
+    </div>
+  </div>
+
+  <div class="headline-strip">
+    <div class="headline-card">
+      <div class="headline-value" style="color: #C07800;">52</div>
+      <div class="headline-label">Customer experience score</div>
+      <div class="headline-sub" style="color: #C07800;">Below sector average of 64</div>
+    </div>
+    <div class="headline-card">
+      <div class="headline-value" style="color: #D43A6A;">43%</div>
+      <div class="headline-label">Failure demand rate</div>
+      <div class="headline-sub" style="color: #D43A6A;">43% of contacts are preventable</div>
+    </div>
+    <div class="headline-card">
+      <div class="headline-value" style="color: #C07800;">22pt</div>
+      <div class="headline-label">Design vs delivery gap</div>
+      <div class="headline-sub" style="color: #C07800;">Service designed for 74, delivering 52</div>
+    </div>
+    <div class="headline-card">
+      <div class="headline-value" style="color: #9B51E0;">5</div>
+      <div class="headline-label">Organisational root causes</div>
+      <div class="headline-sub" style="color: #9B51E0;">Internal patterns → external impact</div>
+    </div>
+    <div class="headline-card">
+      <div class="headline-value" style="color: #221C2B;">1,240</div>
+      <div class="headline-label">Customer voices heard</div>
+      <div class="headline-sub" style="color: rgba(34,28,43,0.35);">Surveys, calls, visits, complaints</div>
+    </div>
+  </div>
+
+  <div class="col-left">
+
+    <div>
+      <div class="section-label">Customer journey quality</div>
+      <div class="journey-list">
+        <div class="journey-row">
+          <div class="journey-stage">First contact</div>
+          <div class="journey-bars">
+            <div class="journey-bar-row"><span class="journey-bar-label">Designed</span><div class="journey-bar-track"><div class="journey-bar-fill" style="width: 78%; background: rgba(34,28,43,0.15);"></div></div></div>
+            <div class="journey-bar-row"><span class="journey-bar-label">Delivered</span><div class="journey-bar-track"><div class="journey-bar-fill" style="width: 58%; background: linear-gradient(90deg, #C07800, #FFA200);"></div></div></div>
+          </div>
+          <div class="journey-score" style="color: #C07800;">58</div>
+        </div>
+        <div class="journey-connector">↓</div>
+        <div class="journey-row">
+          <div class="journey-stage">Application</div>
+          <div class="journey-bars">
+            <div class="journey-bar-row"><span class="journey-bar-label">Designed</span><div class="journey-bar-track"><div class="journey-bar-fill" style="width: 82%; background: rgba(34,28,43,0.15);"></div></div></div>
+            <div class="journey-bar-row"><span class="journey-bar-label">Delivered</span><div class="journey-bar-track"><div class="journey-bar-fill" style="width: 44%; background: linear-gradient(90deg, #D43A6A, #FF6B9A);"></div></div></div>
+          </div>
+          <div class="journey-score" style="color: #D43A6A;">44</div>
+        </div>
+        <div class="journey-connector">↓</div>
+        <div class="journey-row">
+          <div class="journey-stage">Ongoing service</div>
+          <div class="journey-bars">
+            <div class="journey-bar-row"><span class="journey-bar-label">Designed</span><div class="journey-bar-track"><div class="journey-bar-fill" style="width: 76%; background: rgba(34,28,43,0.15);"></div></div></div>
+            <div class="journey-bar-row"><span class="journey-bar-label">Delivered</span><div class="journey-bar-track"><div class="journey-bar-fill" style="width: 52%; background: linear-gradient(90deg, #C07800, #FFA200);"></div></div></div>
+          </div>
+          <div class="journey-score" style="color: #C07800;">52</div>
+        </div>
+        <div class="journey-connector">↓</div>
+        <div class="journey-row">
+          <div class="journey-stage">Claims</div>
+          <div class="journey-bars">
+            <div class="journey-bar-row"><span class="journey-bar-label">Designed</span><div class="journey-bar-track"><div class="journey-bar-fill" style="width: 72%; background: rgba(34,28,43,0.15);"></div></div></div>
+            <div class="journey-bar-row"><span class="journey-bar-label">Delivered</span><div class="journey-bar-track"><div class="journey-bar-fill" style="width: 38%; background: linear-gradient(90deg, #D43A6A, #FF6B9A);"></div></div></div>
+          </div>
+          <div class="journey-score" style="color: #D43A6A;">38</div>
+        </div>
+        <div class="journey-connector">↓</div>
+        <div class="journey-row">
+          <div class="journey-stage">Renewal</div>
+          <div class="journey-bars">
+            <div class="journey-bar-row"><span class="journey-bar-label">Designed</span><div class="journey-bar-track"><div class="journey-bar-fill" style="width: 70%; background: rgba(34,28,43,0.15);"></div></div></div>
+            <div class="journey-bar-row"><span class="journey-bar-label">Delivered</span><div class="journey-bar-track"><div class="journey-bar-fill" style="width: 62%; background: linear-gradient(90deg, #C07800, #FFA200);"></div></div></div>
+          </div>
+          <div class="journey-score" style="color: #C07800;">62</div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section-label">Failure demand breakdown</div>
+      <div class="failure-grid">
+        <div class="failure-card" style="border-top-color: #D43A6A;">
+          <div class="failure-label">Contacts caused by internal handoff failures</div>
+          <div class="failure-value" style="color: #D43A6A;">31%</div>
+          <div class="failure-context">Customer chases because teams did not hand off properly</div>
+        </div>
+        <div class="failure-card" style="border-top-color: #C07800;">
+          <div class="failure-label">Contacts caused by unclear communication</div>
+          <div class="failure-value" style="color: #C07800;">28%</div>
+          <div class="failure-context">Members calling because letters or emails were confusing</div>
+        </div>
+        <div class="failure-card" style="border-top-color: #C07800;">
+          <div class="failure-label">Contacts caused by process errors</div>
+          <div class="failure-value" style="color: #C07800;">24%</div>
+          <div class="failure-context">Things went wrong and the customer had to fix it</div>
+        </div>
+        <div class="failure-card" style="border-top-color: #2D9F4F;">
+          <div class="failure-label">Genuine value demand</div>
+          <div class="failure-value" style="color: #2D9F4F;">57%</div>
+          <div class="failure-context">Real questions, real needs, good contacts to have</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-right">
+
+    <div>
+      <div class="section-label">Organisational root causes → customer impact</div>
+      <div class="rootcause-list">
+        <div class="rootcause-item" style="border-left-color: #D43A6A;">
+          <div class="rootcause-header">
+            <div class="rootcause-title">Teams work in silos, customers fall between them</div>
+            <div class="rootcause-tag" style="background: rgba(212,58,106,0.08); color: #D43A6A;">Structural</div>
+          </div>
+          <div class="rootcause-desc">No single team owns the full journey. Handoffs between departments create gaps where customers get lost or have to repeat themselves.</div>
+          <div class="rootcause-impact">→ Drives 31% of failure demand. Worst at Application and Claims stages.</div>
+        </div>
+        <div class="rootcause-item" style="border-left-color: #D43A6A;">
+          <div class="rootcause-header">
+            <div class="rootcause-title">Front-line teams lack authority to resolve</div>
+            <div class="rootcause-tag" style="background: rgba(212,58,106,0.08); color: #D43A6A;">Decision rights</div>
+          </div>
+          <div class="rootcause-desc">Team members can identify the problem but need approval to fix it. Customers wait while decisions travel up and back down.</div>
+          <div class="rootcause-impact">→ Average resolution time 3x longer than it needs to be.</div>
+        </div>
+        <div class="rootcause-item" style="border-left-color: #C07800;">
+          <div class="rootcause-header">
+            <div class="rootcause-title">Systems designed for the organisation, not the member</div>
+            <div class="rootcause-tag" style="background: rgba(192,120,0,0.08); color: #C07800;">Operational</div>
+          </div>
+          <div class="rootcause-desc">Internal processes and correspondence written for compliance, not clarity. Members cannot understand what is happening with their account.</div>
+          <div class="rootcause-impact">→ 28% of contacts are "what does this letter mean?"</div>
+        </div>
+        <div class="rootcause-item" style="border-left-color: #C07800;">
+          <div class="rootcause-header">
+            <div class="rootcause-title">No feedback loop from front line to design</div>
+            <div class="rootcause-tag" style="background: rgba(192,120,0,0.08); color: #C07800;">Learning</div>
+          </div>
+          <div class="rootcause-desc">Front-line teams know exactly what frustrates members but have no channel to influence how services are designed. The same problems persist.</div>
+          <div class="rootcause-impact">→ Known issues persist an average of 14 months before being addressed.</div>
+        </div>
+        <div class="rootcause-item" style="border-left-color: #9B51E0;">
+          <div class="rootcause-header">
+            <div class="rootcause-title">CX measured by satisfaction, not by experience</div>
+            <div class="rootcause-tag" style="background: rgba(155,81,224,0.08); color: #7B3FA0;">Measurement</div>
+          </div>
+          <div class="rootcause-desc">The organisation tracks NPS and satisfaction scores but not the journey quality or failure demand that actually drives them. Fixing symptoms, not causes.</div>
+          <div class="rootcause-impact">→ Scores improve temporarily after interventions then revert.</div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section-label">Designed service vs delivered service</div>
+      <div class="gap-grid">
+        <div class="gap-card" style="border-top: 3px solid rgba(34,28,43,0.15);">
+          <div class="gap-header">How the service was designed</div>
+          <div class="gap-item">Single point of contact throughout</div>
+          <div class="gap-item">Clear, plain language at every stage</div>
+          <div class="gap-item">Resolved at first contact where possible</div>
+          <div class="gap-item">Proactive updates so members never chase</div>
+        </div>
+        <div class="gap-card" style="border-top: 3px solid #D43A6A;">
+          <div class="gap-header">How members actually experience it</div>
+          <div class="gap-item">Passed between 3-4 people on average</div>
+          <div class="gap-item">Letters require a phone call to understand</div>
+          <div class="gap-item">Average of 2.3 contacts to resolve an issue</div>
+          <div class="gap-item">Members chase because they hear nothing</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div class="footer-message">
+      <div class="footer-title">The customer experience is an organisational challenge, not a service desk problem</div>
+      <div class="footer-desc">Every root cause sits inside the organisation, not at the front line. Fixing CX means changing how the organisation works - its structure, decision rights, communication and learning loops. The front-line team is not the problem. The system is.</div>
+    </div>
+    <div class="footer-score">
+      <div>
+        <div class="score-label">Customer<br>experience</div>
+        <div class="score-sub">Sector average: 64</div>
+      </div>
+      <div class="score-ring">
+        <svg viewBox="0 0 100 100">
+          <defs>
+            <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#80388F"/>
+              <stop offset="50%" stop-color="#FF4279"/>
+              <stop offset="100%" stop-color="#FFA200"/>
+            </linearGradient>
+          </defs>
+          <circle cx="50" cy="50" r="42" class="score-ring-bg"/>
+          <circle cx="50" cy="50" r="42" class="score-ring-fill"/>
+        </svg>
+        <div class="score-ring-value">52</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

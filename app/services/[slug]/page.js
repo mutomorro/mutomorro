@@ -9,6 +9,7 @@ import ServiceHero from '../../../components/heroes/ServiceHero'
 import RecognitionRow from '../../../components/RecognitionRow'
 import LogoStrip from '../../../components/LogoStrip'
 import BackgroundPattern from '@/components/animations/BackgroundPattern'
+import Lightbox from '../../../components/Lightbox'
 
 // Step colours matching the journey strip
 const STEP_COLOURS = ['#80388F', '#9B51E0', '#FF4279', '#E08F00']
@@ -165,40 +166,60 @@ export default async function ServicePage({ params }) {
             </h2>
           </div>
 
-          {/* Body text + image split below heading */}
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: service.propositionImageUrl ? '55% 1fr' : '1fr',
-            gap: '4rem',
-            alignItems: 'start',
-          }}>
-            <div className="scroll-in" style={{
-              maxWidth: service.propositionImageUrl ? 'none' : '800px',
-            }}>
-              <div className="portable-text" style={{ color: 'rgba(0,0,0,0.7)' }}>
-                <PortableText value={service.contextBody} />
-              </div>
-            </div>
+          {/* Body text + fan image split below heading */}
+          {(() => {
+            const fanImages = (service.stages || []).slice(0, 3).filter(s => s.stageImageUrl);
+            const hasFan = fanImages.length > 0;
+            return (
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: hasFan ? '1fr 1fr' : '1fr',
+                gap: '4rem',
+                alignItems: 'start',
+              }}>
+                <div className="scroll-in" style={{
+                  maxWidth: hasFan ? 'none' : '800px',
+                }}>
+                  <div className="portable-text" style={{ color: 'rgba(0,0,0,0.7)' }}>
+                    <PortableText value={service.contextBody} />
+                  </div>
+                </div>
 
-            {/* Proposition diagram */}
-            {service.propositionImageUrl && (
-              <div className="scroll-in delay-1">
-                <img
-                  src={service.propositionImageUrl}
-                  alt={service.propositionCaption || 'Proposition diagram'}
-                  style={{ width: '100%', height: 'auto' }}
-                />
-                {service.propositionCaption && (
-                  <p className="caption-text" style={{
-                    marginTop: '12px',
-                    textAlign: 'center',
-                  }}>
-                    {service.propositionCaption}
-                  </p>
+                {/* Fan composition of stage interface screenshots */}
+                {hasFan && (
+                  <div className="fan-composition scroll-in delay-1">
+                    {service.stages[2]?.stageImageUrl && (
+                      <div className="fan-card fan-card-back">
+                        <img
+                          src={service.stages[2].stageImageUrl}
+                          alt={`${service.title} - ${service.stages[2].stageHeading || 'Implement'}`}
+                          loading="lazy"
+                        />
+                      </div>
+                    )}
+                    {service.stages[1]?.stageImageUrl && (
+                      <div className="fan-card fan-card-middle">
+                        <img
+                          src={service.stages[1].stageImageUrl}
+                          alt={`${service.title} - ${service.stages[1].stageHeading || 'Co-design'}`}
+                          loading="lazy"
+                        />
+                      </div>
+                    )}
+                    {service.stages[0]?.stageImageUrl && (
+                      <div className="fan-card fan-card-front">
+                        <img
+                          src={service.stages[0].stageImageUrl}
+                          alt={`${service.title} - ${service.stages[0].stageHeading || 'Understand'}`}
+                          loading="lazy"
+                        />
+                      </div>
+                    )}
+                  </div>
                 )}
               </div>
-            )}
-          </div>
+            );
+          })()}
         </div>
       </BackgroundPattern>
 
@@ -301,7 +322,7 @@ export default async function ServicePage({ params }) {
                     style={{ transitionDelay: `${i * 0.1}s`, overflow: 'hidden' }}
                   >
                     {project.heroImageUrl && (
-                      <div style={{
+                      <div className="img-lift" style={{
                         width: '100%',
                         height: '200px',
                         overflow: 'hidden',
@@ -455,91 +476,63 @@ export default async function ServicePage({ params }) {
             background: i % 2 === 0 ? 'var(--warm)' : 'var(--white)',
           }}
         >
-          <div style={{
-            maxWidth: '1350px',
-            margin: '0 auto',
-            display: 'grid',
-            gridTemplateColumns: stage.stageImageUrl ? (i % 2 === 0 ? '380px 1fr' : '1fr 380px') : '1fr',
-            gap: '4rem',
-            alignItems: 'start',
-          }}>
-            {/* Image - left on even stages, right on odd */}
-            {stage.stageImageUrl && i % 2 === 0 && (
-              <div className="scroll-in img-offset" style={{
-                position: 'sticky',
-                top: '180px',
-              }}>
-                <img
-                  src={stage.stageImageUrl}
-                  alt={stage.stageHeading}
-                  style={{ width: '100%', height: 'auto', display: 'block' }}
-                />
-              </div>
-            )}
+          <div className="stage-block" style={{ maxWidth: '1350px', margin: '0 auto' }}>
 
-            {/* Content */}
-            <div className="scroll-in">
-              <p className="stage-number-large" style={{ color: STEP_COLOURS[i] || STEP_COLOURS[0] }}>
-                {stage.stageNumber}
-              </p>
-              <h2 className="heading-h3" style={{ margin: '0 0 24px' }}>
-                {stage.stageHeading}
-              </h2>
-              <div className="portable-text">
-                <PortableText value={stage.stageBody} />
-              </div>
-
-              {/* What this looks like in practice */}
-              {stage.stageInPractice?.length > 0 && (
-                <div style={{
-                  marginTop: '24px',
-                  paddingTop: '24px',
-                  borderTop: '1px solid rgba(0,0,0,0.08)',
-                }}>
-                  <p style={{
-                    fontSize: '15px',
-                    fontWeight: '400',
-                    color: 'var(--dark)',
-                    margin: '0 0 16px',
-                  }}>
-                    What this looks like in practice
-                  </p>
-                  <ul className="practice-list">
-                    {stage.stageInPractice.map((item, j) => (
-                      <li key={j}>{item}</li>
-                    ))}
-                  </ul>
+            {/* TOP ROW: heading+body left, image right */}
+            <div className="stage-block__top">
+              <div className="stage-block__text scroll-in">
+                <p className="stage-number-large" style={{ color: STEP_COLOURS[i] || STEP_COLOURS[0] }}>
+                  {stage.stageNumber}
+                </p>
+                <h2 className="heading-h3" style={{ margin: '0 0 24px' }}>
+                  {stage.stageHeading}
+                </h2>
+                <div className="portable-text">
+                  <PortableText value={stage.stageBody} />
                 </div>
-              )}
+              </div>
 
-              {/* What you get - redesigned outcome box */}
-              {stage.stageOutcome && (
-                <div style={{
-                  marginTop: '24px',
-                  paddingTop: '24px',
-                  borderTop: '1px solid rgba(0,0,0,0.08)',
-                }}>
+              {stage.stageImageUrl ? (
+                <div className="stage-block__image scroll-in delay-1 img-lift">
+                  <Lightbox src={stage.stageImageUrl} alt={stage.stageHeading} />
+                </div>
+              ) : (
+                <div className="stage-block__image" style={{ background: i % 2 === 0 ? '#FFFFFF' : '#FAF6F1' }}></div>
+              )}
+            </div>
+
+            {/* BOTTOM ROW: practice bullets left, outcome box right */}
+            <div className="stage-block__bottom">
+              <div className="stage-block__practices scroll-in">
+                {stage.stageInPractice?.length > 0 && (
+                  <>
+                    <p style={{
+                      fontSize: '15px',
+                      fontWeight: '400',
+                      color: 'var(--dark)',
+                      margin: '0 0 16px',
+                    }}>
+                      What this looks like in practice
+                    </p>
+                    <ul className="practice-list">
+                      {stage.stageInPractice.map((item, j) => (
+                        <li key={j}>{item}</li>
+                      ))}
+                    </ul>
+                  </>
+                )}
+              </div>
+
+              <div className="stage-block__outcome-wrap scroll-in delay-1">
+                {stage.stageOutcome && (
                   <div className="stage-outcome-box">
                     <p className="stage-outcome-box__label">What you get</p>
                     <p className="stage-outcome-box__text">{stage.stageOutcome}</p>
                   </div>
-                </div>
-              )}
+                )}
+              </div>
             </div>
 
-            {/* Image - right on odd stages */}
-            {stage.stageImageUrl && i % 2 !== 0 && (
-              <div className="scroll-in delay-1 img-offset" style={{
-                position: 'sticky',
-                top: '180px',
-              }}>
-                <img
-                  src={stage.stageImageUrl}
-                  alt={stage.stageHeading}
-                  style={{ width: '100%', height: 'auto', display: 'block' }}
-                />
-              </div>
-            )}
           </div>
         </section>
       ))}
@@ -581,7 +574,7 @@ export default async function ServicePage({ params }) {
                 </Link>
               )}
             </div>
-            <div className="scroll-in delay-1 img-offset">
+            <div className="scroll-in delay-1 img-offset img-lift">
               <img
                 src={service.perspectiveImageUrl}
                 alt={service.perspectiveHeading}

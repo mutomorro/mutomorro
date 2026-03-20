@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1920">
+<title>Employee Experience - Understand Stage</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;500;600;700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    width: 1920px;
+    height: 1080px;
+    overflow: hidden;
+    font-family: 'Source Sans 3', sans-serif;
+    background: #FFFFFF;
+    color: #221C2B;
+  }
+
+  .dashboard {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto 1fr auto;
+    height: 1080px;
+    padding: 44px 52px;
+    gap: 0;
+  }
+
+  /* ---- TOP BAR ---- */
+  .topbar {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 32px;
+    border-bottom: 1px solid rgba(34,28,43,0.07);
+    margin-bottom: 36px;
+  }
+
+  .topbar-left { display: flex; align-items: center; gap: 20px; }
+
+  .topbar-logo {
+    font-weight: 700; font-size: 18px; letter-spacing: 0.03em;
+    background: linear-gradient(135deg, #80388F, #FF4279, #FFA200);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+
+  .topbar-sep { width: 1px; height: 28px; background: rgba(34,28,43,0.1); }
+  .topbar-context { display: flex; flex-direction: column; }
+  .topbar-type { font-size: 13px; font-weight: 500; color: rgba(34,28,43,0.4); letter-spacing: 0.04em; text-transform: uppercase; }
+  .topbar-org { font-size: 20px; font-weight: 700; color: #221C2B; }
+  .topbar-right { display: flex; align-items: center; gap: 28px; }
+  .topbar-tab { font-size: 15px; font-weight: 500; color: rgba(34,28,43,0.3); }
+  .topbar-tab--active { color: #221C2B; font-weight: 600; border-bottom: 2px solid #9B51E0; padding-bottom: 4px; }
+  .topbar-meta { font-size: 13px; color: rgba(34,28,43,0.3); }
+
+  .section-label {
+    font-size: 12px; font-weight: 600; letter-spacing: 0.1em;
+    text-transform: uppercase; color: rgba(34,28,43,0.35); margin-bottom: 16px;
+  }
+
+  /* ---- HEADLINE STRIP ---- */
+  .headline-strip {
+    grid-column: 1 / -1;
+    display: grid; grid-template-columns: repeat(5, 1fr);
+    gap: 14px; margin-bottom: 36px;
+  }
+
+  .headline-card {
+    padding: 22px 20px; background: rgba(34,28,43,0.015);
+    border: 1px solid rgba(34,28,43,0.05); text-align: center;
+  }
+
+  .headline-value { font-size: 38px; font-weight: 700; line-height: 1; margin-bottom: 6px; }
+  .headline-label { font-size: 13px; font-weight: 500; color: rgba(34,28,43,0.45); line-height: 1.3; }
+  .headline-sub { font-size: 11px; font-weight: 600; margin-top: 6px; }
+
+  /* ---- LEFT COLUMN ---- */
+  .col-left {
+    padding-right: 36px;
+    display: flex; flex-direction: column; gap: 28px;
+  }
+
+  /* Touchpoint quality map */
+  .touchpoint-list {
+    display: flex; flex-direction: column; gap: 8px;
+  }
+
+  .touchpoint-row {
+    display: grid;
+    grid-template-columns: 140px 1fr 60px 60px;
+    gap: 14px;
+    align-items: center;
+    padding: 14px 16px;
+    background: rgba(34,28,43,0.01);
+    border: 1px solid rgba(34,28,43,0.04);
+  }
+
+  .tp-name {
+    font-size: 14px; font-weight: 600; color: #221C2B;
+  }
+
+  .tp-bars {
+    display: flex; flex-direction: column; gap: 4px;
+  }
+
+  .tp-bar-row {
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  .tp-bar-label {
+    font-size: 10px; font-weight: 500; color: rgba(34,28,43,0.35);
+    width: 60px; flex-shrink: 0; text-align: right;
+  }
+
+  .tp-bar-track {
+    flex: 1; height: 8px; background: rgba(34,28,43,0.04);
+  }
+
+  .tp-bar-fill { height: 100%; }
+
+  .tp-score {
+    font-size: 20px; font-weight: 700; text-align: center;
+  }
+
+  .tp-delta {
+    font-size: 12px; font-weight: 600; text-align: center;
+  }
+
+  .tp-header {
+    display: grid;
+    grid-template-columns: 140px 1fr 60px 60px;
+    gap: 14px;
+    padding: 0 16px 8px;
+  }
+
+  .tp-header-cell {
+    font-size: 10px; font-weight: 600; color: rgba(34,28,43,0.3);
+    text-transform: uppercase; letter-spacing: 0.06em;
+  }
+
+  .tp-header-cell:nth-child(3),
+  .tp-header-cell:nth-child(4) { text-align: center; }
+
+  /* Survey vs conversation comparison */
+  .comparison-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .comparison-card {
+    padding: 18px;
+    border: 1px solid rgba(34,28,43,0.06);
+  }
+
+  .comparison-header {
+    font-size: 13px; font-weight: 600; color: #221C2B;
+    margin-bottom: 10px; padding-bottom: 8px;
+    border-bottom: 1px solid rgba(34,28,43,0.06);
+  }
+
+  .comparison-item {
+    font-size: 12px; color: rgba(34,28,43,0.55);
+    padding: 6px 0; line-height: 1.4;
+    border-bottom: 1px solid rgba(34,28,43,0.03);
+  }
+
+  .comparison-item:last-child { border-bottom: none; }
+
+  .comparison-quote {
+    font-style: italic;
+    color: rgba(34,28,43,0.45);
+  }
+
+  /* ---- RIGHT COLUMN ---- */
+  .col-right {
+    padding-left: 36px;
+    border-left: 1px solid rgba(34,28,43,0.06);
+    display: flex; flex-direction: column; gap: 24px;
+  }
+
+  /* Team heatmap */
+  .heatmap-grid {
+    display: grid;
+    grid-template-columns: 120px repeat(6, 1fr);
+    gap: 3px;
+  }
+
+  .heatmap-header {
+    font-size: 10px; font-weight: 600; color: rgba(34,28,43,0.3);
+    text-transform: uppercase; letter-spacing: 0.04em;
+    text-align: center; padding: 8px 4px;
+    writing-mode: horizontal-tb;
+  }
+
+  .heatmap-header:first-child { text-align: left; }
+
+  .heatmap-row-label {
+    font-size: 12px; font-weight: 600; color: #221C2B;
+    padding: 10px 4px; display: flex; align-items: center;
+  }
+
+  .heatmap-cell {
+    padding: 10px 4px;
+    text-align: center;
+    font-size: 13px; font-weight: 700;
+  }
+
+  /* Systemic patterns */
+  .patterns-list {
+    display: flex; flex-direction: column; gap: 6px;
+  }
+
+  .pattern-item {
+    padding: 14px 16px;
+    border-left: 3px solid;
+    background: rgba(34,28,43,0.015);
+  }
+
+  .pattern-title {
+    font-size: 14px; font-weight: 600; color: #221C2B; margin-bottom: 4px;
+  }
+
+  .pattern-desc {
+    font-size: 12px; color: rgba(34,28,43,0.45); line-height: 1.4;
+  }
+
+  .pattern-tag {
+    font-size: 10px; font-weight: 600; padding: 2px 6px;
+    margin-top: 6px; display: inline-block;
+    text-transform: uppercase; letter-spacing: 0.04em;
+  }
+
+  /* ---- FOOTER ---- */
+  .footer {
+    grid-column: 1 / -1;
+    margin-top: 24px;
+    padding: 28px 32px;
+    background: linear-gradient(135deg, rgba(128,56,143,0.04), rgba(255,66,121,0.03), rgba(255,162,0,0.04));
+    border: 1px solid rgba(34,28,43,0.06);
+    display: flex; justify-content: space-between; align-items: center;
+  }
+
+  .footer-message { flex: 1; }
+
+  .footer-title { font-size: 20px; font-weight: 700; color: #221C2B; margin-bottom: 6px; }
+
+  .footer-desc {
+    font-size: 14px; color: rgba(34,28,43,0.5); line-height: 1.5; max-width: 700px;
+  }
+
+  .footer-score {
+    display: flex; gap: 24px; align-items: center;
+  }
+
+  .score-ring {
+    width: 100px; height: 100px; position: relative;
+  }
+
+  .score-ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+
+  .score-ring-bg { fill: none; stroke: rgba(34,28,43,0.05); stroke-width: 8; }
+
+  .score-ring-fill {
+    fill: none; stroke: url(#ringGrad); stroke-width: 8;
+    stroke-linecap: square; stroke-dasharray: 264;
+    stroke-dashoffset: 119; /* 264 * (1 - 0.55) = 118.8 */
+  }
+
+  .score-ring-value {
+    position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 28px; font-weight: 700; color: #221C2B;
+  }
+
+  .score-label {
+    font-size: 14px; font-weight: 600; color: rgba(34,28,43,0.5);
+  }
+
+  .score-sub {
+    font-size: 12px; color: rgba(34,28,43,0.35); margin-top: 2px;
+  }
+</style>
+</head>
+<body>
+<div class="dashboard">
+
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="topbar-logo">MUTOMORRO</div>
+      <div class="topbar-sep"></div>
+      <div class="topbar-context">
+        <span class="topbar-type">Experience diagnostic</span>
+        <span class="topbar-org">Pennine Housing Group</span>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <div class="topbar-tab topbar-tab--active">Touchpoints</div>
+      <div class="topbar-tab">By team</div>
+      <div class="topbar-tab">Patterns</div>
+      <div class="topbar-tab">Priorities</div>
+      <div class="topbar-meta">Assessment period · March-April 2026</div>
+    </div>
+  </div>
+
+  <!-- HEADLINE STRIP -->
+  <div class="headline-strip">
+    <div class="headline-card">
+      <div class="headline-value" style="color: #C07800;">55</div>
+      <div class="headline-label">Overall experience score</div>
+      <div class="headline-sub" style="color: #C07800;">Below sector average of 62</div>
+    </div>
+    <div class="headline-card">
+      <div class="headline-value" style="color: #D43A6A;">3</div>
+      <div class="headline-label">Touchpoints below threshold</div>
+      <div class="headline-sub" style="color: #D43A6A;">Development, communication, recognition</div>
+    </div>
+    <div class="headline-card">
+      <div class="headline-value" style="color: #221C2B;">247</div>
+      <div class="headline-label">People heard from</div>
+      <div class="headline-sub" style="color: rgba(34,28,43,0.35);">Surveys, conversations, observations</div>
+    </div>
+    <div class="headline-card">
+      <div class="headline-value" style="color: #C07800;">18pt</div>
+      <div class="headline-label">Surveys vs reality gap</div>
+      <div class="headline-sub" style="color: #C07800;">Surveys overstate by avg 18 points</div>
+    </div>
+    <div class="headline-card">
+      <div class="headline-value" style="color: #9B51E0;">4</div>
+      <div class="headline-label">Systemic patterns identified</div>
+      <div class="headline-sub" style="color: #9B51E0;">Root causes beneath the symptoms</div>
+    </div>
+  </div>
+
+  <!-- LEFT COLUMN -->
+  <div class="col-left">
+
+    <!-- Touchpoint quality map -->
+    <div>
+      <div class="section-label">Experience quality by touchpoint</div>
+      <div class="tp-header">
+        <div class="tp-header-cell">Touchpoint</div>
+        <div class="tp-header-cell">Survey score vs conversation score</div>
+        <div class="tp-header-cell">Score</div>
+        <div class="tp-header-cell">Gap</div>
+      </div>
+      <div class="touchpoint-list">
+        <div class="touchpoint-row">
+          <div class="tp-name">Onboarding</div>
+          <div class="tp-bars">
+            <div class="tp-bar-row">
+              <span class="tp-bar-label">Survey</span>
+              <div class="tp-bar-track"><div class="tp-bar-fill" style="width: 72%; background: linear-gradient(90deg, #2D9F4F, #4ECB71);"></div></div>
+            </div>
+            <div class="tp-bar-row">
+              <span class="tp-bar-label">Reality</span>
+              <div class="tp-bar-track"><div class="tp-bar-fill" style="width: 61%; background: linear-gradient(90deg, #C07800, #FFA200);"></div></div>
+            </div>
+          </div>
+          <div class="tp-score" style="color: #C07800;">61</div>
+          <div class="tp-delta" style="color: #C07800;">-11</div>
+        </div>
+        <div class="touchpoint-row">
+          <div class="tp-name">Daily work</div>
+          <div class="tp-bars">
+            <div class="tp-bar-row">
+              <span class="tp-bar-label">Survey</span>
+              <div class="tp-bar-track"><div class="tp-bar-fill" style="width: 68%; background: linear-gradient(90deg, #C07800, #FFA200);"></div></div>
+            </div>
+            <div class="tp-bar-row">
+              <span class="tp-bar-label">Reality</span>
+              <div class="tp-bar-track"><div class="tp-bar-fill" style="width: 58%; background: linear-gradient(90deg, #C07800, #FFA200);"></div></div>
+            </div>
+          </div>
+          <div class="tp-score" style="color: #C07800;">58</div>
+          <div class="tp-delta" style="color: #C07800;">-10</div>
+        </div>
+        <div class="touchpoint-row">
+          <div class="tp-name">Development</div>
+          <div class="tp-bars">
+            <div class="tp-bar-row">
+              <span class="tp-bar-label">Survey</span>
+              <div class="tp-bar-track"><div class="tp-bar-fill" style="width: 58%; background: linear-gradient(90deg, #C07800, #FFA200);"></div></div>
+            </div>
+            <div class="tp-bar-row">
+              <span class="tp-bar-label">Reality</span>
+              <div class="tp-bar-track"><div class="tp-bar-fill" style="width: 34%; background: linear-gradient(90deg, #D43A6A, #FF6B9A);"></div></div>
+            </div>
+          </div>
+          <div class="tp-score" style="color: #D43A6A;">34</div>
+          <div class="tp-delta" style="color: #D43A6A;">-24</div>
+        </div>
+        <div class="touchpoint-row">
+          <div class="tp-name">Communication</div>
+          <div class="tp-bars">
+            <div class="tp-bar-row">
+              <span class="tp-bar-label">Survey</span>
+              <div class="tp-bar-track"><div class="tp-bar-fill" style="width: 61%; background: linear-gradient(90deg, #C07800, #FFA200);"></div></div>
+            </div>
+            <div class="tp-bar-row">
+              <span class="tp-bar-label">Reality</span>
+              <div class="tp-bar-track"><div class="tp-bar-fill" style="width: 42%; background: linear-gradient(90deg, #D43A6A, #FF6B9A);"></div></div>
+            </div>
+          </div>
+          <div class="tp-score" style="color: #D43A6A;">42</div>
+          <div class="tp-delta" style="color: #D43A6A;">-19</div>
+        </div>
+        <div class="touchpoint-row">
+          <div class="tp-name">Recognition</div>
+          <div class="tp-bars">
+            <div class="tp-bar-row">
+              <span class="tp-bar-label">Survey</span>
+              <div class="tp-bar-track"><div class="tp-bar-fill" style="width: 55%; background: linear-gradient(90deg, #C07800, #FFA200);"></div></div>
+            </div>
+            <div class="tp-bar-row">
+              <span class="tp-bar-label">Reality</span>
+              <div class="tp-bar-track"><div class="tp-bar-fill" style="width: 38%; background: linear-gradient(90deg, #D43A6A, #FF6B9A);"></div></div>
+            </div>
+          </div>
+          <div class="tp-score" style="color: #D43A6A;">38</div>
+          <div class="tp-delta" style="color: #D43A6A;">-17</div>
+        </div>
+        <div class="touchpoint-row">
+          <div class="tp-name">Exit</div>
+          <div class="tp-bars">
+            <div class="tp-bar-row">
+              <span class="tp-bar-label">Survey</span>
+              <div class="tp-bar-track"><div class="tp-bar-fill" style="width: 50%; background: linear-gradient(90deg, #C07800, #FFA200);"></div></div>
+            </div>
+            <div class="tp-bar-row">
+              <span class="tp-bar-label">Reality</span>
+              <div class="tp-bar-track"><div class="tp-bar-fill" style="width: 46%; background: linear-gradient(90deg, #C07800, #FFA200);"></div></div>
+            </div>
+          </div>
+          <div class="tp-score" style="color: #C07800;">46</div>
+          <div class="tp-delta" style="color: #C07800;">-4</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- What surveys say vs what people told us -->
+    <div>
+      <div class="section-label">What surveys say vs what people actually told us</div>
+      <div class="comparison-grid">
+        <div class="comparison-card" style="border-top: 3px solid rgba(34,28,43,0.15);">
+          <div class="comparison-header">Survey data says</div>
+          <div class="comparison-item">68% feel their manager supports them</div>
+          <div class="comparison-item">62% say communication is effective</div>
+          <div class="comparison-item">71% would recommend as employer</div>
+          <div class="comparison-item">58% feel they have development opportunities</div>
+        </div>
+        <div class="comparison-card" style="border-top: 3px solid #9B51E0;">
+          <div class="comparison-header">People actually told us</div>
+          <div class="comparison-item"><span class="comparison-quote">"My manager means well but has no time"</span></div>
+          <div class="comparison-item"><span class="comparison-quote">"We hear things through the grapevine first"</span></div>
+          <div class="comparison-item"><span class="comparison-quote">"I'd recommend it but I'd warn them too"</span></div>
+          <div class="comparison-item"><span class="comparison-quote">"Development means an online module nobody checks"</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT COLUMN -->
+  <div class="col-right">
+
+    <!-- Team heatmap -->
+    <div>
+      <div class="section-label">Experience quality by team</div>
+      <div class="heatmap-grid">
+        <div class="heatmap-header"></div>
+        <div class="heatmap-header">Onboard</div>
+        <div class="heatmap-header">Daily</div>
+        <div class="heatmap-header">Develop</div>
+        <div class="heatmap-header">Comms</div>
+        <div class="heatmap-header">Recog</div>
+        <div class="heatmap-header">Exit</div>
+
+        <div class="heatmap-row-label">Housing ops</div>
+        <div class="heatmap-cell" style="background: rgba(45,159,79,0.08); color: #2D9F4F;">68</div>
+        <div class="heatmap-cell" style="background: rgba(192,120,0,0.08); color: #C07800;">54</div>
+        <div class="heatmap-cell" style="background: rgba(212,58,106,0.08); color: #D43A6A;">28</div>
+        <div class="heatmap-cell" style="background: rgba(212,58,106,0.08); color: #D43A6A;">38</div>
+        <div class="heatmap-cell" style="background: rgba(212,58,106,0.08); color: #D43A6A;">32</div>
+        <div class="heatmap-cell" style="background: rgba(192,120,0,0.08); color: #C07800;">44</div>
+
+        <div class="heatmap-row-label">Repairs</div>
+        <div class="heatmap-cell" style="background: rgba(192,120,0,0.08); color: #C07800;">56</div>
+        <div class="heatmap-cell" style="background: rgba(192,120,0,0.08); color: #C07800;">62</div>
+        <div class="heatmap-cell" style="background: rgba(212,58,106,0.08); color: #D43A6A;">31</div>
+        <div class="heatmap-cell" style="background: rgba(192,120,0,0.08); color: #C07800;">48</div>
+        <div class="heatmap-cell" style="background: rgba(212,58,106,0.08); color: #D43A6A;">35</div>
+        <div class="heatmap-cell" style="background: rgba(192,120,0,0.08); color: #C07800;">50</div>
+
+        <div class="heatmap-row-label">Customer svc</div>
+        <div class="heatmap-cell" style="background: rgba(45,159,79,0.08); color: #2D9F4F;">72</div>
+        <div class="heatmap-cell" style="background: rgba(192,120,0,0.08); color: #C07800;">55</div>
+        <div class="heatmap-cell" style="background: rgba(192,120,0,0.08); color: #C07800;">42</div>
+        <div class="heatmap-cell" style="background: rgba(192,120,0,0.08); color: #C07800;">46</div>
+        <div class="heatmap-cell" style="background: rgba(192,120,0,0.08); color: #C07800;">44</div>
+        <div class="heatmap-cell" style="background: rgba(192,120,0,0.08); color: #C07800;">48</div>
+
+        <div class="heatmap-row-label">Finance</div>
+        <div class="heatmap-cell" style="background: rgba(45,159,79,0.08); color: #2D9F4F;">65</div>
+        <div class="heatmap-cell" style="background: rgba(45,159,79,0.08); color: #2D9F4F;">68</div>
+        <div class="heatmap-cell" style="background: rgba(192,120,0,0.08); color: #C07800;">48</div>
+        <div class="heatmap-cell" style="background: rgba(192,120,0,0.08); color: #C07800;">52</div>
+        <div class="heatmap-cell" style="background: rgba(192,120,0,0.08); color: #C07800;">45</div>
+        <div class="heatmap-cell" style="background: rgba(192,120,0,0.08); color: #C07800;">42</div>
+
+        <div class="heatmap-row-label">Senior leaders</div>
+        <div class="heatmap-cell" style="background: rgba(45,159,79,0.08); color: #2D9F4F;">74</div>
+        <div class="heatmap-cell" style="background: rgba(45,159,79,0.08); color: #2D9F4F;">76</div>
+        <div class="heatmap-cell" style="background: rgba(45,159,79,0.08); color: #2D9F4F;">72</div>
+        <div class="heatmap-cell" style="background: rgba(45,159,79,0.08); color: #2D9F4F;">71</div>
+        <div class="heatmap-cell" style="background: rgba(45,159,79,0.08); color: #2D9F4F;">68</div>
+        <div class="heatmap-cell" style="background: rgba(45,159,79,0.08); color: #2D9F4F;">65</div>
+      </div>
+    </div>
+
+    <!-- Systemic patterns -->
+    <div>
+      <div class="section-label">Systemic patterns beneath the symptoms</div>
+      <div class="patterns-list">
+        <div class="pattern-item" style="border-left-color: #D43A6A;">
+          <div class="pattern-title">Manager time squeeze</div>
+          <div class="pattern-desc">Managers carrying operational load that leaves no space for people leadership. Development, recognition and communication all suffer from the same root cause.</div>
+          <div class="pattern-tag" style="background: rgba(212,58,106,0.08); color: #D43A6A;">Affects 3 touchpoints</div>
+        </div>
+        <div class="pattern-item" style="border-left-color: #D43A6A;">
+          <div class="pattern-title">Information flows around, not through</div>
+          <div class="pattern-desc">Important decisions reach teams through informal channels before official ones. Creates a trust gap that surveys do not capture.</div>
+          <div class="pattern-tag" style="background: rgba(212,58,106,0.08); color: #D43A6A;">Erodes trust</div>
+        </div>
+        <div class="pattern-item" style="border-left-color: #C07800;">
+          <div class="pattern-title">Experience gap widens with distance from centre</div>
+          <div class="pattern-desc">Senior leaders score experience 20+ points higher than frontline teams. The organisation designed for itself, not for the people delivering services.</div>
+          <div class="pattern-tag" style="background: rgba(192,120,0,0.08); color: #C07800;">Structural pattern</div>
+        </div>
+        <div class="pattern-item" style="border-left-color: #9B51E0;">
+          <div class="pattern-title">Recognition is personal, not systemic</div>
+          <div class="pattern-desc">Where recognition happens, it depends on individual managers, not organisational practices. Good managers create pockets of great experience. The rest drift.</div>
+          <div class="pattern-tag" style="background: rgba(155,81,224,0.08); color: #7B3FA0;">Design opportunity</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <div class="footer-message">
+      <div class="footer-title">The experience is better than surveys suggest in some places, worse in others</div>
+      <div class="footer-desc">The biggest insight is not the scores but the patterns. Four systemic issues explain most of the experience gaps. Addressing these will shift outcomes across multiple touchpoints simultaneously.</div>
+    </div>
+    <div class="footer-score">
+      <div>
+        <div class="score-label">Overall<br>experience</div>
+        <div class="score-sub">Sector average: 62</div>
+      </div>
+      <div class="score-ring">
+        <svg viewBox="0 0 100 100">
+          <defs>
+            <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#80388F"/>
+              <stop offset="50%" stop-color="#FF4279"/>
+              <stop offset="100%" stop-color="#FFA200"/>
+            </linearGradient>
+          </defs>
+          <circle cx="50" cy="50" r="42" class="score-ring-bg"/>
+          <circle cx="50" cy="50" r="42" class="score-ring-fill"/>
+        </svg>
+        <div class="score-ring-value">55</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

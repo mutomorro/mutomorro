@@ -1998,7 +1998,8 @@ a:hover {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
-    position: relative;
+    position: sticky;
+    top: 70px;
   }
   .anchor-nav::-webkit-scrollbar {
     display: none;
@@ -2779,6 +2780,13 @@ a:hover {
   letter-spacing: -0.02em;
 }
 
+/* Use case cards grid */
+.sov-usecase-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
 /* Deliverables grid */
 .sov-deliverables {
   display: grid;
@@ -2882,6 +2890,11 @@ a:hover {
   /* Vertical timeline: show on mobile */
   .sov-timeline--vertical {
     display: block !important;
+  }
+
+  /* Use case cards: stack */
+  .sov-usecase-grid {
+    grid-template-columns: 1fr !important;
   }
 
   /* Deliverables: stack */

@@ -282,6 +282,8 @@ export async function getService(slug) {
         stageInPractice,
         stageOutcome,
         "stageImageUrl": stageImage.asset->url,
+        stageLinkLabel,
+        stageLinkUrl,
       },
 
       // Outcomes
@@ -340,6 +342,76 @@ export async function getService(slug) {
       },
     }
   `, { slug })
+}
+
+// ============================================
+// SERVICE SUB-PAGES
+// ============================================
+
+// Get a single service sub-page by parent service slug and sub-page slug
+export async function getServiceSubPage(serviceSlug, subPageSlug) {
+  return client.fetch(`
+    *[_type == "serviceSubPage" && parentService->slug.current == $serviceSlug && slug.current == $subPageSlug][0] {
+      _id,
+      title,
+      slug,
+
+      // Parent service info
+      "parentService": parentService-> {
+        _id,
+        title,
+        slug,
+        category,
+        categoryLabel,
+      },
+
+      // Hero
+      heroHeading,
+      heroTagline,
+
+      // Content sections
+      sections[] {
+        heading,
+        body,
+        backgroundStyle,
+      },
+
+      // Proof
+      proofHeading,
+      proofBody,
+      relatedProjects[]-> {
+        _id,
+        title,
+        slug,
+        clientSector,
+        shortSummary,
+        "heroImageUrl": heroImage.asset->url,
+      },
+
+      // CTA
+      ctaHeading,
+      ctaBody,
+      ctaButtonLabel,
+      ctaButtonUrl,
+      parentLinkText,
+
+      // SEO
+      seoTitle,
+      seoDescription,
+    }
+  `, { serviceSlug, subPageSlug })
+}
+
+// Get all sub-pages for a given service (for listings or nav)
+export async function getServiceSubPages(serviceSlug) {
+  return client.fetch(`
+    *[_type == "serviceSubPage" && parentService->slug.current == $serviceSlug] | order(title asc) {
+      _id,
+      title,
+      slug,
+      heroTagline,
+    }
+  `, { serviceSlug })
 }
 
 // ============================================

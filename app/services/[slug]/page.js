@@ -480,6 +480,13 @@ export default async function ServicePage({ params }) {
                 <div className="portable-text">
                   <PortableText value={stage.stageBody} />
                 </div>
+                {stage.stageLinkLabel && stage.stageLinkUrl && (
+                  <p style={{ marginTop: '20px' }}>
+                    <Link href={stage.stageLinkUrl} className="inline-link">
+                      {stage.stageLinkLabel} →
+                    </Link>
+                  </p>
+                )}
               </div>
 
               {stage.stageImageUrl ? (

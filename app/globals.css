@@ -1873,6 +1873,26 @@ a:hover {
   background: #FFA200;
 }
 
+/* --- Service Sub-Pages: Gradient Dash --- */
+.service-subpage .body-text ul {
+  list-style: none;
+  padding-left: 0;
+}
+.service-subpage .body-text ul li {
+  padding-left: 24px;
+  position: relative;
+  margin-bottom: 12px;
+}
+.service-subpage .body-text ul li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 11px;
+  width: 12px;
+  height: 2px;
+  background: linear-gradient(90deg, #80388F, #FF4279);
+}
+
 /* --- Courses: Checkmarks --- */
 .page-course .portable-text ul {
   list-style: none;

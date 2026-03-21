@@ -382,6 +382,18 @@ export default defineType({
               description: 'The infographic visual (16:9, unique per service eventually)',
               options: { hotspot: true },
             }),
+            defineField({
+              name: 'stageLinkLabel',
+              title: 'Stage Link Label (optional)',
+              type: 'string',
+              description: 'e.g. "Learn more about our culture change programmes" - links to a sub-page',
+            }),
+            defineField({
+              name: 'stageLinkUrl',
+              title: 'Stage Link URL (optional)',
+              type: 'string',
+              description: 'e.g. "/services/culture-change-consultancy/culture-change-programmes"',
+            }),
           ],
           preview: {
             select: { number: 'stageNumber', title: 'stageTitle' },

@@ -110,7 +110,7 @@ const nextConfig = {
       { source: '/consultancy/customer-experience-consultancy', destination: '/services/customer-experience-consultancy', permanent: true },
       { source: '/consultancy/organisational-restructuring-consultancy', destination: '/services/organisational-restructuring-consultancy', permanent: true },
       { source: '/consultancy/organisational-culture-change', destination: '/services/culture-change-consultancy', permanent: true },
-      { source: '/consultancy/culture-change-programmes', destination: '/services/culture-change-consultancy', permanent: true },
+      { source: '/consultancy/culture-change-programmes', destination: '/services/culture-change-consultancy/culture-change-programmes', permanent: true },
       { source: '/consultancy/:slug', destination: '/services', permanent: true },
 
 
@@ -119,7 +119,7 @@ const nextConfig = {
       // =========================================================
 
       { source: '/application/change-management', destination: '/services/change-management-consultancy', permanent: true },
-      { source: '/application/culture-change-programmes', destination: '/services/culture-change-consultancy', permanent: true },
+      { source: '/application/culture-change-programmes', destination: '/services/culture-change-consultancy/culture-change-programmes', permanent: true },
       { source: '/application/systems-thinking', destination: '/services/organisational-development-consultancy', permanent: true },
       { source: '/application/process-improvement', destination: '/services/operational-effectiveness-consultancy', permanent: true },
       { source: '/application/continuous-improvement-consultancy', destination: '/services/operational-effectiveness-consultancy', permanent: true },
@@ -475,8 +475,8 @@ const nextConfig = {
       { source: '/ecosystem-design/:slug', destination: '/services', permanent: true },
 
       // Culture change sub-pages
-      { source: '/culture-change/culture-change-programmes', destination: '/services/culture-change-consultancy', permanent: true },
-      { source: '/culture-change/culture-change-programmes/:path*', destination: '/services/culture-change-consultancy', permanent: true },
+      { source: '/culture-change/culture-change-programmes', destination: '/services/culture-change-consultancy/culture-change-programmes', permanent: true },
+      { source: '/culture-change/culture-change-programmes/:path*', destination: '/services/culture-change-consultancy/culture-change-programmes', permanent: true },
       { source: '/culture-change/organisational-culture-vision', destination: '/services/culture-change-consultancy', permanent: true },
       { source: '/culture-change/organisational-culture-vision/:path*', destination: '/services/culture-change-consultancy', permanent: true },
       { source: '/culture-change/:slug', destination: '/services/culture-change-consultancy', permanent: true },

@@ -344,6 +344,8 @@ const nextConfig = {
       { source: '/articles/organisational-culture-models', destination: '/articles/developing-organisational-culture', permanent: true },
       { source: '/articles/organisational-culture-guide', destination: '/articles/developing-organisational-culture', permanent: true },
       { source: '/articles/defining-the-need-for-change', destination: '/articles/need-for-change', permanent: true },
+      { source: '/articles/a-guide-to-change-readiness', destination: '/articles/change-readiness-assessment', permanent: true },
+      { source: '/articles/addressing-change-fatigue', destination: '/articles/change-fatigue-in-the-workplace', permanent: true },
 
 
       // =========================================================

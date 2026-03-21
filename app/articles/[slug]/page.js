@@ -4,38 +4,41 @@ import Link from 'next/link'
 import CTA from '../../../components/CTA'
 import { urlFor } from '../../../sanity/image'
 import NewsletterSignup from '../../../components/NewsletterSignup'
+import BackgroundPattern from '../../../components/animations/BackgroundPattern'
 
 export default async function ArticlePage({ params }) {
   const { slug } = await params
   const article = await getArticle(slug)
 
   return (
-    <main>
+    <main className="page-article">
 
       {/* Hero */}
-      <section className="section--full dark-bg" style={{ padding: '100px 48px 120px' }}>
-        <div className="wrap--narrow">
-          {/* Breadcrumb */}
-          <div className="breadcrumb">
-            <Link href="/article" className="breadcrumb__link">Thinking</Link>
-            <span className="breadcrumb__sep">/</span>
-            <span className="breadcrumb__current">{article.category}</span>
-          </div>
+      <BackgroundPattern variant="constellation" style={{ background: 'var(--dark)' }}>
+        <section className="section--full dark-bg" style={{ padding: '100px 48px 120px', background: 'transparent' }}>
+          <div className="wrap--narrow">
+            {/* Breadcrumb */}
+            <div className="breadcrumb">
+              <Link href="/article" className="breadcrumb__link">Thinking</Link>
+              <span className="breadcrumb__sep">/</span>
+              <span className="breadcrumb__current">{article.category}</span>
+            </div>
 
-          <span className="kicker" style={{ marginBottom: '16px' }}>{article.category}</span>
-          <h1 className="heading-h1" style={{
-            color: '#ffffff',
-            margin: '0 0 32px',
-          }}>
-            {article.title}
-          </h1>
-          {article.shortSummary && (
-            <p className="lead-text" style={{ color: 'rgba(255,255,255,0.6)' }}>
-              {article.shortSummary}
-            </p>
-          )}
-        </div>
-      </section>
+            <span className="kicker" style={{ marginBottom: '16px' }}>{article.category}</span>
+            <h1 className="heading-h1" style={{
+              color: '#ffffff',
+              margin: '0 0 32px',
+            }}>
+              {article.title}
+            </h1>
+            {article.shortSummary && (
+              <p className="lead-text" style={{ color: 'rgba(255,255,255,0.6)' }}>
+                {article.shortSummary}
+              </p>
+            )}
+          </div>
+        </section>
+      </BackgroundPattern>
 
       {/* Body */}
       <section className="section--full" style={{ padding: '80px 48px', background: 'var(--white)' }}>

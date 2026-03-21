@@ -24,46 +24,69 @@ export default async function ToolPage({ params }) {
   const heroImageUrl = tool.heroImage ? urlFor(tool.heroImage).width(600).url() : null
 
   return (
-    <main>
+    <main className="page-tool">
 
       {/* Hero */}
       <section className="section--full dark-bg" style={{ padding: '100px 48px 120px' }}>
-        <div className="wrap--narrow">
-          {/* Breadcrumb */}
-          <div className="breadcrumb">
-            <Link href="/tools" className="breadcrumb__link">Tools</Link>
+        <div className={`section__inner tool-hero-grid${heroImageUrl ? '' : ' tool-hero-grid--single'}`}>
+          {/* Left: text content */}
+          <div>
+            {/* Breadcrumb */}
+            <div className="breadcrumb">
+              <Link href="/tools" className="breadcrumb__link">Tools</Link>
+              {tool.category && (
+                <>
+                  <span className="breadcrumb__sep">/</span>
+                  <span className="breadcrumb__current">{tool.category}</span>
+                </>
+              )}
+            </div>
+
             {tool.category && (
-              <>
-                <span className="breadcrumb__sep">/</span>
-                <span className="breadcrumb__current">{tool.category}</span>
-              </>
+              <span className="kicker" style={{ marginBottom: '16px' }}>{tool.category}</span>
+            )}
+            <h1 className="heading-h1 heading-gradient" style={{
+              margin: '0 0 32px',
+            }}>
+              {tool.title}
+            </h1>
+            {tool.shortSummary && (
+              <p className="lead-text" style={{ color: 'rgba(255,255,255,0.6)' }}>
+                {tool.shortSummary}
+              </p>
+            )}
+
+            {/* Quick download button - scrolls to form */}
+            {pdfUrl && (
+              <a
+                href="#get-template"
+                className="btn-primary btn-primary--dark"
+                style={{ marginTop: '2rem', display: 'inline-flex' }}
+              >
+                Get the template
+              </a>
             )}
           </div>
 
-          {tool.category && (
-            <span className="kicker" style={{ marginBottom: '16px' }}>{tool.category}</span>
-          )}
-          <h1 className="heading-h1" style={{
-            color: '#ffffff',
-            margin: '0 0 32px',
-          }}>
-            {tool.title}
-          </h1>
-          {tool.shortSummary && (
-            <p className="lead-text" style={{ color: 'rgba(255,255,255,0.6)' }}>
-              {tool.shortSummary}
-            </p>
-          )}
-
-          {/* Quick download button - scrolls to form */}
-          {pdfUrl && (
-            <a
-              href="#get-template"
-              className="btn-primary btn-primary--dark"
-              style={{ marginTop: '2rem', display: 'inline-flex' }}
-            >
-              Get the template
-            </a>
+          {/* Right: hero image with perspective shift */}
+          {heroImageUrl && (
+            <div style={{
+              display: 'flex',
+              justifyContent: 'flex-end',
+              alignItems: 'center',
+            }}>
+              <div className="img-perspective" style={{ maxWidth: '100%' }}>
+                <img
+                  src={heroImageUrl}
+                  alt={tool.title || ''}
+                  style={{
+                    width: '100%',
+                    height: 'auto',
+                    display: 'block',
+                  }}
+                />
+              </div>
+            </div>
           )}
         </div>
       </section>

@@ -3,6 +3,10 @@ import './globals.css'
 import Nav from '../components/Nav'
 import Footer from '../components/Footer'
 import ScrollObserver from '../components/ScrollObserver'
+import { ConsentProvider } from '../components/CookieConsent/ConsentProvider'
+import CookieBanner from '../components/CookieConsent/CookieBanner'
+import TrackingScripts from '../components/CookieConsent/TrackingScripts'
+import { Analytics } from '@vercel/analytics/next'
 
 const sourceSans = Source_Sans_3({
   subsets: ['latin'],
@@ -13,6 +17,9 @@ const sourceSans = Source_Sans_3({
 export const metadata = {
   title: 'Mutomorro',
   description: 'Organisational development consultancy',
+  verification: {
+    google: 'RAdCNT8DuIKnkt8EZhxgJdETnbll1joUHY34P65WFy4',
+  },
 }
 
 export default function RootLayout({ children }) {
@@ -36,10 +43,15 @@ export default function RootLayout({ children }) {
             </filter>
           </defs>
         </svg>
-        <Nav />
-        <ScrollObserver />
-        {children}
-        <Footer />
+        <ConsentProvider>
+          <Nav />
+          <ScrollObserver />
+          {children}
+          <Footer />
+          <CookieBanner />
+          <TrackingScripts />
+          <Analytics />
+        </ConsentProvider>
       </body>
     </html>
   )

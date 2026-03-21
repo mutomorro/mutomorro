@@ -13,6 +13,7 @@
     "@sanity/image-url": "^2.0.3",
     "@sanity/vision": "^5.16.0",
     "@supabase/supabase-js": "^2.99.1",
+    "@vercel/analytics": "^2.0.1",
     "cheerio": "^1.2.0",
     "csv-parse": "^6.1.0",
     "csv-parser": "^3.2.0",

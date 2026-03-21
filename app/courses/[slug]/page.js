@@ -3,58 +3,61 @@ import { PortableText } from '@portabletext/react'
 import Link from 'next/link'
 import CTA from '../../../components/CTA'
 import { urlFor } from '../../../sanity/image'
+import BackgroundPattern from '../../../components/animations/BackgroundPattern'
 
 export default async function CoursePage({ params }) {
   const { slug } = await params
   const course = await getCourse(slug)
 
   return (
-    <main>
+    <main className="page-course">
 
       {/* Hero */}
-      <section className="section--full dark-bg" style={{ padding: '100px 48px 120px' }}>
-        <div className="wrap--narrow">
-          {/* Breadcrumb */}
-          <div className="breadcrumb">
-            <Link href="/courses" className="breadcrumb__link">Courses</Link>
+      <BackgroundPattern variant="constellation" style={{ background: 'var(--dark)' }}>
+        <section className="section--full dark-bg" style={{ padding: '100px 48px 120px', background: 'transparent' }}>
+          <div className="wrap--narrow">
+            {/* Breadcrumb */}
+            <div className="breadcrumb">
+              <Link href="/courses" className="breadcrumb__link">Courses</Link>
+              {course.category && (
+                <>
+                  <span className="breadcrumb__sep">/</span>
+                  <span className="breadcrumb__current">{course.category}</span>
+                </>
+              )}
+            </div>
+
             {course.category && (
-              <>
-                <span className="breadcrumb__sep">/</span>
-                <span className="breadcrumb__current">{course.category}</span>
-              </>
+              <span className="kicker" style={{ marginBottom: '16px' }}>{course.category}</span>
+            )}
+            <h1 className="heading-h1" style={{
+              color: '#ffffff',
+              margin: '0 0 32px',
+            }}>
+              {course.title}
+            </h1>
+
+            {/* Duration / format metadata */}
+            {(course.duration || course.format) && (
+              <p style={{
+                fontSize: '15px',
+                fontWeight: '400',
+                color: 'var(--accent)',
+                margin: '0 0 20px',
+                letterSpacing: '0.02em',
+              }}>
+                {course.duration}{course.duration && course.format ? ' · ' : ''}{course.format}
+              </p>
+            )}
+
+            {course.shortSummary && (
+              <p className="lead-text" style={{ color: 'rgba(255,255,255,0.6)' }}>
+                {course.shortSummary}
+              </p>
             )}
           </div>
-
-          {course.category && (
-            <span className="kicker" style={{ marginBottom: '16px' }}>{course.category}</span>
-          )}
-          <h1 className="heading-h1" style={{
-            color: '#ffffff',
-            margin: '0 0 32px',
-          }}>
-            {course.title}
-          </h1>
-
-          {/* Duration / format metadata */}
-          {(course.duration || course.format) && (
-            <p style={{
-              fontSize: '15px',
-              fontWeight: '400',
-              color: 'var(--accent)',
-              margin: '0 0 20px',
-              letterSpacing: '0.02em',
-            }}>
-              {course.duration}{course.duration && course.format ? ' · ' : ''}{course.format}
-            </p>
-          )}
-
-          {course.shortSummary && (
-            <p className="lead-text" style={{ color: 'rgba(255,255,255,0.6)' }}>
-              {course.shortSummary}
-            </p>
-          )}
-        </div>
-      </section>
+        </section>
+      </BackgroundPattern>
 
       {/* Body */}
       <section className="section--full" style={{ padding: '80px 48px', background: 'var(--white)' }}>

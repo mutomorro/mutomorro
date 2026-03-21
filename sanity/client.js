@@ -94,6 +94,16 @@ export async function getDimension(slug) {
 }
 
 // ============================================
+// FRAMEWORK OVERVIEW (singleton)
+// ============================================
+
+export async function getFrameworkOverview() {
+  return await client.fetch(
+    `*[_type == "frameworkOverview"][0]{ title, subtitle, intro, body }`
+  )
+}
+
+// ============================================
 // DIMENSION ARTICLES
 // ============================================
 

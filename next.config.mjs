@@ -481,6 +481,12 @@ const nextConfig = {
       { source: '/culture-change/organisational-culture-vision/:path*', destination: '/services/culture-change-consultancy', permanent: true },
       { source: '/culture-change/:slug', destination: '/services/culture-change-consultancy', permanent: true },
 
+      // Root-level tool pages missing /tools/ prefix
+{ source: '/8-wastes-of-lean', destination: '/tools/8-wastes-of-lean', permanent: true },
+
+// Old assessments section → States of Vitality
+{ source: '/assessments/:slug', destination: '/states-of-vitality', permanent: true },
+
     ]
   },
 };

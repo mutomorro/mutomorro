@@ -9,7 +9,7 @@ export default async function ContactPage({ searchParams }) {
   const params = await searchParams
   const service = params?.service || null
   return (
-    <main>
+    <main className="contact-page">
 
       {/* Hero */}
       <section className="section--full dark-bg" style={{ padding: '100px 48px 120px' }}>
@@ -27,7 +27,7 @@ export default async function ContactPage({ searchParams }) {
 
       {/* Form section */}
       <section className="section--full" style={{ padding: '80px 48px', background: 'var(--white)' }}>
-        <div style={{
+        <div className="contact-grid" style={{
           maxWidth: '1350px',
           margin: '0 auto',
           display: 'grid',

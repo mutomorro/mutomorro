@@ -65,7 +65,7 @@ const stages = [
 
 export default function HowWeWorkPage() {
   return (
-    <main>
+    <main className="how-we-work-page">
 
       {/* Hero */}
       <BackgroundPattern variant="network" className="section--full dark-bg" style={{ padding: '100px 48px 120px' }}>

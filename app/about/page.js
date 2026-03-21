@@ -6,7 +6,7 @@ import BackgroundPattern from '@/components/animations/BackgroundPattern'
 
 export default function About() {
   return (
-    <main>
+    <main className="about-page">
 
       {/* Section 1: Hero */}
       <BackgroundPattern variant="network" className="section--full dark-bg" style={{ padding: '100px 48px 120px' }}>

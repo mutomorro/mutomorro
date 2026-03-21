@@ -37,6 +37,12 @@
   position: relative;
 }
 
+/* Ensure footer renders above the sidebar bleed pseudo-element */
+.ew-wrapper ~ footer {
+  position: relative;
+  z-index: 1;
+}
+
 
 /* ============================================
    2. SIDEBAR
@@ -1325,11 +1331,172 @@
   }
 }
 
-@media (max-width: 768px) {
-  .ew-sidebar {
+@media (max-width: 767px) {
+
+  /* --- Hide desktop sidebar bleed --- */
+  .ew-wrapper::before {
     display: none;
   }
 
+  /* --- Sidebar becomes slide-out drawer --- */
+  .ew-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 280px;
+    z-index: 1000;
+    transform: translateX(-100%);
+    transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    display: flex;
+  }
+
+  .ew-sidebar.ew-sidebar--open {
+    transform: translateX(0);
+  }
+
+  /* --- Drawer overlay --- */
+  .ew-drawer-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .ew-drawer-overlay.visible {
+    display: block;
+    opacity: 1;
+  }
+
+  /* --- Drawer trigger button --- */
+  .ew-drawer-trigger {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    bottom: 24px;
+    left: 24px;
+    width: 48px;
+    height: 48px;
+    background: var(--dark);
+    border: none;
+    z-index: 1001;
+    cursor: pointer;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.25);
+  }
+
+  .ew-drawer-trigger-icon {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    width: 20px;
+  }
+
+  .ew-drawer-trigger-icon span {
+    display: block;
+    width: 100%;
+    height: 2px;
+    background: #fff;
+    transition: transform 0.25s ease, opacity 0.25s ease;
+  }
+
+  .ew-drawer-trigger-icon.open span:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+  }
+
+  .ew-drawer-trigger-icon.open span:nth-child(2) {
+    opacity: 0;
+  }
+
+  .ew-drawer-trigger-icon.open span:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
+  }
+
+  /* --- Main content fills full width --- */
+  .ew-wrapper {
+    flex-direction: column;
+  }
+
+  .ew-main {
+    width: 100%;
+    min-width: 0;
+  }
+
+
+  /* --- Overview page (DimensionExplorer) --- */
+  .de-page-container {
+    padding: 48px 24px 80px;
+  }
+
+  .de-overview-title {
+    font-size: clamp(32px, 8vw, 44px);
+  }
+
+  .de-overview-intro {
+    margin-bottom: 40px;
+  }
+
+  .de-overview-intro p {
+    font-size: 17px;
+  }
+
+  /* Tab row: horizontal scroll with dimension names */
+  .de-tab-row {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    gap: 0;
+  }
+
+  .de-tab-row::-webkit-scrollbar {
+    display: none;
+  }
+
+  .de-tab-button {
+    padding: 16px 12px 14px;
+    min-width: 0;
+    flex: 0 0 auto;
+  }
+
+  .de-tab-letter {
+    font-size: 32px;
+  }
+
+  /* Panel: single column */
+  .de-panel-inner {
+    grid-template-columns: 1fr;
+    gap: 32px;
+    padding: 28px 24px 32px;
+    min-height: 0;
+  }
+
+  .de-dim-name {
+    font-size: 24px;
+  }
+
+  .de-description {
+    font-size: 16px;
+  }
+
+  .de-lens-question {
+    font-size: 15px;
+  }
+
+  .de-footer-note {
+    margin-top: 32px;
+    font-size: 14px;
+  }
+
+
+  /* --- Dimension & article pages --- */
+
+  /* Padding reductions */
   .ew-overview-header,
   .ew-overview-grid-label,
   .ew-overview-grid,
@@ -1347,14 +1514,61 @@
     padding-right: 24px;
   }
 
+  /* Dimension hero */
+  .ew-dim-hero {
+    padding-top: 36px;
+    padding-bottom: 28px;
+  }
+
+  .ew-dim-title {
+    font-size: clamp(28px, 7vw, 40px);
+  }
+
+  .ew-dim-tagline {
+    font-size: 18px;
+  }
+
+  .ew-dim-lead {
+    font-size: 17px;
+  }
+
+  .ew-dim-lens {
+    font-size: 16px;
+  }
+
+  /* Breadcrumb wrap */
+  .ew-dim-breadcrumb {
+    flex-wrap: wrap;
+    font-size: 12px;
+  }
+
+  /* Section content */
+  .ew-section-page {
+    padding-top: 28px;
+    padding-bottom: 48px;
+  }
+
+  .ew-section-page h2 {
+    font-size: clamp(22px, 5vw, 30px);
+  }
+
+  .ew-section-page h3 {
+    font-size: clamp(19px, 4vw, 24px);
+  }
+
+  /* Section nav footer */
   .ew-section-nav-footer {
     flex-direction: column;
+    gap: 8px;
+    padding-bottom: 48px;
   }
 
-  .ew-card-left {
-    min-width: 0;
+  .ew-section-nav-btn {
+    font-size: 13px;
+    padding: 12px 16px;
   }
 
+  /* Comparison table: stack columns */
   .ew-comparison-header,
   .ew-comparison-row {
     grid-template-columns: 1fr;
@@ -1363,5 +1577,74 @@
   .ew-comparison-cell:first-child {
     border-right: none;
     border-bottom: 1px solid rgba(0,0,0,0.06);
+  }
+
+  .ew-comparison-header-cell {
+    padding: 10px 16px;
+  }
+
+  .ew-comparison-cell {
+    padding: 10px 16px;
+  }
+
+  /* Card content */
+  .ew-card-left {
+    min-width: 0;
+  }
+
+  .ew-card-content {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  /* Article rows */
+  .ew-article-row-title {
+    font-size: 16px;
+  }
+
+  .ew-article-row-summary {
+    font-size: 14px;
+  }
+
+  /* Reflection block */
+  .ew-reflection-block {
+    padding: 20px 24px;
+  }
+
+  /* Principle items */
+  .ew-principle-item {
+    gap: 14px;
+  }
+
+  /* Service links */
+  .ew-service-link {
+    padding: 14px 20px;
+  }
+
+  /* Definition callout */
+  .ew-definition-callout {
+    padding: 20px 24px;
+  }
+
+  /* Blockquotes */
+  .ew-section-page blockquote {
+    padding: 20px 24px;
+    margin: 20px 0;
+  }
+
+  /* Overview grid */
+  .ew-overview-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Hide drawer trigger on desktop */
+@media (min-width: 768px) {
+  .ew-drawer-trigger {
+    display: none;
+  }
+
+  .ew-drawer-overlay {
+    display: none !important;
   }
 }

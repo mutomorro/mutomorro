@@ -63,7 +63,7 @@ export default async function Home() {
     .filter(Boolean)
 
   return (
-    <main>
+    <main className="homepage">
 
       {/* ─── Section 1: Hero ─── */}
       <section style={{
@@ -249,7 +249,7 @@ export default async function Home() {
       {/* ─── Section 5: Tools ─── */}
       <section className="section--full" style={{ padding: '80px 48px', background: 'var(--white)' }}>
         <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
-          <div style={{
+          <div className="homepage-tools-grid" style={{
             display: 'grid',
             gridTemplateColumns: '2fr 3fr',
             gap: '64px',
@@ -308,7 +308,7 @@ export default async function Home() {
         padding: '80px 48px',
         background: '#221C2B',
       }}>
-        <div style={{
+        <div className="homepage-newsletter-grid" style={{
           maxWidth: '1350px',
           margin: '0 auto',
           position: 'relative',

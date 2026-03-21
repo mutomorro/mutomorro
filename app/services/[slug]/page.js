@@ -20,23 +20,13 @@ const BENTO_COLOURS = ['#80388F', '#9B51E0', '#FF4279', '#E08F00', '#221C2B']
 // Mid-page CTA - lightweight inline prompt + button
 function MidPageCta({ text, buttonLabel, serviceTitle }) {
   return (
-    <div style={{
-      padding: '12px 48px 68px',
-      textAlign: 'center',
-    }}>
-      <p style={{
-        fontSize: '18px',
-        fontWeight: '300',
-        fontStyle: 'italic',
-        color: 'rgba(0,0,0,0.55)',
-        margin: '0 0 20px',
-        lineHeight: '1.5',
-      }}>
+    <div className="mid-page-cta">
+      <p className="mid-page-cta__text">
         {text}
       </p>
       <a
         href={`/contact?service=${encodeURIComponent(serviceTitle)}`}
-        className="btn-primary"
+        className="btn-primary mid-page-cta__btn"
       >
         {buttonLabel}
       </a>
@@ -70,7 +60,7 @@ export default async function ServicePage({ params }) {
   if (!service) notFound()
 
   return (
-    <main>
+    <main className="service-page">
 
       {/* ==========================================
           SECTION 1: HERO (dark)
@@ -399,7 +389,7 @@ export default async function ServicePage({ params }) {
       {service.stats?.length > 0 && (
         <BackgroundPattern variant="constellation" className="section--full dark-bg" style={{ background: '#221C2B', padding: '72px 48px' }}>
           <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
-            <div style={{
+            <div className="stats-grid" style={{
               display: 'grid',
               gridTemplateColumns: `repeat(${service.stats.length}, 1fr)`,
               gap: '2rem',
@@ -752,7 +742,7 @@ export default async function ServicePage({ params }) {
             <span className="kicker" style={{ marginBottom: '2rem' }}>
               You might also be interested in
             </span>
-            <div style={{
+            <div className="related-services-grid" style={{
               display: 'grid',
               gridTemplateColumns: `repeat(${Math.min(service.relatedServices.length, 3)}, 1fr)`,
               gap: '24px',

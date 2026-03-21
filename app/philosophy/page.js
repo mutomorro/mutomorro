@@ -36,7 +36,7 @@ const concepts = [
 
 export default function PhilosophyPage() {
   return (
-    <main>
+    <main className="philosophy-page">
 
       {/* Section 1: Hero */}
       <PhilosophyHero>

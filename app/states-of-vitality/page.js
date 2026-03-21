@@ -93,7 +93,7 @@ export default function StatesOfVitalityPage() {
   const contactHref = '/contact?service=States%20of%20Vitality%20Assessment'
 
   return (
-    <main>
+    <main className="sov-page">
 
       {/* ==========================================
           SECTION 1: HERO (dark, two-column)

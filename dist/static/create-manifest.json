@@ -1,6 +1,6 @@
 {
   "version": 3,
-  "createdAt": "2026-03-20T17:36:25.467Z",
+  "createdAt": "2026-03-22T04:51:02.311Z",
   "workspaces": [
     {
       "name": "mutomorro",
@@ -13,7 +13,7 @@
         "enabled": false,
         "__internal": {}
       },
-      "schema": "d16c3dd9.create-schema.json",
+      "schema": "db8c3c27.create-schema.json",
       "tools": "c8b037a0.create-tools.json"
     }
   ],

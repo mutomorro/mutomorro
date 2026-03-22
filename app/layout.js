@@ -7,6 +7,7 @@ import { ConsentProvider } from '../components/CookieConsent/ConsentProvider'
 import CookieBanner from '../components/CookieConsent/CookieBanner'
 import TrackingScripts from '../components/CookieConsent/TrackingScripts'
 import { Analytics } from '@vercel/analytics/next'
+import { SpeedInsights } from '@vercel/speed-insights/next'
 
 const sourceSans = Source_Sans_3({
   subsets: ['latin'],
@@ -51,6 +52,7 @@ export default function RootLayout({ children }) {
           <CookieBanner />
           <TrackingScripts />
           <Analytics />
+          <SpeedInsights />
         </ConsentProvider>
       </body>
     </html>

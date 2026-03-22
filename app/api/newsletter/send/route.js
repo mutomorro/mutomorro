@@ -346,7 +346,7 @@ async function sendBatch({ batch, sendId, subject, previewText, date, leadText, 
   // Call Resend batch API
   const { data, error } = await resend.batch.send(
     emails.map(e => ({
-      from: 'James from Mutomorro <james@mutomorro.com>',
+      from: 'James from Mutomorro <hello@mutomorro.com>',
       to: [emailOverride || e.email],
       subject,
       html: e.html,

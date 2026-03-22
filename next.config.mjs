@@ -487,6 +487,8 @@ const nextConfig = {
 // Old assessments section → States of Vitality
 { source: '/assessments/:slug', destination: '/states-of-vitality', permanent: true },
 
+{ source: '/articles/change-management-to-change-leadership', destination: '/articles/change-management-vs-change-leadership', permanent: true }
+
     ]
   },
 };

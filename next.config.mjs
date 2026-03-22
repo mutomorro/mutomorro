@@ -402,8 +402,83 @@ const nextConfig = {
 
 
       // =========================================================
+      // ROOT-LEVEL TOOL PAGES → /tools/
+      // Old WordPress had tools at root. New site uses /tools/ prefix.
+      // =========================================================
+
+      { source: '/2x2-scenario-matrix', destination: '/tools/2x2-scenario-matrix', permanent: true },
+      { source: '/4-stages-of-psychological-safety', destination: '/tools/4-stages-of-psychological-safety', permanent: true },
+      { source: '/5-conflict-styles', destination: '/tools/5-conflict-styles', permanent: true },
+      { source: '/5-whys', destination: '/tools/5-whys', permanent: true },
+      { source: '/5ds-of-appreciative-inquiry', destination: '/tools/5ds-of-appreciative-inquiry', permanent: true },
+      { source: '/6-team-conditions-for-team-effectiveness', destination: '/tools/6-team-conditions-for-team-effectiveness', permanent: true },
+      { source: '/adkar-model', destination: '/tools/adkar-model', permanent: true },
+      { source: '/belbins-team-roles', destination: '/tools/belbins-team-roles', permanent: true },
+      { source: '/bpm-lifecycle', destination: '/tools/bpm-lifecycle', permanent: true },
+      { source: '/bridges-transition-model', destination: '/tools/bridges-transition-model', permanent: true },
+      { source: '/burke-litwin-change-model', destination: '/tools/burke-litwin-change-model', permanent: true },
+      { source: '/cedar-feedback-model', destination: '/tools/cedar-feedback-model', permanent: true },
+      { source: '/change-curve', destination: '/tools/change-curve', permanent: true },
+      { source: '/competing-values-framework', destination: '/tools/competing-values-framework', permanent: true },
+      { source: '/contextual-inquiry', destination: '/tools/contextual-inquiry', permanent: true },
+      { source: '/cultural-web', destination: '/tools/cultural-web', permanent: true },
+      { source: '/cynefin-framework', destination: '/tools/cynefin-framework', permanent: true },
+      { source: '/daci-framework', destination: '/tools/daci-framework', permanent: true },
+      { source: '/disc-styles', destination: '/tools/disc-styles', permanent: true },
+      { source: '/dmaic', destination: '/tools/dmaic', permanent: true },
+      { source: '/edgar-scheins-culture-model', destination: '/tools/edgar-scheins-culture-model', permanent: true },
+      { source: '/eisenhower-matrix', destination: '/tools/eisenhower-matrix', permanent: true },
+      { source: '/empathy-map', destination: '/tools/empathy-map', permanent: true },
+      { source: '/five-dysfunctions-of-a-team', destination: '/tools/five-dysfunctions-of-a-team', permanent: true },
+      { source: '/galbraith-star-model', destination: '/tools/galbraith-star-model', permanent: true },
+      { source: '/gemba-walk', destination: '/tools/gemba-walk', permanent: true },
+      { source: '/heart-of-business', destination: '/tools/heart-of-business', permanent: true },
+      { source: '/iceberg-model', destination: '/tools/iceberg-model', permanent: true },
+      { source: '/kaizen-cycle', destination: '/tools/kaizen-cycle', permanent: true },
+      { source: '/kotters-8-step-change-model', destination: '/tools/kotters-8-step-change-model', permanent: true },
+      { source: '/lewins-change-model', destination: '/tools/lewins-change-model', permanent: true },
+      { source: '/logframe-logical-framework', destination: '/tools/logframe-logical-framework', permanent: true },
+      { source: '/mckinsey-7-s-model', destination: '/tools/mckinsey-7-s-model', permanent: true },
+      { source: '/mendelow-power-interest-matrix', destination: '/tools/mendelow-power-interest-matrix', permanent: true },
+      { source: '/narrative-strategy', destination: '/tools/narrative-strategy', permanent: true },
+      { source: '/nonprofit-business-model-canvas', destination: '/tools/nonprofit-business-model-canvas', permanent: true },
+      { source: '/ooda-loop', destination: '/tools/ooda-loop', permanent: true },
+      { source: '/orca', destination: '/tools/orca', permanent: true },
+      { source: '/organisational-maturity-model', destination: '/tools/organisational-maturity-model', permanent: true },
+      { source: '/pdca-cycle', destination: '/tools/pdca-cycle', permanent: true },
+      { source: '/pestle-analysis', destination: '/tools/pestle-analysis', permanent: true },
+      { source: '/polism-canvas', destination: '/tools/polism-canvas', permanent: true },
+      { source: '/problem-statement', destination: '/tools/problem-statement', permanent: true },
+      { source: '/process-mapping', destination: '/tools/process-mapping', permanent: true },
+      { source: '/project-oxygen', destination: '/tools/project-oxygen', permanent: true },
+      { source: '/rasci-framework', destination: '/tools/rasci-framework', permanent: true },
+      { source: '/satir-change-model', destination: '/tools/satir-change-model', permanent: true },
+      { source: '/service-blueprints', destination: '/tools/service-blueprints', permanent: true },
+      { source: '/six-thinking-hats', destination: '/tools/six-thinking-hats', permanent: true },
+      { source: '/t7-model-for-teams', destination: '/tools/t7-model-for-teams', permanent: true },
+      { source: '/tesi-model', destination: '/tools/tesi-model', permanent: true },
+      { source: '/the-heros-journey', destination: '/tools/the-heros-journey', permanent: true },
+      { source: '/the-star-method', destination: '/tools/the-star-method', permanent: true },
+      { source: '/theory-of-change', destination: '/tools/theory-of-change', permanent: true },
+      { source: '/vuca-prime', destination: '/tools/vuca-prime', permanent: true },
+      { source: '/wicked-problems', destination: '/tools/wicked-problems', permanent: true },
+
+
+      // =========================================================
       // MISCELLANEOUS
       // =========================================================
+
+      // Old /buy/ e-commerce pages
+      { source: '/buy/8-step-change-model-slide-deck', destination: '/tools/kotters-8-step-change-model', permanent: true },
+      { source: '/buy/:slug', destination: '/tools', permanent: true },
+
+      // Old /how-we-help/ navigation structure
+      { source: '/how-we-help/structure-and-operations', destination: '/services', permanent: true },
+      { source: '/how-we-help/purpose-and-direction', destination: '/services', permanent: true },
+      { source: '/how-we-help/people-and-capability', destination: '/services', permanent: true },
+      { source: '/how-we-help/service-and-experience', destination: '/services', permanent: true },
+      { source: '/how-we-help/:slug', destination: '/services', permanent: true },
+      { source: '/how-we-help', destination: '/services', permanent: true },
 
       // Old top-level paths
       { source: '/customer-personas', destination: '/tools/audience-personas', permanent: true },
@@ -480,9 +555,6 @@ const nextConfig = {
       { source: '/culture-change/organisational-culture-vision', destination: '/services/culture-change-consultancy', permanent: true },
       { source: '/culture-change/organisational-culture-vision/:path*', destination: '/services/culture-change-consultancy', permanent: true },
       { source: '/culture-change/:slug', destination: '/services/culture-change-consultancy', permanent: true },
-
-      // Root-level tool pages missing /tools/ prefix
-{ source: '/8-wastes-of-lean', destination: '/tools/8-wastes-of-lean', permanent: true },
 
 // Old assessments section → States of Vitality
 { source: '/assessments/:slug', destination: '/states-of-vitality', permanent: true },

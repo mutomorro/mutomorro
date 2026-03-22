@@ -472,9 +472,14 @@ const nextConfig = {
       { source: '/implement/:slug', destination: '/services', permanent: true },
       { source: '/implement', destination: '/services', permanent: true },
 
+      // Old /developing-leaders/ pages
+      { source: '/developing-leaders/:slug', destination: '/develop', permanent: true },
+      { source: '/developing-leaders', destination: '/develop', permanent: true },
+
       // Old one-off pages
       { source: '/purpose-led-organisations', destination: '/philosophy', permanent: true },
       { source: '/hoko-test', destination: '/', permanent: true },
+      { source: '/services/culture-change', destination: '/services/culture-change-consultancy', permanent: true },
 
       // Old /buy/ e-commerce pages
       { source: '/buy/8-step-change-model-slide-deck', destination: '/tools/kotters-8-step-change-model', permanent: true },

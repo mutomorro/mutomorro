@@ -468,6 +468,14 @@ const nextConfig = {
       // MISCELLANEOUS
       // =========================================================
 
+      // Old /implement/ pages (WordPress AI-generated content)
+      { source: '/implement/:slug', destination: '/services', permanent: true },
+      { source: '/implement', destination: '/services', permanent: true },
+
+      // Old one-off pages
+      { source: '/purpose-led-organisations', destination: '/philosophy', permanent: true },
+      { source: '/hoko-test', destination: '/', permanent: true },
+
       // Old /buy/ e-commerce pages
       { source: '/buy/8-step-change-model-slide-deck', destination: '/tools/kotters-8-step-change-model', permanent: true },
       { source: '/buy/:slug', destination: '/tools', permanent: true },

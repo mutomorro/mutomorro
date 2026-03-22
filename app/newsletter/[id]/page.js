@@ -1,6 +1,6 @@
 import { createClient } from '@supabase/supabase-js'
 import { notFound } from 'next/navigation'
-import Link from 'next/link'
+import NewsletterBrowserView from './NewsletterBrowserView'
 
 export async function generateMetadata({ params }) {
   const { id } = await params
@@ -57,47 +57,5 @@ export default async function NewsletterViewPage({ params }) {
       })
     : ''
 
-  return (
-    <div style={{
-      position: 'fixed',
-      inset: 0,
-      zIndex: 9999,
-      backgroundColor: '#f0f0f0',
-      overflowY: 'auto',
-    }}>
-      {/* Banner */}
-      <div style={{
-        maxWidth: '580px',
-        margin: '0 auto',
-        padding: '12px 44px',
-        textAlign: 'center',
-      }}>
-        <p style={{
-          fontFamily: "'Source Sans 3', sans-serif",
-          fontSize: '13px',
-          fontWeight: 400,
-          color: 'rgba(0,0,0,0.4)',
-          margin: 0,
-        }}>
-          This is a web version of an email sent on {sentDate}.{' '}
-          <Link
-            href="https://mutomorro.com"
-            style={{ color: '#9B51E0', textDecoration: 'underline' }}
-          >
-            Subscribe to receive future emails
-          </Link>
-        </p>
-      </div>
-
-      {/* Email content */}
-      <div
-        style={{
-          maxWidth: '580px',
-          margin: '0 auto 40px',
-          backgroundColor: '#FFFFFF',
-        }}
-        dangerouslySetInnerHTML={{ __html: htmlBody }}
-      />
-    </div>
-  )
+  return <NewsletterBrowserView htmlBody={htmlBody} sentDate={sentDate} />
 }

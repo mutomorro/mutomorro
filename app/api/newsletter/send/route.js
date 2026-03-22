@@ -73,6 +73,7 @@ async function handleCreate(body, resend, supabase) {
     signoff = 'Until next month,',
     batchSize: rawBatchSize = 100,
     tierFilter,
+    emailOverride,
   } = body
 
   if (!subject || !sections || !sections.length) {
@@ -175,6 +176,7 @@ async function handleCreate(body, resend, supabase) {
     leadText,
     sections,
     signoff,
+    emailOverride,
     resend,
     supabase,
   })
@@ -196,11 +198,12 @@ async function handleCreate(body, resend, supabase) {
     totalRecipients: allContacts.length,
     remaining,
     status,
+    ...(emailOverride ? { testMode: true, emailOverride } : {}),
   })
 }
 
 async function handleResume(body, resend, supabase) {
-  const { sendId, batchSize: rawBatchSize = 100 } = body
+  const { sendId, batchSize: rawBatchSize = 100, emailOverride } = body
 
   if (!sendId) {
     return Response.json({ error: 'sendId is required for resume' }, { status: 400 })
@@ -284,6 +287,7 @@ async function handleResume(body, resend, supabase) {
     leadText,
     sections,
     signoff,
+    emailOverride,
     resend,
     supabase,
   })
@@ -307,10 +311,11 @@ async function handleResume(body, resend, supabase) {
     totalRecipients: send.total_recipients,
     remaining,
     status,
+    ...(emailOverride ? { testMode: true, emailOverride } : {}),
   })
 }
 
-async function sendBatch({ batch, sendId, subject, previewText, date, leadText, sections, signoff, resend, supabase }) {
+async function sendBatch({ batch, sendId, subject, previewText, date, leadText, sections, signoff, emailOverride, resend, supabase }) {
   const viewInBrowserUrl = `https://mutomorro.com/newsletter/${sendId}`
 
   // Render personalised HTML for each recipient
@@ -342,7 +347,7 @@ async function sendBatch({ batch, sendId, subject, previewText, date, leadText, 
   const { data, error } = await resend.batch.send(
     emails.map(e => ({
       from: 'James from Mutomorro <james@mutomorro.com>',
-      to: [e.email],
+      to: [emailOverride || e.email],
       subject,
       html: e.html,
       headers: {

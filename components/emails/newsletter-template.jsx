@@ -11,7 +11,6 @@ import {
   Link,
   Img,
   Hr,
-  Button,
 } from '@react-email/components'
 
 const fontFamily = "'Source Sans 3', 'Source Sans Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
@@ -146,22 +145,22 @@ function RenderSection({ section, index }) {
           >
             {section.text}
           </Text>
-          <Button
+          <a
             href={section.buttonUrl}
             style={{
               fontFamily,
               backgroundColor: '#9B51E0',
-              color: '#fff',
+              color: '#FFFFFF',
               fontSize: '15px',
               fontWeight: 400,
               padding: '14px 36px',
-              borderRadius: '0',
+              borderRadius: '0px',
               textDecoration: 'none',
               display: 'inline-block',
             }}
           >
             {section.buttonText}
-          </Button>
+          </a>
         </Section>
       )
 
@@ -273,12 +272,30 @@ export default function NewsletterTemplate({
           <Section style={{ padding: '24px 44px 20px' }}>
             <Row>
               <Column style={{ verticalAlign: 'middle' }}>
-                <Img
-                  src="https://mutomorro.com/images/mutomorro-logo.png"
-                  alt="Mutomorro"
-                  width="120"
-                  style={{ display: 'block' }}
-                />
+                <table cellPadding="0" cellSpacing="0" border="0">
+                  <tbody>
+                    <tr>
+                      <td style={{ verticalAlign: 'middle', paddingRight: '10px' }}>
+                        <div style={{
+                          width: '24px',
+                          height: '24px',
+                          borderRadius: '50%',
+                          backgroundColor: '#9B51E0',
+                        }} />
+                      </td>
+                      <td style={{ verticalAlign: 'middle' }}>
+                        <span style={{
+                          fontFamily,
+                          fontSize: '15px',
+                          fontWeight: 400,
+                          color: '#000',
+                        }}>
+                          Mutomorro
+                        </span>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
               </Column>
               <Column style={{ verticalAlign: 'middle', textAlign: 'right' }}>
                 <Text style={{
@@ -343,14 +360,23 @@ export default function NewsletterTemplate({
           }} />
 
           {/* 5. Body content area */}
-          <Section style={{ padding: '36px 44px 0' }}>
-            {sections.map((section, i) => (
-              <RenderSection key={i} section={section} index={i} />
-            ))}
-          </Section>
+          <table width="100%" cellPadding="0" cellSpacing="0" border="0">
+            <tbody>
+              <tr>
+                <td style={{ padding: '36px 44px 0' }}>
+                  {sections.map((section, i) => (
+                    <RenderSection key={i} section={section} index={i} />
+                  ))}
+                </td>
+              </tr>
+            </tbody>
+          </table>
 
           {/* 6. Sign-off */}
-          <Section style={{ padding: '0 44px 0' }}>
+          <table width="100%" cellPadding="0" cellSpacing="0" border="0">
+            <tbody>
+              <tr>
+                <td style={{ padding: '0 44px 0' }}>
             <Text style={{
               fontFamily,
               fontSize: '18px',
@@ -371,7 +397,10 @@ export default function NewsletterTemplate({
             }}>
               James
             </Text>
-          </Section>
+                </td>
+              </tr>
+            </tbody>
+          </table>
 
           {/* 7. Footer */}
           <Section style={{
@@ -379,12 +408,31 @@ export default function NewsletterTemplate({
             marginTop: '48px',
             padding: '36px 44px',
           }}>
-            <Img
-              src="https://mutomorro.com/images/mutomorro-logo.png"
-              alt="Mutomorro"
-              width="90"
-              style={{ display: 'block', marginBottom: '16px', opacity: 0.5 }}
-            />
+            <table cellPadding="0" cellSpacing="0" border="0" style={{ marginBottom: '16px' }}>
+              <tbody>
+                <tr>
+                  <td style={{ verticalAlign: 'middle', paddingRight: '8px' }}>
+                    <div style={{
+                      width: '20px',
+                      height: '20px',
+                      borderRadius: '50%',
+                      backgroundColor: '#9B51E0',
+                      opacity: 0.5,
+                    }} />
+                  </td>
+                  <td style={{ verticalAlign: 'middle' }}>
+                    <span style={{
+                      fontFamily,
+                      fontSize: '14px',
+                      fontWeight: 400,
+                      color: 'rgba(0,0,0,0.5)',
+                    }}>
+                      Mutomorro
+                    </span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
             <Text style={{
               fontFamily,
               fontSize: '14px',

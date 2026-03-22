@@ -272,6 +272,13 @@ export default function NewsletterTemplate({
           <Section style={{ padding: '24px 44px 20px' }}>
             <Row>
               <Column style={{ verticalAlign: 'middle' }}>
+                <Img
+                  src="https://mutomorro.com/images/mutomorro-logo.png"
+                  alt="Mutomorro"
+                  width="120"
+                  style={{ display: 'block' }}
+                />
+                {/* Fallback if logo image is unavailable:
                 <table cellPadding="0" cellSpacing="0" border="0">
                   <tbody>
                     <tr>
@@ -296,6 +303,7 @@ export default function NewsletterTemplate({
                     </tr>
                   </tbody>
                 </table>
+                */}
               </Column>
               <Column style={{ verticalAlign: 'middle', textAlign: 'right' }}>
                 <Text style={{
@@ -408,6 +416,13 @@ export default function NewsletterTemplate({
             marginTop: '48px',
             padding: '36px 44px',
           }}>
+            <Img
+              src="https://mutomorro.com/images/mutomorro-logo.png"
+              alt="Mutomorro"
+              width="80"
+              style={{ display: 'block', marginBottom: '16px', opacity: 0.5 }}
+            />
+            {/* Fallback if logo image is unavailable:
             <table cellPadding="0" cellSpacing="0" border="0" style={{ marginBottom: '16px' }}>
               <tbody>
                 <tr>
@@ -433,6 +448,7 @@ export default function NewsletterTemplate({
                 </tr>
               </tbody>
             </table>
+            */}
             <Text style={{
               fontFamily,
               fontSize: '14px',

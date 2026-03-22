@@ -40,8 +40,60 @@ export default async function ArticlePage({ params }) {
   const { slug } = await params
   const article = await getArticle(slug)
 
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: article.title,
+    description: article.seoDescription || article.shortSummary || article.subtitle,
+    author: {
+      '@type': 'Person',
+      name: 'James Freeman-Gray',
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: 'Mutomorro',
+      url: 'https://mutomorro.com',
+    },
+    url: `https://mutomorro.com/articles/${article.slug.current}`,
+    ...(article._createdAt && { datePublished: article._createdAt }),
+    ...(article._updatedAt && { dateModified: article._updatedAt }),
+  }
+
+  const breadcrumbJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Thinking',
+        item: 'https://mutomorro.com/articles',
+      },
+      ...(article.category ? [{
+        '@type': 'ListItem',
+        position: 2,
+        name: article.category,
+        item: 'https://mutomorro.com/articles',
+      }] : []),
+      {
+        '@type': 'ListItem',
+        position: article.category ? 3 : 2,
+        name: article.title,
+        item: `https://mutomorro.com/articles/${article.slug.current}`,
+      },
+    ],
+  }
+
   return (
     <main className="page-article">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
 
       {/* Hero */}
       <BackgroundPattern variant="constellation" style={{ background: 'var(--dark)' }}>

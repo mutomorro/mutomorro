@@ -38,6 +38,48 @@ export default async function CaseStudy({ params }) {
   const { slug } = await params
   const project = await getProject(slug)
 
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: project.seoTitle || project.title,
+    description: project.seoDescription || project.shortSummary,
+    author: {
+      '@type': 'Person',
+      name: 'James Freeman-Gray',
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: 'Mutomorro',
+      url: 'https://mutomorro.com',
+    },
+    url: `https://mutomorro.com/projects/${project.slug.current}`,
+  }
+
+  const breadcrumbJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Projects',
+        item: 'https://mutomorro.com/projects',
+      },
+      ...(project.clientSector ? [{
+        '@type': 'ListItem',
+        position: 2,
+        name: project.clientSector,
+        item: 'https://mutomorro.com/projects',
+      }] : []),
+      {
+        '@type': 'ListItem',
+        position: project.clientSector ? 3 : 2,
+        name: project.title,
+        item: `https://mutomorro.com/projects/${project.slug.current}`,
+      },
+    ],
+  }
+
   // Section definitions - only render sections that have content
   const sections = [
     { key: 'clientAndContext', label: 'Client & context' },
@@ -73,6 +115,14 @@ export default async function CaseStudy({ params }) {
 
   return (
     <main>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
 
       {/* Hero */}
       <section className="section--full dark-bg" style={{ padding: '100px 48px 120px' }}>

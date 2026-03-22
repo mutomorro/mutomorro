@@ -30,6 +30,9 @@ export const metadata = {
   twitter: {
     card: 'summary',
   },
+  alternates: {
+    canonical: './',
+  },
   robots: {
     index: true,
     follow: true,
@@ -60,6 +63,29 @@ export default function RootLayout({ children }) {
             </filter>
           </defs>
         </svg>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'ProfessionalService',
+              name: 'Mutomorro',
+              url: 'https://mutomorro.com',
+              logo: 'https://mutomorro.com/logo-black.svg',
+              description: 'Systems-led organisational development consultancy. We help leaders redesign how their organisations work across purpose, structure, people, and service.',
+              founder: {
+                '@type': 'Person',
+                name: 'James Freeman-Gray',
+                url: 'https://www.linkedin.com/in/jamesbfg/',
+              },
+              areaServed: 'GB',
+              priceRange: '$$',
+              sameAs: [
+                'https://www.linkedin.com/company/mutomorro/',
+              ],
+            }),
+          }}
+        />
         <ConsentProvider>
           <Nav />
           <ScrollObserver />

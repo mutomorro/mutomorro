@@ -68,8 +68,48 @@ export default async function ServicePage({ params }) {
 
   if (!service) notFound()
 
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Service',
+    name: service.heroHeading,
+    description: service.seoDescription || service.heroTagline,
+    provider: {
+      '@type': 'ProfessionalService',
+      name: 'Mutomorro',
+      url: 'https://mutomorro.com',
+    },
+    url: `https://mutomorro.com/services/${service.slug.current}`,
+  }
+
+  const breadcrumbJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'How we help',
+        item: 'https://mutomorro.com/services',
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: service.heroHeading || service.title,
+        item: `https://mutomorro.com/services/${service.slug.current}`,
+      },
+    ],
+  }
+
   return (
     <main className="service-page">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
 
       {/* ==========================================
           SECTION 1: HERO (dark)

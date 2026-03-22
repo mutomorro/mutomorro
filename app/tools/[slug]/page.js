@@ -32,8 +32,59 @@ export default async function ToolPage({ params }) {
   const pdfUrl = tool.toolkitFileUrl || null
   const heroImageUrl = tool.heroImage ? urlFor(tool.heroImage).width(600).url() : null
 
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: tool.seoTitle || tool.title,
+    description: tool.seoDescription || tool.shortSummary,
+    author: {
+      '@type': 'Person',
+      name: 'James Freeman-Gray',
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: 'Mutomorro',
+      url: 'https://mutomorro.com',
+    },
+    url: `https://mutomorro.com/tools/${tool.slug.current}`,
+    ...(heroImageUrl && { image: heroImageUrl }),
+  }
+
+  const breadcrumbJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Tools',
+        item: 'https://mutomorro.com/tools',
+      },
+      ...(tool.category ? [{
+        '@type': 'ListItem',
+        position: 2,
+        name: tool.category,
+        item: 'https://mutomorro.com/tools',
+      }] : []),
+      {
+        '@type': 'ListItem',
+        position: tool.category ? 3 : 2,
+        name: tool.title,
+        item: `https://mutomorro.com/tools/${tool.slug.current}`,
+      },
+    ],
+  }
+
   return (
     <main className="page-tool">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
 
       {/* Hero */}
       <section className="section--full dark-bg" style={{ padding: '100px 48px 120px' }}>

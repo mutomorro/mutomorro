@@ -1,9 +1,39 @@
 import { getCourse } from '../../../sanity/client'
+import { client } from '../../../sanity/client'
 import { PortableText } from '@portabletext/react'
 import Link from 'next/link'
 import CTA from '../../../components/CTA'
 import { urlFor } from '../../../sanity/image'
 import BackgroundPattern from '../../../components/animations/BackgroundPattern'
+
+export async function generateMetadata({ params }) {
+  const { slug } = await params
+  const course = await client.fetch(
+    `*[_type == "course" && slug.current == $slug][0]{
+      title, seoTitle, seoDescription, shortSummary,
+      "heroImageUrl": heroImage.asset->url
+    }`,
+    { slug }
+  )
+  if (!course) return {}
+
+  const rawTitle = course.seoTitle || course.title
+  const title = rawTitle?.replace(/\s*[\|\-]\s*Mutomorro\s*$/i, '') || rawTitle
+  const description = course.seoDescription || course.shortSummary || ''
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      type: 'article',
+      ...(course.heroImageUrl && {
+        images: [{ url: course.heroImageUrl, width: 1200, height: 630 }],
+      }),
+    },
+  }
+}
 
 export default async function CoursePage({ params }) {
   const { slug } = await params

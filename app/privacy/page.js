@@ -1,7 +1,7 @@
 import ResetConsentButton from './ResetConsentButton'
 
 export const metadata = {
-  title: 'Privacy and Cookies - Mutomorro',
+  title: 'Privacy and cookies',
   description: 'How Mutomorro uses cookies and handles your data. Plain language, no legal waffle.',
 }
 

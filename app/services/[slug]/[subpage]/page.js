@@ -13,9 +13,18 @@ export async function generateMetadata({ params }) {
   const page = await getServiceSubPage(slug, subpage)
   if (!page) return {}
 
+  const rawTitle = page.seoTitle || page.heroHeading
+  const title = rawTitle?.replace(/\s*[\|\-]\s*Mutomorro\s*$/i, '') || rawTitle
+  const description = page.seoDescription || page.heroTagline || ''
+
   return {
-    title: page.seoTitle || `${page.heroHeading} - Mutomorro`,
-    description: page.seoDescription || page.heroTagline,
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      type: 'article',
+    },
   }
 }
 

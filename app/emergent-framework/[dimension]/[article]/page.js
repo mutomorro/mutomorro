@@ -10,9 +10,18 @@ export async function generateMetadata({ params }) {
   const article = await getDimensionArticle(dimensionSlug, articleSlug)
   if (!article) return {}
   const dimTitle = article.dimension?.title || dimensionSlug
+  const rawTitle = article.seoTitle || `${dimTitle}: ${article.title} - EMERGENT Framework`
+  const title = rawTitle?.replace(/\s*[\|\-]\s*Mutomorro\s*$/i, '') || rawTitle
+  const description = article.seoDescription || article.shortSummary || `${article.title} - part of the ${dimTitle} dimension.`
+
   return {
-    title: `${article.title} - ${dimTitle} - EMERGENT Framework - Mutomorro`,
-    description: article.shortSummary || `${article.title} - part of the ${dimTitle} dimension.`,
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      type: 'article',
+    },
   }
 }
 

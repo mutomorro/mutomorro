@@ -1,8 +1,38 @@
 import { getProject } from '../../../sanity/client'
+import { client } from '../../../sanity/client'
 import Link from 'next/link'
 import CTA from '../../../components/CTA'
 import { PortableText } from '@portabletext/react'
 import { urlFor } from '../../../sanity/image'
+
+export async function generateMetadata({ params }) {
+  const { slug } = await params
+  const project = await client.fetch(
+    `*[_type == "project" && slug.current == $slug][0]{
+      title, seoTitle, seoDescription, shortSummary,
+      "heroImageUrl": heroImage.asset->url
+    }`,
+    { slug }
+  )
+  if (!project) return {}
+
+  const rawTitle = project.seoTitle || project.title
+  const title = rawTitle?.replace(/\s*[\|\-]\s*Mutomorro\s*$/i, '') || rawTitle
+  const description = project.seoDescription || project.shortSummary || ''
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      type: 'article',
+      ...(project.heroImageUrl && {
+        images: [{ url: project.heroImageUrl, width: 1200, height: 630 }],
+      }),
+    },
+  }
+}
 
 export default async function CaseStudy({ params }) {
   const { slug } = await params

@@ -2,8 +2,8 @@ import Link from 'next/link'
 import { getAllCapabilityServices } from '../../sanity/client'
 
 export const metadata = {
-  title: 'Building Capability - Developing Leaders and Teams | Mutomorro',
-  description: 'Developing the leaders and teams who make organisations work. Leadership programmes, coaching, facilitation, training, and team development - all grounded in how organisations actually work.',
+  title: 'Building capability - leadership and team development',
+  description: 'Development programmes for leaders and teams. Executive coaching, leadership facilitation, bespoke training, team sessions, and manager coaching.',
 }
 
 export default async function DevelopLandingPage() {

@@ -2,6 +2,11 @@ import { getAllArticles } from '../../sanity/client'
 import CTA from '../../components/CTA'
 import ArticlesGrid from './ArticlesGrid'
 
+export const metadata = {
+  title: 'Articles - thinking on organisational development',
+  description: 'Perspectives on culture change, organisational design, change management, service design, and the systems that shape how organisations work.',
+}
+
 export default async function Articles() {
   const articles = await getAllArticles()
 

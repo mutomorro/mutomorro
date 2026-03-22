@@ -1,6 +1,18 @@
 import Link from 'next/link'
 import { getAllProjects, getAllTools } from '../sanity/client'
 import HeroCanvas from '../components/HeroCanvas'
+
+export const metadata = {
+  title: {
+    absolute: 'Mutomorro - Organisational development consultancy',
+  },
+  description: 'We help leaders redesign how their organisations work. Systems-led organisational development across purpose, structure, people, and service.',
+  openGraph: {
+    title: 'Mutomorro - Organisational development consultancy',
+    description: 'We help leaders redesign how their organisations work. Systems-led organisational development across purpose, structure, people, and service.',
+    type: 'website',
+  },
+}
 import LogoStrip from '../components/LogoStrip'
 import NewsletterSignup from '../components/NewsletterSignup'
 import BackgroundPattern from '../components/animations/BackgroundPattern'

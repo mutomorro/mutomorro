@@ -4,6 +4,10 @@ export default defineType({
   name: 'dimensionArticle',
   title: 'Dimension Articles',
   type: 'document',
+  groups: [
+    { name: 'content', title: 'Content', default: true },
+    { name: 'seo', title: 'SEO' },
+  ],
   fields: [
     defineField({
       name: 'title',
@@ -11,6 +15,7 @@ export default defineType({
       type: 'string',
       description: 'e.g. What is Embedded Strategy?',
       validation: Rule => Rule.required(),
+      group: 'content',
     }),
     defineField({
   name: 'slug',
@@ -38,6 +43,7 @@ export default defineType({
     }
   },
   validation: Rule => Rule.required(),
+  group: 'content',
 }),
     defineField({
       name: 'dimension',
@@ -46,6 +52,7 @@ export default defineType({
       to: [{ type: 'dimension' }],
       description: 'Which dimension does this article belong to?',
       validation: Rule => Rule.required(),
+      group: 'content',
     }),
     defineField({
       name: 'sectionType',
@@ -60,12 +67,14 @@ export default defineType({
           { title: 'Explore it yourself', value: 'explore-it-yourself' },
         ],
       },
+      group: 'content',
     }),
     defineField({
       name: 'order',
       title: 'Order',
       type: 'number',
       description: 'Position within the dimension (1 = first article shown)',
+      group: 'content',
     }),
     defineField({
       name: 'shortSummary',
@@ -74,6 +83,7 @@ export default defineType({
       rows: 2,
       description: 'One sentence for article listings',
       validation: Rule => Rule.required(),
+      group: 'content',
     }),
     defineField({
       name: 'body',
@@ -84,6 +94,22 @@ export default defineType({
         { type: 'image', options: { hotspot: true } },
       ],
       validation: Rule => Rule.required(),
+      group: 'content',
+    }),
+    defineField({
+      name: 'seoTitle',
+      title: 'SEO title',
+      type: 'string',
+      description: 'Custom page title for search engines. If blank, uses article title + dimension name.',
+      group: 'seo',
+    }),
+    defineField({
+      name: 'seoDescription',
+      title: 'SEO description',
+      type: 'text',
+      rows: 3,
+      description: 'Meta description for search results. If blank, uses short summary.',
+      group: 'seo',
     }),
   ],
   orderings: [

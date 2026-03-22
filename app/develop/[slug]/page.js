@@ -47,9 +47,18 @@ export async function generateMetadata({ params }) {
   const service = await getCapabilityService(slug)
   if (!service) return {}
 
+  const rawTitle = service.seoTitle || service.heroHeading || service.title
+  const title = rawTitle?.replace(/\s*[\|\-]\s*Mutomorro\s*$/i, '') || rawTitle
+  const description = service.seoDescription || service.heroTagline || ''
+
   return {
-    title: service.seoTitle || `${service.heroHeading || service.title} | Mutomorro`,
-    description: service.seoDescription || service.heroTagline,
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      type: 'article',
+    },
   }
 }
 

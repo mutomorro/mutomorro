@@ -2,6 +2,11 @@ import { getAllCourses } from '../../sanity/client'
 import CTA from '../../components/CTA'
 import CoursesGrid from './CoursesGrid'
 
+export const metadata = {
+  title: 'Sessions - organisational development training',
+  description: 'Collaborative learning sessions on change management, culture, leadership, systems thinking, service design, and more. Designed for teams and leaders.',
+}
+
 export default async function Courses() {
   const courses = await getAllCourses()
 

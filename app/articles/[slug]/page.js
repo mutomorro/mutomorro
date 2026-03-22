@@ -1,10 +1,40 @@
 import { getArticle } from '../../../sanity/client'
+import { client } from '../../../sanity/client'
 import { PortableText } from '@portabletext/react'
 import Link from 'next/link'
 import CTA from '../../../components/CTA'
 import { urlFor } from '../../../sanity/image'
 import NewsletterSignup from '../../../components/NewsletterSignup'
 import BackgroundPattern from '../../../components/animations/BackgroundPattern'
+
+export async function generateMetadata({ params }) {
+  const { slug } = await params
+  const article = await client.fetch(
+    `*[_type == "article" && slug.current == $slug][0]{
+      title, subtitle, seoTitle, seoDescription, shortSummary,
+      "heroImageUrl": heroImage.asset->url
+    }`,
+    { slug }
+  )
+  if (!article) return {}
+
+  const rawTitle = article.seoTitle || article.title
+  const title = rawTitle?.replace(/\s*[\|\-]\s*Mutomorro\s*$/i, '') || rawTitle
+  const description = article.seoDescription || article.shortSummary || article.subtitle || ''
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      type: 'article',
+      ...(article.heroImageUrl && {
+        images: [{ url: article.heroImageUrl, width: 1200, height: 630 }],
+      }),
+    },
+  }
+}
 
 export default async function ArticlePage({ params }) {
   const { slug } = await params

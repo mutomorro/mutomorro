@@ -10,12 +10,12 @@ import HeroScreenshotReveal from '../../components/states-of-vitality/HeroScreen
 // ============================================
 
 export const metadata = {
-  title: 'States of Vitality Organisational Assessment | Mutomorro',
-  description: 'A comprehensive assessment that reveals how your organisation actually works - not just individual parts, but how everything connects. Eight dimensions. One connected view.',
+  title: 'States of Vitality - organisational health diagnostic',
+  description: 'A diagnostic tool that measures organisational health across eight dimensions. See where your organisation thrives and where it needs attention.',
   openGraph: {
-    title: 'States of Vitality Organisational Assessment',
-    description: 'See your whole organisation clearly. Understand where you\'re thriving, where energy is getting stuck, and where focused attention will create the greatest impact.',
-    url: 'https://mutomorro.com/states-of-vitality',
+    title: 'States of Vitality - organisational health diagnostic',
+    description: 'A diagnostic tool that measures organisational health across eight dimensions. See where your organisation thrives and where it needs attention.',
+    type: 'website',
   },
 }
 

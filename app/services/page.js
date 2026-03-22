@@ -2,6 +2,11 @@ import Link from 'next/link'
 import { getAllServices } from '../../sanity/client'
 import CTA from '../../components/CTA'
 
+export const metadata = {
+  title: 'Services - organisational development consultancy',
+  description: 'Fourteen services across purpose and direction, structure and operations, people and capability, and service and experience. Each one designed to help your organisation work better.',
+}
+
 const categories = [
   {
     slug: 'purpose-direction',

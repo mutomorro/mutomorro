@@ -3,8 +3,8 @@ import CTA from '../../components/CTA'
 import BackgroundPattern from '@/components/animations/BackgroundPattern'
 
 export const metadata = {
-  title: 'How We Work - Mutomorro',
-  description: 'Our four-stage approach to working together - from understanding where you are now, through collaborative design, to embedded change and lasting internal capability.',
+  title: 'How we work with organisations',
+  description: 'Four stages - understand, co-design, implement, build capability. We start from where you are and work alongside your people, not instead of them.',
 }
 
 const stages = [

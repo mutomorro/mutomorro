@@ -8,9 +8,18 @@ export async function generateMetadata({ params }) {
   const { dimension: slug } = await params
   const dimension = await getDimension(slug)
   if (!dimension) return {}
+  const rawTitle = dimension.seoTitle || `${dimension.title} - EMERGENT Framework`
+  const title = rawTitle?.replace(/\s*[\|\-]\s*Mutomorro\s*$/i, '') || rawTitle
+  const description = dimension.seoDescription || dimension.shortSummary || `Explore the ${dimension.title} dimension of the EMERGENT Framework.`
+
   return {
-    title: `${dimension.title} - EMERGENT Framework - Mutomorro`,
-    description: dimension.shortSummary || `Explore the ${dimension.title} dimension of the EMERGENT Framework.`,
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      type: 'article',
+    },
   }
 }
 

@@ -16,8 +16,24 @@ const sourceSans = Source_Sans_3({
 })
 
 export const metadata = {
-  title: 'Mutomorro',
-  description: 'Organisational development consultancy',
+  metadataBase: new URL('https://mutomorro.com'),
+  title: {
+    default: 'Mutomorro - Organisational development consultancy',
+    template: '%s | Mutomorro',
+  },
+  description: 'We help leaders redesign how their organisations work. Systems-led organisational development across purpose, structure, people, and service.',
+  openGraph: {
+    type: 'website',
+    locale: 'en_GB',
+    siteName: 'Mutomorro',
+  },
+  twitter: {
+    card: 'summary',
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
   verification: {
     google: 'RAdCNT8DuIKnkt8EZhxgJdETnbll1joUHY34P65WFy4',
   },

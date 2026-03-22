@@ -10,9 +10,18 @@ export async function generateMetadata({ params }) {
   const tool = await getTool(slug)
   if (!tool) return {}
 
+  const rawTitle = tool.seoTitle || tool.title
+  const title = rawTitle?.replace(/\s*[\|\-]\s*Mutomorro\s*$/i, '') || rawTitle
+  const description = tool.seoDescription || tool.shortSummary || ''
+
   return {
-    title: tool.seoTitle || `${tool.title} - Mutomorro`,
-    description: tool.seoDescription || tool.shortSummary,
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      type: 'article',
+    },
   }
 }
 

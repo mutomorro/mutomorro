@@ -4,6 +4,11 @@ import CTA from '../../components/CTA'
 import LogoStrip from '../../components/LogoStrip'
 import BackgroundPattern from '@/components/animations/BackgroundPattern'
 
+export const metadata = {
+  title: 'About Mutomorro',
+  description: 'Over 20 years helping organisations across every sector redesign how they work. From teams of 12 to workforces of 80,000.',
+}
+
 export default function About() {
   return (
     <main className="about-page">

@@ -12,8 +12,8 @@ import EmergentConstellation from '@/components/philosophy/EmergentConstellation
 import NetworkDivider from '@/components/philosophy/NetworkDivider'
 
 export const metadata = {
-  title: 'Our Philosophy - Intentional Ecosystems | Mutomorro',
-  description: 'How we think about organisations. A systems-thinking approach to organisational development - why we see organisations as living ecosystems, not collections of parts to fix.',
+  title: 'Our philosophy - Intentional Ecosystems',
+  description: 'Organisations are living systems, not machines. We work with the patterns beneath the surface to help leaders create conditions where good things happen naturally.',
 }
 
 const concepts = [

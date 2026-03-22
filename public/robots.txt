@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://mutomorro.com/sitemap.xml
+
+# Block Sanity Studio
+Disallow: /studio

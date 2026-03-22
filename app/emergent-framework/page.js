@@ -3,8 +3,8 @@ import { getFrameworkOverview } from '../../sanity/client'
 import { PortableText } from '@portabletext/react'
 
 export const metadata = {
-  title: 'The EMERGENT Framework - Mutomorro',
-  description: 'Eight dimensions of organisational health. A model for understanding how purpose, strategy, culture, capacity, and the way work gets done all shape each other.',
+  title: 'The EMERGENT Framework - eight dimensions of organisational health',
+  description: 'A model for understanding what makes organisations thrive. Eight interconnected dimensions covering strategy, culture, purpose, capacity, and more.',
 }
 
 export default async function EmergentFramework() {

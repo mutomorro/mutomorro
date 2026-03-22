@@ -1,8 +1,8 @@
 import ContactForm from '../../components/ContactForm'
 
 export const metadata = {
-  title: 'Get in touch - Mutomorro',
-  description: 'Every conversation starts with listening. Tell us what you\'re working on and we\'ll explore it together.',
+  title: 'Get in touch',
+  description: 'Start a conversation about what you are working on. We will listen, share how we see it, and explore whether we can help.',
 }
 
 export default async function ContactPage({ searchParams }) {

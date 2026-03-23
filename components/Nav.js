@@ -237,10 +237,9 @@ export default function Nav() {
             <Link
               href="/states-of-vitality"
               onClick={closePanel}
-              className={isTransparent ? 'btn-sec btn-sec--dark' : 'btn-sec'}
-              style={{ fontSize: '14px', padding: '8px 0' }}
+              className="sov-nav-btn"
             >
-              States of Vitality
+              <span style={{ position: 'relative', zIndex: 1 }}>States of Vitality</span>
             </Link>
             <Link
               href="/contact"
@@ -455,38 +454,98 @@ export default function Nav() {
         onMouseEnter={handlePanelEnter}
         onMouseLeave={handlePanelLeave}
       >
-        <div style={{ maxWidth: '50%' }}>
-          {/* Read and think */}
-          <div className="nav-panel-stagger nav-menu-col">
-            <span className="kicker" style={{ marginBottom: '20px' }}>Read and think</span>
-            {[
-              { label: 'The EMERGENT Framework', href: '/emergent-framework' },
-              { label: 'Tools of the Trade', href: '/tools' },
-              { label: 'Thinking', href: '/article' },
-            ].map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                onClick={closePanel}
-                className="nav-menu-link"
-              >
-                <span className="nav-menu-link__label">{item.label}</span>
-                <span className="nav-menu-link__chevron">›</span>
+        <div className="explore-panel">
+          {/* Left column - destinations */}
+          <div className="explore-panel__left nav-panel-stagger">
+            {/* Read and think */}
+            <div>
+              <span className="explore-zone-label">Read and think</span>
+              <div className="explore-dest-cards">
+              <Link href="/tools" onClick={closePanel} className="explore-dest-card">
+                <svg width="44" height="44" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg" className="explore-dest-card__icon">
+                  <rect x="3" y="6" width="17" height="22" rx="1" stroke="#9B51E0" strokeWidth="1.3" fill="none"/>
+                  <rect x="24" y="6" width="17" height="22" rx="1" stroke="#9B51E0" strokeWidth="1.3" fill="none" opacity="0.4"/>
+                  <line x1="8" y1="13" x2="15" y2="13" stroke="#9B51E0" strokeWidth="1" opacity="0.5"/>
+                  <line x1="8" y1="17" x2="14" y2="17" stroke="#9B51E0" strokeWidth="1" opacity="0.35"/>
+                  <line x1="8" y1="21" x2="16" y2="21" stroke="#9B51E0" strokeWidth="1" opacity="0.25"/>
+                  <path d="M11 32 L11 36 L15 34 Z" fill="#9B51E0" opacity="0.4"/>
+                  <circle cx="32" cy="14" r="2.5" stroke="#9B51E0" strokeWidth="1" fill="none" opacity="0.35"/>
+                  <circle cx="29" cy="22" r="1.5" stroke="#9B51E0" strokeWidth="1" fill="none" opacity="0.25"/>
+                </svg>
+                <div className="explore-dest-card__text">
+                  <span className="explore-dest-card__title">Tools of the Trade</span>
+                  <span className="explore-dest-card__desc">Practical frameworks and models</span>
+                </div>
+                <span className="explore-dest-card__chevron">›</span>
               </Link>
-            ))}
+              <Link href="/article" onClick={closePanel} className="explore-dest-card">
+                <svg width="44" height="44" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg" className="explore-dest-card__icon">
+                  <circle cx="22" cy="19" r="11" stroke="#9B51E0" strokeWidth="1.3" fill="none"/>
+                  <circle cx="22" cy="19" r="4.5" stroke="#9B51E0" strokeWidth="1" fill="none" opacity="0.35"/>
+                  <circle cx="22" cy="19" r="1.5" fill="#9B51E0" opacity="0.5"/>
+                  <line x1="22" y1="8" x2="22" y2="5" stroke="#9B51E0" strokeWidth="1" opacity="0.4"/>
+                  <line x1="22" y1="30" x2="22" y2="33" stroke="#9B51E0" strokeWidth="1" opacity="0.4"/>
+                  <line x1="11" y1="19" x2="8" y2="19" stroke="#9B51E0" strokeWidth="1" opacity="0.4"/>
+                  <line x1="33" y1="19" x2="36" y2="19" stroke="#9B51E0" strokeWidth="1" opacity="0.4"/>
+                  <path d="M16 36 L22 39 L28 36" stroke="#9B51E0" strokeWidth="1" fill="none" opacity="0.25"/>
+                </svg>
+                <div className="explore-dest-card__text">
+                  <span className="explore-dest-card__title">Thinking</span>
+                  <span className="explore-dest-card__desc">Articles, perspectives, and ideas</span>
+                </div>
+                <span className="explore-dest-card__chevron">›</span>
+              </Link>
+              </div>
+            </div>
+
+            {/* Courses box */}
+            <Link href="/courses" onClick={closePanel} className="explore-courses-card">
+              <div>
+                <span className="explore-zone-label" style={{ color: '#9B51E0' }}>Learn and develop</span>
+                <span className="explore-courses-card__title">Courses</span>
+                <span className="explore-courses-card__desc">Ready-made sessions on popular topics</span>
+              </div>
+              <span className="explore-courses-card__chevron">›</span>
+            </Link>
           </div>
 
-          {/* Learn and develop */}
-          <div className="nav-panel-stagger nav-menu-col" style={{ marginTop: '32px' }}>
-            <span className="kicker" style={{ marginBottom: '20px' }}>Learn and develop</span>
-            <Link
-              href="/courses"
-              onClick={closePanel}
-              className="nav-menu-link"
-            >
-              <span className="nav-menu-link__label">Courses</span>
-              <span className="nav-menu-link__chevron">›</span>
+          {/* Right column - featured + tasters */}
+          <div className="explore-panel__right nav-panel-stagger">
+            <span className="explore-zone-label">Popular resources</span>
+            {/* Featured resource */}
+            <Link href="/resources/thinking-in-ecosystems" onClick={closePanel} className="explore-featured">
+              <div className="explore-featured__image">
+                <div className="explore-featured__image-inner">
+                  <img
+                    src="https://cdn.sanity.io/images/c6pg4t4h/production/a1183aad79022f1aa0200d6be7b3f0897223f157-2480x3508.png"
+                    alt="Thinking in Ecosystems primer"
+                    style={{ width: '100%', height: 'auto', display: 'block' }}
+                  />
+                </div>
+              </div>
+              <div className="explore-featured__text">
+                <span className="kicker" style={{ marginBottom: '10px' }}>Featured</span>
+                <span className="explore-featured__title">Thinking in Ecosystems</span>
+                <span className="explore-featured__desc">Six ways of seeing your organisation for leaders ready to create thriving organisational ecosystems</span>
+                <span className="explore-featured__cta">Download primer ›</span>
+              </div>
             </Link>
+
+            {/* Taster cards */}
+            <div className="explore-tasters">
+              {[
+                { type: 'Tool', title: 'PESTLE Analysis', meta: 'Most popular', href: '/tools/pestle-analysis' },
+                { type: 'Tool', title: "Kotter's 8 Steps", meta: 'Change classic', href: '/tools/kotters-8-step-change-model' },
+                { type: 'Article', title: 'The Friction Audit', meta: '5 min read', href: '/article/the-friction-audit' },
+                { type: 'Article', title: 'Guide to Change Readiness', meta: '7 min read', href: '/article/a-guide-to-change-readiness' },
+              ].map((item) => (
+                <Link key={item.href} href={item.href} onClick={closePanel} className="explore-taster">
+                  <span className="explore-taster__type">{item.type}</span>
+                  <span className="explore-taster__title">{item.title}</span>
+                  <span className="explore-taster__meta">{item.meta}</span>
+                </Link>
+              ))}
+            </div>
           </div>
         </div>
       </NavPanel>
@@ -609,7 +668,6 @@ export default function Nav() {
               <div className="mobile-nav__accordion-inner">
                 <span className="kicker" style={{ marginBottom: '8px' }}>Read and think</span>
                 {[
-                  { label: 'The EMERGENT Framework', href: '/emergent-framework' },
                   { label: 'Tools of the Trade', href: '/tools' },
                   { label: 'Thinking', href: '/article' },
                 ].map((item) => (

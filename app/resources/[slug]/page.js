@@ -47,68 +47,103 @@ export default async function ResourcePage({ params }) {
 
   return (
     <main>
-      {/* Dark header strip */}
+      {/* Dark header with title, preview image, and form */}
       <section className="section--full dark-bg" style={{ padding: '80px 48px 72px' }}>
-        <div style={{ maxWidth: '1350px', margin: '0 auto', position: 'relative', overflow: 'hidden' }}>
-          <div style={{ position: 'relative', zIndex: 1 }}>
-            <span className="kicker" style={{ marginBottom: '16px' }}>{typeLabel.toUpperCase()}</span>
-            <h1 className="heading-h1" style={{
-              color: '#fff',
-              margin: '0 0 20px',
-              maxWidth: '900px',
+        <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
+          {/* Title block */}
+          <span className="kicker" style={{ marginBottom: '16px' }}>{typeLabel.toUpperCase()}</span>
+          <h1 className="heading-h1" style={{
+            color: '#fff',
+            margin: '0 0 20px',
+            maxWidth: '900px',
+          }}>
+            {resource.title}
+          </h1>
+          {resource.subtitle && (
+            <p style={{
+              fontSize: '20px',
+              fontWeight: '300',
+              lineHeight: '1.6',
+              color: 'rgba(255,255,255,0.55)',
+              maxWidth: '680px',
+              margin: '0 0 48px',
             }}>
-              {resource.title}
-            </h1>
-            {resource.subtitle && (
-              <p style={{
-                fontSize: '20px',
-                fontWeight: '300',
-                lineHeight: '1.6',
-                color: 'rgba(255,255,255,0.55)',
-                maxWidth: '680px',
-                margin: 0,
-              }}>
-                {resource.subtitle}
-              </p>
-            )}
-          </div>
-          {resource.previewImageUrl && (
-            <div className="resource-header-preview" style={{
-              position: 'absolute',
-              right: '-20px',
-              top: '50%',
-              transform: 'translateY(-50%) perspective(800px) rotateY(-12deg) rotateX(3deg)',
-              width: '300px',
-              opacity: 0.18,
-              pointerEvents: 'none',
-              border: '1px solid rgba(255,255,255,0.1)',
-            }}>
-              <img
-                src={resource.previewImageUrl}
-                alt=""
-                aria-hidden="true"
-                style={{ width: '100%', height: 'auto', display: 'block' }}
-              />
-            </div>
+              {resource.subtitle}
+            </p>
           )}
+
+          {/* Preview image + form row */}
+          <div className="resource-header-row" style={{
+            display: 'flex',
+            gap: '40px',
+            alignItems: 'center',
+            marginTop: resource.subtitle ? '0' : '48px',
+          }}>
+            {/* Preview image */}
+            {resource.previewImageUrl && (
+              <div style={{
+                flex: '0 0 40%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}>
+                <div className="img-perspective resource-preview-image" style={{
+                  maxHeight: '572px',
+                  maxWidth: '352px',
+                  overflow: 'hidden',
+                }}>
+                  <img
+                    src={resource.previewImageUrl}
+                    alt={resource.previewImageAlt || `Preview of ${resource.title}`}
+                    style={{ width: '100%', height: 'auto', display: 'block' }}
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Form card */}
+            <div className="dark-form-wrapper" style={{
+              flex: '1 1 60%',
+              background: 'rgba(255,255,255,0.06)',
+              border: '1px solid rgba(255,255,255,0.1)',
+              borderRadius: '4px',
+              padding: '2rem',
+            }}>
+              {resource.gated ? (
+                <ResourceDownloadForm
+                  resourceTitle={resource.title}
+                  resourceSlug={slug}
+                  resourceType={resource.resourceType}
+                  downloadUrl={resource.downloadUrl}
+                  downloadButtonLabel={resource.downloadButtonLabel}
+                />
+              ) : (
+                <FreeDownload
+                  downloadUrl={resource.downloadUrl}
+                  downloadButtonLabel={resource.downloadButtonLabel}
+                  resourceType={resource.resourceType}
+                  dark
+                />
+              )}
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* Warm content area - two column grid */}
+      {/* Warm content area - 50/50 two column */}
       <section className="section--full warm-bg" style={{ padding: '80px 48px' }}>
-        <div className="resource-grid" style={{
+        <div className="resource-content-grid" style={{
           maxWidth: '1350px',
           margin: '0 auto',
           display: 'grid',
-          gridTemplateColumns: '1fr 400px',
+          gridTemplateColumns: '1fr 1fr',
           gap: '64px',
           alignItems: 'start',
         }}>
-          {/* Left column - content */}
+          {/* Left column - introduction */}
           <div>
-            {/* Introduction */}
             {resource.introduction && (
-              <div className="portable-text" style={{ marginBottom: '3rem' }}>
+              <div className="portable-text">
                 <PortableText
                   value={resource.introduction}
                   components={{
@@ -126,10 +161,13 @@ export default async function ResourcePage({ params }) {
                 />
               </div>
             )}
+          </div>
 
+          {/* Right column - highlights + related */}
+          <div>
             {/* Highlights checklist */}
             {resource.highlights?.length > 0 && (
-              <div style={{ marginBottom: '3rem' }}>
+              <div style={{ marginBottom: hasRelated ? '3rem' : 0 }}>
                 <h2 className="heading-h3" style={{ margin: '0 0 1.5rem' }}>What you'll learn</h2>
                 <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
                   {resource.highlights.map((item, i) => (
@@ -213,47 +251,75 @@ export default async function ResourcePage({ params }) {
               </div>
             )}
           </div>
-
-          {/* Right column - sticky sidebar */}
-          <div style={{ position: 'sticky', top: '100px' }}>
-            {/* Download section */}
-            <div style={{
-              background: '#fff',
-              border: '1px solid rgba(0,0,0,0.1)',
-              padding: '2rem',
-            }}>
-              {resource.gated ? (
-                <ResourceDownloadForm
-                  resourceTitle={resource.title}
-                  resourceSlug={slug}
-                  resourceType={resource.resourceType}
-                  downloadUrl={resource.downloadUrl}
-                  downloadButtonLabel={resource.downloadButtonLabel}
-                />
-              ) : (
-                <FreeDownload
-                  downloadUrl={resource.downloadUrl}
-                  downloadButtonLabel={resource.downloadButtonLabel}
-                  resourceType={resource.resourceType}
-                />
-              )}
-            </div>
-          </div>
         </div>
       </section>
 
-      {/* Responsive styles */}
+      {/* Dark form wrapper styles */}
       <style>{`
+        .resource-preview-image.img-perspective {
+          transform: perspective(1200px) rotateY(12deg) rotateX(8deg) rotateZ(-1deg);
+        }
+        .resource-preview-image.img-perspective:hover {
+          transform: perspective(1200px) rotateY(6deg) rotateX(4deg) rotateZ(-0.5deg);
+        }
+        .dark-form-wrapper .heading-h4 {
+          color: rgba(255,255,255,0.9) !important;
+        }
+        .dark-form-wrapper p {
+          color: rgba(255,255,255,0.5) !important;
+        }
+        .dark-form-wrapper .form-label {
+          color: rgba(255,255,255,0.6) !important;
+        }
+        .dark-form-wrapper .form-input {
+          background: rgba(255,255,255,0.08) !important;
+          border-color: rgba(255,255,255,0.12) !important;
+          color: #fff !important;
+        }
+        .dark-form-wrapper .form-input::placeholder {
+          color: rgba(255,255,255,0.3) !important;
+        }
+        .dark-form-wrapper .form-input:focus {
+          border-color: rgba(255,255,255,0.25) !important;
+        }
+        .dark-form-wrapper span {
+          color: rgba(255,255,255,0.5) !important;
+        }
+        .dark-form-wrapper .btn-primary {
+          background: #9B51E0 !important;
+          color: #fff !important;
+        }
+        .dark-form-wrapper .btn-primary:hover {
+          background: #8a3fd0 !important;
+        }
+        .dark-form-wrapper .feedback-success {
+          border-left-color: #9B51E0 !important;
+        }
+        .dark-form-wrapper .feedback-success p {
+          color: rgba(255,255,255,0.85) !important;
+        }
+        .dark-form-wrapper .feedback-success p:last-child {
+          color: rgba(255,255,255,0.5) !important;
+        }
+        .dark-form-wrapper .feedback-success a {
+          color: #C9A4F0 !important;
+        }
+        .dark-form-wrapper .feedback-error {
+          color: #FF4279 !important;
+          border-left-color: #FF4279 !important;
+        }
+
         @media (max-width: 768px) {
-          .resource-grid {
+          .resource-header-row {
+            flex-direction: column !important;
+            gap: 1.5rem !important;
+          }
+          .resource-header-row > .resource-preview-image {
+            flex: 0 0 180px !important;
+          }
+          .resource-content-grid {
             grid-template-columns: 1fr !important;
-            gap: 2.5rem !important;
-          }
-          .resource-grid > div:last-child {
-            position: static !important;
-          }
-          .resource-header-preview {
-            display: none !important;
+            gap: 2rem !important;
           }
         }
       `}</style>
@@ -264,7 +330,7 @@ export default async function ResourcePage({ params }) {
 }
 
 // ── Free (ungated) download block ──
-function FreeDownload({ downloadUrl, downloadButtonLabel, resourceType }) {
+function FreeDownload({ downloadUrl, downloadButtonLabel, resourceType, dark }) {
   const typeLabels = { primer: 'Primer', whitepaper: 'Whitepaper', guide: 'Guide' }
   const typeLabel = typeLabels[resourceType] || 'Resource'
   const buttonText = downloadButtonLabel || `Download ${typeLabel}`
@@ -278,7 +344,6 @@ function FreeDownload({ downloadUrl, downloadButtonLabel, resourceType }) {
         fontSize: '15px',
         fontWeight: '300',
         lineHeight: '1.5',
-        color: 'rgba(0,0,0,0.55)',
         margin: '0 0 1.5rem',
       }}>
         No form needed - it's yours.

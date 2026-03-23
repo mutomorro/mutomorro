@@ -197,27 +197,7 @@ const nextConfig = {
 
       { source: '/themes', destination: '/emergent-framework', permanent: true },
       { source: '/themes/:path*', destination: '/emergent-framework', permanent: true },
-      { source: '/key-themes/cultural-vitality', destination: '/emergent-framework/enacted-culture', permanent: true },
-      { source: '/key-themes/cultural-vitality/:path*', destination: '/emergent-framework/enacted-culture', permanent: true },
-      { source: '/key-themes/collective-capacity', destination: '/emergent-framework/generative-capacity', permanent: true },
-      { source: '/key-themes/collective-capacity/:path*', destination: '/emergent-framework/generative-capacity', permanent: true },
-      { source: '/key-themes/operational-flow', destination: '/emergent-framework/momentum-through-work', permanent: true },
-      { source: '/key-themes/operational-flow/:path*', destination: '/emergent-framework/momentum-through-work', permanent: true },
-      { source: '/key-themes/change-fluency', destination: '/emergent-framework/tuned-to-change', permanent: true },
-      { source: '/key-themes/change-fluency/:path*', destination: '/emergent-framework/tuned-to-change', permanent: true },
-      { source: '/key-themes/unifying-purpose', destination: '/emergent-framework/resonant-purpose', permanent: true },
-      { source: '/key-themes/unifying-purpose/:path*', destination: '/emergent-framework/resonant-purpose', permanent: true },
-      { source: '/key-themes/purpose-impact', destination: '/emergent-framework/resonant-purpose', permanent: true },
-      { source: '/key-themes/purpose-impact/:path*', destination: '/emergent-framework/resonant-purpose', permanent: true },
-      { source: '/key-themes/narrative-connections', destination: '/emergent-framework/narrative-connections', permanent: true },
-      { source: '/key-themes/service-innovation', destination: '/emergent-framework/evolving-service', permanent: true },
-      { source: '/key-themes/service-innovation/:path*', destination: '/emergent-framework/evolving-service', permanent: true },
-      { source: '/key-themes/living-strategy', destination: '/emergent-framework/embedded-strategy', permanent: true },
-      { source: '/key-themes/living-strategy/:path*', destination: '/emergent-framework/embedded-strategy', permanent: true },
-      { source: '/key-themes/strategy-futures', destination: '/emergent-framework/embedded-strategy', permanent: true },
-      { source: '/key-themes/strategy-futures/:path*', destination: '/emergent-framework/embedded-strategy', permanent: true },
-      { source: '/key-themes/storytelling-engagement-theme', destination: '/emergent-framework/narrative-connections', permanent: true },
-      { source: '/key-themes/:slug', destination: '/emergent-framework', permanent: true },
+      // key-themes wildcards consolidated in 404 log cleanup section below
 
       { source: '/dimensions/organisational-knowledge-consultancy', destination: '/emergent-framework/narrative-connections', permanent: true },
       { source: '/dimensions/organisational-knowledge-consultancy/:path*', destination: '/emergent-framework/narrative-connections', permanent: true },
@@ -472,9 +452,7 @@ const nextConfig = {
       { source: '/implement/:slug', destination: '/services', permanent: true },
       { source: '/implement', destination: '/services', permanent: true },
 
-      // Old /developing-leaders/ pages
-      { source: '/developing-leaders/:slug', destination: '/develop', permanent: true },
-      { source: '/developing-leaders', destination: '/develop', permanent: true },
+      // Old /developing-leaders/ pages - consolidated in 404 log cleanup section below
 
       // Old one-off pages
       { source: '/purpose-led-organisations', destination: '/philosophy', permanent: true },
@@ -572,7 +550,28 @@ const nextConfig = {
 // Old assessments section → States of Vitality
 { source: '/assessments/:slug', destination: '/states-of-vitality', permanent: true },
 
-{ source: '/articles/change-management-to-change-leadership', destination: '/articles/change-management-vs-change-leadership', permanent: true }
+{ source: '/articles/change-management-to-change-leadership', destination: '/articles/change-management-vs-change-leadership', permanent: true },
+
+
+      // =========================================================
+      // 404 LOG CLEANUP - 23 March 2026
+      // =========================================================
+
+      // Old taxonomy pagination (operational-effectiveness had paginated pages)
+      { source: '/key-themes/operational-effectiveness/:path*', destination: '/services/operational-effectiveness-consultancy', permanent: true },
+
+      // Catch-all for any other key-themes paths that slip through
+      { source: '/key-themes/:path*', destination: '/emergent-framework', permanent: true },
+
+      // Old capability page - Deeper Ground programme
+      { source: '/developing-leaders/:path*', destination: '/develop/leadership-programme', permanent: true },
+
+      // Old coaching service URL (crawler traffic)
+      { source: '/purpose-led-leadership-coaching', destination: '/develop/executive-coaching', permanent: true },
+
+      // Old systems thinking page
+      { source: '/systems-thinking', destination: '/emergent-framework', permanent: true },
+      { source: '/systems-thinking/', destination: '/emergent-framework', permanent: true },
 
     ]
   },

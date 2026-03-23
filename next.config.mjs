@@ -63,7 +63,6 @@ const nextConfig = {
       { source: '/transformation/:path*', destination: '/services', permanent: true },
       { source: '/ecosystem-design', destination: '/services', permanent: true },
       { source: '/application', destination: '/services', permanent: true },
-      { source: '/resources', destination: '/tools', permanent: true },
       { source: '/services-old', destination: '/services', permanent: true },
       { source: '/checkout', destination: '/contact', permanent: true },
       { source: '/checkout-2', destination: '/contact', permanent: true },
@@ -308,14 +307,14 @@ const nextConfig = {
       // These handle where the slug itself changed
       // =========================================================
 
-      { source: '/articles/change-readiness', destination: '/articles/a-guide-to-change-readiness', permanent: true },
-      { source: '/articles/the-change-readiness-imperative', destination: '/articles/addressing-change-fatigue', permanent: true },
+      { source: '/articles/change-readiness', destination: '/articles/change-readiness-assessment', permanent: true },
+      { source: '/articles/the-change-readiness-imperative', destination: '/articles/change-fatigue-in-the-workplace', permanent: true },
       { source: '/articles/building-greater-organisational-resilience', destination: '/articles/building-organisational-resilience', permanent: true },
-      { source: '/articles/writing-a-meaningful-mission-statement', destination: '/articles/writing-a-mission-statement', permanent: true },
+      { source: '/articles/writing-a-meaningful-mission-statement', destination: '/articles/how-to-write-a-mission-statement', permanent: true },
       { source: '/articles/developing-a-need-for-change', destination: '/articles/need-for-change', permanent: true },
       { source: '/articles/developing-organisational-culture-the-basics', destination: '/articles/developing-organisational-culture', permanent: true },
       { source: '/articles/adaptive-leadership', destination: '/articles/guide-to-adaptive-leadership', permanent: true },
-      { source: '/articles/nonprofit-mission-statement-guide', destination: '/articles/writing-a-mission-statement', permanent: true },
+      { source: '/articles/nonprofit-mission-statement-guide', destination: '/articles/how-to-write-a-mission-statement', permanent: true },
       { source: '/articles/emotional-intelligence-in-leadership-guide', destination: '/articles/emotional-intelligence-in-leadership', permanent: true },
       { source: '/articles/nonprofit-resilience-guide', destination: '/articles/building-organisational-resilience', permanent: true },
       { source: '/articles/impact-measurement-framework-guide', destination: '/articles/build-impact-measurement-framework', permanent: true },
@@ -326,6 +325,8 @@ const nextConfig = {
       { source: '/articles/defining-the-need-for-change', destination: '/articles/need-for-change', permanent: true },
       { source: '/articles/a-guide-to-change-readiness', destination: '/articles/change-readiness-assessment', permanent: true },
       { source: '/articles/addressing-change-fatigue', destination: '/articles/change-fatigue-in-the-workplace', permanent: true },
+      { source: '/articles/change-management-to-change-leadership', destination: '/articles/change-management-vs-change-leadership', permanent: true },
+      { source: '/articles/writing-a-mission-statement', destination: '/articles/how-to-write-a-mission-statement', permanent: true },
 
 
       // =========================================================
@@ -476,7 +477,7 @@ const nextConfig = {
       { source: '/audience-personas', destination: '/tools/audience-personas', permanent: true },
       { source: '/project-aristotle-for-effective-team-coaching', destination: '/tools/project-aristotle-effective-teams', permanent: true },
       { source: '/project-aristotle-effective-teams', destination: '/tools/project-aristotle-effective-teams', permanent: true },
-      { source: '/resource-hub', destination: '/tools', permanent: true },
+      { source: '/resource-hub', destination: '/resources', permanent: true },
       { source: '/specialisms', destination: '/services', permanent: true },
       { source: '/specialisms/:slug', destination: '/services', permanent: true },
       { source: '/why-are-you-reading-the-url', destination: '/', permanent: true },
@@ -549,9 +550,6 @@ const nextConfig = {
 
 // Old assessments section → States of Vitality
 { source: '/assessments/:slug', destination: '/states-of-vitality', permanent: true },
-
-{ source: '/articles/change-management-to-change-leadership', destination: '/articles/change-management-vs-change-leadership', permanent: true },
-
 
       // =========================================================
       // 404 LOG CLEANUP - 23 March 2026

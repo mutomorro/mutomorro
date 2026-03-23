@@ -489,3 +489,28 @@ export async function getCapabilityService(slug) {
     }
   `, { slug })
 }
+
+
+// ============================================
+// RESOURCES
+// ============================================
+
+export async function getResource(slug) {
+  return await client.fetch(
+    `*[_type == "resource" && slug.current == $slug][0] {
+      ...,
+      "downloadUrl": downloadFile.asset->url,
+      "previewImageUrl": previewImage.asset->url,
+      relatedServices[]->{title, "slug": slug.current},
+      relatedTools[]->{title, "slug": slug.current},
+      relatedArticles[]->{title, "slug": slug.current}
+    }`,
+    { slug }
+  )
+}
+
+export async function getAllResourceSlugs() {
+  return await client.fetch(
+    `*[_type == "resource"]{ "slug": slug.current }`
+  )
+}

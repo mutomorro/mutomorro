@@ -11,6 +11,7 @@ import service from './sanity/schemas/service'
 import frameworkOverview from './sanity/schemas/frameworkOverview'
 import capabilityService from './sanity/schemas/capabilityService'
 import serviceSubPage from './sanity/schemas/serviceSubPage'
+import resource from './sanity/schemas/resource'
 
 export default defineConfig({
   name: 'mutomorro',
@@ -20,6 +21,6 @@ export default defineConfig({
   dataset: 'production',
   plugins: [structureTool(), media()],
   schema: {
-    types: [project, tool, dimension, dimensionArticle, article, course, service, serviceSubPage, frameworkOverview, capabilityService],
+    types: [project, tool, dimension, dimensionArticle, article, course, service, serviceSubPage, frameworkOverview, capabilityService, resource],
   },
 })

@@ -8,6 +8,7 @@ import CookieBanner from '../components/CookieConsent/CookieBanner'
 import TrackingScripts from '../components/CookieConsent/TrackingScripts'
 import { Analytics } from '@vercel/analytics/next'
 import { SpeedInsights } from '@vercel/speed-insights/next'
+import Script from 'next/script'
 
 const sourceSans = Source_Sans_3({
   subsets: ['latin'],
@@ -86,6 +87,14 @@ export default function RootLayout({ children }) {
             }),
           }}
         />
+        <Analytics />
+          <SpeedInsights />
+          <Script
+  defer
+  src="https://analytics.mutomorro.com/script.js"
+  data-website-id="3277d9c5-e0d7-409d-804f-51ccdcc2119c"
+  strategy="afterInteractive"
+          />
         <ConsentProvider>
           <Nav />
           <ScrollObserver />

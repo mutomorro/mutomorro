@@ -13,7 +13,7 @@ import NetworkDivider from '@/components/philosophy/NetworkDivider'
 
 export const metadata = {
   title: 'Our philosophy - Intentional Ecosystems',
-  description: 'Organisations are living systems, not machines. We work with the patterns beneath the surface to help leaders create conditions where good things happen naturally.',
+  description: 'Organisations are living systems - complex, interconnected, and adaptive. We work with the patterns beneath the surface to help leaders create conditions where good things happen naturally.',
 }
 
 const concepts = [

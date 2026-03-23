@@ -91,7 +91,7 @@ export default function RootLayout({ children }) {
           <SpeedInsights />
           <Script
   defer
-  src="https://analytics.mutomorro.com/script.js"
+  src="/stats/script.js"
   data-website-id="3277d9c5-e0d7-409d-804f-51ccdcc2119c"
   strategy="afterInteractive"
           />

@@ -573,6 +573,14 @@ const nextConfig = {
 
     ]
   },
+  async rewrites() {
+    return [
+      {
+        source: '/stats/:path*',
+        destination: 'https://analytics.mutomorro.com/:path*',
+      },
+    ]
+  },
 };
 
 export default nextConfig;

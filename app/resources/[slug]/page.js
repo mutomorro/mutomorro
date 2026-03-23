@@ -49,26 +49,47 @@ export default async function ResourcePage({ params }) {
     <main>
       {/* Dark header strip */}
       <section className="section--full dark-bg" style={{ padding: '80px 48px 72px' }}>
-        <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
-          <span className="kicker" style={{ marginBottom: '16px' }}>{typeLabel.toUpperCase()}</span>
-          <h1 className="heading-h1" style={{
-            color: '#fff',
-            margin: '0 0 20px',
-            maxWidth: '900px',
-          }}>
-            {resource.title}
-          </h1>
-          {resource.subtitle && (
-            <p style={{
-              fontSize: '20px',
-              fontWeight: '300',
-              lineHeight: '1.6',
-              color: 'rgba(255,255,255,0.55)',
-              maxWidth: '680px',
-              margin: 0,
+        <div style={{ maxWidth: '1350px', margin: '0 auto', position: 'relative', overflow: 'hidden' }}>
+          <div style={{ position: 'relative', zIndex: 1 }}>
+            <span className="kicker" style={{ marginBottom: '16px' }}>{typeLabel.toUpperCase()}</span>
+            <h1 className="heading-h1" style={{
+              color: '#fff',
+              margin: '0 0 20px',
+              maxWidth: '900px',
             }}>
-              {resource.subtitle}
-            </p>
+              {resource.title}
+            </h1>
+            {resource.subtitle && (
+              <p style={{
+                fontSize: '20px',
+                fontWeight: '300',
+                lineHeight: '1.6',
+                color: 'rgba(255,255,255,0.55)',
+                maxWidth: '680px',
+                margin: 0,
+              }}>
+                {resource.subtitle}
+              </p>
+            )}
+          </div>
+          {resource.previewImageUrl && (
+            <div className="resource-header-preview" style={{
+              position: 'absolute',
+              right: '-20px',
+              top: '50%',
+              transform: 'translateY(-50%) perspective(800px) rotateY(-12deg) rotateX(3deg)',
+              width: '300px',
+              opacity: 0.18,
+              pointerEvents: 'none',
+              border: '1px solid rgba(255,255,255,0.1)',
+            }}>
+              <img
+                src={resource.previewImageUrl}
+                alt=""
+                aria-hidden="true"
+                style={{ width: '100%', height: 'auto', display: 'block' }}
+              />
+            </div>
           )}
         </div>
       </section>
@@ -195,22 +216,6 @@ export default async function ResourcePage({ params }) {
 
           {/* Right column - sticky sidebar */}
           <div style={{ position: 'sticky', top: '100px' }}>
-            {/* Preview image */}
-            {resource.previewImageUrl && (
-              <div style={{
-                background: '#fff',
-                border: '1px solid rgba(0,0,0,0.1)',
-                padding: '16px',
-                marginBottom: '1.5rem',
-              }}>
-                <img
-                  src={resource.previewImageUrl}
-                  alt={resource.previewImageAlt || `Preview of ${resource.title}`}
-                  style={{ width: '100%', height: 'auto', display: 'block' }}
-                />
-              </div>
-            )}
-
             {/* Download section */}
             <div style={{
               background: '#fff',
@@ -246,6 +251,9 @@ export default async function ResourcePage({ params }) {
           }
           .resource-grid > div:last-child {
             position: static !important;
+          }
+          .resource-header-preview {
+            display: none !important;
           }
         }
       `}</style>

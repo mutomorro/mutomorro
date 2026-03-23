@@ -309,14 +309,15 @@ a:hover {
   font-size: 14px;
   font-weight: 600;
   color: #fff;
-  padding: 8px 22px;
+  padding: 10px 24px;
   text-decoration: none;
   cursor: pointer;
   position: relative;
   overflow: hidden;
   background: linear-gradient(100deg, #80388F, #FF4279, #FFA200);
-  transition: box-shadow 0.4s;
-  box-shadow: 0 1px 8px rgba(255, 66, 121, 0.08);
+  background-size: 200% 100%;
+  background-position: 0% 50%;
+  transition: background-position 0.5s ease;
   display: inline-flex;
   align-items: center;
 }
@@ -340,7 +341,7 @@ a:hover {
 }
 
 .sov-nav-btn:hover {
-  box-shadow: 0 4px 22px rgba(255, 66, 121, 0.35);
+  background-position: 100% 50%;
 }
 
 @keyframes sovShimmer {

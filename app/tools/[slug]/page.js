@@ -2,6 +2,7 @@ import { getTool } from '../../../sanity/client'
 import { PortableText } from '@portabletext/react'
 import CTA from '../../../components/CTA'
 import ToolDownloadForm from '../../../components/ToolDownloadForm'
+import ToolFloatingBar from '../../../components/ToolFloatingBar'
 import Link from 'next/link'
 import { urlFor } from '../../../sanity/image'
 
@@ -119,11 +120,12 @@ export default async function ToolPage({ params }) {
             {/* Quick download button - scrolls to form */}
             {pdfUrl && (
               <a
+                id="tool-hero-cta"
                 href="#get-template"
                 className="btn-primary btn-primary--dark"
                 style={{ marginTop: '2rem', display: 'inline-flex' }}
               >
-                Get the template
+                Get this template
               </a>
             )}
           </div>
@@ -204,6 +206,8 @@ export default async function ToolPage({ params }) {
           </div>
         </section>
       )}
+
+      {pdfUrl && <ToolFloatingBar toolTitle={tool.title} />}
 
       <CTA label="Work with us" heading="Want to put these ideas into practice?" />
 

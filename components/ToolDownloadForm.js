@@ -7,7 +7,7 @@ export default function ToolDownloadForm({ toolTitle, toolSlug, pdfUrl, heroImag
     firstName: '',
     lastName: '',
     email: '',
-    newsletterOptIn: false,
+    newsletterOptIn: true,
   })
   const [status, setStatus] = useState('idle') // idle | sending | success | error
   const [errorMessage, setErrorMessage] = useState('')
@@ -124,11 +124,11 @@ export default function ToolDownloadForm({ toolTitle, toolSlug, pdfUrl, heroImag
   }
 
   // ── The form ──
-  return (
+  const formContent = (
     <div>
       <div style={{ marginBottom: '2rem' }}>
         <h3 className="heading-h4" style={{ margin: '0 0 12px' }}>
-          Get the template
+          Get this template
         </h3>
         <p className="lead-text" style={{ margin: 0, maxWidth: '480px', fontSize: '16px' }}>
           Fill in your details and the PDF will appear right here - no email, no waiting.
@@ -236,9 +236,35 @@ export default function ToolDownloadForm({ toolTitle, toolSlug, pdfUrl, heroImag
           className="btn-primary"
           style={status === 'sending' ? { background: 'rgba(0,0,0,0.4)', cursor: 'default' } : undefined}
         >
-          {status === 'sending' ? 'Getting your template...' : 'Get the template'}
+          {status === 'sending' ? 'Getting your template...' : 'Get this template'}
         </button>
       </form>
+    </div>
+  )
+
+  if (!heroImageUrl) return formContent
+
+  return (
+    <div className="tool-form-grid">
+      <div className="tool-form-grid__preview">
+        <div style={{
+          border: '1px solid rgba(0,0,0,0.12)',
+          background: '#fff',
+        }}>
+          <img
+            src={heroImageUrl}
+            alt={toolTitle}
+            style={{
+              width: '100%',
+              height: 'auto',
+              display: 'block',
+            }}
+          />
+        </div>
+      </div>
+      <div className="tool-form-grid__form">
+        {formContent}
+      </div>
     </div>
   )
 }

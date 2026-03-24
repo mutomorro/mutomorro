@@ -4,6 +4,7 @@ const nextConfig = {
     remotePatterns: [
       { protocol: 'https', hostname: 'cdn.sanity.io' },
     ],
+    minimumCacheTTL: 2592000,
   },
   async redirects() {
     return [

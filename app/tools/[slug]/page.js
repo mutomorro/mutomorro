@@ -1,10 +1,17 @@
-import { getTool } from '../../../sanity/client'
+import { client, getTool } from '../../../sanity/client'
 import { PortableText } from '@portabletext/react'
 import CTA from '../../../components/CTA'
 import ToolDownloadForm from '../../../components/ToolDownloadForm'
 import ToolFloatingBar from '../../../components/ToolFloatingBar'
 import Link from 'next/link'
 import { urlFor } from '../../../sanity/image'
+
+export const revalidate = 3600
+
+export async function generateStaticParams() {
+  const tools = await client.fetch(`*[_type == "tool"]{ "slug": slug.current }`)
+  return tools.map(t => ({ slug: t.slug }))
+}
 
 export async function generateMetadata({ params }) {
   const { slug } = await params

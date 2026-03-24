@@ -1,9 +1,16 @@
-import { getResource } from '../../../sanity/client'
+import { client, getResource } from '../../../sanity/client'
 import { PortableText } from '@portabletext/react'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import ResourceDownloadForm from '../../../components/ResourceDownloadForm'
 import CTA from '../../../components/CTA'
+
+export const revalidate = 3600
+
+export async function generateStaticParams() {
+  const resources = await client.fetch(`*[_type == "resource"]{ "slug": slug.current }`)
+  return resources.map(r => ({ slug: r.slug }))
+}
 
 const TYPE_LABELS = { primer: 'Primer', whitepaper: 'Whitepaper', guide: 'Guide' }
 

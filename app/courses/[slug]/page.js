@@ -6,6 +6,13 @@ import CTA from '../../../components/CTA'
 import { urlFor } from '../../../sanity/image'
 import BackgroundPattern from '../../../components/animations/BackgroundPattern'
 
+export const revalidate = 3600
+
+export async function generateStaticParams() {
+  const courses = await client.fetch(`*[_type == "course"]{ "slug": slug.current }`)
+  return courses.map(c => ({ slug: c.slug }))
+}
+
 export async function generateMetadata({ params }) {
   const { slug } = await params
   const course = await client.fetch(

@@ -1,8 +1,15 @@
-import { getDimension, getDimensionArticles } from '../../../sanity/client'
+import { client, getDimension, getDimensionArticles } from '../../../sanity/client'
 import { PortableText } from '@portabletext/react'
 import Link from 'next/link'
 import { DIMENSION_LETTERS } from '../../../components/emergent/constants'
 import { urlFor } from '../../../sanity/image'
+
+export const revalidate = 3600
+
+export async function generateStaticParams() {
+  const dimensions = await client.fetch(`*[_type == "dimension"]{ "slug": slug.current }`)
+  return dimensions.map(d => ({ dimension: d.slug }))
+}
 
 export async function generateMetadata({ params }) {
   const { dimension: slug } = await params

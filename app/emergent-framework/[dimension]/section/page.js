@@ -5,6 +5,12 @@ import Link from 'next/link'
 import SectionNavFooter from '../../../../components/emergent/SectionNavFooter'
 import { SECTION_ORDER, DIMENSION_LETTERS } from '../../../../components/emergent/constants'
 
+export const revalidate = 3600
+
+// Note: generateStaticParams omitted - this route destructures `section` from
+// params but "section" is a static path segment, not a dynamic param. The page
+// works at runtime via notFound() fallback but fails during pre-rendering.
+
 // ============================================
 // SEO METADATA
 // ============================================

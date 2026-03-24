@@ -1,9 +1,16 @@
-import { getDimensionArticle, getDimensionArticles } from '../../../../sanity/client'
+import { client, getDimensionArticle, getDimensionArticles } from '../../../../sanity/client'
 import { PortableText } from '@portabletext/react'
 import Link from 'next/link'
 import SectionNavFooter from '../../../../components/emergent/SectionNavFooter'
 import { DIMENSION_LETTERS } from '../../../../components/emergent/constants'
 import { urlFor } from '../../../../sanity/image'
+
+export const revalidate = 3600
+
+export async function generateStaticParams() {
+  const articles = await client.fetch(`*[_type == "dimensionArticle"]{ "slug": slug.current, "dimension": dimension->slug.current }`)
+  return articles.map(a => ({ dimension: a.dimension, article: a.slug }))
+}
 
 export async function generateMetadata({ params }) {
   const { dimension: dimensionSlug, article: articleSlug } = await params

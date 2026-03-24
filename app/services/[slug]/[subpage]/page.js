@@ -1,8 +1,15 @@
 import Link from 'next/link'
-import { getServiceSubPage } from '../../../../sanity/client'
+import { client, getServiceSubPage } from '../../../../sanity/client'
 import { PortableText } from '@portabletext/react'
 import { notFound } from 'next/navigation'
 import CTA from '../../../../components/CTA'
+
+export const revalidate = 3600
+
+export async function generateStaticParams() {
+  const subpages = await client.fetch(`*[_type == "serviceSubPage"]{ "slug": slug.current, "parentSlug": parentService->slug.current }`)
+  return subpages.map(s => ({ slug: s.parentSlug, subpage: s.slug }))
+}
 
 // ============================================
 // SEO METADATA

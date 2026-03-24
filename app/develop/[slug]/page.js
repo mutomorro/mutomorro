@@ -1,9 +1,16 @@
 import Link from 'next/link'
-import { getCapabilityService, getAllCapabilityServices } from '../../../sanity/client'
+import { client, getCapabilityService, getAllCapabilityServices } from '../../../sanity/client'
 import { PortableText } from '@portabletext/react'
 import { notFound } from 'next/navigation'
 import CTA from '../../../components/CTA'
 import NetworkIllustration from '../../../components/NetworkIllustration'
+
+export const revalidate = 3600
+
+export async function generateStaticParams() {
+  const capabilities = await client.fetch(`*[_type == "capabilityService"]{ "slug": slug.current }`)
+  return capabilities.map(c => ({ slug: c.slug }))
+}
 
 // Accent colours for numbered items
 const ACCENT_COLOURS = ['#80388F', '#9B51E0', '#FF4279', '#E08F00', '#221C2B', '#80388F', '#9B51E0', '#FF4279']

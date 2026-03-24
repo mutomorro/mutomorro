@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { getService } from '../../../sanity/client'
+import { client, getService } from '../../../sanity/client'
 import { PortableText } from '@portabletext/react'
 import { notFound } from 'next/navigation'
 import CTA from '../../../components/CTA'
@@ -10,6 +10,13 @@ import RecognitionRow from '../../../components/RecognitionRow'
 import LogoStrip from '../../../components/LogoStrip'
 import BackgroundPattern from '@/components/animations/BackgroundPattern'
 import Lightbox from '../../../components/Lightbox'
+
+export const revalidate = 3600
+
+export async function generateStaticParams() {
+  const services = await client.fetch(`*[_type == "service"]{ "slug": slug.current }`)
+  return services.map(s => ({ slug: s.slug }))
+}
 
 // Step colours matching the journey strip
 const STEP_COLOURS = ['#80388F', '#9B51E0', '#FF4279', '#E08F00']

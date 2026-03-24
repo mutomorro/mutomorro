@@ -7,6 +7,13 @@ import { urlFor } from '../../../sanity/image'
 import NewsletterSignup from '../../../components/NewsletterSignup'
 import BackgroundPattern from '../../../components/animations/BackgroundPattern'
 
+export const revalidate = 3600
+
+export async function generateStaticParams() {
+  const articles = await client.fetch(`*[_type == "article"]{ "slug": slug.current }`)
+  return articles.map(a => ({ slug: a.slug }))
+}
+
 export async function generateMetadata({ params }) {
   const { slug } = await params
   const article = await client.fetch(

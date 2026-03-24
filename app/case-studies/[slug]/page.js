@@ -1,7 +1,14 @@
-import { getProject } from '../../../sanity/client'
+import { client, getProject } from '../../../sanity/client'
 import Link from 'next/link'
 import CTA from '../../../components/CTA'
 import { PortableText } from '@portabletext/react'
+
+export const revalidate = 3600
+
+export async function generateStaticParams() {
+  const projects = await client.fetch(`*[_type == "project"]{ "slug": slug.current }`)
+  return projects.map(p => ({ slug: p.slug }))
+}
 
 export default async function CaseStudy({ params }) {
   const { slug } = await params

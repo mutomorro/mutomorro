@@ -5,6 +5,13 @@ import CTA from '../../../components/CTA'
 import { PortableText } from '@portabletext/react'
 import { urlFor } from '../../../sanity/image'
 
+export const revalidate = 3600
+
+export async function generateStaticParams() {
+  const projects = await client.fetch(`*[_type == "project"]{ "slug": slug.current }`)
+  return projects.map(p => ({ slug: p.slug }))
+}
+
 export async function generateMetadata({ params }) {
   const { slug } = await params
   const project = await client.fetch(

@@ -11,6 +11,8 @@ export default function ContactForm({ service }) {
   })
   const [status, setStatus] = useState('idle') // idle | sending | success | error
   const [errorMessage, setErrorMessage] = useState('')
+  const [honeypot, setHoneypot] = useState('')
+  const [formLoadedAt] = useState(Date.now())
 
   function handleChange(e) {
     setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }))
@@ -25,7 +27,7 @@ export default function ContactForm({ service }) {
       const res = await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...formData, service }),
+        body: JSON.stringify({ ...formData, service, company_website: honeypot, _t: formLoadedAt }),
       })
 
       if (!res.ok) {
@@ -75,6 +77,20 @@ export default function ContactForm({ service }) {
           {errorMessage}
         </div>
       )}
+
+      {/* Honeypot - hidden from real users */}
+      <div style={{ position: 'absolute', left: '-9999px', opacity: 0, height: 0, overflow: 'hidden' }} aria-hidden="true" tabIndex={-1}>
+        <label htmlFor="company_website">Company Website</label>
+        <input
+          type="text"
+          id="company_website"
+          name="company_website"
+          value={honeypot}
+          onChange={(e) => setHoneypot(e.target.value)}
+          autoComplete="off"
+          tabIndex={-1}
+        />
+      </div>
 
       {/* Name */}
       <div className="form-group">

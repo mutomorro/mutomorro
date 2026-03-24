@@ -9,7 +9,19 @@ const supabase = createClient(
 
 export async function POST(request) {
   try {
-    const { name, email, organisation, message, service } = await request.json()
+    const { company_website, _t, ...formData } = await request.json()
+
+    // Honeypot check - bots fill hidden fields, humans don't
+    if (company_website) {
+      return Response.json({ success: true }, { status: 200 })
+    }
+
+    // Time-based check - reject submissions faster than 3 seconds
+    if (_t && (Date.now() - _t) < 3000) {
+      return Response.json({ success: true }, { status: 200 })
+    }
+
+    const { name, email, organisation, message, service } = formData
 
     if (!name || !email || !message) {
       return Response.json(

@@ -5,9 +5,26 @@ import { useState } from 'react'
 export default function NewsletterSignup({ variant = 'inline' }) {
   const [formData, setFormData] = useState({ firstName: '', email: '' })
   const [status, setStatus] = useState('idle') // idle | sending | success | error
+  const [honeypot, setHoneypot] = useState('')
+  const [formLoadedAt] = useState(Date.now())
 
   const isFooter = variant === 'footer'
   const isHomepage = variant === 'homepage'
+
+  const honeypotField = (
+    <div style={{ position: 'absolute', left: '-9999px', opacity: 0, height: 0, overflow: 'hidden' }} aria-hidden="true" tabIndex={-1}>
+      <label htmlFor="company_website">Company Website</label>
+      <input
+        type="text"
+        id="company_website"
+        name="company_website"
+        value={honeypot}
+        onChange={(e) => setHoneypot(e.target.value)}
+        autoComplete="off"
+        tabIndex={-1}
+      />
+    </div>
+  )
 
   function handleChange(e) {
     setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }))
@@ -21,7 +38,7 @@ export default function NewsletterSignup({ variant = 'inline' }) {
       const res = await fetch('/api/newsletter', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({ ...formData, company_website: honeypot, _t: formLoadedAt }),
       })
 
       if (!res.ok) throw new Error()
@@ -59,6 +76,7 @@ export default function NewsletterSignup({ variant = 'inline' }) {
           flexWrap: 'wrap',
           maxWidth: '440px',
         }}>
+          {honeypotField}
           <input
             type="text"
             name="firstName"
@@ -125,6 +143,7 @@ export default function NewsletterSignup({ variant = 'inline' }) {
           flexWrap: 'wrap',
           maxWidth: '400px',
         }}>
+          {honeypotField}
           <input
             type="text"
             name="firstName"
@@ -190,6 +209,7 @@ export default function NewsletterSignup({ variant = 'inline' }) {
         flexWrap: 'wrap',
         maxWidth: '520px',
       }}>
+        {honeypotField}
         <input
           type="text"
           name="firstName"

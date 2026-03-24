@@ -11,6 +11,8 @@ export default function ToolDownloadForm({ toolTitle, toolSlug, pdfUrl, heroImag
   })
   const [status, setStatus] = useState('idle') // idle | sending | success | error
   const [errorMessage, setErrorMessage] = useState('')
+  const [honeypot, setHoneypot] = useState('')
+  const [formLoadedAt] = useState(Date.now())
 
   function handleChange(e) {
     const { name, value, type, checked } = e.target
@@ -36,6 +38,8 @@ export default function ToolDownloadForm({ toolTitle, toolSlug, pdfUrl, heroImag
           toolTitle,
           toolSlug,
           newsletterOptIn: formData.newsletterOptIn,
+          company_website: honeypot,
+          _t: formLoadedAt,
         }),
       })
 
@@ -142,6 +146,20 @@ export default function ToolDownloadForm({ toolTitle, toolSlug, pdfUrl, heroImag
       )}
 
       <form onSubmit={handleSubmit} style={{ maxWidth: '480px' }}>
+
+        {/* Honeypot - hidden from real users */}
+        <div style={{ position: 'absolute', left: '-9999px', opacity: 0, height: 0, overflow: 'hidden' }} aria-hidden="true" tabIndex={-1}>
+          <label htmlFor="company_website">Company Website</label>
+          <input
+            type="text"
+            id="company_website"
+            name="company_website"
+            value={honeypot}
+            onChange={(e) => setHoneypot(e.target.value)}
+            autoComplete="off"
+            tabIndex={-1}
+          />
+        </div>
 
         {/* First name + Last name side by side */}
         <div style={{

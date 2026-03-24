@@ -112,7 +112,7 @@ export default function StatesOfVitalityPage() {
               See your whole organisation clearly
             </h1>
             <p className="lead-text" style={{ color: 'rgba(255,255,255,0.6)', maxWidth: '680px' }}>
-              A comprehensive diagnostic that reveals how your organisation actually works - not just individual parts, but how everything connects. Understand where you're thriving, where energy is getting stuck, and where focused attention will create the greatest impact.
+              Our organisational assessment gives you the full picture - deep, connected insight across the key areas of organisational health. See where you're thriving, where energy is getting stuck, and where a small shift will make the biggest difference.
             </p>
             <div style={{ marginTop: '40px' }}>
               <Link href={contactHref} className="btn-primary btn-primary--dark btn-primary--lg sov-cta-btn">

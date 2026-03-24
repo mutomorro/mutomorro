@@ -1,4 +1,5 @@
 import { client, getDimension, getDimensionArticles } from '../../../sanity/client'
+import Image from 'next/image'
 import { PortableText } from '@portabletext/react'
 import Link from 'next/link'
 import { DIMENSION_LETTERS } from '../../../components/emergent/constants'
@@ -42,9 +43,12 @@ export default async function DimensionPage({ params }) {
     types: {
       image: ({ value }) => (
         <div style={{ margin: '2rem 0' }}>
-          <img
+          <Image
             src={urlFor(value).width(700).url()}
             alt={value.alt || ''}
+            width={700}
+            height={394}
+            sizes="(max-width: 768px) 100vw, 700px"
             style={{ width: '100%', height: 'auto', display: 'block' }}
           />
         </div>

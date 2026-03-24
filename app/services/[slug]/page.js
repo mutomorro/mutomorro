@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { client, getService } from '../../../sanity/client'
 import { PortableText } from '@portabletext/react'
 import { notFound } from 'next/navigation'
@@ -236,28 +237,34 @@ export default async function ServicePage({ params }) {
                   <div className="fan-composition scroll-in delay-1">
                     {service.stages[2]?.stageImageUrl && (
                       <div className="fan-card fan-card-back">
-                        <img
+                        <Image
                           src={service.stages[2].stageImageUrl}
                           alt={`${service.title} - ${service.stages[2].stageHeading || 'Implement'}`}
-                          loading="lazy"
+                          width={400}
+                          height={300}
+                          sizes="(max-width: 768px) 100vw, 400px"
                         />
                       </div>
                     )}
                     {service.stages[1]?.stageImageUrl && (
                       <div className="fan-card fan-card-middle">
-                        <img
+                        <Image
                           src={service.stages[1].stageImageUrl}
                           alt={`${service.title} - ${service.stages[1].stageHeading || 'Co-design'}`}
-                          loading="lazy"
+                          width={400}
+                          height={300}
+                          sizes="(max-width: 768px) 100vw, 400px"
                         />
                       </div>
                     )}
                     {service.stages[0]?.stageImageUrl && (
                       <div className="fan-card fan-card-front">
-                        <img
+                        <Image
                           src={service.stages[0].stageImageUrl}
                           alt={`${service.title} - ${service.stages[0].stageHeading || 'Understand'}`}
-                          loading="lazy"
+                          width={400}
+                          height={300}
+                          sizes="(max-width: 768px) 100vw, 400px"
                         />
                       </div>
                     )}
@@ -373,9 +380,12 @@ export default async function ServicePage({ params }) {
                         height: '200px',
                         overflow: 'hidden',
                       }}>
-                        <img
+                        <Image
                           src={project.heroImageUrl}
-                          alt=""
+                          alt={project.title || ''}
+                          width={600}
+                          height={200}
+                          sizes="(max-width: 768px) 100vw, 600px"
                           style={{
                             width: '100%',
                             height: '100%',
@@ -628,9 +638,12 @@ export default async function ServicePage({ params }) {
               )}
             </div>
             <div className="scroll-in delay-1 img-offset img-lift">
-              <img
+              <Image
                 src={service.perspectiveImageUrl}
                 alt={service.perspectiveHeading}
+                width={600}
+                height={400}
+                sizes="(max-width: 768px) 100vw, 600px"
                 style={{ width: '100%', height: 'auto', display: 'block' }}
               />
             </div>

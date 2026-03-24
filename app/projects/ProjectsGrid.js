@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import ServiceFilter from '../../components/ServiceFilter'
 
 export default function ProjectsGrid({ items }) {
@@ -20,9 +21,12 @@ export default function ProjectsGrid({ items }) {
               height: '200px',
               overflow: 'hidden',
             }}>
-              <img
+              <Image
                 src={`${project.heroImageUrl}?w=600&h=400&fit=crop`}
-                alt=""
+                alt={project.title || ''}
+                width={600}
+                height={400}
+                sizes="(max-width: 768px) 100vw, 600px"
                 style={{
                   width: '100%',
                   height: '100%',

@@ -1,4 +1,5 @@
 import { client, getTool } from '../../../sanity/client'
+import Image from 'next/image'
 import { PortableText } from '@portabletext/react'
 import CTA from '../../../components/CTA'
 import ToolDownloadForm from '../../../components/ToolDownloadForm'
@@ -145,9 +146,13 @@ export default async function ToolPage({ params }) {
               alignItems: 'center',
             }}>
               <div className="img-perspective" style={{ maxWidth: '100%' }}>
-                <img
+                <Image
                   src={heroImageUrl}
                   alt={tool.title || ''}
+                  width={600}
+                  height={400}
+                  priority
+                  sizes="(max-width: 768px) 100vw, 600px"
                   style={{
                     width: '100%',
                     height: 'auto',
@@ -171,9 +176,12 @@ export default async function ToolPage({ params }) {
                   types: {
                     image: ({ value }) => (
                       <div className="img-mat" style={{ margin: '2.5rem 0' }}>
-                        <img
+                        <Image
                           src={urlFor(value).width(900).url()}
                           alt={value.alt || ''}
+                          width={900}
+                          height={506}
+                          sizes="(max-width: 768px) 100vw, 800px"
                           style={{ width: '100%', height: 'auto', display: 'block' }}
                         />
                       </div>

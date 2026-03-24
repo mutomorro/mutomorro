@@ -1,4 +1,5 @@
 import { client, getResource } from '../../../sanity/client'
+import Image from 'next/image'
 import { PortableText } from '@portabletext/react'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
@@ -99,9 +100,13 @@ export default async function ResourcePage({ params }) {
                   maxWidth: '352px',
                   overflow: 'hidden',
                 }}>
-                  <img
+                  <Image
                     src={resource.previewImageUrl}
                     alt={resource.previewImageAlt || `Preview of ${resource.title}`}
+                    width={352}
+                    height={500}
+                    priority
+                    sizes="(max-width: 768px) 100vw, 352px"
                     style={{ width: '100%', height: 'auto', display: 'block' }}
                   />
                 </div>

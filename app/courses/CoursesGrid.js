@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import ServiceFilter from '../../components/ServiceFilter'
 import { urlFor } from '../../sanity/image'
 
@@ -20,10 +21,13 @@ export default function CoursesGrid({ items }) {
 
           {course.heroImage && (
             <div className="card-d__image">
-              <img
+              <Image
                 className="card-d__image-inner"
                 src={urlFor(course.heroImage).width(600).height(338).url()}
                 alt={course.heroImage.alt || course.title}
+                width={600}
+                height={338}
+                sizes="(max-width: 768px) 100vw, 600px"
               />
             </div>
           )}

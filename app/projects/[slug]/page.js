@@ -1,5 +1,6 @@
 import { getProject } from '../../../sanity/client'
 import { client } from '../../../sanity/client'
+import Image from 'next/image'
 import Link from 'next/link'
 import CTA from '../../../components/CTA'
 import { PortableText } from '@portabletext/react'
@@ -100,9 +101,12 @@ export default async function CaseStudy({ params }) {
     types: {
       image: ({ value }) => (
         <div className="img-mat" style={{ margin: '2.5rem 0' }}>
-          <img
+          <Image
             src={urlFor(value).width(900).url()}
             alt={value.alt || ''}
+            width={900}
+            height={506}
+            sizes="(max-width: 768px) 100vw, 800px"
             style={{ width: '100%', height: 'auto', display: 'block' }}
           />
         </div>

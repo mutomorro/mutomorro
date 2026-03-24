@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { client, getServiceSubPage } from '../../../../sanity/client'
 import { PortableText } from '@portabletext/react'
 import { notFound } from 'next/navigation'
@@ -161,11 +162,13 @@ export default async function ServiceSubPage({ params }) {
                   >
                     {project.heroImageUrl && (
                       <div className="card-c__image-wrap">
-                        <img
+                        <Image
                           src={project.heroImageUrl}
                           alt={project.title}
                           className="card-c__image"
-                          loading="lazy"
+                          width={600}
+                          height={338}
+                          sizes="(max-width: 768px) 100vw, 600px"
                         />
                       </div>
                     )}

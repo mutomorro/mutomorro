@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { getAllProjects, getAllTools } from '../sanity/client'
 import HeroCanvas from '../components/HeroCanvas'
 
@@ -230,10 +231,13 @@ export default async function Home() {
                 <div className="card-c__fill" />
                 {project.heroImageUrl && (
                   <div className="card-c__image">
-                    <img
+                    <Image
                       src={`${project.heroImageUrl}?w=600&h=340&fit=crop`}
-                      alt=""
+                      alt={project.title || ''}
                       className="card-c__image-inner"
+                      width={600}
+                      height={340}
+                      sizes="(max-width: 768px) 100vw, 600px"
                     />
                   </div>
                 )}

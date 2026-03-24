@@ -233,7 +233,7 @@ export default async function ResourcePage({ params }) {
                   {resource.relatedArticles?.map((a) => (
                     <Link
                       key={a.slug}
-                      href={`/article/${a.slug}`}
+                      href={`/articles/${a.slug}`}
                       style={{
                         fontSize: '14px',
                         fontWeight: '400',

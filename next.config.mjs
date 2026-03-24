@@ -29,9 +29,9 @@ const nextConfig = {
       // Slug stays the same, just the path prefix changes
       // =========================================================
 
-      // Articles: /articles/[slug] → /article/[slug] (old WordPress URLs)
-      { source: '/articles/:slug', destination: '/article/:slug', permanent: true },
-      { source: '/articles', destination: '/article', permanent: true },
+      // Articles: /article → /articles (old singular URLs)
+      { source: '/article/:slug', destination: '/articles/:slug', permanent: true },
+      { source: '/article', destination: '/articles', permanent: true },
 
       // Projects: /project/[slug] → /projects/[slug]
       { source: '/project/:slug', destination: '/projects/:slug', permanent: true },

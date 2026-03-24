@@ -478,7 +478,7 @@ export default function Nav() {
                 </div>
                 <span className="explore-dest-card__chevron">›</span>
               </Link>
-              <Link href="/article" onClick={closePanel} className="explore-dest-card">
+              <Link href="/articles" onClick={closePanel} className="explore-dest-card">
                 <svg width="44" height="44" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg" className="explore-dest-card__icon">
                   <circle cx="22" cy="19" r="11" stroke="#9B51E0" strokeWidth="1.3" fill="none"/>
                   <circle cx="22" cy="19" r="4.5" stroke="#9B51E0" strokeWidth="1" fill="none" opacity="0.35"/>
@@ -536,8 +536,8 @@ export default function Nav() {
               {[
                 { type: 'Tool', title: 'PESTLE Analysis', meta: 'Most popular', href: '/tools/pestle-analysis' },
                 { type: 'Tool', title: "Kotter's 8 Steps", meta: 'Change classic', href: '/tools/kotters-8-step-change-model' },
-                { type: 'Article', title: 'The Friction Audit', meta: '5 min read', href: '/article/the-friction-audit' },
-                { type: 'Article', title: 'Guide to Change Readiness', meta: '7 min read', href: '/article/a-guide-to-change-readiness' },
+                { type: 'Article', title: 'The Friction Audit', meta: '5 min read', href: '/articles/the-friction-audit' },
+                { type: 'Article', title: 'Guide to Change Readiness', meta: '7 min read', href: '/articles/a-guide-to-change-readiness' },
               ].map((item) => (
                 <Link key={item.href} href={item.href} onClick={closePanel} className="explore-taster">
                   <span className="explore-taster__type">{item.type}</span>
@@ -669,7 +669,7 @@ export default function Nav() {
                 <span className="kicker" style={{ marginBottom: '8px' }}>Read and think</span>
                 {[
                   { label: 'Tools of the Trade', href: '/tools' },
-                  { label: 'Thinking', href: '/article' },
+                  { label: 'Thinking', href: '/articles' },
                 ].map((item) => (
                   <Link key={item.href} href={item.href} onClick={closeMobile} className="mobile-nav__explore-link">{item.label}</Link>
                 ))}

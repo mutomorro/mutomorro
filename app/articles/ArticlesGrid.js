@@ -11,14 +11,14 @@ export default function ArticlesGrid({ items }) {
       contentType="articles"
       renderCard={(article) => (
         <Link
-          href={`/article/${article.slug.current}`}
+          href={`/articles/${article.slug.current}`}
           className="card-d"
         >
           {article.category && (
             <div className="card-d__badge">{article.category}</div>
           )}
 
-          {article.heroImage && (
+          {article.heroImage?.asset && (
             <div className="card-d__image">
               <img
                 className="card-d__image-inner"

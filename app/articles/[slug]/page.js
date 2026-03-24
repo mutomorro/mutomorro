@@ -101,7 +101,7 @@ export default async function ArticlePage({ params }) {
           <div className="wrap--narrow">
             {/* Breadcrumb */}
             <div className="breadcrumb">
-              <Link href="/article" className="breadcrumb__link">Thinking</Link>
+              <Link href="/articles" className="breadcrumb__link">Thinking</Link>
               <span className="breadcrumb__sep">/</span>
               <span className="breadcrumb__current">{article.category}</span>
             </div>

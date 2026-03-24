@@ -572,6 +572,32 @@ const nextConfig = {
       { source: '/systems-thinking', destination: '/emergent-framework', permanent: true },
       { source: '/systems-thinking/', destination: '/emergent-framework', permanent: true },
 
+
+      // -------------------------------------------
+      // Article audit redirects (Batches 1-3)
+      // Added: 24 March 2026
+      // -------------------------------------------
+
+      // Batch 1 - Change management and foundations
+      { source: '/articles/a-guide-to-change-readiness', destination: '/articles/change-readiness-assessment', permanent: true },
+      { source: '/articles/addressing-change-fatigue', destination: '/articles/change-fatigue-in-the-workplace', permanent: true },
+      { source: '/articles/change-management-to-change-leadership', destination: '/articles/change-management-vs-change-leadership', permanent: true },
+      { source: '/articles/writing-a-mission-statement', destination: '/articles/how-to-write-a-mission-statement', permanent: true },
+
+      // Batch 2 - Purpose, psychology, change, operations
+      { source: '/articles/the-economics-of-authentic-purpose', destination: '/articles/organisational-purpose-business-case', permanent: true },
+      { source: '/articles/translating-purpose-from-boardroom-to-breakroom', destination: '/articles/embedding-organisational-purpose', permanent: true },
+      { source: '/articles/psychological-safety-guide', destination: '/articles/psychological-safety-in-organisations', permanent: true },
+      { source: '/articles/need-for-change', destination: '/articles/building-the-case-for-change', permanent: true },
+      { source: '/articles/the-friction-audit', destination: '/articles/reducing-organisational-friction', permanent: true },
+
+      // Batch 3 - OD core, leadership, design, measurement
+      { source: '/articles/building-anti-fragile-organisations', destination: '/articles/building-organisational-resilience', permanent: true },
+      { source: '/articles/emotional-intelligence-in-leadership', destination: '/articles/emotional-intelligence-for-leaders', permanent: true },
+      { source: '/articles/guide-to-adaptive-leadership', destination: '/articles/adaptive-leadership-guide', permanent: true },
+      { source: '/articles/adaptive-organisational-architectures', destination: '/articles/adaptive-organisational-design', permanent: true },
+      { source: '/articles/build-impact-measurement-framework', destination: '/articles/impact-measurement-framework', permanent: true },
+
     ]
   },
   async rewrites() {

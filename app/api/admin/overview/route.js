@@ -48,8 +48,8 @@ export async function GET(request) {
       // b) Last 10 signals with contact info
       supabase
         .from('signals')
-        .select('id, type, detail, strength, metadata, created_at, contact_id')
-        .order('created_at', { ascending: false })
+        .select('id, type, detail, strength, date, contact_id')
+        .order('date', { ascending: false })
         .limit(10),
 
       // c) Organisations grouped by status
@@ -110,6 +110,7 @@ export async function GET(request) {
 
       enrichedSignals = recentSignals.data.map((s) => ({
         ...s,
+        created_at: s.date,
         contact: contactMap[s.contact_id] || null,
       }))
     }

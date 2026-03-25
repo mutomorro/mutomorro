@@ -324,6 +324,41 @@ export default function AdminOverview() {
               )
             })()}
           </div>
+          {/* Last newsletter send */}
+          {!loading && data?.lastNewsletter && (
+            <div style={cardStyle}>
+              <h2 style={cardHeading}>Last newsletter</h2>
+              <div style={{ fontSize: '14px', color: '#fff', marginBottom: '4px' }}>
+                {data.lastNewsletter.subject}
+              </div>
+              <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.35)', marginBottom: '12px' }}>
+                {new Date(data.lastNewsletter.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+              </div>
+              <div style={{ display: 'flex', gap: '16px' }}>
+                <div>
+                  <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.3px' }}>Open rate</div>
+                  <div style={{ fontSize: '18px', fontWeight: 500, color: data.lastNewsletter.total_delivered > 0 && (data.lastNewsletter.total_opened / data.lastNewsletter.total_delivered * 100) > 25 ? '#2DD4BF' : '#fff' }}>
+                    {data.lastNewsletter.total_delivered > 0 ? ((data.lastNewsletter.total_opened / data.lastNewsletter.total_delivered) * 100).toFixed(1) + '%' : '-'}
+                  </div>
+                </div>
+                <div>
+                  <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.3px' }}>Click rate</div>
+                  <div style={{ fontSize: '18px', fontWeight: 500, color: '#fff' }}>
+                    {data.lastNewsletter.total_delivered > 0 ? ((data.lastNewsletter.total_clicked / data.lastNewsletter.total_delivered) * 100).toFixed(1) + '%' : '-'}
+                  </div>
+                </div>
+                <div>
+                  <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.3px' }}>Bounced</div>
+                  <div style={{ fontSize: '18px', fontWeight: 500, color: data.lastNewsletter.total_bounced > 0 ? '#FF4279' : '#fff' }}>
+                    {data.lastNewsletter.total_bounced || 0}
+                  </div>
+                </div>
+              </div>
+              <a href="/admin/newsletter" style={{ display: 'inline-block', marginTop: '12px', fontSize: '12px', color: '#9B51E0', textDecoration: 'none' }}>
+                View details →
+              </a>
+            </div>
+          )}
         </div>
       </div>
 

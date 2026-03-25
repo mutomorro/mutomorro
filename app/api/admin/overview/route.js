@@ -35,6 +35,7 @@ export async function GET(request) {
       newsletterCount,
       calendarThisWeek,
       pipelineTotal,
+      lastNewsletter,
       umamiStats,
       umamiActive,
       umamiReferrers,
@@ -45,6 +46,7 @@ export async function GET(request) {
       supabase.from('contacts').select('id', { count: 'exact', head: true }).eq('newsletter_status', 'active'),
       supabase.from('calendar_items').select('*').or(`scheduled_date.gte.${mondayStr},due_date.gte.${mondayStr}`).or(`scheduled_date.lte.${sundayStr},due_date.lte.${sundayStr}`).order('scheduled_date', { ascending: true }),
       supabase.from('organisations').select('id', { count: 'exact', head: true }).neq('status', 'new'),
+      supabase.from('newsletter_sends').select('subject, total_recipients, total_sent, total_delivered, total_opened, total_clicked, total_bounced, created_at').neq('status', 'draft').order('created_at', { ascending: false }).limit(1).maybeSingle(),
       getStats('7d').catch(() => null),
       getActiveVisitors().catch(() => null),
       getTopReferrers('7d', 5).catch(() => null),
@@ -121,6 +123,7 @@ export async function GET(request) {
       pipeline: { counts: pipelineCounts, activeTotal: pipelineTotal.count || 0 },
       newsletterSubscribers: newsletterCount.count || 0,
       calendar: calendarThisWeek.data || [],
+      lastNewsletter: lastNewsletter.data || null,
       analytics,
     })
   } catch (err) {

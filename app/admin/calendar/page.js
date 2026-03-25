@@ -434,7 +434,7 @@ function MonthView({ days, monthStart, monthEnd, itemsForDate, onDayClick, onIte
                 border: today ? '1px solid rgba(155,81,224,0.4)' : '1px solid rgba(255,255,255,0.04)',
                 borderRadius: '6px',
                 padding: '8px',
-                minHeight: '80px',
+                minHeight: '110px',
                 cursor: 'pointer',
                 transition: 'background 0.15s',
               }}
@@ -448,19 +448,28 @@ function MonthView({ days, monthStart, monthEnd, itemsForDate, onDayClick, onIte
               }}>
                 {day.getDate()}
               </div>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '3px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
                 {dayItems.map((item) => (
                   <div
                     key={item.id}
                     onClick={(e) => { e.stopPropagation(); onItemClick(item) }}
                     title={item.title}
                     style={{
-                      width: '8px',
-                      height: '8px',
-                      borderRadius: '50%',
-                      background: typeColours[item.type] || 'rgba(255,255,255,0.2)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '4px',
+                      padding: '2px 4px',
+                      borderLeft: `2px solid ${typeColours[item.type] || 'rgba(255,255,255,0.2)'}`,
+                      borderRadius: '0 2px 2px 0',
+                      background: 'rgba(255,255,255,0.03)',
+                      cursor: 'pointer',
+                      overflow: 'hidden',
                     }}
-                  />
+                  >
+                    <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.6)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      {item.title}
+                    </span>
+                  </div>
                 ))}
               </div>
             </div>

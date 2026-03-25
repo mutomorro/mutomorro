@@ -339,7 +339,7 @@ async function sendBatch({ batch, sendId, subject, title, previewText, date, lea
     send_id: sendId,
     contact_id: contact.id,
     email: contact.signup_email,
-    status: 'pending',
+    status: 'queued',
   }))
 
   // Check for existing pending records from previous attempts

@@ -30,6 +30,10 @@ const nextConfig = {
       // Slug stays the same, just the path prefix changes
       // =========================================================
 
+      // Articles: specific slug changes (must precede catch-all)
+      { source: '/article/psychological-safety-guide', destination: '/articles/psychological-safety-in-organisations', permanent: true },
+      { source: '/article/the-economics-of-authentic-purpose', destination: '/articles/organisational-purpose-business-case', permanent: true },
+
       // Articles: /article → /articles (old singular URLs)
       { source: '/article/:slug', destination: '/articles/:slug', permanent: true },
       { source: '/article', destination: '/articles', permanent: true },
@@ -45,6 +49,9 @@ const nextConfig = {
       // Training → Courses: /training/[slug] → /courses/[slug]
       { source: '/training/:slug', destination: '/courses/:slug', permanent: true },
       { source: '/training', destination: '/courses', permanent: true },
+
+      // Guides: specific slug redirect (must precede catch-all)
+      { source: '/guides/psychological-safety-guide', destination: '/articles/psychological-safety-in-organisations', permanent: true },
 
       // Guides → Articles: /guides/[slug] → /articles/[slug]
       { source: '/guides/:slug', destination: '/articles/:slug', permanent: true },
@@ -217,6 +224,8 @@ const nextConfig = {
       { source: '/change-focus/system-thinking', destination: '/services/organisational-development-consultancy', permanent: true },
       { source: '/change-focus/systems-thinking', destination: '/services/organisational-development-consultancy', permanent: true },
       { source: '/change-focus/process-improvement', destination: '/services/operational-effectiveness-consultancy', permanent: true },
+      // Pagination catch-all (must precede :slug catch-all)
+      { source: '/change-focus/:slug/page/:num', destination: '/articles', permanent: true },
       { source: '/change-focus/:slug', destination: '/services', permanent: true },
 
 
@@ -522,6 +531,7 @@ const nextConfig = {
       // Old taxonomies (catch-alls)
       { source: '/tool-use/:slug', destination: '/tools', permanent: true },
       { source: '/use/:slug', destination: '/tools', permanent: true },
+      { source: '/topic/:slug/page/:num', destination: '/articles', permanent: true },
       { source: '/topic/:slug', destination: '/articles', permanent: true },
       { source: '/sector/:slug', destination: '/projects', permanent: true },
       { source: '/event/:slug', destination: '/courses', permanent: true },
@@ -559,10 +569,14 @@ const nextConfig = {
       // Old taxonomy pagination (operational-effectiveness had paginated pages)
       { source: '/key-themes/operational-effectiveness/:path*', destination: '/services/operational-effectiveness-consultancy', permanent: true },
 
+      // Pagination catch-all (must precede :path* catch-all)
+      { source: '/key-themes/:slug/page/:num', destination: '/articles', permanent: true },
+
       // Catch-all for any other key-themes paths that slip through
       { source: '/key-themes/:path*', destination: '/emergent-framework', permanent: true },
 
-      // Old capability page - Deeper Ground programme
+      // Old capability page - specific path before catch-all
+      { source: '/developing-leaders/leadership-development-programme', destination: '/develop/deeper-ground', permanent: true },
       { source: '/developing-leaders/:path*', destination: '/develop/leadership-programme', permanent: true },
 
       // Old coaching service URL (crawler traffic)
@@ -597,6 +611,21 @@ const nextConfig = {
       { source: '/articles/guide-to-adaptive-leadership', destination: '/articles/adaptive-leadership-guide', permanent: true },
       { source: '/articles/adaptive-organisational-architectures', destination: '/articles/adaptive-organisational-design', permanent: true },
       { source: '/articles/build-impact-measurement-framework', destination: '/articles/impact-measurement-framework', permanent: true },
+
+
+      // =========================================================
+      // 404 LOG CLEANUP - 25 March 2026
+      // =========================================================
+
+      // Individual missing pages
+      { source: '/culture-change', destination: '/services/culture-change-consultancy', permanent: true },
+      { source: '/services/assessments-diagnostics', destination: '/states-of-vitality', permanent: true },
+      { source: '/kotters-8-step-change-', destination: '/tools/kotters-8-step-change-model', permanent: true },
+
+      // Assessment paths - all point to States of Vitality
+      { source: '/assessments', destination: '/states-of-vitality', permanent: true },
+      { source: '/assessment/:path*', destination: '/states-of-vitality', permanent: true },
+      { source: '/assessments/:path*', destination: '/states-of-vitality', permanent: true },
 
     ]
   },

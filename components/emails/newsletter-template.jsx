@@ -23,7 +23,7 @@ function RenderSection({ section, index }) {
           key={index}
           style={{
             fontFamily,
-            fontSize: '18px',
+            fontSize: '19px',
             fontWeight: 300,
             color: '#000',
             lineHeight: '1.75',
@@ -217,6 +217,7 @@ function RenderSection({ section, index }) {
 
 export default function NewsletterTemplate({
   subject = '',
+  title = '',
   previewText = '',
   date = '',
   leadText = '',
@@ -226,16 +227,22 @@ export default function NewsletterTemplate({
   unsubscribeUrl = '',
   viewInBrowserUrl = '',
 }) {
+  const displayTitle = title || subject
   return (
     <Html lang="en">
       <Head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <style>{`
           strong { font-weight: 400 !important; }
           a { color: #9B51E0; }
+          @media only screen and (max-width: 620px) {
+            .email-container { width: 100% !important; }
+            .email-padding { padding-left: 24px !important; padding-right: 24px !important; }
+          }
         `}</style>
       </Head>
       <Preview>{previewText}</Preview>
-      <Body style={{ backgroundColor: '#f0f0f0', margin: '0', padding: '40px 0' }}>
+      <Body style={{ backgroundColor: '#FAF6F1', margin: '0', padding: '40px 0' }}>
         <Container style={{ maxWidth: '580px', margin: '0 auto', backgroundColor: '#FFFFFF' }}>
 
           {/* 1. Gradient accent bar */}
@@ -344,7 +351,7 @@ export default function NewsletterTemplate({
               letterSpacing: '-0.025em',
               margin: '0',
             }}>
-              {subject}
+              {displayTitle}
             </Text>
             {leadText && (
               <Text style={{
@@ -379,7 +386,7 @@ export default function NewsletterTemplate({
                     <Text
                       style={{
                         fontFamily,
-                        fontSize: '18px',
+                        fontSize: '19px',
                         fontWeight: 300,
                         color: '#000',
                         lineHeight: '1.75',
@@ -404,7 +411,7 @@ export default function NewsletterTemplate({
                 <td style={{ padding: '0 44px 0' }}>
             <Text style={{
               fontFamily,
-              fontSize: '18px',
+              fontSize: '19px',
               fontWeight: 300,
               color: '#000',
               lineHeight: '1.75',
@@ -414,7 +421,7 @@ export default function NewsletterTemplate({
             </Text>
             <Text style={{
               fontFamily,
-              fontSize: '18px',
+              fontSize: '19px',
               fontWeight: 400,
               color: '#000',
               lineHeight: '1.75',
@@ -473,7 +480,7 @@ export default function NewsletterTemplate({
               color: 'rgba(0,0,0,0.35)',
               margin: '0 0 4px 0',
             }}>
-              Organisational development consultancy
+              Helping organisations become intentional ecosystems
             </Text>
             <Text style={{
               fontFamily,
@@ -482,7 +489,7 @@ export default function NewsletterTemplate({
               color: 'rgba(0,0,0,0.35)',
               margin: '0 0 20px 0',
             }}>
-              London, United Kingdom
+              86-90 Paul Street, London EC2A 4NE
             </Text>
 
             <Hr style={{

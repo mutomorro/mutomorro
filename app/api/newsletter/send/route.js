@@ -66,6 +66,7 @@ async function checkDailyLimit(supabase, batchSize) {
 async function handleCreate(body, resend, supabase) {
   const {
     subject,
+    title = '',
     previewText = '',
     date = '',
     leadText = '',
@@ -95,6 +96,7 @@ async function handleCreate(body, resend, supabase) {
   const viewInBrowserHtml = await render(
     createElement(NewsletterTemplate, {
       subject,
+      title,
       previewText,
       date,
       leadText,
@@ -176,6 +178,7 @@ async function handleCreate(body, resend, supabase) {
     batch,
     sendId,
     subject,
+    title,
     previewText,
     date,
     leadText,
@@ -236,7 +239,7 @@ async function handleResume(body, resend, supabase) {
   }
 
   const contentJson = send.content_json
-  const { subject, previewText = '', date = '', leadText = '', sections, signoff = 'Until next month,', tierFilter, tagFilter } = contentJson
+  const { subject, title = '', previewText = '', date = '', leadText = '', sections, signoff = 'Until next month,', tierFilter, tagFilter } = contentJson
 
   // Query active contacts
   let contactsQuery = supabase
@@ -291,6 +294,7 @@ async function handleResume(body, resend, supabase) {
     batch,
     sendId,
     subject,
+    title,
     previewText,
     date,
     leadText,
@@ -324,7 +328,7 @@ async function handleResume(body, resend, supabase) {
   })
 }
 
-async function sendBatch({ batch, sendId, subject, previewText, date, leadText, sections, signoff, emailOverride, resend, supabase }) {
+async function sendBatch({ batch, sendId, subject, title, previewText, date, leadText, sections, signoff, emailOverride, resend, supabase }) {
   const viewInBrowserUrl = `https://mutomorro.com/newsletter/${sendId}`
 
   // Render personalised HTML for each recipient
@@ -339,6 +343,7 @@ async function sendBatch({ batch, sendId, subject, previewText, date, leadText, 
       const html = await render(
         createElement(NewsletterTemplate, {
           subject,
+          title,
           previewText,
           date,
           leadText,

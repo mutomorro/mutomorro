@@ -15,7 +15,16 @@ import {
 
 const fontFamily = "'Source Sans 3', 'Source Sans Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
 
-function RenderSection({ section, index }) {
+function wrapLinks(html, recipientId) {
+  if (!recipientId || !html) return html
+  // Wrap href="https://mutomorro.com..." links with tracking redirect
+  return html.replace(
+    /href="(https:\/\/mutomorro\.com[^"]*)"/g,
+    (match, url) => `href="https://mutomorro.com/api/newsletter/track?rid=${recipientId}&url=${encodeURIComponent(url)}"`
+  )
+}
+
+function RenderSection({ section, index, recipientId }) {
   switch (section.type) {
     case 'paragraph':
       return (
@@ -29,7 +38,7 @@ function RenderSection({ section, index }) {
             lineHeight: '1.75',
             margin: '0 0 24px 0',
           }}
-          dangerouslySetInnerHTML={{ __html: section.text }}
+          dangerouslySetInnerHTML={{ __html: wrapLinks(section.text, recipientId) }}
         />
       )
 
@@ -114,7 +123,7 @@ function RenderSection({ section, index }) {
                     verticalAlign: 'top',
                     paddingBottom: i < section.items.length - 1 ? '22px' : '0',
                   }}
-                  dangerouslySetInnerHTML={{ __html: item.text }}
+                  dangerouslySetInnerHTML={{ __html: wrapLinks(item.text, recipientId) }}
                 />
               </tr>
             ))}
@@ -148,7 +157,9 @@ function RenderSection({ section, index }) {
             </Text>
           )}
           <a
-            href={section.buttonUrl}
+            href={recipientId && section.buttonUrl?.startsWith('https://mutomorro.com')
+              ? `https://mutomorro.com/api/newsletter/track?rid=${recipientId}&url=${encodeURIComponent(section.buttonUrl)}`
+              : section.buttonUrl}
             style={{
               fontFamily,
               backgroundColor: '#9B51E0',
@@ -226,6 +237,7 @@ export default function NewsletterTemplate({
   signoff = 'Until next month,',
   unsubscribeUrl = '',
   viewInBrowserUrl = '',
+  recipientId = '',
 }) {
   const displayTitle = title || subject
   return (
@@ -397,7 +409,7 @@ export default function NewsletterTemplate({
                     </Text>
                   )}
                   {sections.map((section, i) => (
-                    <RenderSection key={i} section={section} index={i} />
+                    <RenderSection key={i} section={section} index={i} recipientId={recipientId} />
                   ))}
                 </td>
               </tr>
@@ -433,6 +445,17 @@ export default function NewsletterTemplate({
               </tr>
             </tbody>
           </table>
+
+          {/* Tracking pixel */}
+          {recipientId && (
+            <Img
+              src={`https://mutomorro.com/api/newsletter/track?rid=${recipientId}`}
+              width="1"
+              height="1"
+              alt=""
+              style={{ display: 'block', width: '1px', height: '1px', border: '0', opacity: 0 }}
+            />
+          )}
 
           {/* 7. Footer */}
           <Section style={{

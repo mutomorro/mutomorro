@@ -331,9 +331,37 @@ async function handleResume(body, resend, supabase) {
 async function sendBatch({ batch, sendId, subject, title, previewText, date, leadText, sections, signoff, emailOverride, resend, supabase }) {
   const viewInBrowserUrl = `https://mutomorro.com/newsletter/${sendId}`
 
-  // Render personalised HTML for each recipient
+  const now = new Date().toISOString()
+
+  // Step 1: Create recipient records FIRST so we have IDs for tracking
+  const recipientInserts = batch.map(contact => ({
+    send_id: sendId,
+    contact_id: contact.id,
+    email: contact.signup_email,
+    status: 'pending',
+  }))
+
+  const { data: insertedRecipients, error: insertError } = await supabase
+    .from('newsletter_recipients')
+    .insert(recipientInserts)
+    .select('id, contact_id, email')
+
+  if (insertError) {
+    console.error('Failed to insert newsletter_recipients:', insertError)
+    return { batchSent: 0 }
+  }
+
+  // Build a map from contact_id to recipient record (for the recipientId)
+  const recipientMap = new Map()
+  for (const r of insertedRecipients) {
+    recipientMap.set(r.contact_id, r)
+  }
+
+  // Step 2: Render personalised HTML for each recipient (now with tracking)
   const emails = await Promise.all(
     batch.map(async (contact) => {
+      const recipient = recipientMap.get(contact.id)
+      const recipientId = recipient?.id || ''
       const unsubscribeUrl = generateUnsubscribeUrl(contact.signup_email)
       const rawName = contact.first_name?.trim()
       const firstName = rawName
@@ -352,18 +380,20 @@ async function sendBatch({ batch, sendId, subject, title, previewText, date, lea
           signoff,
           unsubscribeUrl,
           viewInBrowserUrl,
+          recipientId,
         })
       )
       return {
         email: contact.signup_email,
         contactId: contact.id,
+        recipientId,
         html,
         unsubscribeUrl,
       }
     })
   )
 
-  // Call Resend batch API
+  // Step 3: Send via Resend
   const { data, error } = await resend.batch.send(
     emails.map(e => ({
       from: 'James from Mutomorro <hello@mutomorro.com>',
@@ -385,12 +415,8 @@ async function sendBatch({ batch, sendId, subject, title, previewText, date, lea
     console.error('Resend batch error:', error)
   }
 
-  // Store results in newsletter_recipients
+  // Step 4: Update recipient records with Resend IDs
   let batchSent = 0
-  const now = new Date().toISOString()
-  const recipients = []
-
-  // data is an array of results matching the input order
   const results = data?.data || data || []
 
   for (let i = 0; i < emails.length; i++) {
@@ -399,31 +425,10 @@ async function sendBatch({ batch, sendId, subject, title, previewText, date, lea
 
     if (resendId) {
       batchSent++
-      recipients.push({
-        send_id: sendId,
-        contact_id: emails[i].contactId,
-        email: emails[i].email,
-        resend_id: resendId,
-        status: 'sent',
-        sent_at: now,
-      })
-    } else {
-      recipients.push({
-        send_id: sendId,
-        contact_id: emails[i].contactId,
-        email: emails[i].email,
-        status: 'queued',
-      })
-    }
-  }
-
-  if (recipients.length > 0) {
-    const { error: insertError } = await supabase
-      .from('newsletter_recipients')
-      .insert(recipients)
-
-    if (insertError) {
-      console.error('Failed to insert newsletter_recipients:', insertError)
+      await supabase
+        .from('newsletter_recipients')
+        .update({ resend_id: resendId, status: 'sent', sent_at: now })
+        .eq('id', emails[i].recipientId)
     }
   }
 

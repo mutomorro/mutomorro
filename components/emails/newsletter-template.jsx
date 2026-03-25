@@ -133,18 +133,20 @@ function RenderSection({ section, index }) {
             margin: '0 0 48px 0',
           }}
         >
-          <Text
-            style={{
-              fontFamily,
-              fontSize: '16px',
-              fontWeight: 300,
-              color: 'rgba(0,0,0,0.45)',
-              lineHeight: '1.5',
-              margin: '0 0 24px 0',
-            }}
-          >
-            {section.text}
-          </Text>
+          {section.text && (
+            <Text
+              style={{
+                fontFamily,
+                fontSize: '16px',
+                fontWeight: 300,
+                color: 'rgba(0,0,0,0.45)',
+                lineHeight: '1.5',
+                margin: '0 0 24px 0',
+              }}
+            >
+              {section.text}
+            </Text>
+          )}
           <a
             href={section.buttonUrl}
             style={{
@@ -218,6 +220,7 @@ export default function NewsletterTemplate({
   previewText = '',
   date = '',
   leadText = '',
+  greeting = '',
   sections = [],
   signoff = 'Until next month,',
   unsubscribeUrl = '',
@@ -372,6 +375,20 @@ export default function NewsletterTemplate({
             <tbody>
               <tr>
                 <td style={{ padding: '36px 44px 0' }}>
+                  {greeting && (
+                    <Text
+                      style={{
+                        fontFamily,
+                        fontSize: '18px',
+                        fontWeight: 300,
+                        color: '#000',
+                        lineHeight: '1.75',
+                        margin: '0 0 24px 0',
+                      }}
+                    >
+                      {greeting}
+                    </Text>
+                  )}
                   {sections.map((section, i) => (
                     <RenderSection key={i} section={section} index={i} />
                   ))}

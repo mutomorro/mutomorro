@@ -73,6 +73,7 @@ async function handleCreate(body, resend, supabase) {
     signoff = 'Until next month,',
     batchSize: rawBatchSize = 100,
     tierFilter,
+    tagFilter,
     emailOverride,
   } = body
 
@@ -127,12 +128,16 @@ async function handleCreate(body, resend, supabase) {
   // Query active contacts
   let contactsQuery = supabase
     .from('contacts')
-    .select('id, signup_email')
+    .select('id, signup_email, first_name')
     .eq('newsletter_status', 'active')
     .order('created_at', { ascending: true })
 
   if (tierFilter) {
     contactsQuery = contactsQuery.eq('tier', tierFilter)
+  }
+
+  if (tagFilter) {
+    contactsQuery = contactsQuery.contains('tags', [tagFilter])
   }
 
   const { data: allContacts, error: contactsError } = await contactsQuery
@@ -231,17 +236,21 @@ async function handleResume(body, resend, supabase) {
   }
 
   const contentJson = send.content_json
-  const { subject, previewText = '', date = '', leadText = '', sections, signoff = 'Until next month,', tierFilter } = contentJson
+  const { subject, previewText = '', date = '', leadText = '', sections, signoff = 'Until next month,', tierFilter, tagFilter } = contentJson
 
   // Query active contacts
   let contactsQuery = supabase
     .from('contacts')
-    .select('id, signup_email')
+    .select('id, signup_email, first_name')
     .eq('newsletter_status', 'active')
     .order('created_at', { ascending: true })
 
   if (tierFilter) {
     contactsQuery = contactsQuery.eq('tier', tierFilter)
+  }
+
+  if (tagFilter) {
+    contactsQuery = contactsQuery.contains('tags', [tagFilter])
   }
 
   const { data: allContacts, error: contactsError } = await contactsQuery
@@ -322,12 +331,18 @@ async function sendBatch({ batch, sendId, subject, previewText, date, leadText, 
   const emails = await Promise.all(
     batch.map(async (contact) => {
       const unsubscribeUrl = generateUnsubscribeUrl(contact.signup_email)
+      const rawName = contact.first_name?.trim()
+      const firstName = rawName
+        ? rawName.replace(/(^|[\s-])(\w)/g, (_, sep, c) => sep + c.toUpperCase())
+        : ''
+      const greeting = firstName ? `Hi ${firstName},` : 'Hi there,'
       const html = await render(
         createElement(NewsletterTemplate, {
           subject,
           previewText,
           date,
           leadText,
+          greeting,
           sections,
           signoff,
           unsubscribeUrl,

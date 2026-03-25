@@ -342,17 +342,35 @@ async function sendBatch({ batch, sendId, subject, title, previewText, date, lea
     status: 'pending',
   }))
 
-  const { data: insertedRecipients, error: insertError } = await supabase
+  // Check for existing pending records from previous attempts
+  const contactIds = batch.map(c => c.id)
+  const { data: existingRecipients } = await supabase
     .from('newsletter_recipients')
-    .insert(recipientInserts)
     .select('id, contact_id, email')
+    .eq('send_id', sendId)
+    .in('contact_id', contactIds)
 
-  if (insertError) {
-    console.error('Failed to insert newsletter_recipients:', insertError)
-    return { batchSent: 0 }
+  let insertedRecipients = existingRecipients || []
+
+  // Only insert contacts that don't already have records
+  const existingContactIds = new Set((existingRecipients || []).map(r => r.contact_id))
+  const newInserts = recipientInserts.filter(r => !existingContactIds.has(r.contact_id))
+
+  if (newInserts.length > 0) {
+    const { data: newRecipients, error: insertError } = await supabase
+      .from('newsletter_recipients')
+      .insert(newInserts)
+      .select('id, contact_id, email')
+
+    if (insertError) {
+      console.error('Failed to insert newsletter_recipients:', JSON.stringify(insertError))
+      return { batchSent: 0 }
+    }
+
+    insertedRecipients = [...insertedRecipients, ...(newRecipients || [])]
   }
 
-  console.log('Inserted recipients:', JSON.stringify(insertedRecipients))
+  console.log('Recipients for batch:', JSON.stringify(insertedRecipients))
 
   // Build a map from contact_id to recipient record (for the recipientId)
   const recipientMap = new Map()

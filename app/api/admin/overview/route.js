@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { getStats, getActiveVisitors, getTopReferrers } from '../../../../lib/umami'
 
 export async function GET(request) {
-  // Session check (middleware handles redirect, but API routes need explicit check)
   const sessionCookie = request.cookies.get('admin_session')?.value
   if (!sessionCookie) {
     return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
@@ -14,13 +14,11 @@ export async function GET(request) {
   )
 
   try {
-    // Calculate date ranges
     const now = new Date()
     const weekAgo = new Date(now)
     weekAgo.setDate(weekAgo.getDate() - 7)
     const weekAgoISO = weekAgo.toISOString()
 
-    // Get Monday of current week
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
     const dayOfWeek = today.getDay()
     const monday = new Date(today)
@@ -30,7 +28,6 @@ export async function GET(request) {
     const mondayStr = monday.toISOString().split('T')[0]
     const sundayStr = sunday.toISOString().split('T')[0]
 
-    // Run all queries in parallel
     const [
       contactsThisWeek,
       recentSignals,
@@ -38,47 +35,22 @@ export async function GET(request) {
       newsletterCount,
       calendarThisWeek,
       pipelineTotal,
+      umamiStats,
+      umamiActive,
+      umamiReferrers,
     ] = await Promise.all([
-      // a) Contacts created in last 7 days
-      supabase
-        .from('contacts')
-        .select('first_source')
-        .gte('created_at', weekAgoISO),
-
-      // b) Last 10 signals with contact info
-      supabase
-        .from('signals')
-        .select('id, type, detail, strength, date, contact_id')
-        .order('date', { ascending: false })
-        .limit(10),
-
-      // c) Organisations grouped by status
-      supabase
-        .from('organisations')
-        .select('status'),
-
-      // d) Newsletter subscriber count
-      supabase
-        .from('contacts')
-        .select('id', { count: 'exact', head: true })
-        .eq('newsletter_status', 'active'),
-
-      // e) Calendar items this week
-      supabase
-        .from('calendar_items')
-        .select('*')
-        .or(`scheduled_date.gte.${mondayStr},due_date.gte.${mondayStr}`)
-        .or(`scheduled_date.lte.${sundayStr},due_date.lte.${sundayStr}`)
-        .order('scheduled_date', { ascending: true }),
-
-      // f) Pipeline total (not 'new')
-      supabase
-        .from('organisations')
-        .select('id', { count: 'exact', head: true })
-        .neq('status', 'new'),
+      supabase.from('contacts').select('first_source').gte('created_at', weekAgoISO),
+      supabase.from('signals').select('id, type, detail, strength, date, contact_id').order('date', { ascending: false }).limit(10),
+      supabase.from('organisations').select('status'),
+      supabase.from('contacts').select('id', { count: 'exact', head: true }).eq('newsletter_status', 'active'),
+      supabase.from('calendar_items').select('*').or(`scheduled_date.gte.${mondayStr},due_date.gte.${mondayStr}`).or(`scheduled_date.lte.${sundayStr},due_date.lte.${sundayStr}`).order('scheduled_date', { ascending: true }),
+      supabase.from('organisations').select('id', { count: 'exact', head: true }).neq('status', 'new'),
+      getStats('7d').catch(() => null),
+      getActiveVisitors().catch(() => null),
+      getTopReferrers('7d', 5).catch(() => null),
     ])
 
-    // Process contacts this week - group by source
+    // Process contacts
     const contactsBySource = {}
     let totalContactsThisWeek = 0
     if (contactsThisWeek.data) {
@@ -89,25 +61,20 @@ export async function GET(request) {
       })
     }
 
-    // Enrich signals with contact info
+    // Enrich signals
     let enrichedSignals = []
     if (recentSignals.data && recentSignals.data.length > 0) {
       const contactIds = [...new Set(recentSignals.data.map((s) => s.contact_id).filter(Boolean))]
       let contactMap = {}
-
       if (contactIds.length > 0) {
         const { data: contacts } = await supabase
           .from('contacts')
           .select('id, first_name, last_name, signup_email, organisation_name')
           .in('id', contactIds)
-
         if (contacts) {
-          contacts.forEach((c) => {
-            contactMap[c.id] = c
-          })
+          contacts.forEach((c) => { contactMap[c.id] = c })
         }
       }
-
       enrichedSignals = recentSignals.data.map((s) => ({
         ...s,
         created_at: s.date,
@@ -115,7 +82,7 @@ export async function GET(request) {
       }))
     }
 
-    // Process pipeline snapshot - group by status
+    // Pipeline
     const pipelineCounts = {}
     if (pipelineSnapshot.data) {
       pipelineSnapshot.data.forEach((o) => {
@@ -124,21 +91,61 @@ export async function GET(request) {
       })
     }
 
+    // Analytics - flat number format: { pageviews: N, visitors: N, bounces: N, totaltime: N }
+    let analytics = null
+    if (umamiStats) {
+      const visitors = umamiStats.visitors ?? 0
+      const pageviews = umamiStats.pageviews ?? 0
+      const bounces = umamiStats.bounces ?? 0
+      const totaltime = umamiStats.totaltime ?? 0
+      const activeCount = umamiActive?.visitors ?? 0
+
+      analytics = {
+        visitors,
+        pageviews,
+        bounceRate: visitors > 0 ? parseFloat(((bounces / visitors) * 100).toFixed(1)) : 0,
+        avgDuration: visitors > 0 ? Math.round(totaltime / visitors) : 0,
+        activeVisitors: activeCount,
+        topReferrers: Array.isArray(umamiReferrers)
+          ? umamiReferrers.map((r) => ({ referrer: r.x || '(direct)', views: r.y }))
+          : [],
+      }
+
+      // Fire-and-forget snapshot
+      writeSnapshot(supabase, analytics).catch(() => {})
+    }
+
     return NextResponse.json({
-      contactsThisWeek: {
-        total: totalContactsThisWeek,
-        bySource: contactsBySource,
-      },
+      contactsThisWeek: { total: totalContactsThisWeek, bySource: contactsBySource },
       signals: enrichedSignals,
-      pipeline: {
-        counts: pipelineCounts,
-        activeTotal: pipelineTotal.count || 0,
-      },
+      pipeline: { counts: pipelineCounts, activeTotal: pipelineTotal.count || 0 },
       newsletterSubscribers: newsletterCount.count || 0,
       calendar: calendarThisWeek.data || [],
+      analytics,
     })
   } catch (err) {
     console.error('Overview API error:', err)
     return NextResponse.json({ error: 'Failed to load overview data' }, { status: 500 })
   }
+}
+
+async function writeSnapshot(supabase, analytics) {
+  await supabase
+    .from('analytics_snapshots')
+    .delete()
+    .eq('period', '7d')
+    .lt('captured_at', new Date(Date.now() - 60 * 60 * 1000).toISOString())
+
+  await supabase
+    .from('analytics_snapshots')
+    .insert({
+      period: '7d',
+      visitors: analytics.visitors,
+      pageviews: analytics.pageviews,
+      bounce_rate: analytics.bounceRate,
+      avg_visit_duration: analytics.avgDuration,
+      top_pages: [],
+      top_referrers: analytics.topReferrers,
+      active_visitors: analytics.activeVisitors,
+    })
 }

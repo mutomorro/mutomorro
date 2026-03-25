@@ -100,14 +100,28 @@ export default function AdminOverview() {
           </h1>
           <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.4)' }}>{today}</p>
         </div>
-        <div style={{ fontSize: '14px', color: 'rgba(255,255,255,0.35)' }}>
-          - active visitors
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px', color: 'rgba(255,255,255,0.35)' }}>
+          {!loading && data?.analytics?.activeVisitors > 0 && (
+            <span style={{
+              width: '8px',
+              height: '8px',
+              borderRadius: '50%',
+              background: '#2DD4BF',
+              display: 'inline-block',
+              animation: 'activePulse 2s ease-in-out infinite',
+            }} />
+          )}
+          {loading ? '-' : (data?.analytics?.activeVisitors ?? '-')} active visitors
         </div>
       </div>
 
       {/* Metric cards */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '32px' }}>
-        <MetricCard label="Visitors this week" value="-" />
+        <MetricCard
+          label="Visitors this week"
+          value={loading ? null : data?.analytics?.visitors ?? '-'}
+          subtitle={!loading && data?.analytics?.pageviews ? `${data.analytics.pageviews.toLocaleString()} pageviews` : null}
+        />
         <MetricCard label="New contacts" value={loading ? null : data?.contactsThisWeek?.total ?? 0} />
         <MetricCard label="Newsletter subscribers" value={loading ? null : data?.newsletterSubscribers ?? 0} />
         <MetricCard label="Pipeline (active)" value={loading ? null : data?.pipeline?.activeTotal ?? 0} />
@@ -223,6 +237,32 @@ export default function AdminOverview() {
             )}
           </div>
 
+          {/* Top referrers */}
+          {!loading && data?.analytics?.topReferrers?.length > 0 && (
+            <div style={cardStyle}>
+              <h2 style={cardHeading}>Top referrers (7d)</h2>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                {data.analytics.topReferrers.map((ref, i) => (
+                  <div key={i} style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    padding: '7px 0',
+                    borderBottom: '1px solid rgba(255,255,255,0.04)',
+                    fontSize: '13px',
+                  }}>
+                    <span style={{ color: 'rgba(255,255,255,0.6)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '75%' }}>
+                      {ref.referrer}
+                    </span>
+                    <span style={{ color: 'rgba(255,255,255,0.35)', flexShrink: 0 }}>
+                      {ref.views}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* Pipeline bar */}
           <div style={cardStyle}>
             <h2 style={cardHeading}>Organisation pipeline</h2>
@@ -292,6 +332,10 @@ export default function AdminOverview() {
           0%, 100% { opacity: 0.4; }
           50% { opacity: 0.8; }
         }
+        @keyframes activePulse {
+          0%, 100% { opacity: 1; transform: scale(1); }
+          50% { opacity: 0.5; transform: scale(0.8); }
+        }
         @media (max-width: 768px) {
           div[style*="grid-template-columns: repeat(4"] {
             grid-template-columns: repeat(2, 1fr) !important;
@@ -305,7 +349,7 @@ export default function AdminOverview() {
   )
 }
 
-function MetricCard({ label, value }) {
+function MetricCard({ label, value, subtitle }) {
   return (
     <div style={cardStyle}>
       <div style={{
@@ -320,9 +364,16 @@ function MetricCard({ label, value }) {
       {value === null ? (
         <Skeleton width="60px" height={28} />
       ) : (
-        <div style={{ fontSize: '28px', fontWeight: 500, color: '#fff' }}>
-          {typeof value === 'number' ? value.toLocaleString() : value}
-        </div>
+        <>
+          <div style={{ fontSize: '28px', fontWeight: 500, color: '#fff' }}>
+            {typeof value === 'number' ? value.toLocaleString() : value}
+          </div>
+          {subtitle && (
+            <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.3)', marginTop: '4px' }}>
+              {subtitle}
+            </div>
+          )}
+        </>
       )}
     </div>
   )

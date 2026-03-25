@@ -324,6 +324,28 @@ export default function AdminOverview() {
               )
             })()}
           </div>
+          {/* Outreach summary */}
+          {!loading && data?.outreach && (
+            <div style={cardStyle}>
+              <h2 style={cardHeading}>Outreach</h2>
+              <div style={{ display: 'flex', gap: '20px', marginBottom: '8px' }}>
+                <div>
+                  <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.3px' }}>Sequences</div>
+                  <div style={{ fontSize: '18px', fontWeight: 500, color: '#fff' }}>{data.outreach.activeSequences}</div>
+                </div>
+                <div>
+                  <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.3px' }}>Enrolled</div>
+                  <div style={{ fontSize: '18px', fontWeight: 500, color: '#fff' }}>{data.outreach.totalContacts}</div>
+                </div>
+                <div>
+                  <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.3px' }}>Replies</div>
+                  <div style={{ fontSize: '18px', fontWeight: 500, color: '#2DD4BF' }}>{data.outreach.totalReplies}</div>
+                </div>
+              </div>
+              <a href="/admin/outreach" style={{ fontSize: '12px', color: '#9B51E0', textDecoration: 'none' }}>View details →</a>
+            </div>
+          )}
+
           {/* Last newsletter send */}
           {!loading && data?.lastNewsletter && (
             <div style={cardStyle}>

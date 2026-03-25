@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { getStats, getActiveVisitors, getTopReferrers } from '../../../../lib/umami'
+import { getSequences } from '../../../../lib/apollo'
 
 export async function GET(request) {
   const sessionCookie = request.cookies.get('admin_session')?.value
@@ -39,6 +40,7 @@ export async function GET(request) {
       umamiStats,
       umamiActive,
       umamiReferrers,
+      apolloSequences,
     ] = await Promise.all([
       supabase.from('contacts').select('first_source').gte('created_at', weekAgoISO),
       supabase.from('signals').select('id, type, detail, strength, date, contact_id').order('date', { ascending: false }).limit(10),
@@ -50,6 +52,7 @@ export async function GET(request) {
       getStats('7d').catch(() => null),
       getActiveVisitors().catch(() => null),
       getTopReferrers('7d', 5).catch(() => null),
+      process.env.APOLLO_API_KEY ? getSequences().catch(() => null) : Promise.resolve(null),
     ])
 
     // Process contacts
@@ -124,6 +127,11 @@ export async function GET(request) {
       newsletterSubscribers: newsletterCount.count || 0,
       calendar: calendarThisWeek.data || [],
       lastNewsletter: lastNewsletter.data || null,
+      outreach: apolloSequences ? {
+        activeSequences: apolloSequences.filter((s) => s.active && !s.archived).length,
+        totalContacts: apolloSequences.filter((s) => s.active && !s.archived).reduce((sum, s) => sum + (s.unique_scheduled || 0), 0),
+        totalReplies: apolloSequences.reduce((sum, s) => sum + (s.unique_replied || 0), 0),
+      } : null,
       analytics,
     })
   } catch (err) {

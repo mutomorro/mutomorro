@@ -352,11 +352,14 @@ async function sendBatch({ batch, sendId, subject, title, previewText, date, lea
     return { batchSent: 0 }
   }
 
+  console.log('Inserted recipients:', JSON.stringify(insertedRecipients))
+
   // Build a map from contact_id to recipient record (for the recipientId)
   const recipientMap = new Map()
   for (const r of insertedRecipients) {
     recipientMap.set(r.contact_id, r)
   }
+  console.log('Batch contacts:', batch.map(c => ({ id: c.id, type: typeof c.id })))
 
   // Step 2: Render personalised HTML for each recipient (now with tracking)
   const emails = await Promise.all(
@@ -416,9 +419,12 @@ async function sendBatch({ batch, sendId, subject, title, previewText, date, lea
     console.error('Resend batch error:', error)
   }
 
+  console.log('Resend batch response data:', JSON.stringify(data))
+
   // Step 4: Update recipient records with Resend IDs
   let batchSent = 0
   const results = data?.data || data || []
+  console.log('Parsed results:', JSON.stringify(results), 'isArray:', Array.isArray(results))
 
   for (let i = 0; i < emails.length; i++) {
     const resendResult = Array.isArray(results) ? results[i] : null

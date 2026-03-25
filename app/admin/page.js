@@ -162,13 +162,29 @@ export default function AdminOverview() {
                     flexShrink: 0,
                   }} />
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: '14px', fontWeight: 400, color: '#fff', marginBottom: '2px' }}>
-                      {signalLabel(signal.type)}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '2px' }}>
+                      <span style={{ fontSize: '14px', fontWeight: 400, color: '#fff', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {signal.detail || signalLabel(signal.type)}
+                      </span>
+                      <span style={{
+                        fontSize: '10px',
+                        fontWeight: 400,
+                        color: 'rgba(255,255,255,0.5)',
+                        background: 'rgba(255,255,255,0.06)',
+                        padding: '2px 7px',
+                        borderRadius: '3px',
+                        whiteSpace: 'nowrap',
+                        flexShrink: 0,
+                        letterSpacing: '0.03em',
+                        textTransform: 'uppercase',
+                      }}>
+                        {signalLabel(signal.type)}
+                      </span>
                     </div>
                     <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.45)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {signal.contact
                         ? `${signal.contact.first_name || ''} ${signal.contact.last_name || ''}`.trim() + (signal.contact.organisation_name ? ` - ${signal.contact.organisation_name}` : '')
-                        : signal.detail || 'Unknown contact'}
+                        : 'Unknown contact'}
                     </div>
                   </div>
                   <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.3)', flexShrink: 0, whiteSpace: 'nowrap' }}>

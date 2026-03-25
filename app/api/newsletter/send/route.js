@@ -53,7 +53,7 @@ async function checkDailyLimit(supabase, batchSize) {
     .gte('sent_at', todayStart.toISOString())
 
   const sentToday = count || 0
-  const DAILY_LIMIT = 101
+  const DAILY_LIMIT = 110
   if (sentToday + batchSize > DAILY_LIMIT) {
     return {
       exceeded: true,

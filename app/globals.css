@@ -3618,16 +3618,20 @@ a:hover {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  flex: 1;
 }
 
 .sector-highlight-card {
-  padding: 16px 20px;
+  padding: 24px 20px;
   border-left: 3px solid #9B51E0;
   background: #FFFFFF;
-  font-size: 15px;
-  font-weight: 400;
-  line-height: 1.6;
+  font-size: 18px;
+  font-weight: 300;
+  line-height: 1.75;
   color: #221C2B;
+  flex: 1;
+  display: flex;
+  align-items: center;
 }
 
 /* Services grid */

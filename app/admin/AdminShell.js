@@ -11,6 +11,7 @@ const navItems = [
   { label: 'Outreach', href: '/admin/outreach' },
   { label: 'Calendar', href: '/admin/calendar' },
   { label: 'Analytics', href: '/admin/analytics' },
+  { label: 'Tenders', href: '/admin/tenders' },
 ]
 
 export default function AdminShell({ children }) {

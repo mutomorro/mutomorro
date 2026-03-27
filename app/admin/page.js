@@ -362,6 +362,28 @@ export default function AdminOverview() {
             </div>
           )}
 
+          {/* Tenders summary */}
+          {!loading && data?.tenders && (
+            <div style={cardStyle}>
+              <h2 style={cardHeading}>Tenders</h2>
+              <div style={{ display: 'flex', gap: '20px', marginBottom: '8px' }}>
+                <div>
+                  <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.3px' }}>Hot</div>
+                  <div style={{ fontSize: '18px', fontWeight: 500, color: data.tenders.hot > 0 ? '#DC2626' : '#fff' }}>{data.tenders.hot}</div>
+                </div>
+                <div>
+                  <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.3px' }}>Unreviewed</div>
+                  <div style={{ fontSize: '18px', fontWeight: 500, color: data.tenders.unreviewed > 0 ? '#D97706' : '#fff' }}>{data.tenders.unreviewed}</div>
+                </div>
+                <div>
+                  <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.3px' }}>Deadlines &lt;7d</div>
+                  <div style={{ fontSize: '18px', fontWeight: 500, color: data.tenders.urgent > 0 ? '#DC2626' : '#fff' }}>{data.tenders.urgent}</div>
+                </div>
+              </div>
+              <a href="/admin/tenders" style={{ fontSize: '12px', color: '#9B51E0', textDecoration: 'none' }}>View tenders →</a>
+            </div>
+          )}
+
           {/* Last newsletter send */}
           {!loading && data?.lastNewsletter && (
             <div style={cardStyle}>

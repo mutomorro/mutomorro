@@ -41,6 +41,9 @@ export async function GET(request) {
       umamiActive,
       umamiReferrers,
       apolloSequences,
+      tenderHot,
+      tenderUnreviewed,
+      tenderUrgent,
     ] = await Promise.all([
       supabase.from('contacts').select('first_source').gte('created_at', weekAgoISO),
       supabase.from('signals').select('id, type, detail, strength, date, contact_id').order('date', { ascending: false }).limit(10),
@@ -53,6 +56,9 @@ export async function GET(request) {
       getActiveVisitors().catch(() => null),
       getTopReferrers('7d', 5).catch(() => null),
       process.env.APOLLO_API_KEY ? getSequences().catch(() => null) : Promise.resolve(null),
+      supabase.from('tenders').select('id', { count: 'exact', head: true }).eq('temperature', 'hot'),
+      supabase.from('tenders').select('id', { count: 'exact', head: true }).eq('status', 'new'),
+      supabase.from('tenders').select('id', { count: 'exact', head: true }).gt('deadline', new Date().toISOString()).lt('deadline', new Date(Date.now() + 7 * 86400000).toISOString()),
     ])
 
     // Process contacts
@@ -133,6 +139,11 @@ export async function GET(request) {
         totalReplies: apolloSequences.reduce((sum, s) => sum + (s.unique_replied || 0), 0),
       } : null,
       analytics,
+      tenders: {
+        hot: tenderHot.count || 0,
+        unreviewed: tenderUnreviewed.count || 0,
+        urgent: tenderUrgent.count || 0,
+      },
     })
   } catch (err) {
     console.error('Overview API error:', err)

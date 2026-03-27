@@ -16,6 +16,7 @@ export async function getAllProjects() {
     _id,
     title,
     slug,
+    client,
     clientSector,
     challenge,
     shortSummary,
@@ -513,4 +514,57 @@ export async function getAllResourceSlugs() {
   return await client.fetch(
     `*[_type == "resource"]{ "slug": slug.current }`
   )
+}
+
+// ============================================
+// SECTOR LANDING PAGES
+// ============================================
+
+export async function getSectorLandingPage(slug) {
+  return client.fetch(`
+    *[_type == "sectorLandingPage" && slug.current == $slug][0] {
+      ...,
+      featuredServices[] {
+        sectorAngle,
+        serviceRef-> {
+          _type,
+          title,
+          "slug": slug.current,
+          heroTagline
+        }
+      },
+      featuredProjects[]-> {
+        title,
+        "slug": slug.current,
+        summary,
+        shortSummary,
+        "heroImageUrl": heroImage.asset->url,
+        clientSector
+      },
+      featuredTools[]-> {
+        title,
+        "slug": slug.current
+      },
+      featuredArticles[]-> {
+        title,
+        "slug": slug.current
+      },
+      "sectorLogos": sectorLogos[] {
+        "url": asset->url,
+        alt
+      }
+    }
+  `, { slug })
+}
+
+export async function getAllSectorLandingPages() {
+  return client.fetch(`
+    *[_type == "sectorLandingPage"] | order(order asc) {
+      title,
+      "slug": slug.current,
+      sectorLabel,
+      heroHeading,
+      heroSubheading
+    }
+  `)
 }

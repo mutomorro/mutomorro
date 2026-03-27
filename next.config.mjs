@@ -172,6 +172,7 @@ const nextConfig = {
       // Top-level old service paths
       { source: '/service-design', destination: '/services/service-design-consultancy', permanent: true },
       { source: '/service-design/:path*', destination: '/services/service-design-consultancy', permanent: true },
+      { source: '/change-management', destination: '/services/change-management-consultancy', permanent: true },
       { source: '/change-management-consultancy', destination: '/services/change-management-consultancy', permanent: true },
       { source: '/change-management-consultancy/:path*', destination: '/services/change-management-consultancy', permanent: true },
       { source: '/system-thinking', destination: '/services/organisational-development-consultancy', permanent: true },

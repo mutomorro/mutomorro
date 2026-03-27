@@ -90,6 +90,13 @@ export default {
       description: 'One-line tagline — shown below the title on the case study page.',
     },
     {
+      name: 'client',
+      title: 'Client',
+      type: 'string',
+      group: 'core',
+      description: 'The name of the client organisation.',
+    },
+    {
       name: 'clientSector',
       title: 'Client sector',
       type: 'string',
@@ -202,13 +209,15 @@ export default {
   preview: {
     select: {
       title: 'title',
+      clientName: 'client',
       sector: 'clientSector',
       media: 'heroImage',
     },
-    prepare({ title, sector, media }) {
+    prepare({ title, clientName, sector, media }) {
+      const parts = [clientName, sector].filter(Boolean)
       return {
         title,
-        subtitle: sector || 'No sector set',
+        subtitle: parts.join(' · ') || 'No client set',
         media,
       }
     },

@@ -170,32 +170,6 @@ export default async function CaseStudy({ params }) {
       <section className="section--full" style={{ padding: '80px 48px', background: 'var(--white)' }}>
         <div className="wrap--narrow">
 
-          {/* Client info box */}
-          {(project.client || project.clientSector) && (
-            <div className="scroll-in" style={{
-              marginBottom: '3rem',
-              padding: '24px 28px',
-              border: '1px solid rgba(0,0,0,0.08)',
-              background: 'var(--warm)',
-              display: 'flex',
-              gap: '2.5rem',
-              flexWrap: 'wrap',
-            }}>
-              {project.client && (
-                <div>
-                  <span className="kicker" style={{ marginBottom: '6px', display: 'block' }}>Client</span>
-                  <span style={{ fontSize: '17px', fontWeight: 400 }}>{project.client}</span>
-                </div>
-              )}
-              {project.clientSector && (
-                <div>
-                  <span className="kicker" style={{ marginBottom: '6px', display: 'block' }}>Sector</span>
-                  <span style={{ fontSize: '17px', fontWeight: 400 }}>{project.clientSector}</span>
-                </div>
-              )}
-            </div>
-          )}
-
           {sections.map(({ key, label }) => {
             const content = project[key]
             if (!content) return null

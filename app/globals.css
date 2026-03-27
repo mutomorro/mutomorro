@@ -3602,12 +3602,22 @@ a:hover {
    SECTOR LANDING PAGES
    ============================================ */
 
-/* Context highlights - compact cards with purple left border */
-.sector-highlights {
+/* Context layout - text left, highlights right */
+.sector-context-layout {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 1.5rem;
-  margin-top: 3rem;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  align-items: start;
+}
+
+.sector-context-body {
+  max-width: 720px;
+}
+
+.sector-context-highlights {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
 .sector-highlight-card {
@@ -3698,8 +3708,9 @@ a:hover {
 
 /* Sector responsive */
 @media (max-width: 767px) {
-  .sector-highlights {
+  .sector-context-layout {
     grid-template-columns: 1fr;
+    gap: 2rem;
   }
 
   .sector-services-grid,

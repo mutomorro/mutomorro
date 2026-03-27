@@ -4,6 +4,7 @@ import { PortableText } from '@portabletext/react'
 import { notFound } from 'next/navigation'
 import { getSectorLandingPage, getAllSectorLandingPages } from '../../../sanity/client'
 import CTA from '../../../components/CTA'
+import BackgroundPattern from '@/components/animations/BackgroundPattern'
 
 export const revalidate = 3600
 
@@ -86,23 +87,24 @@ export default async function SectorLandingPage({ params }) {
           <h2 className="heading-h2 scroll-in" style={{ marginBottom: '2rem' }}>
             {page.contextHeading}
           </h2>
-          <div className="scroll-in" style={{ maxWidth: '720px' }}>
-            <div className="portable-text">
-              <PortableText value={page.contextBody} />
+          <div className="sector-context-layout scroll-in">
+            <div className="sector-context-body">
+              <div className="portable-text">
+                <PortableText value={page.contextBody} />
+              </div>
             </div>
+            {page.contextHighlights?.length > 0 && (
+              <div className="sector-context-highlights">
+                {page.contextHighlights.map((item, i) => (
+                  <div key={i} className="sector-highlight-card">
+                    <p style={{ margin: 0 }}>
+                      {item.highlightText}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
-
-          {page.contextHighlights?.length > 0 && (
-            <div className="sector-highlights scroll-in">
-              {page.contextHighlights.map((item, i) => (
-                <div key={i} className="sector-highlight-card">
-                  <p style={{ margin: 0 }}>
-                    {item.highlightText}
-                  </p>
-                </div>
-              ))}
-            </div>
-          )}
         </div>
       </section>
 
@@ -131,8 +133,8 @@ export default async function SectorLandingPage({ params }) {
           SECTION 4 - RELEVANT SERVICES (white)
           ========================================== */}
       {page.featuredServices?.length > 0 && (
-        <section className="section--full" style={{ padding: '80px 48px' }}>
-          <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
+        <BackgroundPattern variant="network" className="section--full" style={{ padding: '80px 48px' }}>
+          <div style={{ maxWidth: '1350px', margin: '0 auto', position: 'relative' }}>
             <h2 className="heading-h2 scroll-in" style={{ marginBottom: page.servicesIntro ? '1rem' : '2.5rem' }}>
               {page.servicesHeading}
             </h2>
@@ -164,7 +166,7 @@ export default async function SectorLandingPage({ params }) {
               })}
             </div>
           </div>
-        </section>
+        </BackgroundPattern>
       )}
 
       {/* ==========================================
@@ -207,14 +209,16 @@ export default async function SectorLandingPage({ params }) {
                   )}
                   <div className="card-a__body">
                     {project.clientSector && (
-                      <span className="card-a__kicker">{project.clientSector}</span>
+                      <span className="card-a__tag">{project.clientSector}</span>
                     )}
                     <h3 className="card-a__title">{project.title}</h3>
                     <p className="card-a__text">{project.shortSummary || project.summary}</p>
                   </div>
                   <div className="card-a__footer">
-                    <span>Read case study</span>
-                    <span className="card-a__arrow">&rarr;</span>
+                    <div className="card-a__footer-bg"></div>
+                    <div className="card-a__action">
+                      Read case study <span className="arrow">&rarr;</span>
+                    </div>
                   </div>
                 </Link>
               ))}

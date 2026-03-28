@@ -2125,6 +2125,16 @@ a:hover {
   }
 }
 
+/* LinkedIn follow band (post-download success states) */
+@media (max-width: 560px) {
+  .linkedin-band {
+    flex-wrap: wrap !important;
+  }
+  .linkedin-band a {
+    margin-left: auto;
+  }
+}
+
 /* ================================================
    TOOL FLOATING BAR
    ================================================ */

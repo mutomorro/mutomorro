@@ -201,6 +201,19 @@ export default async function ToolPage({ params }) {
               />
             </div>
           )}
+
+          <p className="body-text" style={{ marginTop: '32px' }}>
+            We regularly share thinking on organisational change and development on{' '}
+            <a
+              href="https://www.linkedin.com/company/mutomorro"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-link"
+            >
+              LinkedIn
+            </a>
+            {' '}- ideas, practical approaches, and useful tools for people working on making their organisations better.
+          </p>
         </div>
       </section>
 

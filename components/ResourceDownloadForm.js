@@ -122,6 +122,54 @@ export default function ResourceDownloadForm({
             click here to download
           </a>.
         </p>
+
+        {/* LinkedIn follow band */}
+        <div className="linkedin-band" style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '14px',
+          padding: '16px 20px',
+          background: 'rgba(255,255,255,0.06)',
+          borderTop: '1px solid rgba(255,255,255,0.08)',
+          marginTop: '20px',
+        }}>
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ flexShrink: 0 }}>
+            <rect width="28" height="28" rx="4" fill="#0A66C2"/>
+            <path d="M8.5 11.5H11V19.5H8.5V11.5ZM9.75 10.5C8.92 10.5 8.25 9.83 8.25 9C8.25 8.17 8.92 7.5 9.75 7.5C10.58 7.5 11.25 8.17 11.25 9C11.25 9.83 10.58 10.5 9.75 10.5ZM20.5 19.5H18V15.6C18 14.57 17.98 13.25 16.56 13.25C15.12 13.25 14.9 14.37 14.9 15.53V19.5H12.4V11.5H14.8V12.7H14.83C15.17 12.03 16.04 11.32 17.33 11.32C19.86 11.32 20.5 12.97 20.5 15.1V19.5Z" fill="white"/>
+          </svg>
+          <p style={{
+            flex: 1,
+            fontSize: '14px',
+            margin: 0,
+            color: 'rgba(255,255,255,0.7)',
+          }}>
+            We share thinking like this regularly on LinkedIn
+          </p>
+          <a
+            href="https://www.linkedin.com/company/mutomorro"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              padding: '8px 16px',
+              background: '#0A66C2',
+              color: 'white',
+              fontSize: '13px',
+              fontWeight: 500,
+              textDecoration: 'none',
+              borderRadius: 0,
+              whiteSpace: 'nowrap',
+              border: 'none',
+            }}
+          >
+            Follow us
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+              <path d="M3 9L9 3M9 3H4M9 3V8" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </a>
+        </div>
       </div>
     )
   }

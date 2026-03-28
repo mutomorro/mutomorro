@@ -1,11 +1,13 @@
 import { createClient } from '@supabase/supabase-js'
+import { Resend } from 'resend'
+import { buildConfirmationEmail } from '../../../components/emails/confirmation-email'
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_ROLE_KEY
+)
 
 export async function POST(request) {
-  const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL,
-    process.env.SUPABASE_SERVICE_ROLE_KEY
-  )
-
   try {
     const { firstName, lastName, email, organisation, newsletterOptIn, resourceSlug, resourceTitle, resourceType } = await request.json()
 
@@ -21,11 +23,12 @@ export async function POST(request) {
     // 1. Check if this person already exists
     const { data: existing } = await supabase
       .from('contacts')
-      .select('id, sources, tags, first_name, last_name, organisation_name, downloaded_items, download_count, newsletter_status')
+      .select('id, sources, tags, first_name, last_name, organisation_name, downloaded_items, download_count, newsletter_status, confirmation_token')
       .eq('signup_email', emailNormalised)
       .single()
 
     let contactId = null
+    let shouldSendConfirmation = false
 
     if (existing) {
       // Merge sources, tags, and downloaded_items
@@ -44,10 +47,16 @@ export async function POST(request) {
         last_download_date: new Date().toISOString(),
       }
 
-      // If they opted in and aren't already active or unsubscribed, set to active
-      if (newsletterOptIn && existing.newsletter_status !== 'active' && existing.newsletter_status !== 'unsubscribed') {
-        updates.newsletter_status = 'active'
-        updates.newsletter_consent_date = new Date().toISOString()
+      // Double opt-in: only trigger for contacts not already confirmed/active/unsubscribed
+      if (newsletterOptIn && !['confirmed', 'active', 'unsubscribed'].includes(existing.newsletter_status)) {
+        if (!existing.confirmation_token) {
+          const token = crypto.randomUUID()
+          updates.confirmation_token = token
+          updates.confirmation_token_created_at = new Date().toISOString()
+          updates.newsletter_status = 'pending_confirmation'
+          updates.confirmation_reminder_sent = false
+          shouldSendConfirmation = true
+        }
       }
 
       const { error: updateError } = await supabase
@@ -77,8 +86,11 @@ export async function POST(request) {
       }
 
       if (newsletterOptIn) {
-        newContact.newsletter_status = 'active'
-        newContact.newsletter_consent_date = new Date().toISOString()
+        const token = crypto.randomUUID()
+        newContact.confirmation_token = token
+        newContact.confirmation_token_created_at = new Date().toISOString()
+        newContact.newsletter_status = 'pending_confirmation'
+        shouldSendConfirmation = true
       }
 
       const { data: created, error: insertError } = await supabase
@@ -113,6 +125,13 @@ export async function POST(request) {
       }
     }
 
+    // 3. Fire-and-forget: send confirmation email if needed
+    if (shouldSendConfirmation && contactId) {
+      sendConfirmationEmail(contactId, firstName, emailNormalised).catch(err => {
+        console.error('Failed to send confirmation email:', err)
+      })
+    }
+
     return Response.json({ success: true })
 
   } catch (error) {
@@ -122,4 +141,25 @@ export async function POST(request) {
       { status: 500 }
     )
   }
+}
+
+async function sendConfirmationEmail(contactId, firstName, email) {
+  const { data: contact } = await supabase
+    .from('contacts')
+    .select('confirmation_token')
+    .eq('id', contactId)
+    .single()
+
+  if (!contact?.confirmation_token) return
+
+  const confirmUrl = `https://mutomorro.com/api/confirm?token=${contact.confirmation_token}`
+  const html = buildConfirmationEmail({ firstName, confirmUrl })
+
+  const resend = new Resend(process.env.RESEND_API_KEY)
+  await resend.emails.send({
+    from: 'Mutomorro <hello@mutomorro.com>',
+    to: [email],
+    subject: 'Confirm your email address',
+    html,
+  })
 }

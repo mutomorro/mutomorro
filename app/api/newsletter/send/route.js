@@ -132,7 +132,7 @@ async function handleCreate(body, resend, supabase) {
   let contactsQuery = supabase
     .from('contacts')
     .select('id, signup_email, first_name')
-    .eq('newsletter_status', 'active')
+    .in('newsletter_status', ['active', 'confirmed'])
     .order('created_at', { ascending: true })
 
   if (tierFilter) {
@@ -246,7 +246,7 @@ async function handleResume(body, resend, supabase) {
   let contactsQuery = supabase
     .from('contacts')
     .select('id, signup_email, first_name')
-    .eq('newsletter_status', 'active')
+    .in('newsletter_status', ['active', 'confirmed'])
     .order('created_at', { ascending: true })
 
   if (tierFilter) {

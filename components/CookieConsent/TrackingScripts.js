@@ -2,17 +2,26 @@
 
 /*
  * Conditional script loader - only renders tracking scripts when consent is accepted.
- *
- * To add a future tracking script:
- * 1. Import Script from 'next/script' (already done)
- * 2. Add another <Script> block inside the return, guarded by the same consent check
+ * Also upgrades PostHog from anonymous (memory) to cookie-based persistence on consent.
  */
 
 import { useConsent } from './ConsentProvider'
+import { useEffect } from 'react'
+import posthog from 'posthog-js'
 import Script from 'next/script'
 
 export default function TrackingScripts() {
   const { consentState } = useConsent()
+
+  // Upgrade or downgrade PostHog persistence based on consent
+  useEffect(() => {
+    if (consentState === 'accepted') {
+      posthog.opt_in_capturing()
+      posthog.set_config({ persistence: 'localStorage+cookie' })
+    } else if (consentState === 'declined') {
+      posthog.opt_out_capturing()
+    }
+  }, [consentState])
 
   if (consentState !== 'accepted') return null
 

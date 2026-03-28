@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import posthog from 'posthog-js'
 
 export default function ContactForm({ service }) {
   const [formData, setFormData] = useState({
@@ -35,6 +36,10 @@ export default function ContactForm({ service }) {
         throw new Error(data.error || 'Something went wrong')
       }
 
+      posthog.capture('contact_form_submitted', {
+        service_interest: service || undefined,
+        source_page: window.location.pathname,
+      })
       setStatus('success')
       setFormData({ name: '', email: '', organisation: '', message: '' })
     } catch (err) {

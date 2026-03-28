@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import posthog from 'posthog-js'
 
 export default function ToolDownloadForm({ toolTitle, toolSlug, pdfUrl, heroImageUrl }) {
   const [formData, setFormData] = useState({
@@ -48,6 +49,10 @@ export default function ToolDownloadForm({ toolTitle, toolSlug, pdfUrl, heroImag
         throw new Error(data.error || 'Something went wrong')
       }
 
+      posthog.capture('tool_download', {
+        tool_name: toolTitle,
+        source_page: window.location.pathname,
+      })
       setStatus('success')
     } catch (err) {
       setStatus('error')

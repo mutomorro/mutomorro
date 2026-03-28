@@ -7,6 +7,8 @@ import ScrollObserver from '../components/ScrollObserver'
 import { ConsentProvider } from '../components/CookieConsent/ConsentProvider'
 import CookieBanner from '../components/CookieConsent/CookieBanner'
 import TrackingScripts from '../components/CookieConsent/TrackingScripts'
+import { PostHogProvider } from './providers'
+import PostHogPageView from './PostHogPageView'
 import { Analytics } from '@vercel/analytics/next'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import Script from 'next/script'
@@ -104,16 +106,19 @@ export default async function RootLayout({ children }) {
               data-website-id="3277d9c5-e0d7-409d-804f-51ccdcc2119c"
               strategy="afterInteractive"
             />
-            <ConsentProvider>
-              <Nav />
-              <ScrollObserver />
-              {children}
-              <Footer />
-              <CookieBanner />
-              <TrackingScripts />
-              <Analytics />
-              <SpeedInsights />
-            </ConsentProvider>
+            <PostHogProvider>
+              <PostHogPageView />
+              <ConsentProvider>
+                <Nav />
+                <ScrollObserver />
+                {children}
+                <Footer />
+                <CookieBanner />
+                <TrackingScripts />
+                <Analytics />
+                <SpeedInsights />
+              </ConsentProvider>
+            </PostHogProvider>
           </>
         )}
       </body>

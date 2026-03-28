@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import posthog from 'posthog-js'
 
 export default function NewsletterSignup({ variant = 'inline' }) {
   const [formData, setFormData] = useState({ firstName: '', email: '' })
@@ -42,6 +43,9 @@ export default function NewsletterSignup({ variant = 'inline' }) {
       })
 
       if (!res.ok) throw new Error()
+      posthog.capture('newsletter_signup', {
+        source_page: window.location.pathname,
+      })
       setStatus('success')
       setFormData({ firstName: '', email: '' })
     } catch {

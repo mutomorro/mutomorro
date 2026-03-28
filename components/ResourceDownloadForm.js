@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import posthog from 'posthog-js'
 
 export default function ResourceDownloadForm({
   resourceTitle,
@@ -68,6 +69,12 @@ export default function ResourceDownloadForm({
         const data = await res.json()
         throw new Error(data.error || 'Something went wrong')
       }
+
+      posthog.capture('resource_download', {
+        resource_name: resourceTitle,
+        organisation: formData.organisation || undefined,
+        source_page: window.location.pathname,
+      })
 
       // Trigger the download
       if (downloadUrl) {

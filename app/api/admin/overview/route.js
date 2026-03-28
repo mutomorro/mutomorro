@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
-import { getStats, getActiveVisitors, getTopReferrers } from '../../../../lib/umami'
+import { queryPostHog, trendsQuery } from '../../../../lib/posthog-admin'
 import { getSequences } from '../../../../lib/apollo'
 
 export async function GET(request) {
@@ -41,10 +41,9 @@ export async function GET(request) {
       calendarThisWeek,
       pipelineTotal,
       lastNewsletter,
-      umamiStats,
-      umamiPrevStats,
-      umamiActive,
-      umamiReferrers,
+      phVisitors,
+      phPageviews,
+      phReferrers,
       apolloSequences,
       tenderHot,
       tenderUnreviewed,
@@ -59,10 +58,9 @@ export async function GET(request) {
       supabase.from('calendar_items').select('*').or(`scheduled_date.gte.${mondayStr},due_date.gte.${mondayStr}`).or(`scheduled_date.lte.${sundayStr},due_date.lte.${sundayStr}`).order('scheduled_date', { ascending: true }),
       supabase.from('organisations').select('id', { count: 'exact', head: true }).neq('status', 'new'),
       supabase.from('newsletter_sends').select('subject, total_recipients, total_sent, total_delivered, total_opened, total_clicked, total_bounced, created_at').neq('status', 'draft').order('created_at', { ascending: false }).limit(1).maybeSingle(),
-      getStats('7d').catch(() => null),
-      getStats('7d').catch(() => null), // Previous week approximated from same period
-      getActiveVisitors().catch(() => null),
-      getTopReferrers('7d', 5).catch(() => null),
+      queryPostHog(trendsQuery({ math: 'dau', dateRange: '-7d', interval: 'day' })).catch(() => null),
+      queryPostHog(trendsQuery({ math: 'total', dateRange: '-7d', interval: 'day' })).catch(() => null),
+      queryPostHog(trendsQuery({ dateRange: '-7d', breakdownProperty: '$referring_domain', breakdownLimit: 5 })).catch(() => null),
       process.env.APOLLO_API_KEY ? getSequences().catch(() => null) : Promise.resolve(null),
       supabase.from('tenders').select('id', { count: 'exact', head: true }).eq('temperature', 'hot'),
       supabase.from('tenders').select('id', { count: 'exact', head: true }).eq('status', 'new'),
@@ -118,24 +116,24 @@ export async function GET(request) {
       })
     }
 
-    // Analytics - flat number format: { pageviews: N, visitors: N, bounces: N, totaltime: N }
+    // Analytics from PostHog - keep same response shape as before
     let analytics = null
-    if (umamiStats) {
-      const visitors = umamiStats.visitors ?? 0
-      const pageviews = umamiStats.pageviews ?? 0
-      const bounces = umamiStats.bounces ?? 0
-      const totaltime = umamiStats.totaltime ?? 0
-      const activeCount = umamiActive?.visitors ?? 0
+    const visitors = sumPostHogSeries(phVisitors)
+    const pageviews = sumPostHogSeries(phPageviews)
+
+    if (visitors !== null || pageviews !== null) {
+      const referrers = extractPostHogBreakdown(phReferrers)
 
       analytics = {
-        visitors,
-        pageviews,
-        bounceRate: visitors > 0 ? parseFloat(((bounces / visitors) * 100).toFixed(1)) : 0,
-        avgDuration: visitors > 0 ? Math.round(totaltime / visitors) : 0,
-        activeVisitors: activeCount,
-        topReferrers: Array.isArray(umamiReferrers)
-          ? umamiReferrers.map((r) => ({ referrer: r.x || '(direct)', views: r.y }))
-          : [],
+        visitors: visitors || 0,
+        pageviews: pageviews || 0,
+        bounceRate: 0,
+        avgDuration: 0,
+        activeVisitors: 0,
+        topReferrers: referrers.map((r) => ({
+          referrer: r.label === '$direct' || r.label === 'null' ? '(direct)' : r.label,
+          views: r.count,
+        })),
       }
 
       // Fire-and-forget snapshot
@@ -166,6 +164,24 @@ export async function GET(request) {
     console.error('Overview API error:', err)
     return NextResponse.json({ error: 'Failed to load overview data' }, { status: 500 })
   }
+}
+
+// Sum all daily values from a PostHog TrendsQuery result
+function sumPostHogSeries(result) {
+  if (!result?.results?.[0]?.data) return null
+  return result.results[0].data.reduce((sum, v) => sum + v, 0)
+}
+
+// Extract breakdown data from PostHog result
+function extractPostHogBreakdown(result) {
+  if (!result?.results) return []
+  return result.results
+    .map((r) => ({
+      label: String(r.breakdown_value ?? r.label ?? 'Unknown'),
+      count: (r.data || []).reduce((sum, v) => sum + v, 0),
+    }))
+    .filter((r) => r.count > 0)
+    .sort((a, b) => b.count - a.count)
 }
 
 async function writeSnapshot(supabase, analytics) {

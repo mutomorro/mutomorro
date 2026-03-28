@@ -633,10 +633,6 @@ const nextConfig = {
   async rewrites() {
     return [
       {
-        source: '/stats/:path*',
-        destination: 'https://analytics.mutomorro.com/:path*',
-      },
-      {
         source: '/ingest/static/:path*',
         destination: 'https://eu-assets.i.posthog.com/static/:path*',
       },

@@ -49,12 +49,45 @@ export async function GET(request) {
       last_used: s.last_used_at || s.updated_at,
     }))
 
-    // Process recent replies
-    recentReplies = repliesResult.emails.map((e) => ({
-      contact_name: e.contact?.name || e.contact?.first_name || 'Unknown',
-      email: e.contact?.email || e.email_address || '',
-      sequence_name: e.emailer_campaign?.name || 'Unknown sequence',
-      replied_at: e.last_activity_date || e.updated_at,
+    // Build sequence ID-to-name map for reply enrichment
+    const seqNameMap = {}
+    seqResult.forEach((s) => { seqNameMap[s.id] = s.name })
+
+    // Process recent replies - enrich with sequence names and contact lookup
+    const replyEmails = repliesResult.emails.map((e) => {
+      const contactName = e.contact?.name || e.contact?.first_name
+        || [e.contact?.first_name, e.contact?.last_name].filter(Boolean).join(' ')
+        || null
+      const email = e.contact?.email || e.email_address || ''
+      const seqName = e.emailer_campaign?.name || seqNameMap[e.emailer_campaign_id] || null
+
+      return { contactName, email, seqName, replied_at: e.last_activity_date || e.updated_at }
+    })
+
+    // Cross-reference unknown replies against Supabase contacts
+    const unknownEmails = replyEmails
+      .filter((r) => !r.contactName && r.email)
+      .map((r) => r.email.toLowerCase())
+
+    let supabaseContactMap = {}
+    if (unknownEmails.length > 0) {
+      const { data: matchedContacts } = await supabase
+        .from('contacts')
+        .select('first_name, last_name, signup_email')
+        .in('signup_email', unknownEmails)
+      if (matchedContacts) {
+        matchedContacts.forEach((c) => {
+          supabaseContactMap[c.signup_email?.toLowerCase()] =
+            [c.first_name, c.last_name].filter(Boolean).join(' ')
+        })
+      }
+    }
+
+    recentReplies = replyEmails.map((r) => ({
+      contact_name: r.contactName || supabaseContactMap[r.email?.toLowerCase()] || r.email || 'Unknown',
+      email: r.email,
+      sequence_name: r.seqName || 'Unknown sequence',
+      replied_at: r.replied_at,
     }))
 
     // Crossover detection - match Apollo emails against Supabase contacts

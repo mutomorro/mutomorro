@@ -63,8 +63,34 @@ export async function GET(request) {
 
     if (error) throw error
 
+    // Enrich contacts with latest signal detail
+    let enrichedContacts = data || []
+    if (enrichedContacts.length > 0) {
+      const contactIds = enrichedContacts.map((c) => c.id)
+      const { data: signals } = await supabase
+        .from('signals')
+        .select('contact_id, type, detail')
+        .in('contact_id', contactIds)
+        .order('date', { ascending: false })
+
+      if (signals) {
+        // Build map of contact_id -> latest signal
+        const signalMap = {}
+        signals.forEach((s) => {
+          if (!signalMap[s.contact_id]) {
+            signalMap[s.contact_id] = s
+          }
+        })
+        enrichedContacts = enrichedContacts.map((c) => ({
+          ...c,
+          latest_signal_detail: signalMap[c.id]?.detail || null,
+          latest_signal_type: signalMap[c.id]?.type || null,
+        }))
+      }
+    }
+
     return NextResponse.json({
-      contacts: data || [],
+      contacts: enrichedContacts,
       total: count || 0,
       page,
       pages: Math.ceil((count || 0) / perPage),

@@ -161,6 +161,7 @@ export default function ContactsPage() {
                   gridTemplateColumns: '1.2fr 1.4fr 1.2fr 0.5fr 0.8fr 0.6fr 0.6fr',
                   padding: '12px 16px',
                   borderBottom: '1px solid rgba(255,255,255,0.03)',
+                  borderLeft: c.organisation_name ? '3px solid #9B51E0' : '3px solid transparent',
                   cursor: 'pointer',
                   background: selectedId === c.id ? 'rgba(155,81,224,0.06)' : i % 2 === 0 ? 'transparent' : 'rgba(255,255,255,0.01)',
                   fontSize: '14px',
@@ -182,8 +183,8 @@ export default function ContactsPage() {
                   {c.organisation_name || '-'}
                 </div>
                 <div style={{ fontSize: '13px' }}>{c.tier || '-'}</div>
-                <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.45)' }}>
-                  {(c.first_source || '-').replace('template-', '').replace('newsletter-', 'NL ')}
+                <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.45)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={c.latest_signal_detail || c.first_source || ''}>
+                  {c.latest_signal_detail || (c.first_source || '-').replace('template-', '').replace('newsletter-', 'NL ')}
                 </div>
                 <div>
                   <span style={{

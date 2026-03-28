@@ -98,70 +98,142 @@ export default function NewsletterPage() {
               <div>Status</div>
             </div>
 
-            {/* Rows */}
-            {data.sends.map((send) => {
-              const openRate = pct(send.total_opened, send.total_delivered)
-              const clickRate = pct(send.total_clicked, send.total_delivered)
-              const bounceRate = pct(send.total_bounced, send.total_sent)
-              const badge = statusBadge[send.status] || statusBadge.draft
-              const isSelected = selectedSendId === send.id
+            {/* Rows - grouped by subject for multi-batch sends */}
+            {(() => {
+              // Group sends by subject
+              const grouped = []
+              const subjectMap = {}
+              data.sends.forEach((send) => {
+                const key = send.subject
+                if (!subjectMap[key]) {
+                  subjectMap[key] = { sends: [], index: grouped.length }
+                  grouped.push({ subject: key, sends: [] })
+                }
+                grouped[subjectMap[key].index].sends.push(send)
+              })
 
-              return (
-                <div key={send.id}>
-                  <div
-                    onClick={() => loadSendDetail(send.id)}
-                    style={{
-                      display: 'grid',
-                      gridTemplateColumns: '2.5fr 0.7fr 0.7fr 0.7fr 0.7fr 0.7fr 0.6fr',
-                      gap: '8px',
-                      padding: '12px 0',
-                      borderBottom: '1px solid rgba(255,255,255,0.04)',
-                      fontSize: '13px',
-                      color: 'rgba(255,255,255,0.7)',
-                      cursor: 'pointer',
-                      background: isSelected ? 'rgba(155,81,224,0.06)' : 'transparent',
-                      alignItems: 'center',
-                      transition: 'background 0.1s',
-                    }}
-                    onMouseEnter={(e) => { if (!isSelected) e.currentTarget.style.background = 'rgba(255,255,255,0.02)' }}
-                    onMouseLeave={(e) => { if (!isSelected) e.currentTarget.style.background = 'transparent' }}
-                  >
-                    <div style={{ color: '#fff', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                      {send.subject}
-                    </div>
-                    <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)' }}>
-                      {relativeTime(send.created_at)}
-                    </div>
-                    <div>{send.total_sent || 0}</div>
-                    <div>
-                      {send.total_opened || 0}
-                      <span style={{ fontSize: '11px', marginLeft: '4px', color: parseFloat(openRate) > 25 ? '#2DD4BF' : 'rgba(255,255,255,0.3)' }}>
-                        {openRate}
-                      </span>
-                    </div>
-                    <div>
-                      {send.total_clicked || 0}
-                      <span style={{ fontSize: '11px', marginLeft: '4px', color: parseFloat(clickRate) > 3 ? '#2DD4BF' : 'rgba(255,255,255,0.3)' }}>
-                        {clickRate}
-                      </span>
-                    </div>
-                    <div style={{ color: parseFloat(bounceRate) > 5 ? '#FF4279' : 'rgba(255,255,255,0.7)' }}>
-                      {send.total_bounced || 0}
-                    </div>
-                    <div>
-                      <span style={{ fontSize: '11px', padding: '2px 8px', borderRadius: '3px', background: badge.bg, color: badge.color }}>
-                        {send.status}
-                      </span>
-                    </div>
+              return grouped.map((group) => {
+                const hasSummary = group.sends.length > 1
+                const summaryRow = hasSummary ? {
+                  total_sent: group.sends.reduce((s, b) => s + (b.total_sent || 0), 0),
+                  total_opened: group.sends.reduce((s, b) => s + (b.total_opened || 0), 0),
+                  total_clicked: group.sends.reduce((s, b) => s + (b.total_clicked || 0), 0),
+                  total_bounced: group.sends.reduce((s, b) => s + (b.total_bounced || 0), 0),
+                  total_delivered: group.sends.reduce((s, b) => s + (b.total_delivered || 0), 0),
+                } : null
+
+                return (
+                  <div key={group.subject}>
+                    {/* Summary row for multi-batch */}
+                    {hasSummary && (
+                      <div style={{
+                        display: 'grid',
+                        gridTemplateColumns: '2.5fr 0.7fr 0.7fr 0.7fr 0.7fr 0.7fr 0.6fr',
+                        gap: '8px',
+                        padding: '12px 0',
+                        borderBottom: '1px solid rgba(255,255,255,0.06)',
+                        fontSize: '13px',
+                        color: 'rgba(255,255,255,0.8)',
+                        background: 'rgba(155,81,224,0.04)',
+                        alignItems: 'center',
+                      }}>
+                        <div style={{ color: '#fff', fontWeight: 400 }}>
+                          {group.subject}
+                          <span style={{ fontSize: '11px', marginLeft: '8px', color: 'rgba(255,255,255,0.35)' }}>
+                            {group.sends.length} batches combined
+                          </span>
+                        </div>
+                        <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)' }}>
+                          {relativeTime(group.sends[0].created_at)}
+                        </div>
+                        <div>{summaryRow.total_sent}</div>
+                        <div>
+                          {summaryRow.total_opened}
+                          <span style={{ fontSize: '11px', marginLeft: '4px', color: parseFloat(pct(summaryRow.total_opened, summaryRow.total_delivered)) > 25 ? '#2DD4BF' : 'rgba(255,255,255,0.3)' }}>
+                            {pct(summaryRow.total_opened, summaryRow.total_delivered)}
+                          </span>
+                        </div>
+                        <div>
+                          {summaryRow.total_clicked}
+                          <span style={{ fontSize: '11px', marginLeft: '4px', color: parseFloat(pct(summaryRow.total_clicked, summaryRow.total_delivered)) > 3 ? '#2DD4BF' : 'rgba(255,255,255,0.3)' }}>
+                            {pct(summaryRow.total_clicked, summaryRow.total_delivered)}
+                          </span>
+                        </div>
+                        <div style={{ color: summaryRow.total_bounced > 0 ? '#FF4279' : 'rgba(255,255,255,0.7)' }}>
+                          {summaryRow.total_bounced}
+                        </div>
+                        <div />
+                      </div>
+                    )}
+
+                    {/* Individual batch rows */}
+                    {group.sends.map((send) => {
+                      const openRate = pct(send.total_opened, send.total_delivered)
+                      const clickRate = pct(send.total_clicked, send.total_delivered)
+                      const bounceRate = pct(send.total_bounced, send.total_sent)
+                      const badge = statusBadge[send.status] || statusBadge.draft
+                      const isSelected = selectedSendId === send.id
+
+                      return (
+                        <div key={send.id}>
+                          <div
+                            onClick={() => loadSendDetail(send.id)}
+                            style={{
+                              display: 'grid',
+                              gridTemplateColumns: '2.5fr 0.7fr 0.7fr 0.7fr 0.7fr 0.7fr 0.6fr',
+                              gap: '8px',
+                              padding: hasSummary ? '10px 0 10px 16px' : '12px 0',
+                              borderBottom: '1px solid rgba(255,255,255,0.04)',
+                              fontSize: '13px',
+                              color: hasSummary ? 'rgba(255,255,255,0.55)' : 'rgba(255,255,255,0.7)',
+                              cursor: 'pointer',
+                              background: isSelected ? 'rgba(155,81,224,0.06)' : 'transparent',
+                              alignItems: 'center',
+                              transition: 'background 0.1s',
+                            }}
+                            onMouseEnter={(e) => { if (!isSelected) e.currentTarget.style.background = 'rgba(255,255,255,0.02)' }}
+                            onMouseLeave={(e) => { if (!isSelected) e.currentTarget.style.background = 'transparent' }}
+                          >
+                            <div style={{ color: hasSummary ? 'rgba(255,255,255,0.6)' : '#fff', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                              {hasSummary ? `Batch ${group.sends.indexOf(send) + 1}` : send.subject}
+                            </div>
+                            <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)' }}>
+                              {relativeTime(send.created_at)}
+                            </div>
+                            <div>{send.total_sent || 0}</div>
+                            <div>
+                              {send.total_opened || 0}
+                              <span style={{ fontSize: '11px', marginLeft: '4px', color: parseFloat(openRate) > 25 ? '#2DD4BF' : 'rgba(255,255,255,0.3)' }}>
+                                {openRate}
+                              </span>
+                            </div>
+                            <div>
+                              {send.total_clicked || 0}
+                              <span style={{ fontSize: '11px', marginLeft: '4px', color: parseFloat(clickRate) > 3 ? '#2DD4BF' : 'rgba(255,255,255,0.3)' }}>
+                                {clickRate}
+                              </span>
+                            </div>
+                            <div style={{ color: parseFloat(bounceRate) > 5 ? '#FF4279' : 'rgba(255,255,255,0.7)' }}>
+                              {send.total_bounced || 0}
+                            </div>
+                            <div>
+                              <span style={{ fontSize: '11px', padding: '2px 8px', borderRadius: '3px', background: badge.bg, color: badge.color }}>
+                                {send.status}
+                              </span>
+                            </div>
+                          </div>
+
+                          {/* Send detail panel */}
+                          {isSelected && (
+                            <SendDetailPanel detail={sendDetail} loading={detailLoading} />
+                          )}
+                        </div>
+                      )
+                    })}
                   </div>
-
-                  {/* Send detail panel */}
-                  {isSelected && (
-                    <SendDetailPanel detail={sendDetail} loading={detailLoading} />
-                  )}
-                </div>
-              )
-            })}
+                )
+              })
+            })()}
           </div>
         ) : (
           <p style={emptyText}>No sends yet</p>

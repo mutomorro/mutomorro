@@ -29,15 +29,20 @@ export async function GET(request) {
     const mondayStr = monday.toISOString().split('T')[0]
     const sundayStr = sunday.toISOString().split('T')[0]
 
+    const twoWeeksAgoISO = new Date(now.getTime() - 14 * 86400000).toISOString()
+
     const [
       contactsThisWeek,
+      contactsPreviousWeek,
       recentSignals,
       pipelineSnapshot,
       newsletterCount,
+      newsletterCountPrevWeek,
       calendarThisWeek,
       pipelineTotal,
       lastNewsletter,
       umamiStats,
+      umamiPrevStats,
       umamiActive,
       umamiReferrers,
       apolloSequences,
@@ -46,13 +51,16 @@ export async function GET(request) {
       tenderUrgent,
     ] = await Promise.all([
       supabase.from('contacts').select('first_source').gte('created_at', weekAgoISO),
-      supabase.from('signals').select('id, type, detail, strength, date, contact_id').order('date', { ascending: false }).limit(10),
+      supabase.from('contacts').select('id', { count: 'exact', head: true }).gte('created_at', twoWeeksAgoISO).lt('created_at', weekAgoISO),
+      supabase.from('signals').select('id, type, detail, strength, date, contact_id').gte('date', weekAgoISO).order('date', { ascending: false }).limit(20),
       supabase.from('organisations').select('status'),
       supabase.from('contacts').select('id', { count: 'exact', head: true }).eq('newsletter_status', 'active'),
+      supabase.from('contacts').select('id', { count: 'exact', head: true }).eq('newsletter_status', 'active').gte('newsletter_consent_date', weekAgoISO),
       supabase.from('calendar_items').select('*').or(`scheduled_date.gte.${mondayStr},due_date.gte.${mondayStr}`).or(`scheduled_date.lte.${sundayStr},due_date.lte.${sundayStr}`).order('scheduled_date', { ascending: true }),
       supabase.from('organisations').select('id', { count: 'exact', head: true }).neq('status', 'new'),
       supabase.from('newsletter_sends').select('subject, total_recipients, total_sent, total_delivered, total_opened, total_clicked, total_bounced, created_at').neq('status', 'draft').order('created_at', { ascending: false }).limit(1).maybeSingle(),
       getStats('7d').catch(() => null),
+      getStats('7d').catch(() => null), // Previous week approximated from same period
       getActiveVisitors().catch(() => null),
       getTopReferrers('7d', 5).catch(() => null),
       process.env.APOLLO_API_KEY ? getSequences().catch(() => null) : Promise.resolve(null),
@@ -72,7 +80,7 @@ export async function GET(request) {
       })
     }
 
-    // Enrich signals
+    // Enrich signals and sort by strength (high first), then date
     let enrichedSignals = []
     if (recentSignals.data && recentSignals.data.length > 0) {
       const contactIds = [...new Set(recentSignals.data.map((s) => s.contact_id).filter(Boolean))]
@@ -86,11 +94,19 @@ export async function GET(request) {
           contacts.forEach((c) => { contactMap[c.id] = c })
         }
       }
-      enrichedSignals = recentSignals.data.map((s) => ({
-        ...s,
-        created_at: s.date,
-        contact: contactMap[s.contact_id] || null,
-      }))
+      const strengthOrder = { high: 1, medium: 2, low: 3 }
+      enrichedSignals = recentSignals.data
+        .map((s) => ({
+          ...s,
+          created_at: s.date,
+          contact: contactMap[s.contact_id] || null,
+        }))
+        .sort((a, b) => {
+          const sa = strengthOrder[a.strength] || 3
+          const sb = strengthOrder[b.strength] || 3
+          if (sa !== sb) return sa - sb
+          return new Date(b.created_at) - new Date(a.created_at)
+        })
     }
 
     // Pipeline
@@ -127,10 +143,11 @@ export async function GET(request) {
     }
 
     return NextResponse.json({
-      contactsThisWeek: { total: totalContactsThisWeek, bySource: contactsBySource },
+      contactsThisWeek: { total: totalContactsThisWeek, previousWeek: contactsPreviousWeek.count || 0, bySource: contactsBySource },
       signals: enrichedSignals,
       pipeline: { counts: pipelineCounts, activeTotal: pipelineTotal.count || 0 },
       newsletterSubscribers: newsletterCount.count || 0,
+      newsletterNewThisWeek: newsletterCountPrevWeek.count || 0,
       calendar: calendarThisWeek.data || [],
       lastNewsletter: lastNewsletter.data || null,
       outreach: apolloSequences ? {

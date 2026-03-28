@@ -122,8 +122,16 @@ export default function AdminOverview() {
           value={loading ? null : data?.analytics?.visitors ?? '-'}
           subtitle={!loading && data?.analytics?.pageviews ? `${data.analytics.pageviews.toLocaleString()} pageviews` : null}
         />
-        <MetricCard label="New contacts" value={loading ? null : data?.contactsThisWeek?.total ?? 0} />
-        <MetricCard label="Newsletter subscribers" value={loading ? null : data?.newsletterSubscribers ?? 0} />
+        <MetricCard
+          label="New contacts"
+          value={loading ? null : data?.contactsThisWeek?.total ?? 0}
+          previousValue={loading ? null : data?.contactsThisWeek?.previousWeek}
+        />
+        <MetricCard
+          label="Newsletter subscribers"
+          value={loading ? null : data?.newsletterSubscribers ?? 0}
+          subtitle={!loading && data?.newsletterNewThisWeek > 0 ? `+${data.newsletterNewThisWeek} this week` : null}
+        />
         <MetricCard label="Pipeline (active)" value={loading ? null : data?.pipeline?.activeTotal ?? 0} />
       </div>
 
@@ -444,7 +452,15 @@ export default function AdminOverview() {
   )
 }
 
-function MetricCard({ label, value, subtitle }) {
+function MetricCard({ label, value, subtitle, previousValue }) {
+  let change = null
+  let isUp = null
+  if (value !== null && previousValue !== null && previousValue !== undefined && previousValue > 0) {
+    const pct = ((value - previousValue) / previousValue * 100).toFixed(0)
+    change = Math.abs(pct) + '%'
+    isUp = value >= previousValue
+  }
+
   return (
     <div style={cardStyle}>
       <div style={{
@@ -463,7 +479,12 @@ function MetricCard({ label, value, subtitle }) {
           <div style={{ fontSize: '28px', fontWeight: 500, color: '#fff' }}>
             {typeof value === 'number' ? value.toLocaleString() : value}
           </div>
-          {subtitle && (
+          {change && (
+            <div style={{ fontSize: '12px', color: isUp ? '#2DD4BF' : '#FF4279', marginTop: '4px' }}>
+              {isUp ? '↑' : '↓'} {change} vs last week
+            </div>
+          )}
+          {subtitle && !change && (
             <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.3)', marginTop: '4px' }}>
               {subtitle}
             </div>

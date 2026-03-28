@@ -221,6 +221,12 @@ export default function PipelinePage() {
                           {relativeTime(org.last_interaction_date)}
                         </span>
                       </div>
+                      {org.contact_names && org.contact_names.length > 0 && (
+                        <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', marginTop: '4px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          {org.contact_names.slice(0, 3).join(', ')}
+                          {org.contact_names.length > 3 && ` +${org.contact_names.length - 3} more`}
+                        </div>
+                      )}
                       {org.next_action && (
                         <div style={{ fontSize: '11px', color: '#F59E0B', marginTop: '6px' }}>
                           Next: {org.next_action}

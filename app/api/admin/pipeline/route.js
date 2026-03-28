@@ -20,14 +20,15 @@ export async function GET(request) {
 
     if (error) throw error
 
-    // For each org, get contact count and latest interaction
+    // For each org, get contacts (names) and latest interaction
     const enriched = await Promise.all(
       (orgs || []).map(async (org) => {
-        const [contactCount, lastInteraction] = await Promise.all([
+        const [contactResult, lastInteraction] = await Promise.all([
           supabase
             .from('contacts')
-            .select('id', { count: 'exact', head: true })
-            .eq('organisation_name', org.name),
+            .select('id, first_name, last_name')
+            .eq('organisation_name', org.name)
+            .limit(10),
           supabase
             .from('interactions')
             .select('created_at, next_action')
@@ -37,9 +38,15 @@ export async function GET(request) {
             .maybeSingle(),
         ])
 
+        const contacts = contactResult.data || []
+        const contactNames = contacts
+          .map((c) => [c.first_name, c.last_name].filter(Boolean).join(' '))
+          .filter(Boolean)
+
         return {
           ...org,
-          contact_count: contactCount.count || 0,
+          contact_count: contacts.length,
+          contact_names: contactNames,
           last_interaction_date: lastInteraction.data?.created_at || null,
           next_action: lastInteraction.data?.next_action || null,
         }

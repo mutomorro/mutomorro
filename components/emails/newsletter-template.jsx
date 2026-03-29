@@ -13,7 +13,7 @@ import {
   Hr,
 } from '@react-email/components'
 
-const fontFamily = "'Source Sans 3', 'Source Sans Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
+const fontFamily = "'Source Sans 3', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif"
 
 function wrapLinks(html, recipientId) {
   if (!recipientId || !html) return html
@@ -34,7 +34,7 @@ function RenderSection({ section, index, recipientId }) {
             fontFamily,
             fontSize: '19px',
             fontWeight: 300,
-            color: '#000',
+            color: '#221C2B',
             lineHeight: '1.75',
             margin: '0 0 24px 0',
           }}
@@ -50,7 +50,7 @@ function RenderSection({ section, index, recipientId }) {
             fontFamily,
             fontSize: '30px',
             fontWeight: 400,
-            color: '#000',
+            color: '#221C2B',
             lineHeight: '1.12',
             letterSpacing: '-0.02em',
             margin: '0 0 28px 0',
@@ -75,7 +75,7 @@ function RenderSection({ section, index, recipientId }) {
               fontFamily,
               fontSize: '26px',
               fontWeight: 300,
-              color: '#000',
+              color: '#221C2B',
               fontStyle: 'italic',
               lineHeight: '1.4',
               letterSpacing: '-0.01em',
@@ -118,7 +118,7 @@ function RenderSection({ section, index, recipientId }) {
                     fontFamily,
                     fontSize: '18px',
                     fontWeight: 300,
-                    color: '#000',
+                    color: '#221C2B',
                     lineHeight: '1.75',
                     verticalAlign: 'top',
                     paddingBottom: i < section.items.length - 1 ? '22px' : '0',
@@ -244,6 +244,8 @@ export default function NewsletterTemplate({
     <Html lang="en">
       <Head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+        <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;600&display=swap" rel="stylesheet" />
         <style>{`
           strong { font-weight: 400 !important; }
           a { color: #9B51E0; }
@@ -254,14 +256,16 @@ export default function NewsletterTemplate({
         `}</style>
       </Head>
       <Preview>{previewText}</Preview>
-      <Body style={{ backgroundColor: '#FAF6F1', margin: '0', padding: '40px 0' }}>
+      <Body style={{ backgroundColor: '#FAF6F1', margin: '0', padding: '0 0 40px 0' }}>
         <Container style={{ maxWidth: '580px', margin: '0 auto', backgroundColor: '#FFFFFF' }}>
 
           {/* 1. Gradient accent bar */}
           <Section style={{
             background: 'linear-gradient(90deg, #80388F, #FF4279, #FFA200)',
-            height: '4px',
+            height: '8px',
             width: '100%',
+            fontSize: '1px',
+            lineHeight: '1px',
           }}>
             &nbsp;
           </Section>
@@ -297,7 +301,7 @@ export default function NewsletterTemplate({
                 <Img
                   src="https://mutomorro.com/images/mutomorro-logo.png"
                   alt="Mutomorro"
-                  width="120"
+                  width="132"
                   style={{ display: 'block' }}
                 />
                 {/* Fallback if logo image is unavailable:
@@ -317,7 +321,7 @@ export default function NewsletterTemplate({
                           fontFamily,
                           fontSize: '15px',
                           fontWeight: 400,
-                          color: '#000',
+                          color: '#221C2B',
                         }}>
                           Mutomorro
                         </span>
@@ -358,7 +362,7 @@ export default function NewsletterTemplate({
               fontFamily,
               fontSize: '40px',
               fontWeight: 400,
-              color: '#000',
+              color: '#221C2B',
               lineHeight: '1.08',
               letterSpacing: '-0.025em',
               margin: '0',
@@ -400,7 +404,7 @@ export default function NewsletterTemplate({
                         fontFamily,
                         fontSize: '19px',
                         fontWeight: 300,
-                        color: '#000',
+                        color: '#221C2B',
                         lineHeight: '1.75',
                         margin: '0 0 24px 0',
                       }}
@@ -425,7 +429,7 @@ export default function NewsletterTemplate({
               fontFamily,
               fontSize: '19px',
               fontWeight: 300,
-              color: '#000',
+              color: '#221C2B',
               lineHeight: '1.75',
               margin: '0 0 4px 0',
             }}>
@@ -435,7 +439,7 @@ export default function NewsletterTemplate({
               fontFamily,
               fontSize: '19px',
               fontWeight: 400,
-              color: '#000',
+              color: '#221C2B',
               lineHeight: '1.75',
               margin: '0',
             }}>
@@ -466,7 +470,7 @@ export default function NewsletterTemplate({
             <Img
               src="https://mutomorro.com/images/mutomorro-logo.png"
               alt="Mutomorro"
-              width="80"
+              width="88"
               style={{ display: 'block', marginBottom: '16px', opacity: 0.5 }}
             />
             {/* Fallback if logo image is unavailable:

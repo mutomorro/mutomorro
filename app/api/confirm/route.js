@@ -1,3 +1,4 @@
+import crypto from 'crypto'
 import { createClient } from '@supabase/supabase-js'
 import { Resend } from 'resend'
 import { buildWelcomeEmail } from '../../../components/emails/welcome-email'
@@ -66,7 +67,13 @@ async function sendWelcomeEmailDelayed(firstName, email) {
   // 2-minute delay so it feels less automated
   await new Promise(resolve => setTimeout(resolve, 2 * 60 * 1000))
 
-  const html = buildWelcomeEmail({ firstName })
+  const unsubscribeToken = crypto
+    .createHmac('sha256', process.env.UNSUBSCRIBE_SECRET)
+    .update(email)
+    .digest('hex')
+  const unsubscribeUrl = `https://mutomorro.com/api/unsubscribe?email=${encodeURIComponent(email)}&token=${unsubscribeToken}`
+
+  const html = buildWelcomeEmail({ firstName, unsubscribeUrl })
   const resend = new Resend(process.env.RESEND_API_KEY)
 
   await resend.emails.send({

@@ -4,6 +4,7 @@ import { createClient } from '@supabase/supabase-js'
 import { render } from '@react-email/components'
 import { createElement } from 'react'
 import NewsletterTemplate from '../../../../components/emails/newsletter-template.jsx'
+import { verifyEmail } from '../../../../components/email-verification.js'
 
 function generateUnsubscribeUrl(email) {
   const token = crypto
@@ -62,6 +63,53 @@ async function checkDailyLimit(supabase, batchSize) {
     }
   }
   return { exceeded: false, sentToday, remaining: DAILY_LIMIT - sentToday }
+}
+
+const BLOCKED_STATUSES = new Set(['invalid', 'spamtrap', 'abuse', 'do_not_mail'])
+const STALE_DAYS = 30
+
+async function verifyBatch(batch, supabase) {
+  const thirtyDaysAgo = new Date()
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - STALE_DAYS)
+
+  const verified = []
+  const excluded = []
+  let reVerified = 0
+
+  for (const contact of batch) {
+    const isStale = !contact.zb_verified_at || new Date(contact.zb_verified_at) < thirtyDaysAgo
+    const needsVerification = !contact.zb_status || contact.zb_status === 'unknown' || isStale
+
+    let status = contact.zb_status
+
+    if (needsVerification) {
+      // ~200ms delay between API calls
+      if (reVerified > 0) await new Promise(r => setTimeout(r, 200))
+
+      const result = await verifyEmail(contact.signup_email)
+      status = result.status
+      reVerified++
+
+      // Update contact with fresh verification data
+      await supabase
+        .from('contacts')
+        .update({ zb_status: status, zb_verified_at: new Date().toISOString() })
+        .eq('id', contact.id)
+    }
+
+    if (BLOCKED_STATUSES.has(status)) {
+      excluded.push({ id: contact.id, email: contact.signup_email, reason: status })
+      // Mark as bounced so they're excluded from future sends
+      await supabase
+        .from('contacts')
+        .update({ newsletter_status: 'bounced' })
+        .eq('id', contact.id)
+    } else {
+      verified.push(contact)
+    }
+  }
+
+  return { verified, excluded, reVerified }
 }
 
 async function handleCreate(body, resend, supabase) {
@@ -131,7 +179,7 @@ async function handleCreate(body, resend, supabase) {
   // Query active contacts
   let contactsQuery = supabase
     .from('contacts')
-    .select('id, signup_email, first_name')
+    .select('id, signup_email, first_name, zb_status, zb_verified_at')
     .in('newsletter_status', ['active', 'confirmed'])
     .order('created_at', { ascending: true })
 
@@ -175,8 +223,34 @@ async function handleCreate(body, resend, supabase) {
     })
   }
 
+  // Verify batch before sending
+  const verification = await verifyBatch(batch, supabase)
+
+  if (verification.verified.length === 0) {
+    await supabase
+      .from('newsletter_sends')
+      .update({ status: 'complete', completed_at: new Date().toISOString() })
+      .eq('id', sendId)
+
+    return Response.json({
+      sendId,
+      batchSent: 0,
+      totalSent: 0,
+      totalRecipients: allContacts.length,
+      remaining: allContacts.length,
+      status: 'complete',
+      verification: {
+        checked: batch.length,
+        safe: 0,
+        excluded: verification.excluded.length,
+        reVerified: verification.reVerified,
+        excludedContacts: verification.excluded,
+      },
+    })
+  }
+
   const result = await sendBatch({
-    batch,
+    batch: verification.verified,
     sendId,
     subject,
     title,
@@ -190,7 +264,7 @@ async function handleCreate(body, resend, supabase) {
     supabase,
   })
 
-  const remaining = allContacts.length - result.batchSent
+  const remaining = allContacts.length - result.batchSent - verification.excluded.length
   const status = remaining === 0 ? 'complete' : 'sending'
 
   if (status === 'complete') {
@@ -207,6 +281,13 @@ async function handleCreate(body, resend, supabase) {
     totalRecipients: allContacts.length,
     remaining,
     status,
+    verification: {
+      checked: batch.length,
+      safe: verification.verified.length,
+      excluded: verification.excluded.length,
+      reVerified: verification.reVerified,
+      excludedContacts: verification.excluded,
+    },
     ...(emailOverride ? { testMode: true, emailOverride } : {}),
   })
 }
@@ -245,7 +326,7 @@ async function handleResume(body, resend, supabase) {
   // Query active contacts
   let contactsQuery = supabase
     .from('contacts')
-    .select('id, signup_email, first_name')
+    .select('id, signup_email, first_name, zb_status, zb_verified_at')
     .in('newsletter_status', ['active', 'confirmed'])
     .order('created_at', { ascending: true })
 
@@ -291,8 +372,29 @@ async function handleResume(body, resend, supabase) {
     })
   }
 
+  // Verify batch before sending
+  const verification = await verifyBatch(batch, supabase)
+
+  if (verification.verified.length === 0) {
+    return Response.json({
+      sendId,
+      batchSent: 0,
+      totalSent: send.total_sent || 0,
+      totalRecipients: send.total_recipients,
+      remaining: remainingContacts.length - verification.excluded.length,
+      status: 'sending',
+      verification: {
+        checked: batch.length,
+        safe: 0,
+        excluded: verification.excluded.length,
+        reVerified: verification.reVerified,
+        excludedContacts: verification.excluded,
+      },
+    })
+  }
+
   const result = await sendBatch({
-    batch,
+    batch: verification.verified,
     sendId,
     subject,
     title,
@@ -307,7 +409,7 @@ async function handleResume(body, resend, supabase) {
   })
 
   const totalSent = (send.total_sent || 0) + result.batchSent
-  const remaining = remainingContacts.length - result.batchSent
+  const remaining = remainingContacts.length - result.batchSent - verification.excluded.length
   const status = remaining === 0 ? 'complete' : 'sending'
 
   await supabase
@@ -325,6 +427,13 @@ async function handleResume(body, resend, supabase) {
     totalRecipients: send.total_recipients,
     remaining,
     status,
+    verification: {
+      checked: batch.length,
+      safe: verification.verified.length,
+      excluded: verification.excluded.length,
+      reVerified: verification.reVerified,
+      excludedContacts: verification.excluded,
+    },
     ...(emailOverride ? { testMode: true, emailOverride } : {}),
   })
 }

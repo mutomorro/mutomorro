@@ -1,4 +1,6 @@
 import { createClient } from '@supabase/supabase-js'
+import { Resend } from 'resend'
+import { buildConfirmationEmail } from '../../../components/emails/confirmation-email'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -33,9 +35,12 @@ export async function POST(request) {
     // Check if this person already exists
     const { data: existing } = await supabase
       .from('contacts')
-      .select('id, sources, tags, first_name, newsletter_status')
+      .select('id, sources, tags, first_name, newsletter_status, confirmation_token')
       .eq('signup_email', emailNormalised)
       .single()
+
+    let contactId = null
+    let shouldSendConfirmation = false
 
     if (existing) {
       // Don't override if they've previously unsubscribed
@@ -51,14 +56,19 @@ export async function POST(request) {
         first_name: existing.first_name || firstName || null,
         sources: mergedSources,
         tags: mergedTags,
-        newsletter_status: 'active',
-        newsletter_consent_date: existing.newsletter_status === 'active'
-          ? undefined  // don't overwrite existing consent date
-          : new Date().toISOString(),
       }
 
-      // Remove undefined keys
-      Object.keys(updates).forEach(key => updates[key] === undefined && delete updates[key])
+      // Double opt-in: only trigger for contacts not already confirmed/active/unsubscribed
+      if (!['confirmed', 'active', 'unsubscribed'].includes(existing.newsletter_status)) {
+        if (!existing.confirmation_token) {
+          const token = crypto.randomUUID()
+          updates.confirmation_token = token
+          updates.confirmation_token_created_at = new Date().toISOString()
+          updates.newsletter_status = 'pending_confirmation'
+          updates.confirmation_reminder_sent = false
+          shouldSendConfirmation = true
+        }
+      }
 
       const { error: updateError } = await supabase
         .from('contacts')
@@ -68,24 +78,40 @@ export async function POST(request) {
       if (updateError) {
         console.error('Supabase contact update error:', updateError)
       }
+      contactId = existing.id
 
     } else {
       // New person
-      const { error: insertError } = await supabase
+      const token = crypto.randomUUID()
+      const newContact = {
+        signup_email: emailNormalised,
+        first_name: firstName || null,
+        sources: ['newsletter-signup'],
+        first_source: 'newsletter-signup',
+        tags: ['newsletter-signup'],
+        confirmation_token: token,
+        confirmation_token_created_at: new Date().toISOString(),
+        newsletter_status: 'pending_confirmation',
+      }
+      shouldSendConfirmation = true
+
+      const { data: created, error: insertError } = await supabase
         .from('contacts')
-        .insert({
-          signup_email: emailNormalised,
-          first_name: firstName || null,
-          sources: ['newsletter-signup'],
-          first_source: 'newsletter-signup',
-          tags: ['newsletter-signup'],
-          newsletter_status: 'active',
-          newsletter_consent_date: new Date().toISOString(),
-        })
+        .insert(newContact)
+        .select('id')
+        .single()
 
       if (insertError) {
         console.error('Supabase contact insert error:', insertError)
       }
+      contactId = created?.id
+    }
+
+    // Fire-and-forget: send confirmation email if needed
+    if (shouldSendConfirmation && contactId) {
+      sendConfirmationEmail(contactId, firstName, emailNormalised).catch(err => {
+        console.error('Failed to send confirmation email:', err)
+      })
     }
 
     return Response.json({ success: true })
@@ -97,4 +123,25 @@ export async function POST(request) {
       { status: 500 }
     )
   }
+}
+
+async function sendConfirmationEmail(contactId, firstName, email) {
+  const { data: contact } = await supabase
+    .from('contacts')
+    .select('confirmation_token')
+    .eq('id', contactId)
+    .single()
+
+  if (!contact?.confirmation_token) return
+
+  const confirmUrl = `https://mutomorro.com/api/confirm?token=${contact.confirmation_token}`
+  const html = buildConfirmationEmail({ firstName, confirmUrl })
+
+  const resend = new Resend(process.env.RESEND_API_KEY)
+  await resend.emails.send({
+    from: 'Mutomorro <hello@mutomorro.com>',
+    to: [email],
+    subject: 'Confirm your email address',
+    html,
+  })
 }

@@ -29,14 +29,14 @@ export async function GET(request) {
       byTier,
       bySource,
     ] = await Promise.all([
-      supabase.from('contacts').select('id', { count: 'exact', head: true }).eq('newsletter_status', 'active'),
+      supabase.from('contacts').select('id', { count: 'exact', head: true }).in('newsletter_status', ['active', 'confirmed']),
       supabase.from('contacts').select('id', { count: 'exact', head: true }).eq('newsletter_status', 'unsubscribed'),
       supabase.from('contacts').select('id', { count: 'exact', head: true }).eq('newsletter_status', 'bounced'),
-      supabase.from('contacts').select('id', { count: 'exact', head: true }).eq('newsletter_status', 'active').gte('newsletter_consent_date', weekAgo.toISOString()),
-      supabase.from('contacts').select('id', { count: 'exact', head: true }).eq('newsletter_status', 'active').gte('newsletter_consent_date', monthAgo.toISOString()),
+      supabase.from('contacts').select('id', { count: 'exact', head: true }).in('newsletter_status', ['active', 'confirmed']).gte('newsletter_consent_date', weekAgo.toISOString()),
+      supabase.from('contacts').select('id', { count: 'exact', head: true }).in('newsletter_status', ['active', 'confirmed']).gte('newsletter_consent_date', monthAgo.toISOString()),
       supabase.from('newsletter_sends').select('id, subject, status, total_recipients, total_sent, total_delivered, total_opened, total_clicked, total_bounced, created_at, completed_at').gte('total_sent', 10).order('created_at', { ascending: false }).limit(20),
-      supabase.from('contacts').select('tier').eq('newsletter_status', 'active'),
-      supabase.from('contacts').select('first_source').eq('newsletter_status', 'active'),
+      supabase.from('contacts').select('tier').in('newsletter_status', ['active', 'confirmed']),
+      supabase.from('contacts').select('first_source').in('newsletter_status', ['active', 'confirmed']),
     ])
 
     // Group by tier

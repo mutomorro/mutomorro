@@ -32,7 +32,7 @@ function RenderSection({ section, index, recipientId }) {
           key={index}
           style={{
             fontFamily,
-            fontSize: '18px',
+            fontSize: '20px',
             fontWeight: 300,
             color: '#221C2B',
             lineHeight: '1.75',
@@ -102,7 +102,7 @@ function RenderSection({ section, index, recipientId }) {
                 <td
                   style={{
                     fontFamily,
-                    fontSize: '18px',
+                    fontSize: '20px',
                     fontWeight: 400,
                     color: '#9B51E0',
                     width: '30px',
@@ -116,7 +116,7 @@ function RenderSection({ section, index, recipientId }) {
                 <td
                   style={{
                     fontFamily,
-                    fontSize: '18px',
+                    fontSize: '20px',
                     fontWeight: 300,
                     color: '#221C2B',
                     lineHeight: '1.75',
@@ -402,7 +402,7 @@ export default function NewsletterTemplate({
                     <Text
                       style={{
                         fontFamily,
-                        fontSize: '18px',
+                        fontSize: '20px',
                         fontWeight: 300,
                         color: '#221C2B',
                         lineHeight: '1.75',
@@ -427,7 +427,7 @@ export default function NewsletterTemplate({
                 <td style={{ padding: '0 44px 0' }}>
             <Text style={{
               fontFamily,
-              fontSize: '18px',
+              fontSize: '20px',
               fontWeight: 300,
               color: '#221C2B',
               lineHeight: '1.75',
@@ -437,7 +437,7 @@ export default function NewsletterTemplate({
             </Text>
             <Text style={{
               fontFamily,
-              fontSize: '18px',
+              fontSize: '20px',
               fontWeight: 400,
               color: '#221C2B',
               lineHeight: '1.75',

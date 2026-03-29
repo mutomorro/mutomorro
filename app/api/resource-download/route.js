@@ -1,6 +1,7 @@
 import { createClient } from '@supabase/supabase-js'
 import { Resend } from 'resend'
 import { buildConfirmationEmail } from '../../../components/emails/confirmation-email'
+import { verifyEmail, getCachedVerification } from '../../../components/email-verification'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -23,10 +24,20 @@ export async function POST(request) {
     // 1. Check if this person already exists
     const { data: existing } = await supabase
       .from('contacts')
-      .select('id, sources, tags, first_name, last_name, organisation_name, downloaded_items, download_count, newsletter_status, confirmation_token')
+      .select('id, sources, tags, first_name, last_name, organisation_name, downloaded_items, download_count, newsletter_status, confirmation_token, zb_status')
       .eq('signup_email', emailNormalised)
       .single()
 
+    // 2. Verify email - use cached result if available, otherwise call ZeroBounce
+    const verification = getCachedVerification(existing) || await verifyEmail(emailNormalised)
+
+    // 3. If blocked: return success (silent rejection) but don't create contact or send email
+    if (verification.shouldBlock) {
+      console.log(`Blocked resource download for ${emailNormalised}: zb_status=${verification.status}`)
+      return Response.json({ success: true })
+    }
+
+    // 4. Create or update contact
     let contactId = null
     let shouldSendConfirmation = false
 
@@ -45,6 +56,7 @@ export async function POST(request) {
         downloaded_items: mergedDownloads,
         download_count: mergedDownloads.length,
         last_download_date: new Date().toISOString(),
+        zb_status: verification.status,
       }
 
       // Double opt-in: only trigger for contacts not already confirmed/active/unsubscribed
@@ -83,6 +95,7 @@ export async function POST(request) {
         download_count: 1,
         last_download_date: new Date().toISOString(),
         tier: 'Tier 2',
+        zb_status: verification.status,
       }
 
       if (newsletterOptIn) {
@@ -105,7 +118,7 @@ export async function POST(request) {
       contactId = created?.id
     }
 
-    // 2. Log a medium-high strength signal
+    // 5. Log a medium-high strength signal
     if (contactId) {
       const signalDetail = resourceType
         ? `${resourceType}: ${resourceTitle}`
@@ -125,7 +138,7 @@ export async function POST(request) {
       }
     }
 
-    // 3. Fire-and-forget: send confirmation email if needed
+    // 6. Fire-and-forget: send confirmation email if needed
     if (shouldSendConfirmation && contactId) {
       sendConfirmationEmail(contactId, firstName, emailNormalised).catch(err => {
         console.error('Failed to send confirmation email:', err)

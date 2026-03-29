@@ -1,6 +1,7 @@
 import { createClient } from '@supabase/supabase-js'
 import { Resend } from 'resend'
 import { buildConfirmationEmail } from '../../../components/emails/confirmation-email'
+import { verifyEmail, getCachedVerification } from '../../../components/email-verification'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -35,9 +36,18 @@ export async function POST(request) {
     // Check if this person already exists
     const { data: existing } = await supabase
       .from('contacts')
-      .select('id, sources, tags, first_name, newsletter_status, confirmation_token')
+      .select('id, sources, tags, first_name, newsletter_status, confirmation_token, zb_status')
       .eq('signup_email', emailNormalised)
       .single()
+
+    // Verify email - use cached result if available, otherwise call ZeroBounce
+    const verification = getCachedVerification(existing) || await verifyEmail(emailNormalised)
+
+    // If blocked: return success (silent rejection) but don't create contact or send email
+    if (verification.shouldBlock) {
+      console.log(`Blocked newsletter signup for ${emailNormalised}: zb_status=${verification.status}`)
+      return Response.json({ success: true })
+    }
 
     let contactId = null
     let shouldSendConfirmation = false
@@ -56,6 +66,7 @@ export async function POST(request) {
         first_name: existing.first_name || firstName || null,
         sources: mergedSources,
         tags: mergedTags,
+        zb_status: verification.status,
       }
 
       // Double opt-in: only trigger for contacts not already confirmed/active/unsubscribed
@@ -92,6 +103,7 @@ export async function POST(request) {
         confirmation_token: token,
         confirmation_token_created_at: new Date().toISOString(),
         newsletter_status: 'pending_confirmation',
+        zb_status: verification.status,
       }
       shouldSendConfirmation = true
 

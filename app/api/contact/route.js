@@ -1,5 +1,6 @@
 import { Resend } from 'resend'
 import { createClient } from '@supabase/supabase-js'
+import { verifyEmail, getCachedVerification } from '../../../components/email-verification'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 const supabase = createClient(
@@ -35,7 +36,19 @@ export async function POST(request) {
     const firstName = nameParts[0]
     const lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : null
 
-    // 1. Send the email via Resend (existing behaviour)
+    const emailNormalised = email.toLowerCase().trim()
+
+    // Check if this person already exists (for cached verification)
+    const { data: existing } = await supabase
+      .from('contacts')
+      .select('id, zb_status')
+      .eq('signup_email', emailNormalised)
+      .single()
+
+    // Verify email - use cached result if available, otherwise call ZeroBounce
+    const verification = getCachedVerification(existing) || await verifyEmail(emailNormalised)
+
+    // 1. Always send the internal notification email (goes to hello@mutomorro.com, no bounce risk)
     await resend.emails.send({
       from: 'Mutomorro Website <hello@mutomorro.com>',
       to: 'hello@mutomorro.com',
@@ -70,6 +83,11 @@ export async function POST(request) {
               <td style="padding: 0.75rem 0; white-space: pre-wrap;">${message}</td>
             </tr>
           </table>
+          ${verification.shouldBlock ? `
+          <p style="margin-top: 1.5rem; padding: 0.75rem; background: #fff3cd; border-left: 3px solid #ffc107; font-size: 0.85rem;">
+            ⚠️ Email verification flagged this address as <strong>${verification.status}</strong>. No contact record was created.
+          </p>
+          ` : ''}
           <p style="margin-top: 2rem; color: #888; font-size: 0.85rem;">
             Sent from mutomorro.com/contact - reply directly to this email to respond.
           </p>
@@ -77,22 +95,28 @@ export async function POST(request) {
       `,
     })
 
-    // 2. Upsert contact in Supabase
+    // 2. If blocked: skip contact creation but still return success
+    if (verification.shouldBlock) {
+      console.log(`Blocked contact form for ${emailNormalised}: zb_status=${verification.status}`)
+      return Response.json({ success: true })
+    }
+
+    // 3. Upsert contact in Supabase
     const { data: contact, error: contactError } = await supabase
       .from('contacts')
       .upsert(
         {
-          signup_email: email.toLowerCase().trim(),
+          signup_email: emailNormalised,
           first_name: firstName,
           last_name: lastName,
           organisation_name: organisation || null,
           sources: ['contact-form'],
           first_source: 'contact-form',
           tags: ['inbound-enquiry'],
+          zb_status: verification.status,
         },
         {
           onConflict: 'signup_email',
-          // If they already exist, merge rather than overwrite
           ignoreDuplicates: false,
         }
       )
@@ -101,10 +125,9 @@ export async function POST(request) {
 
     if (contactError) {
       console.error('Supabase contact upsert error:', contactError)
-      // Don't fail the request - the email already sent successfully
     }
 
-    // 3. Log a high-strength signal
+    // 4. Log a high-strength signal
     if (contact?.id) {
       const { error: signalError } = await supabase
         .from('signals')

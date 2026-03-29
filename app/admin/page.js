@@ -370,6 +370,41 @@ export default function AdminOverview() {
             </div>
           )}
 
+          {/* Handoffs summary */}
+          {!loading && data?.handoffs && (
+            <div style={cardStyle}>
+              <h2 style={cardHeading}>Handoffs</h2>
+              <div style={{ display: 'flex', gap: '20px', marginBottom: '12px' }}>
+                <div>
+                  <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.3px' }}>Open</div>
+                  <div style={{ fontSize: '18px', fontWeight: 500, color: data.handoffs.openCount > 0 ? '#F59E0B' : '#fff' }}>{data.handoffs.openCount}</div>
+                </div>
+              </div>
+              {data.handoffs.recent.length > 0 && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', marginBottom: '12px' }}>
+                  {data.handoffs.recent.map((h) => (
+                    <div key={h.id} style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      padding: '7px 0',
+                      borderBottom: '1px solid rgba(255,255,255,0.04)',
+                      fontSize: '13px',
+                    }}>
+                      <span style={{ color: 'rgba(255,255,255,0.6)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>
+                        {h.title}
+                      </span>
+                      <span style={{ color: 'rgba(255,255,255,0.25)', fontSize: '11px', flexShrink: 0 }}>
+                        {h.source_project} → {h.target_project}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
+              <a href="/admin/handoffs" style={{ fontSize: '12px', color: '#9B51E0', textDecoration: 'none' }}>View all →</a>
+            </div>
+          )}
+
           {/* Tenders summary */}
           {!loading && data?.tenders && (
             <div style={cardStyle}>

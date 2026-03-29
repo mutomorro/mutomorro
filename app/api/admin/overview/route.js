@@ -48,6 +48,8 @@ export async function GET(request) {
       tenderHot,
       tenderUnreviewed,
       tenderUrgent,
+      handoffsOpen,
+      handoffsRecent,
     ] = await Promise.all([
       supabase.from('contacts').select('first_source').gte('created_at', weekAgoISO),
       supabase.from('contacts').select('id', { count: 'exact', head: true }).gte('created_at', twoWeeksAgoISO).lt('created_at', weekAgoISO),
@@ -65,6 +67,8 @@ export async function GET(request) {
       supabase.from('tenders').select('id', { count: 'exact', head: true }).eq('temperature', 'hot'),
       supabase.from('tenders').select('id', { count: 'exact', head: true }).eq('status', 'new'),
       supabase.from('tenders').select('id', { count: 'exact', head: true }).gt('deadline', new Date().toISOString()).lt('deadline', new Date(Date.now() + 7 * 86400000).toISOString()),
+      supabase.from('handoffs').select('id', { count: 'exact', head: true }).eq('status', 'open'),
+      supabase.from('handoffs').select('id, title, source_project, target_project').eq('status', 'open').order('created_at', { ascending: false }).limit(3),
     ])
 
     // Process contacts
@@ -154,6 +158,10 @@ export async function GET(request) {
         totalReplies: apolloSequences.reduce((sum, s) => sum + (s.unique_replied || 0), 0),
       } : null,
       analytics,
+      handoffs: {
+        openCount: handoffsOpen.count || 0,
+        recent: handoffsRecent.data || [],
+      },
       tenders: {
         hot: tenderHot.count || 0,
         unreviewed: tenderUnreviewed.count || 0,

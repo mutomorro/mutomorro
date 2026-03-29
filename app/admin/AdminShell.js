@@ -10,6 +10,7 @@ const navItems = [
   { label: 'Newsletter', href: '/admin/newsletter' },
   { label: 'Outreach', href: '/admin/outreach' },
   { label: 'Calendar', href: '/admin/calendar' },
+  { label: 'Handoffs', href: '/admin/handoffs' },
   { label: 'Analytics', href: '/admin/analytics' },
   { label: 'Tenders', href: '/admin/tenders' },
 ]

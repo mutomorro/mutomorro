@@ -42,7 +42,7 @@ export function buildConfirmationEmail({ firstName, confirmUrl }) {
                 ${greeting}
               </p>
               <p style="margin:0 0 20px;font-family:'Source Sans 3',Arial,Helvetica,sans-serif;font-size:18px;font-weight:300;line-height:1.75;color:#000000;">
-                Thanks for downloading from Mutomorro. To make sure we've got the right address, please confirm below.
+                Thanks for signing up to our newsletter. Please confirm your address below:
               </p>
             </td>
           </tr>

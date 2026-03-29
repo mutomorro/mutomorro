@@ -44,7 +44,10 @@ export function buildWelcomeEmail({ firstName }) {
                 ${greeting}
               </p>
               <p style="margin:0 0 20px;font-family:'Source Sans 3',Arial,Helvetica,sans-serif;font-size:18px;font-weight:300;line-height:1.75;color:#000000;">
-                Delighted to have you here.
+                Delighted you've signed up. If you have a moment, I'd love to share a little about what we're all about.
+              </p>
+              <p style="margin:28px 0 24px 0;font-family:'Source Sans 3',Arial,Helvetica,sans-serif;font-size:22px;font-weight:400;line-height:1.4;color:#221C2B;">
+                Seeing the unseen: the invisible architecture of organisations
               </p>
               <p style="margin:0 0 20px;font-family:'Source Sans 3',Arial,Helvetica,sans-serif;font-size:18px;font-weight:300;line-height:1.75;color:#000000;">
                 For the past decade I've been fascinated by an idea: the things you can't easily measure, can't simply quantify, can't put neatly on an organisational chart - are often the things that determine how organisations really work.

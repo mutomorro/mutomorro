@@ -31,7 +31,13 @@ export async function GET(request) {
       .select('id, title, organisation, sector, source, source_url, value_low, value_high, deadline, notice_type, keyword_score, keywords_matched, sector_score, value_score, ai_score, ai_summary, total_score, temperature, status, james_rating, rating_notes, notes, found_at, notified_at, reviewed_at, rated_at', { count: 'exact' })
 
     // Filters
-    if (temperature) query = query.eq('temperature', temperature)
+    if (temperature) {
+      if (temperature.includes(',')) {
+        query = query.in('temperature', temperature.split(','))
+      } else {
+        query = query.eq('temperature', temperature)
+      }
+    }
     if (status) query = query.eq('status', status)
     if (sector) query = query.ilike('sector', `%${sector}%`)
     if (source) query = query.eq('source', source)
@@ -64,10 +70,9 @@ export async function GET(request) {
     if (error) throw error
 
     // Also fetch stats
-    const [hotRes, warmRes, coolRes, archivedRes, unratedRes, triggerRes, totalRes] = await Promise.all([
+    const [hotRes, warmRes, archivedRes, unratedRes, triggerRes, totalRes] = await Promise.all([
       supabase.from('tenders').select('id', { count: 'exact', head: true }).eq('temperature', 'hot'),
       supabase.from('tenders').select('id', { count: 'exact', head: true }).eq('temperature', 'warm'),
-      supabase.from('tenders').select('id', { count: 'exact', head: true }).eq('temperature', 'cool'),
       supabase.from('tenders').select('id', { count: 'exact', head: true }).eq('temperature', 'archived'),
       supabase.from('tenders').select('id', { count: 'exact', head: true }).is('james_rating', null),
       supabase.from('tenders').select('id', { count: 'exact', head: true }).eq('notice_type', 'trigger_event'),
@@ -83,7 +88,6 @@ export async function GET(request) {
         total: totalRes.count || 0,
         hot: hotRes.count || 0,
         warm: warmRes.count || 0,
-        cool: coolRes.count || 0,
         archived: archivedRes.count || 0,
         unrated: unratedRes.count || 0,
         triggers: triggerRes.count || 0,

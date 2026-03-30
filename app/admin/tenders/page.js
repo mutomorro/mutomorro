@@ -52,7 +52,7 @@ export default function AdminTenders() {
   const [data, setData] = useState(null)
   const [loading, setLoading] = useState(true)
   const [page, setPage] = useState(1)
-  const [temperature, setTemperature] = useState('')
+  const [temperature, setTemperature] = useState('hot,warm')
   const [status, setStatus] = useState('new')
   const [rating, setRating] = useState('')
   const [sector, setSector] = useState('')
@@ -143,7 +143,6 @@ export default function AdminTenders() {
         <span>{stats.total || 0} total</span>
         <span style={{ color: tempColours.hot }}>● {stats.hot || 0} hot</span>
         <span style={{ color: tempColours.warm }}>● {stats.warm || 0} warm</span>
-        <span style={{ color: tempColours.cool }}>● {stats.cool || 0} cool</span>
         <span style={{ color: tempColours.archived }}>● {stats.archived || 0} archived</span>
         <span>🔵 {stats.triggers || 0} triggers</span>
         <span>{stats.unrated || 0} unrated</span>
@@ -153,7 +152,7 @@ export default function AdminTenders() {
       {/* Filters */}
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '20px' }}>
         <FilterSelect label="Temperature" value={temperature} onChange={v => setTemperature(v)}
-          options={[['', 'All'], ['hot', 'Hot'], ['warm', 'Warm'], ['cool', 'Cool'], ['archived', 'Archived']]} />
+          options={[['hot,warm', 'Hot & Warm'], ['hot', 'Hot only'], ['warm', 'Warm only'], ['archived', 'Archived'], ['', 'All']]} />
         <FilterSelect label="Status" value={status} onChange={v => setStatus(v)}
           options={[['', 'All'], ...statusOptions.map(s => [s, s.charAt(0).toUpperCase() + s.slice(1)])]} />
         <FilterSelect label="Rating" value={rating} onChange={v => setRating(v)}

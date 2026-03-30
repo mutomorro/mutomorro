@@ -9,8 +9,12 @@
 export const maxDuration = 300
 
 export async function POST(request) {
+  // Accept either Bearer token (CLI/API) or admin session cookie (browser)
   const authHeader = request.headers.get('authorization')
-  if (!authHeader || authHeader !== `Bearer ${process.env.ADMIN_PASSWORD}`) {
+  const sessionCookie = request.cookies.get('admin_session')?.value
+  const authed = (authHeader && authHeader === `Bearer ${process.env.ADMIN_PASSWORD}`) || !!sessionCookie
+
+  if (!authed) {
     return Response.json({ error: 'Unauthorised' }, { status: 401 })
   }
 

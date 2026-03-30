@@ -55,6 +55,8 @@ export default function NewsletterPage() {
   const [pool, setPool] = useState(null)
   const [configLoading, setConfigLoading] = useState(true)
   const [saving, setSaving] = useState(false)
+  const [sending, setSending] = useState(false)
+  const [sendResult, setSendResult] = useState(null)
 
   useEffect(() => {
     fetch('/api/admin/newsletter')
@@ -104,6 +106,32 @@ export default function NewsletterPage() {
       console.error(e)
     } finally {
       setSaving(false)
+    }
+  }
+
+  async function triggerSend() {
+    if (!confirm('Send a batch now? This will use current settings.')) return
+    setSending(true)
+    setSendResult(null)
+    try {
+      const res = await fetch('/api/newsletter-send/run', { method: 'POST' })
+      const d = await res.json()
+      if (d.error) {
+        setSendResult({ type: 'error', message: d.error })
+      } else if (d.skipped) {
+        setSendResult({ type: 'skipped', message: d.reason })
+      } else if (d.paused) {
+        setSendResult({ type: 'error', message: d.reason })
+      } else {
+        setSendResult({ type: 'success', message: `Sent ${d.sent} emails. ${d.remaining ?? '?'} remaining.` })
+        // Refresh config and data
+        fetch('/api/admin/newsletter-config').then(r => r.ok ? r.json() : null).then(d => { if (d) { setConfig(d.config); setPool(d.pool) } })
+        fetch('/api/admin/newsletter').then(r => r.ok ? r.json() : null).then(d => { if (d) setData(d) })
+      }
+    } catch (e) {
+      setSendResult({ type: 'error', message: 'Request failed' })
+    } finally {
+      setSending(false)
     }
   }
 
@@ -201,8 +229,8 @@ export default function NewsletterPage() {
               />
             </div>
 
-            {/* Info display */}
-            <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap', fontSize: '13px', color: 'rgba(255,255,255,0.4)', borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '16px' }}>
+            {/* Info display + Send now */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '24px', flexWrap: 'wrap', fontSize: '13px', color: 'rgba(255,255,255,0.4)', borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '16px' }}>
               {config.last_send_date && (
                 <span>Last send: {new Date(config.last_send_date + 'T00:00:00').toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}, {config.last_send_count} contacts</span>
               )}
@@ -210,7 +238,28 @@ export default function NewsletterPage() {
               {pool && config.batch_size && pool.remaining > 0 && (
                 <span>Est. completion: {estimateCompletion(pool.remaining, config.batch_size, config.skip_weekends)}</span>
               )}
+              <button
+                onClick={triggerSend}
+                disabled={sending}
+                style={{
+                  marginLeft: 'auto', fontSize: '12px', fontWeight: 400, padding: '6px 16px', borderRadius: '4px', border: 'none', cursor: sending ? 'not-allowed' : 'pointer',
+                  background: sending ? 'rgba(155,81,224,0.15)' : 'rgba(155,81,224,0.25)', color: sending ? 'rgba(155,81,224,0.5)' : '#9B51E0',
+                  transition: 'background 0.15s',
+                }}
+              >
+                {sending ? 'Sending...' : 'Send now'}
+              </button>
             </div>
+            {sendResult && (
+              <div style={{
+                marginTop: '12px', padding: '10px 14px', borderRadius: '6px', fontSize: '13px',
+                background: sendResult.type === 'success' ? 'rgba(45,212,191,0.08)' : sendResult.type === 'skipped' ? 'rgba(245,158,11,0.08)' : 'rgba(255,66,121,0.08)',
+                color: sendResult.type === 'success' ? '#2DD4BF' : sendResult.type === 'skipped' ? '#F59E0B' : '#FF4279',
+                borderLeft: `3px solid ${sendResult.type === 'success' ? '#2DD4BF' : sendResult.type === 'skipped' ? '#F59E0B' : '#FF4279'}`,
+              }}>
+                {sendResult.message}
+              </div>
+            )}
           </>
         ) : (
           <p style={emptyText}>Config not available</p>

@@ -31,12 +31,30 @@ const statusBadge = {
   draft: { bg: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.4)' },
 }
 
+function estimateCompletion(remaining, batchSize, skipWeekends) {
+  if (!remaining || remaining <= 0) return null
+  const daysNeeded = Math.ceil(remaining / batchSize)
+  const d = new Date()
+  let added = 0
+  while (added < daysNeeded) {
+    d.setDate(d.getDate() + 1)
+    const day = d.getDay()
+    if (skipWeekends && (day === 0 || day === 6)) continue
+    added++
+  }
+  return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
+}
+
 export default function NewsletterPage() {
   const [data, setData] = useState(null)
   const [loading, setLoading] = useState(true)
   const [selectedSendId, setSelectedSendId] = useState(null)
   const [sendDetail, setSendDetail] = useState(null)
   const [detailLoading, setDetailLoading] = useState(false)
+  const [config, setConfig] = useState(null)
+  const [pool, setPool] = useState(null)
+  const [configLoading, setConfigLoading] = useState(true)
+  const [saving, setSaving] = useState(false)
 
   useEffect(() => {
     fetch('/api/admin/newsletter')
@@ -44,6 +62,12 @@ export default function NewsletterPage() {
       .then(setData)
       .catch((e) => console.error(e))
       .finally(() => setLoading(false))
+
+    fetch('/api/admin/newsletter-config')
+      .then((r) => r.ok ? r.json() : Promise.reject())
+      .then((d) => { setConfig(d.config); setPool(d.pool) })
+      .catch((e) => console.error(e))
+      .finally(() => setConfigLoading(false))
   }, [])
 
   async function loadSendDetail(id) {
@@ -64,13 +88,134 @@ export default function NewsletterPage() {
     }
   }
 
+  async function updateConfig(updates) {
+    setSaving(true)
+    try {
+      const res = await fetch('/api/admin/newsletter-config', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updates),
+      })
+      if (res.ok) {
+        const d = await res.json()
+        setConfig(d.config)
+      }
+    } catch (e) {
+      console.error(e)
+    } finally {
+      setSaving(false)
+    }
+  }
+
   const subs = data?.subscribers || {}
+
+  // Status indicator
+  const statusDot = config
+    ? config.paused_reason
+      ? { color: '#FF4279', label: `PAUSED: ${config.paused_reason}` }
+      : config.enabled
+        ? { color: '#2DD4BF', label: 'Running - next send tomorrow at 9:30am' }
+        : { color: 'rgba(255,255,255,0.3)', label: 'Disabled' }
+    : null
 
   return (
     <div>
       <h1 style={{ fontSize: '28px', fontWeight: 400, color: '#fff', letterSpacing: '-0.02em', marginBottom: '24px' }}>
         Newsletter
       </h1>
+
+      {/* Automated send settings */}
+      <div style={{ ...cardStyle, marginBottom: '24px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
+          <h2 style={sectionHeading}>Automated sends</h2>
+          {saving && <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.3)' }}>Saving...</span>}
+        </div>
+
+        {configLoading ? (
+          <Skeleton height={120} />
+        ) : config ? (
+          <>
+            {/* Status indicator */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px', padding: '12px 16px', background: 'rgba(255,255,255,0.03)', borderRadius: '6px' }}>
+              <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: statusDot.color, flexShrink: 0 }} />
+              <span style={{ fontSize: '14px', fontWeight: 400, color: '#fff' }}>{statusDot.label}</span>
+              {config.paused_reason && (
+                <button
+                  onClick={() => updateConfig({ enabled: true })}
+                  style={{ marginLeft: 'auto', fontSize: '12px', fontWeight: 400, color: '#9B51E0', background: 'rgba(155,81,224,0.1)', border: 'none', padding: '4px 12px', borderRadius: '4px', cursor: 'pointer' }}
+                >
+                  Resume
+                </button>
+              )}
+            </div>
+
+            {/* Controls grid */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '16px', marginBottom: '20px' }}>
+              {/* Enable/disable */}
+              <ToggleControl
+                label="Enable sends"
+                value={config.enabled}
+                onChange={(v) => updateConfig({ enabled: v })}
+              />
+              {/* Skip weekends */}
+              <ToggleControl
+                label="Skip weekends"
+                value={config.skip_weekends}
+                onChange={(v) => updateConfig({ skip_weekends: v })}
+              />
+              {/* Domain exclusions */}
+              <ToggleControl
+                label="Domain exclusions"
+                value={config.domain_exclusions_enabled}
+                onChange={(v) => updateConfig({ domain_exclusions_enabled: v })}
+              />
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '16px', marginBottom: '20px' }}>
+              {/* Batch size */}
+              <NumberControl
+                label="Batch size"
+                value={config.batch_size}
+                step={50}
+                min={10}
+                max={500}
+                onChange={(v) => updateConfig({ batch_size: v })}
+              />
+              {/* Daily cap */}
+              <NumberControl
+                label="Daily cap"
+                value={config.daily_cap}
+                step={50}
+                min={10}
+                max={1000}
+                onChange={(v) => updateConfig({ daily_cap: v })}
+              />
+              {/* Bounce threshold */}
+              <NumberControl
+                label="Bounce threshold %"
+                value={config.bounce_rate_threshold}
+                step={0.5}
+                min={0.5}
+                max={10}
+                onChange={(v) => updateConfig({ bounce_rate_threshold: v })}
+              />
+            </div>
+
+            {/* Info display */}
+            <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap', fontSize: '13px', color: 'rgba(255,255,255,0.4)', borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '16px' }}>
+              {config.last_send_date && (
+                <span>Last send: {new Date(config.last_send_date + 'T00:00:00').toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}, {config.last_send_count} contacts</span>
+              )}
+              {pool && <span>Remaining: {pool.remaining.toLocaleString()}</span>}
+              {pool && config.batch_size && pool.remaining > 0 && (
+                <span>Est. completion: {estimateCompletion(pool.remaining, config.batch_size, config.skip_weekends)}</span>
+              )}
+            </div>
+          </>
+        ) : (
+          <p style={emptyText}>Config not available</p>
+        )}
+      </div>
 
       {/* Metric cards */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '32px' }}>
@@ -378,6 +523,50 @@ function Card({ label, value }) {
 
 function Skeleton({ height = 20, width }) {
   return <div style={{ height, width: width || '100%', background: 'rgba(255,255,255,0.06)', borderRadius: '4px', animation: 'pulse 1.5s ease-in-out infinite' }} />
+}
+
+function ToggleControl({ label, value, onChange }) {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px', background: 'rgba(255,255,255,0.03)', borderRadius: '6px' }}>
+      <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.6)' }}>{label}</span>
+      <button
+        onClick={() => onChange(!value)}
+        style={{
+          width: '36px', height: '20px', borderRadius: '10px', border: 'none', cursor: 'pointer', position: 'relative',
+          background: value ? '#9B51E0' : 'rgba(255,255,255,0.15)', transition: 'background 0.2s',
+        }}
+      >
+        <div style={{
+          width: '16px', height: '16px', borderRadius: '50%', background: '#fff', position: 'absolute', top: '2px',
+          left: value ? '18px' : '2px', transition: 'left 0.2s',
+        }} />
+      </button>
+    </div>
+  )
+}
+
+function NumberControl({ label, value, step, min, max, onChange }) {
+  const numVal = parseFloat(value)
+  return (
+    <div style={{ padding: '10px 14px', background: 'rgba(255,255,255,0.03)', borderRadius: '6px' }}>
+      <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'block', marginBottom: '8px' }}>{label}</span>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <button
+          onClick={() => { const v = Math.max(min, numVal - step); onChange(Number(step < 1 ? v.toFixed(1) : v)) }}
+          style={{ width: '28px', height: '28px', borderRadius: '4px', border: '1px solid rgba(255,255,255,0.1)', background: 'transparent', color: '#fff', cursor: 'pointer', fontSize: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+        >
+          -
+        </button>
+        <span style={{ fontSize: '18px', fontWeight: 400, color: '#fff', minWidth: '50px', textAlign: 'center' }}>{value}</span>
+        <button
+          onClick={() => { const v = Math.min(max, numVal + step); onChange(Number(step < 1 ? v.toFixed(1) : v)) }}
+          style={{ width: '28px', height: '28px', borderRadius: '4px', border: '1px solid rgba(255,255,255,0.1)', background: 'transparent', color: '#fff', cursor: 'pointer', fontSize: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+        >
+          +
+        </button>
+      </div>
+    </div>
+  )
 }
 
 const cardStyle = { background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '10px', padding: '20px' }

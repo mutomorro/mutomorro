@@ -54,7 +54,7 @@ async function checkDailyLimit(supabase, batchSize) {
     .gte('sent_at', todayStart.toISOString())
 
   const sentToday = count || 0
-  const DAILY_LIMIT = 200
+  const DAILY_LIMIT = 500
   if (sentToday + batchSize > DAILY_LIMIT) {
     return {
       exceeded: true,
@@ -67,6 +67,42 @@ async function checkDailyLimit(supabase, batchSize) {
 
 const BLOCKED_STATUSES = new Set(['invalid', 'spamtrap', 'abuse', 'do_not_mail'])
 const STALE_DAYS = 30
+
+// Warm-up phase: exclude domain types that accept verification pings but bounce real emails.
+// Controlled by domain_exclusions_enabled in newsletter_config table.
+// Falls back to enabled if config can't be read.
+const WARMUP_EXCLUDED_DOMAIN_PATTERNS = [
+  /\.edu$/i,
+  /\.edu\.[a-z]{2,3}$/i,
+  /\.ac\.uk$/i,
+  /\.ac\.[a-z]{2,3}$/i,
+  /\.gov$/i,
+  /\.gov\.[a-z]{2,3}$/i,
+  /\.mil$/i,
+]
+
+function filterWarmupDomains(contacts, enabled = true) {
+  if (!enabled) return { filtered: contacts, excludedCount: 0 }
+
+  const filtered = []
+  let excludedCount = 0
+
+  for (const contact of contacts) {
+    const email = contact.signup_email || ''
+    const isExcluded = WARMUP_EXCLUDED_DOMAIN_PATTERNS.some(pattern => pattern.test(email))
+    if (isExcluded) {
+      excludedCount++
+    } else {
+      filtered.push(contact)
+    }
+  }
+
+  if (excludedCount > 0) {
+    console.log(`Warm-up domain exclusion: skipped ${excludedCount} contacts from risky domains (.edu, .ac, .gov, .mil)`)
+  }
+
+  return { filtered, excludedCount }
+}
 
 async function verifyBatch(batch, supabase) {
   const thirtyDaysAgo = new Date()
@@ -110,6 +146,15 @@ async function verifyBatch(batch, supabase) {
   }
 
   return { verified, excluded, reVerified }
+}
+
+async function getDomainExclusionsEnabled(supabase) {
+  try {
+    const { data } = await supabase.from('newsletter_config').select('domain_exclusions_enabled').limit(1).single()
+    return data?.domain_exclusions_enabled ?? true
+  } catch {
+    return true // default to enabled if config unavailable
+  }
 }
 
 async function handleCreate(body, resend, supabase) {
@@ -198,14 +243,18 @@ async function handleCreate(body, resend, supabase) {
     return Response.json({ error: 'Failed to query contacts' }, { status: 500 })
   }
 
+  // Exclude risky domains during warm-up phase
+  const domainExclusionsEnabled = await getDomainExclusionsEnabled(supabase)
+  const { filtered: eligibleContacts, excludedCount: warmupExcluded } = filterWarmupDomains(allContacts, domainExclusionsEnabled)
+
   // Update total_recipients
   await supabase
     .from('newsletter_sends')
-    .update({ total_recipients: allContacts.length })
+    .update({ total_recipients: eligibleContacts.length })
     .eq('id', sendId)
 
   // Take first batch
-  const batch = allContacts.slice(0, batchSize)
+  const batch = eligibleContacts.slice(0, batchSize)
 
   if (batch.length === 0) {
     await supabase
@@ -220,6 +269,7 @@ async function handleCreate(body, resend, supabase) {
       totalRecipients: 0,
       remaining: 0,
       status: 'complete',
+      ...(warmupExcluded > 0 ? { warmupDomainExcluded: warmupExcluded } : {}),
     })
   }
 
@@ -236,8 +286,8 @@ async function handleCreate(body, resend, supabase) {
       sendId,
       batchSent: 0,
       totalSent: 0,
-      totalRecipients: allContacts.length,
-      remaining: allContacts.length,
+      totalRecipients: eligibleContacts.length,
+      remaining: eligibleContacts.length,
       status: 'complete',
       verification: {
         checked: batch.length,
@@ -246,6 +296,7 @@ async function handleCreate(body, resend, supabase) {
         reVerified: verification.reVerified,
         excludedContacts: verification.excluded,
       },
+      ...(warmupExcluded > 0 ? { warmupDomainExcluded: warmupExcluded } : {}),
     })
   }
 
@@ -264,7 +315,7 @@ async function handleCreate(body, resend, supabase) {
     supabase,
   })
 
-  const remaining = allContacts.length - result.batchSent - verification.excluded.length
+  const remaining = eligibleContacts.length - result.batchSent - verification.excluded.length
   const status = remaining === 0 ? 'complete' : 'sending'
 
   if (status === 'complete') {
@@ -278,7 +329,7 @@ async function handleCreate(body, resend, supabase) {
     sendId,
     batchSent: result.batchSent,
     totalSent: result.batchSent,
-    totalRecipients: allContacts.length,
+    totalRecipients: eligibleContacts.length,
     remaining,
     status,
     verification: {
@@ -288,6 +339,7 @@ async function handleCreate(body, resend, supabase) {
       reVerified: verification.reVerified,
       excludedContacts: verification.excluded,
     },
+    ...(warmupExcluded > 0 ? { warmupDomainExcluded: warmupExcluded } : {}),
     ...(emailOverride ? { testMode: true, emailOverride } : {}),
   })
 }
@@ -344,6 +396,10 @@ async function handleResume(body, resend, supabase) {
     return Response.json({ error: 'Failed to query contacts' }, { status: 500 })
   }
 
+  // Exclude risky domains during warm-up phase
+  const domainExclusionsEnabled = await getDomainExclusionsEnabled(supabase)
+  const { filtered: eligibleContacts, excludedCount: warmupExcluded } = filterWarmupDomains(allContacts, domainExclusionsEnabled)
+
   // Get already-sent contact IDs
   const { data: alreadySent } = await supabase
     .from('newsletter_recipients')
@@ -351,7 +407,7 @@ async function handleResume(body, resend, supabase) {
     .eq('send_id', sendId)
 
   const sentContactIds = new Set((alreadySent || []).map(r => r.contact_id))
-  const remainingContacts = allContacts.filter(c => !sentContactIds.has(c.id))
+  const remainingContacts = eligibleContacts.filter(c => !sentContactIds.has(c.id))
 
   // Take next batch
   const batch = remainingContacts.slice(0, batchSize)
@@ -369,6 +425,7 @@ async function handleResume(body, resend, supabase) {
       totalRecipients: send.total_recipients,
       remaining: 0,
       status: 'complete',
+      ...(warmupExcluded > 0 ? { warmupDomainExcluded: warmupExcluded } : {}),
     })
   }
 
@@ -390,6 +447,7 @@ async function handleResume(body, resend, supabase) {
         reVerified: verification.reVerified,
         excludedContacts: verification.excluded,
       },
+      ...(warmupExcluded > 0 ? { warmupDomainExcluded: warmupExcluded } : {}),
     })
   }
 
@@ -434,6 +492,7 @@ async function handleResume(body, resend, supabase) {
       reVerified: verification.reVerified,
       excludedContacts: verification.excluded,
     },
+    ...(warmupExcluded > 0 ? { warmupDomainExcluded: warmupExcluded } : {}),
     ...(emailOverride ? { testMode: true, emailOverride } : {}),
   })
 }

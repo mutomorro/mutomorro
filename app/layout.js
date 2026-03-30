@@ -18,6 +18,11 @@ const sourceSans = Source_Sans_3({
   variable: '--font-source-sans',
 })
 
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+}
+
 export const metadata = {
   metadataBase: new URL('https://mutomorro.com'),
   title: {

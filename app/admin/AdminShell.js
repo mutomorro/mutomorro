@@ -38,27 +38,47 @@ export default function AdminShell({ children }) {
       color: 'rgba(255,255,255,0.85)',
       fontFamily: 'var(--font-source-sans), Source Sans 3, sans-serif',
     }}>
-      {/* Mobile hamburger */}
-      <button
-        onClick={() => setMobileOpen(!mobileOpen)}
+      {/* Mobile top bar */}
+      <div
+        className="admin-topbar"
         style={{
           position: 'fixed',
-          top: '16px',
-          left: '16px',
-          zIndex: 1001,
-          background: 'rgba(255,255,255,0.06)',
-          border: '1px solid rgba(255,255,255,0.12)',
-          borderRadius: '0',
-          color: '#fff',
-          padding: '8px 12px',
-          cursor: 'pointer',
-          fontSize: '18px',
+          top: 0,
+          left: 0,
+          right: 0,
+          height: '56px',
+          background: 'rgba(34,28,43,0.98)',
+          borderBottom: '1px solid rgba(255,255,255,0.06)',
           display: 'none',
+          alignItems: 'center',
+          padding: '0 16px',
+          gap: '12px',
+          zIndex: 1001,
         }}
-        className="admin-mobile-toggle"
       >
-        {mobileOpen ? '✕' : '☰'}
-      </button>
+        <button
+          onClick={() => setMobileOpen(!mobileOpen)}
+          style={{
+            background: 'rgba(255,255,255,0.06)',
+            border: '1px solid rgba(255,255,255,0.12)',
+            color: '#fff',
+            padding: 0,
+            cursor: 'pointer',
+            fontSize: '20px',
+            width: '44px',
+            height: '44px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            flexShrink: 0,
+          }}
+        >
+          {mobileOpen ? '✕' : '☰'}
+        </button>
+        <span style={{ fontSize: '15px', fontWeight: 400, color: '#fff', letterSpacing: '-0.01em' }}>
+          Command Centre
+        </span>
+      </div>
 
       {/* Sidebar */}
       <aside
@@ -196,9 +216,12 @@ export default function AdminShell({ children }) {
       )}
 
       <style>{`
+        .admin-topbar {
+          display: none;
+        }
         @media (max-width: 768px) {
-          .admin-mobile-toggle {
-            display: block !important;
+          .admin-topbar {
+            display: flex !important;
           }
           .admin-sidebar {
             transform: translateX(-100%);
@@ -209,8 +232,8 @@ export default function AdminShell({ children }) {
           }
           .admin-main {
             margin-left: 0 !important;
-            padding: 24px 16px !important;
-            padding-top: 60px !important;
+            padding: 16px !important;
+            padding-top: 72px !important;
           }
         }
       `}</style>

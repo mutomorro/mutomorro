@@ -69,7 +69,7 @@ export default function OutreachPage() {
       )}
 
       {/* Metric cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '32px' }}>
+      <div className="admin-metrics-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '32px' }}>
         <Card label="Active sequences" value={loading ? null : activeSeqs.length} />
         <Card label="Contacts enrolled" value={loading ? null : totalContacts} />
         <Card label="Total replies" value={loading ? null : totalReplies} />
@@ -123,14 +123,15 @@ export default function OutreachPage() {
       )}
 
       {/* Two columns: Sequences + Recent replies */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: '24px' }}>
+      <div className="admin-outreach-cols" style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: '24px' }}>
         {/* Sequences */}
         <div style={cardStyle}>
           <h2 style={sectionHeading}>Sequences</h2>
           {loading ? (
             <Skeleton height={200} />
           ) : sequences.length > 0 ? (
-            <div>
+            <div style={{ overflowX: 'auto' }}>
+              <div style={{ minWidth: '500px' }}>
               <div style={{ display: 'grid', gridTemplateColumns: '2fr 0.6fr 0.6fr 0.6fr 0.6fr 0.6fr 0.7fr', gap: '6px', padding: '6px 0', borderBottom: '1px solid rgba(255,255,255,0.06)', fontSize: '11px', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                 <div>Name</div>
                 <div>Status</div>
@@ -160,6 +161,7 @@ export default function OutreachPage() {
                   </div>
                 )
               })}
+              </div>
             </div>
           ) : (
             <p style={emptyText}>No sequences found</p>
@@ -193,8 +195,17 @@ export default function OutreachPage() {
       <style>{`
         @keyframes pulse { 0%, 100% { opacity: 0.4; } 50% { opacity: 0.8; } }
         @media (max-width: 768px) {
-          div[style*="repeat(4, 1fr)"] { grid-template-columns: repeat(2, 1fr) !important; }
-          div[style*="1.5fr 1fr"] { grid-template-columns: 1fr !important; }
+          .admin-metrics-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+          }
+          .admin-outreach-cols {
+            grid-template-columns: 1fr !important;
+          }
+        }
+        @media (max-width: 480px) {
+          .admin-metrics-grid {
+            grid-template-columns: 1fr !important;
+          }
         }
       `}</style>
     </div>

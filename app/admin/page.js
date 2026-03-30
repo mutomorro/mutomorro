@@ -116,7 +116,7 @@ export default function AdminOverview() {
       </div>
 
       {/* Metric cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '32px' }}>
+      <div className="admin-metrics-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '32px' }}>
         <MetricCard
           label="Visitors this week"
           value={loading ? null : data?.analytics?.visitors ?? '-'}
@@ -142,7 +142,7 @@ export default function AdminOverview() {
       )}
 
       {/* Two-column layout */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: '24px' }}>
+      <div className="admin-two-col" style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: '24px' }}>
         {/* Left column: Recent signals */}
         <div style={cardStyle}>
           <h2 style={cardHeading}>Recent signals</h2>
@@ -475,10 +475,15 @@ export default function AdminOverview() {
           50% { opacity: 0.5; transform: scale(0.8); }
         }
         @media (max-width: 768px) {
-          div[style*="grid-template-columns: repeat(4"] {
+          .admin-metrics-grid {
             grid-template-columns: repeat(2, 1fr) !important;
           }
-          div[style*="grid-template-columns: 1.4fr"] {
+          .admin-two-col {
+            grid-template-columns: 1fr !important;
+          }
+        }
+        @media (max-width: 480px) {
+          .admin-metrics-grid {
             grid-template-columns: 1fr !important;
           }
         }

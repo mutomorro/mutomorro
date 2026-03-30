@@ -279,7 +279,7 @@ export default function CalendarPage() {
 
 function WeekView({ days, itemsForDate, onAddClick, onItemClick, onStatusCycle, loading }) {
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '8px' }}>
+    <div className="admin-week-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '8px' }}>
       {days.map((day) => {
         const dateStr = formatDateStr(day)
         const dayItems = itemsForDate(dateStr)
@@ -396,7 +396,7 @@ function WeekView({ days, itemsForDate, onAddClick, onItemClick, onStatusCycle, 
           50% { opacity: 0.8; }
         }
         @media (max-width: 768px) {
-          div[style*="grid-template-columns: repeat(7"] {
+          .admin-week-grid {
             grid-template-columns: 1fr !important;
           }
         }

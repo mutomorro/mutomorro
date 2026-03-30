@@ -62,7 +62,7 @@ export default function AnalyticsPage() {
       )}
 
       {/* Row 1 - Summary cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '24px' }}>
+      <div className="admin-metrics-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '24px' }}>
         <SummaryCard label="Visitors today" value={loading ? null : data?.today?.visitors} colour="#2DD4BF" />
         <SummaryCard label="Pageviews today" value={loading ? null : data?.today?.pageviews} colour="#9B51E0" />
         <SummaryCard label="Downloads today" value={loading ? null : data?.today?.downloads} colour="#F59E0B" />
@@ -83,7 +83,7 @@ export default function AnalyticsPage() {
       </div>
 
       {/* Row 3 - Two-column: Traffic split + Sources */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', marginBottom: '24px' }}>
+      <div className="admin-analytics-cols" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', marginBottom: '24px' }}>
         {/* Left: Traffic split */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
           {/* Exploration traffic */}
@@ -161,8 +161,17 @@ export default function AnalyticsPage() {
       <style>{`
         @keyframes pulse { 0%, 100% { opacity: 0.4; } 50% { opacity: 0.8; } }
         @media (max-width: 768px) {
-          div[style*="repeat(4, 1fr)"] { grid-template-columns: repeat(2, 1fr) !important; }
-          div[style*="1fr 1fr"] { grid-template-columns: 1fr !important; }
+          .admin-metrics-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+          }
+          .admin-analytics-cols {
+            grid-template-columns: 1fr !important;
+          }
+        }
+        @media (max-width: 480px) {
+          .admin-metrics-grid {
+            grid-template-columns: 1fr !important;
+          }
         }
       `}</style>
     </div>

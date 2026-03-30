@@ -160,7 +160,7 @@ export default function HandoffsPage() {
       </div>
 
       {/* Summary cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', marginBottom: '24px' }}>
+      <div className="admin-metrics-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', marginBottom: '24px' }}>
         <MetricCard label="Open" value={loading ? null : counts.open} colour={counts.open > 0 ? '#F59E0B' : null} />
         <MetricCard label="Picked up" value={loading ? null : counts.pickedUp} colour={counts.pickedUp > 0 ? '#9B51E0' : null} />
         <MetricCard label="Completed this week" value={loading ? null : counts.completedThisWeek} colour={counts.completedThisWeek > 0 ? '#2DD4BF' : null} />
@@ -199,7 +199,7 @@ export default function HandoffsPage() {
           <form onSubmit={handleCreate} style={{ marginTop: '20px' }}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
               {/* Row: target, type, priority */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px' }}>
+              <div className="admin-form-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px' }}>
                 <div>
                   <label style={labelStyle}>Target project</label>
                   <select value={formTarget} onChange={(e) => setFormTarget(e.target.value)} style={inputStyle}>
@@ -463,10 +463,15 @@ export default function HandoffsPage() {
           50% { opacity: 0.8; }
         }
         @media (max-width: 768px) {
-          div[style*="grid-template-columns: repeat(3"] {
+          .admin-metrics-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+          }
+          .admin-form-grid {
             grid-template-columns: 1fr !important;
           }
-          div[style*="grid-template-columns: 1fr 1fr 1fr"] {
+        }
+        @media (max-width: 480px) {
+          .admin-metrics-grid {
             grid-template-columns: 1fr !important;
           }
         }

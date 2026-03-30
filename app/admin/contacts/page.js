@@ -128,7 +128,8 @@ export default function ContactsPage() {
       </div>
 
       {/* Table */}
-      <div style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '10px', overflow: 'hidden' }}>
+      <div style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '10px', overflowX: 'auto' }}>
+        <div style={{ minWidth: '560px' }}>
         {/* Header row */}
         <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1.4fr 1.2fr 0.5fr 0.8fr 0.6fr 0.6fr', padding: '10px 16px', borderBottom: '1px solid rgba(255,255,255,0.06)', fontSize: '11px', color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', letterSpacing: '0.5px', gap: '8px' }}>
           <div>Name</div>
@@ -214,6 +215,7 @@ export default function ContactsPage() {
             </div>
           ))
         )}
+        </div>
       </div>
 
       {/* Pagination */}
@@ -234,7 +236,9 @@ export default function ContactsPage() {
       <style>{`
         @keyframes pulse { 0%, 100% { opacity: 0.4; } 50% { opacity: 0.8; } }
         @media (max-width: 768px) {
-          div[style*="gridTemplateColumns: '1.2fr"] { grid-template-columns: 1fr !important; }
+          .admin-contact-detail-grid {
+            grid-template-columns: 1fr !important;
+          }
         }
       `}</style>
     </div>
@@ -307,7 +311,7 @@ function ContactDetail({ detail, loading, contactId, onUpdate }) {
 
   return (
     <div style={{ padding: '20px 16px', background: 'rgba(255,255,255,0.02)', borderBottom: '2px solid rgba(155,81,224,0.2)' }}>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
+      <div className="admin-contact-detail-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
         {/* Left: Info + actions */}
         <div>
           <h3 style={{ fontSize: '16px', fontWeight: 400, color: '#fff', marginBottom: '12px' }}>

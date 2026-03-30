@@ -218,7 +218,9 @@ export default function AdminTenders() {
       <style>{`
         @keyframes pulse { 0%, 100% { opacity: 0.4; } 50% { opacity: 0.8; } }
         @media (max-width: 768px) {
-          div[style*="flex-wrap: wrap"] { flex-direction: column; }
+          .admin-tender-filters {
+            flex-direction: column;
+          }
         }
       `}</style>
     </div>

@@ -178,7 +178,7 @@ export default function NewsletterPage() {
             </div>
 
             {/* Controls grid */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '16px', marginBottom: '20px' }}>
+            <div className="admin-newsletter-controls" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '16px', marginBottom: '20px' }}>
               {/* Enable/disable */}
               <ToggleControl
                 label="Enable sends"
@@ -199,7 +199,7 @@ export default function NewsletterPage() {
               />
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '16px', marginBottom: '20px' }}>
+            <div className="admin-newsletter-controls" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '16px', marginBottom: '20px' }}>
               {/* Batch size */}
               <NumberControl
                 label="Batch size"
@@ -267,7 +267,7 @@ export default function NewsletterPage() {
       </div>
 
       {/* Metric cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '32px' }}>
+      <div className="admin-metrics-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '32px' }}>
         <Card label="Active subscribers" value={loading ? null : subs.active} />
         <Card label="New this week" value={loading ? null : subs.newThisWeek} />
         <Card label="New this month" value={loading ? null : subs.newThisMonth} />
@@ -280,7 +280,8 @@ export default function NewsletterPage() {
         {loading ? (
           <Skeleton height={200} />
         ) : data?.sends?.length > 0 ? (
-          <div>
+          <div style={{ overflowX: 'auto' }}>
+          <div style={{ minWidth: '580px' }}>
             {/* Header */}
             <div style={{ display: 'grid', gridTemplateColumns: '2.5fr 0.7fr 0.7fr 0.7fr 0.7fr 0.7fr 0.6fr', gap: '8px', padding: '8px 0', borderBottom: '1px solid rgba(255,255,255,0.06)', fontSize: '11px', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
               <div>Subject</div>
@@ -429,6 +430,7 @@ export default function NewsletterPage() {
               })
             })()}
           </div>
+          </div>
         ) : (
           <p style={emptyText}>No sends yet</p>
         )}
@@ -436,7 +438,7 @@ export default function NewsletterPage() {
 
       {/* Breakdown panels */}
       {!loading && (
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', marginTop: '24px' }}>
+        <div className="admin-breakdown-cols" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', marginTop: '24px' }}>
           {/* By tier */}
           <div style={cardStyle}>
             <h2 style={sectionHeading}>Subscribers by tier</h2>
@@ -483,8 +485,20 @@ export default function NewsletterPage() {
       <style>{`
         @keyframes pulse { 0%, 100% { opacity: 0.4; } 50% { opacity: 0.8; } }
         @media (max-width: 768px) {
-          div[style*="repeat(4, 1fr)"] { grid-template-columns: repeat(2, 1fr) !important; }
-          div[style*="1fr 1fr"] { grid-template-columns: 1fr !important; }
+          .admin-metrics-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+          }
+          .admin-newsletter-controls {
+            grid-template-columns: 1fr !important;
+          }
+          .admin-breakdown-cols {
+            grid-template-columns: 1fr !important;
+          }
+        }
+        @media (max-width: 480px) {
+          .admin-metrics-grid {
+            grid-template-columns: 1fr !important;
+          }
         }
       `}</style>
     </div>
@@ -523,6 +537,8 @@ function SendDetailPanel({ detail, loading }) {
       {engaged.length > 0 && (
         <div>
           <h4 style={{ ...sectionHeading, marginBottom: '8px' }}>Who engaged</h4>
+          <div style={{ overflowX: 'auto' }}>
+          <div style={{ minWidth: '480px' }}>
           <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1.4fr 1fr 0.6fr 0.8fr', gap: '8px', padding: '6px 0', borderBottom: '1px solid rgba(255,255,255,0.06)', fontSize: '11px', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
             <div>Name</div>
             <div>Email</div>
@@ -547,6 +563,8 @@ function SendDetailPanel({ detail, loading }) {
               </div>
             </div>
           ))}
+          </div>
+          </div>
         </div>
       )}
 

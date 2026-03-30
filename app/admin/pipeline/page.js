@@ -306,7 +306,7 @@ export default function PipelinePage() {
           {detailLoading ? (
             <div style={{ height: '60px', background: 'rgba(255,255,255,0.04)', borderRadius: '4px', animation: 'pulse 1.5s ease-in-out infinite' }} />
           ) : (
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
+            <div className="admin-pipeline-detail-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
               {/* Contacts */}
               <div>
                 <h3 style={sectionHeading}>Contacts ({detailContacts.length})</h3>
@@ -388,6 +388,11 @@ export default function PipelinePage() {
 
       <style>{`
         @keyframes pulse { 0%, 100% { opacity: 0.4; } 50% { opacity: 0.8; } }
+        @media (max-width: 768px) {
+          .admin-pipeline-detail-grid {
+            grid-template-columns: 1fr !important;
+          }
+        }
       `}</style>
     </div>
   )

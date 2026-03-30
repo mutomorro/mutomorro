@@ -91,11 +91,22 @@ export async function PATCH(request) {
 
     updates.updated_at = new Date().toISOString()
 
+    // Get the single config row ID first (Supabase requires a filter on updates)
+    const { data: existing } = await supabase
+      .from('newsletter_config')
+      .select('id')
+      .limit(1)
+      .single()
+
+    if (!existing) {
+      return NextResponse.json({ error: 'Config row not found' }, { status: 404 })
+    }
+
     const { data: config, error } = await supabase
       .from('newsletter_config')
       .update(updates)
+      .eq('id', existing.id)
       .select('*')
-      .limit(1)
       .single()
 
     if (error) {

@@ -11,7 +11,7 @@
 
 import { runAiScoreStage } from '../../../../lib/tender-finder/pipeline.js'
 
-export const maxDuration = 300
+export const maxDuration = 800
 
 export async function GET(request) {
   const authHeader = request.headers.get('authorization')

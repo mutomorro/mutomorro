@@ -137,44 +137,46 @@ export async function GET(request) {
       return Response.json({ skipped: true, reason: 'Already sent today' })
     }
 
-    // 3. Circuit breaker - check most recent completed send's bounce rate
+    // 3. Circuit breaker - check aggregate bounce rate across the most recent send date
+    // Uses all batches from the last day that had sends, not just the single most recent batch.
+    // With small batch sizes (e.g. 30), a single batch can have a misleadingly high bounce rate.
     const { data: recentSends } = await supabase
       .from('newsletter_sends')
-      .select('id, total_sent, total_bounced, created_at')
+      .select('id, total_sent, total_delivered, total_bounced, total_opened, total_clicked, created_at')
       .eq('status', 'complete')
-      .gte('total_sent', 10)
+      .gte('total_sent', 1)
       .order('created_at', { ascending: false })
-      .limit(1)
+      .limit(50)
 
     let yesterdayStats = {}
 
     if (recentSends && recentSends.length > 0) {
-      const lastSend = recentSends[0]
-      const bounceRate = lastSend.total_sent > 0
-        ? ((lastSend.total_bounced || 0) / lastSend.total_sent) * 100
-        : 0
+      // Find the most recent send date and aggregate all batches from that date
+      const lastDate = recentSends[0].created_at.split('T')[0]
+      const sameDaySends = recentSends.filter(s => s.created_at.split('T')[0] === lastDate)
 
-      // Collect yesterday's engagement stats for summary
-      const { data: lastSendFull } = await supabase
-        .from('newsletter_sends')
-        .select('total_sent, total_delivered, total_opened, total_clicked, total_bounced')
-        .eq('id', lastSend.id)
-        .single()
+      const aggSent = sameDaySends.reduce((sum, s) => sum + (s.total_sent || 0), 0)
+      const aggBounced = sameDaySends.reduce((sum, s) => sum + (s.total_bounced || 0), 0)
+      const aggDelivered = sameDaySends.reduce((sum, s) => sum + (s.total_delivered || s.total_sent || 0), 0)
+      const aggOpened = sameDaySends.reduce((sum, s) => sum + (s.total_opened || 0), 0)
+      const aggClicked = sameDaySends.reduce((sum, s) => sum + (s.total_clicked || 0), 0)
 
-      if (lastSendFull) {
-        const delivered = lastSendFull.total_delivered || lastSendFull.total_sent || 0
+      const bounceRate = aggSent > 0 ? (aggBounced / aggSent) * 100 : 0
+
+      // Collect engagement stats for summary email
+      if (aggSent > 0) {
         yesterdayStats = {
-          yesterdayOpened: lastSendFull.total_opened || 0,
-          yesterdayOpenRate: delivered > 0 ? ((lastSendFull.total_opened || 0) / delivered * 100).toFixed(1) + '%' : '-',
-          yesterdayClicked: lastSendFull.total_clicked || 0,
-          yesterdayClickRate: delivered > 0 ? ((lastSendFull.total_clicked || 0) / delivered * 100).toFixed(1) + '%' : '-',
-          yesterdayBounced: lastSendFull.total_bounced || 0,
-          yesterdayBounceRate: lastSendFull.total_sent > 0 ? ((lastSendFull.total_bounced || 0) / lastSendFull.total_sent * 100).toFixed(1) + '%' : '-',
+          yesterdayOpened: aggOpened,
+          yesterdayOpenRate: aggDelivered > 0 ? (aggOpened / aggDelivered * 100).toFixed(1) + '%' : '-',
+          yesterdayClicked: aggClicked,
+          yesterdayClickRate: aggDelivered > 0 ? (aggClicked / aggDelivered * 100).toFixed(1) + '%' : '-',
+          yesterdayBounced: aggBounced,
+          yesterdayBounceRate: (aggBounced / aggSent * 100).toFixed(1) + '%',
         }
       }
 
       if (bounceRate > parseFloat(config.bounce_rate_threshold)) {
-        const reason = `Circuit breaker: last send bounce rate was ${bounceRate.toFixed(1)}% (threshold: ${config.bounce_rate_threshold}%)`
+        const reason = `Circuit breaker: last send date bounce rate was ${bounceRate.toFixed(1)}% across ${aggSent} emails (threshold: ${config.bounce_rate_threshold}%)`
         console.error(`Newsletter cron: ${reason}`)
 
         await supabase

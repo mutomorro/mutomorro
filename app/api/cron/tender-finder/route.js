@@ -1,38 +1,36 @@
 /**
- * Tender Finder cron job
+ * Tender Finder cron - Stage 1: Fetch & Store
  *
- * Runs daily at 7:00 UTC via Vercel cron.
- * Protected by CRON_SECRET header.
+ * Runs daily at 06:00 UTC (07:00 BST) via Vercel cron.
+ * Fetches from all channels, deduplicates, keyword scores, and stores.
+ * AI scoring happens in a separate stage to avoid timeouts.
  *
  * Schedule configured in vercel.json:
- *   "0 7 * * *" = every day at 7:00 UTC
+ *   "0 6 * * *" = every day at 06:00 UTC (07:00 BST)
  */
 
-import { runPipeline } from '../../../../lib/tender-finder/pipeline.js'
+import { runFetchStage } from '../../../../lib/tender-finder/pipeline.js'
 
-export const maxDuration = 300 // 5 minutes (Vercel Pro limit)
+export const maxDuration = 300
 
 export async function GET(request) {
-  // Verify legitimate cron call
   const authHeader = request.headers.get('authorization')
   if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
     return new Response('Unauthorised', { status: 401 })
   }
 
   try {
-    const summary = await runPipeline({
-      sendDigest: true,
-      sendHotAlerts: true,
-    })
+    const summary = await runFetchStage()
 
     return Response.json({
       success: true,
+      stage: 'fetch',
       summary,
     })
   } catch (error) {
-    console.error('Tender finder cron failed:', error)
+    console.error('Tender finder fetch stage failed:', error)
     return Response.json(
-      { success: false, error: error.message },
+      { success: false, stage: 'fetch', error: error.message },
       { status: 500 }
     )
   }

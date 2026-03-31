@@ -55,27 +55,8 @@ export default async function ContactPage({ searchParams }) {
           {/* Right: sidebar */}
           <div className="scroll-in delay-1" style={{ paddingTop: '0.5rem' }}>
 
-            {/* Direct email */}
-            <div style={{ marginBottom: '2.5rem' }}>
-              <span className="kicker" style={{
-                color: 'rgba(0,0,0,0.4)',
-                marginBottom: '8px',
-              }}>
-                Prefer email?
-              </span>
-              <a
-                href="mailto:hello@mutomorro.com"
-                className="inline-link"
-                style={{ fontSize: '17px' }}
-              >
-                hello@mutomorro.com
-              </a>
-            </div>
-
-            {/* What to expect */}
+            {/* What happens next */}
             <div style={{
-              borderTop: '1px solid rgba(0,0,0,0.08)',
-              paddingTop: '2rem',
               marginBottom: '2.5rem',
             }}>
               <span className="kicker" style={{

@@ -14,13 +14,13 @@ export default function Footer() {
                 maxWidth: '1350px',
                 margin: '0 auto',
                 display: 'grid',
-                gridTemplateColumns: 'repeat(4, 1fr)',
+                gridTemplateColumns: '2fr 1fr 1fr 1fr 1.5fr',
                 gap: '3rem',
                 paddingBottom: '3rem',
                 borderBottom: '1px solid rgba(255,255,255,0.1)',
             }}>
 
-                {/* Brand + Newsletter column */}
+                {/* Brand */}
                 <div>
                     <span className="heading-gradient" style={{
                         fontSize: '1.25rem',
@@ -35,11 +35,10 @@ export default function Footer() {
                         lineHeight: '1.7',
                         color: 'rgba(255,255,255,0.6)',
                         fontWeight: '300',
-                        margin: '0 0 2rem',
+                        margin: 0,
                     }}>
                         Helping organisations become intentional ecosystems - places where people and purpose thrive together.
                     </p>
-                    <NewsletterSignup variant="footer" />
                 </div>
 
                 {/* How We Help */}
@@ -76,6 +75,92 @@ export default function Footer() {
                     </ul>
                 </div>
 
+                {/* Get in Touch */}
+                <div>
+                    <p className="footer-heading">Get in Touch</p>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                        <div>
+                            <p style={{
+                                fontSize: '13px',
+                                fontWeight: '400',
+                                textTransform: 'uppercase',
+                                letterSpacing: '0.15em',
+                                color: 'rgba(255,255,255,0.35)',
+                                margin: '0 0 6px',
+                            }}>
+                                London
+                            </p>
+                            <p style={{
+                                fontSize: '15px',
+                                fontWeight: '300',
+                                lineHeight: '1.6',
+                                color: 'rgba(255,255,255,0.6)',
+                                margin: 0,
+                            }}>
+                                86-90 Paul Street<br />
+                                London EC2A 4NE
+                            </p>
+                        </div>
+                        <div>
+                            <p style={{
+                                fontSize: '13px',
+                                fontWeight: '400',
+                                textTransform: 'uppercase',
+                                letterSpacing: '0.15em',
+                                color: 'rgba(255,255,255,0.35)',
+                                margin: '0 0 6px',
+                            }}>
+                                Glasgow
+                            </p>
+                            <p style={{
+                                fontSize: '15px',
+                                fontWeight: '300',
+                                lineHeight: '1.6',
+                                color: 'rgba(255,255,255,0.6)',
+                                margin: 0,
+                            }}>
+                                15 Candleriggs Square<br />
+                                Glasgow G1 1TQ Scotland
+                            </p>
+                        </div>
+                        <a
+                            href="https://www.linkedin.com/in/jamesfreemanuk/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="footer-link"
+                            style={{ fontSize: '15px' }}
+                        >
+                            LinkedIn
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+
+            {/* Newsletter row */}
+            <div style={{
+                maxWidth: '1350px',
+                margin: '0 auto',
+                padding: '2rem 0',
+                borderBottom: '1px solid rgba(255,255,255,0.1)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                gap: '3rem',
+            }}>
+                <p style={{
+                    fontSize: '15px',
+                    fontWeight: '300',
+                    lineHeight: '1.6',
+                    color: 'rgba(255,255,255,0.6)',
+                    margin: 0,
+                    flexShrink: 0,
+                }}>
+                    Ideas and provocations, straight to your inbox.
+                </p>
+                <div style={{ flexShrink: 0 }}>
+                    <NewsletterSignup variant="footer" />
+                </div>
             </div>
 
             {/* Bottom bar */}

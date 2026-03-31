@@ -14,6 +14,11 @@ export async function POST(request) {
 
     // Honeypot check - bots fill hidden fields, humans don't
     if (fax_number) {
+      supabase.from('contact_honeypot_log').insert({
+        name: formData.name || null,
+        email: formData.email || null,
+        honeypot_value: fax_number,
+      }).then() // fire-and-forget
       return Response.json({ success: true }, { status: 200 })
     }
 

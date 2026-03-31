@@ -488,7 +488,7 @@ const nextConfig = {
       { source: '/audience-personas', destination: '/tools/audience-personas', permanent: true },
       { source: '/project-aristotle-for-effective-team-coaching', destination: '/tools/project-aristotle-effective-teams', permanent: true },
       { source: '/project-aristotle-effective-teams', destination: '/tools/project-aristotle-effective-teams', permanent: true },
-      { source: '/resource-hub', destination: '/resources', permanent: true },
+      { source: '/resource-hub', destination: '/tools', permanent: true },
       { source: '/specialisms', destination: '/services', permanent: true },
       { source: '/specialisms/:slug', destination: '/services', permanent: true },
       { source: '/why-are-you-reading-the-url', destination: '/', permanent: true },
@@ -627,6 +627,46 @@ const nextConfig = {
       { source: '/assessments', destination: '/states-of-vitality', permanent: true },
       { source: '/assessment/:path*', destination: '/states-of-vitality', permanent: true },
       { source: '/assessments/:path*', destination: '/states-of-vitality', permanent: true },
+
+
+      // ── 404 triage - 31 March 2026 ──────────────────────────────────
+
+      // Contact page variants
+      { source: '/contact-us', destination: '/contact', permanent: true },
+      { source: '/contact-us.html', destination: '/contact', permanent: true },
+      { source: '/contact.html', destination: '/contact', permanent: true },
+      { source: '/contacte', destination: '/contact', permanent: true },
+
+      // Old service paths
+      { source: '/services/leading-change', destination: '/services/change-management-consultancy', permanent: true },
+      { source: '/services/continuous-improvement-learning', destination: '/services/organisational-capacity-building', permanent: true },
+      { source: '/services/positive-change', destination: '/services/change-management-consultancy', permanent: true },
+      { source: '/services/co-creation', destination: '/services', permanent: true },
+
+      // Old service-areas deep paths (WordPress structure)
+      { source: '/service-areas/culture-change/organisational-culture-discovery', destination: '/services/culture-change-consultancy', permanent: true },
+      { source: '/service-areas/culture-change/organisational-culture-discovery/', destination: '/services/culture-change-consultancy', permanent: true },
+      { source: '/service-areas/culture-change/culture-change-programmes', destination: '/services/culture-change-consultancy/culture-change-programmes', permanent: true },
+      { source: '/service-areas/culture-change/culture-change-programmes/', destination: '/services/culture-change-consultancy/culture-change-programmes', permanent: true },
+
+      // Old section paths
+      { source: '/continuous-improvement-consultancy', destination: '/services/operational-effectiveness-consultancy', permanent: true },
+      { source: '/continuous-improvement-consultancy/', destination: '/services/operational-effectiveness-consultancy', permanent: true },
+      { source: '/build-capacity', destination: '/services/organisational-capacity-building', permanent: true },
+      { source: '/develop/leadership-programme', destination: '/develop', permanent: true },
+      { source: '/ideation/transformation-story-lab', destination: '/services', permanent: true },
+
+      // Resources/toolkit/workshops - old WordPress sections
+      { source: '/resources', destination: '/tools', permanent: true },
+      { source: '/toolkit', destination: '/tools', permanent: true },
+      { source: '/workshops', destination: '/courses', permanent: true },
+      { source: '/sitemap', destination: '/sitemap.xml', permanent: true },
+
+      // Tool embed path
+      { source: '/tools/change-curve/embed', destination: '/tools/change-curve', permanent: true },
+
+      // Project feed URLs (RSS remnants from WordPress)
+      { source: '/project/:slug/feed', destination: '/projects/:slug', permanent: true },
 
     ]
   },

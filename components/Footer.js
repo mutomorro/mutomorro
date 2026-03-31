@@ -145,21 +145,31 @@ export default function Footer() {
                 borderBottom: '1px solid rgba(255,255,255,0.1)',
                 display: 'flex',
                 alignItems: 'center',
-                justifyContent: 'space-between',
                 gap: '3rem',
             }}>
-                <p style={{
-                    fontSize: '15px',
-                    fontWeight: '300',
-                    lineHeight: '1.6',
-                    color: 'rgba(255,255,255,0.6)',
-                    margin: 0,
-                    flexShrink: 0,
-                }}>
-                    Ideas and provocations, straight to your inbox.
-                </p>
                 <div style={{ flexShrink: 0 }}>
-                    <NewsletterSignup variant="footer" />
+                    <p style={{
+                        fontSize: '13px',
+                        fontWeight: '400',
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.15em',
+                        color: 'rgba(255,255,255,0.4)',
+                        margin: '0 0 6px',
+                    }}>
+                        Stay in the loop
+                    </p>
+                    <p style={{
+                        fontSize: '15px',
+                        fontWeight: '300',
+                        lineHeight: '1.6',
+                        color: 'rgba(255,255,255,0.6)',
+                        margin: 0,
+                    }}>
+                        Occasional insights on organisational development and change. No spam.
+                    </p>
+                </div>
+                <div style={{ flex: 1 }}>
+                    <NewsletterSignup variant="footer-row" />
                 </div>
             </div>
 

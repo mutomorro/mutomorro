@@ -9,7 +9,8 @@ export default function NewsletterSignup({ variant = 'inline' }) {
   const [honeypot, setHoneypot] = useState('')
   const [formLoadedAt] = useState(Date.now())
 
-  const isFooter = variant === 'footer'
+  const isFooter = variant === 'footer' || variant === 'footer-row'
+  const isFooterRow = variant === 'footer-row'
   const isHomepage = variant === 'homepage'
 
   const honeypotField = (
@@ -107,6 +108,61 @@ export default function NewsletterSignup({ variant = 'inline' }) {
             style={{
               fontSize: '15px',
               padding: '14px 28px',
+              ...(status === 'sending' ? { background: 'rgba(255,255,255,0.5)', cursor: 'default' } : {}),
+            }}
+          >
+            {status === 'sending' ? '...' : 'Subscribe'}
+          </button>
+        </form>
+        {status === 'error' && (
+          <p style={{
+            fontSize: '13px',
+            color: 'var(--pink)',
+            margin: '12px 0 0',
+          }}>
+            Something went wrong - please try again.
+          </p>
+        )}
+      </div>
+    )
+  }
+
+  // ── Footer-row variant: form only, no heading/description ──
+  if (isFooterRow) {
+    return (
+      <div>
+        <form onSubmit={handleSubmit} style={{
+          display: 'flex',
+          gap: '8px',
+          flexWrap: 'wrap',
+        }}>
+          {honeypotField}
+          <input
+            type="text"
+            name="firstName"
+            value={formData.firstName}
+            onChange={handleChange}
+            placeholder="First name"
+            className="form-input form-input--dark"
+            style={{ width: '120px', fontSize: '14px', padding: '12px 14px' }}
+          />
+          <input
+            type="email"
+            name="email"
+            required
+            value={formData.email}
+            onChange={handleChange}
+            placeholder="Email address"
+            className="form-input form-input--dark"
+            style={{ flex: '1', minWidth: '180px', fontSize: '14px', padding: '12px 14px' }}
+          />
+          <button
+            type="submit"
+            disabled={status === 'sending'}
+            className="btn-primary btn-primary--dark"
+            style={{
+              fontSize: '14px',
+              padding: '12px 24px',
               ...(status === 'sending' ? { background: 'rgba(255,255,255,0.5)', cursor: 'default' } : {}),
             }}
           >

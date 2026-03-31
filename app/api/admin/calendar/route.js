@@ -17,7 +17,8 @@ export async function GET(request) {
   const dateParam = searchParams.get('date') || new Date().toISOString().split('T')[0]
 
   // Calculate date range
-  const anchor = new Date(dateParam + 'T00:00:00')
+  const [y, m, d] = dateParam.split('-').map(Number)
+  const anchor = new Date(y, m - 1, d)
   let startDate, endDate
 
   if (view === 'month') {
@@ -33,8 +34,8 @@ export async function GET(request) {
     endDate.setDate(startDate.getDate() + 6)
   }
 
-  const startStr = startDate.toISOString().split('T')[0]
-  const endStr = endDate.toISOString().split('T')[0]
+  const startStr = `${startDate.getFullYear()}-${String(startDate.getMonth() + 1).padStart(2, '0')}-${String(startDate.getDate()).padStart(2, '0')}`
+  const endStr = `${endDate.getFullYear()}-${String(endDate.getMonth() + 1).padStart(2, '0')}-${String(endDate.getDate()).padStart(2, '0')}`
 
   try {
     const { data, error } = await supabase

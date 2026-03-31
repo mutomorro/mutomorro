@@ -31,7 +31,7 @@ export default async function ContactPage({ searchParams }) {
           maxWidth: '1350px',
           margin: '0 auto',
           display: 'grid',
-          gridTemplateColumns: '1fr 380px',
+          gridTemplateColumns: '1fr 440px',
           gap: '5rem',
           alignItems: 'start',
         }}>
@@ -83,6 +83,7 @@ export default async function ContactPage({ searchParams }) {
             <div style={{
               borderTop: '1px solid rgba(0,0,0,0.08)',
               paddingTop: '2rem',
+              marginBottom: '2.5rem',
             }}>
               <span className="kicker" style={{
                 color: 'rgba(0,0,0,0.4)',
@@ -99,6 +100,27 @@ export default async function ContactPage({ searchParams }) {
               >
                 LinkedIn
               </a>
+            </div>
+
+            {/* Location */}
+            <div style={{
+              borderTop: '1px solid rgba(0,0,0,0.08)',
+              paddingTop: '2rem',
+            }}>
+              <span className="kicker" style={{
+                color: 'rgba(0,0,0,0.4)',
+                marginBottom: '16px',
+              }}>
+                Location
+              </span>
+              <div className="body-small" style={{ color: 'rgba(0,0,0,0.6)' }}>
+                <p style={{ margin: '0 0 1rem' }}>
+                  86-90 Paul Street, London EC2A 4NE
+                </p>
+                <p style={{ margin: 0 }}>
+                  15 Candleriggs Square, Glasgow G1 1TQ Scotland
+                </p>
+              </div>
             </div>
           </div>
         </div>

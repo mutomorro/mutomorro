@@ -92,7 +92,7 @@ export default async function ContactPage({ searchParams }) {
                 Connect
               </span>
               <a
-                href="https://www.linkedin.com/in/jamesfreemanuk/"
+                href="https://www.linkedin.com/company/mutomorro/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-link"

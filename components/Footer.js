@@ -161,7 +161,7 @@ export default function Footer() {
                             </p>
                         </div>
                         <a
-                            href="https://www.linkedin.com/in/jamesfreemanuk/"
+                            href="https://www.linkedin.com/company/mutomorro/"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="footer-link"

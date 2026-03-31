@@ -9,10 +9,47 @@ export default function Footer() {
             padding: '5rem 48px 2rem',
         }}>
 
+            {/* Newsletter row */}
+            <div style={{
+                maxWidth: '1350px',
+                margin: '0 auto',
+                paddingBottom: '3rem',
+                borderBottom: '1px solid rgba(255,255,255,0.1)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '3rem',
+            }}>
+                <div style={{ flexShrink: 0 }}>
+                    <p style={{
+                        fontSize: '13px',
+                        fontWeight: '400',
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.15em',
+                        color: 'rgba(255,255,255,0.4)',
+                        margin: '0 0 6px',
+                    }}>
+                        Stay in the loop
+                    </p>
+                    <p style={{
+                        fontSize: '15px',
+                        fontWeight: '300',
+                        lineHeight: '1.6',
+                        color: 'rgba(255,255,255,0.6)',
+                        margin: 0,
+                    }}>
+                        Occasional insights on organisational development and change. No spam.
+                    </p>
+                </div>
+                <div style={{ flex: 1 }}>
+                    <NewsletterSignup variant="footer-row" />
+                </div>
+            </div>
+
             {/* Main footer columns */}
             <div style={{
                 maxWidth: '1350px',
                 margin: '0 auto',
+                paddingTop: '3rem',
                 display: 'grid',
                 gridTemplateColumns: '2fr 1fr 1fr 1fr 1.5fr',
                 gap: '3rem',
@@ -135,42 +172,6 @@ export default function Footer() {
                     </div>
                 </div>
 
-            </div>
-
-            {/* Newsletter row */}
-            <div style={{
-                maxWidth: '1350px',
-                margin: '0 auto',
-                padding: '2rem 0',
-                borderBottom: '1px solid rgba(255,255,255,0.1)',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '3rem',
-            }}>
-                <div style={{ flexShrink: 0 }}>
-                    <p style={{
-                        fontSize: '13px',
-                        fontWeight: '400',
-                        textTransform: 'uppercase',
-                        letterSpacing: '0.15em',
-                        color: 'rgba(255,255,255,0.4)',
-                        margin: '0 0 6px',
-                    }}>
-                        Stay in the loop
-                    </p>
-                    <p style={{
-                        fontSize: '15px',
-                        fontWeight: '300',
-                        lineHeight: '1.6',
-                        color: 'rgba(255,255,255,0.6)',
-                        margin: 0,
-                    }}>
-                        Occasional insights on organisational development and change. No spam.
-                    </p>
-                </div>
-                <div style={{ flex: 1 }}>
-                    <NewsletterSignup variant="footer-row" />
-                </div>
             </div>
 
             {/* Bottom bar */}

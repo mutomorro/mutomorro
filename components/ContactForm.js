@@ -68,7 +68,7 @@ export default function ContactForm({ service }) {
           opacity: 0.6,
           margin: 0,
         }}>
-          I'll come back to you within 48 hours.
+          We'll come back to you within a day or two.
         </p>
       </div>
     )

@@ -82,19 +82,18 @@ export default async function ContactPage({ searchParams }) {
                 color: 'rgba(0,0,0,0.4)',
                 marginBottom: '16px',
               }}>
-                What to expect
+                What happens next
               </span>
               <div className="body-small" style={{ color: 'rgba(0,0,0,0.6)' }}>
                 <p style={{ margin: '0 0 1rem' }}>
-                  I'll reply within 48 hours, usually sooner.
-                </p>
-                <p style={{ margin: '0 0 1rem' }}>
-                  If it sounds like there's something worth exploring, I'll suggest a
-                  30-minute conversation - no preparation needed on your side.
+                  Do get in touch, whatever the project. We work with all kinds of
+                  organisations, on all sorts of challenges - and we'd genuinely
+                  love to hear from you.
                 </p>
                 <p style={{ margin: 0 }}>
-                  If I'm not the right fit for what you need, I'll say so honestly
-                  and point you toward someone who is.
+                  Let us know what you're thinking, and we'll come back to you
+                  within a day or two. From there, we can arrange a conversation
+                  to explore ideas and work out whether there's a good fit.
                 </p>
               </div>
             </div>

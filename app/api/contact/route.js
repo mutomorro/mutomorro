@@ -139,8 +139,8 @@ export async function POST(request) {
           html: `
             <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; color: #221C2B;">
               <p style="font-size: 16px; line-height: 1.6;">Hi ${firstName},</p>
-              <p style="font-size: 16px; line-height: 1.6;">Thanks for reaching out. I've received your message and will get back to you shortly.</p>
-              <p style="font-size: 16px; line-height: 1.6;">James</p>
+              <p style="font-size: 16px; line-height: 1.6;">Thanks for getting in touch. We've received your message and will get back to you shortly.</p>
+              <p style="font-size: 16px; line-height: 1.6;">Best wishes,<br/>Mutomorro</p>
             </div>
           `,
         })

@@ -106,19 +106,34 @@ export default async function ContactPage({ searchParams }) {
             <div style={{
               borderTop: '1px solid rgba(0,0,0,0.08)',
               paddingTop: '2rem',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '1.25rem',
             }}>
-              <span className="kicker" style={{
-                color: 'rgba(0,0,0,0.4)',
-                marginBottom: '16px',
-              }}>
-                Location
-              </span>
-              <div className="body-small" style={{ color: 'rgba(0,0,0,0.6)' }}>
-                <p style={{ margin: '0 0 1rem' }}>
-                  86-90 Paul Street, London EC2A 4NE
+              <div>
+                <span className="kicker" style={{
+                  color: 'rgba(0,0,0,0.4)',
+                  marginBottom: '6px',
+                  fontSize: '12px',
+                }}>
+                  London
+                </span>
+                <p className="body-small" style={{ color: 'rgba(0,0,0,0.6)', margin: 0 }}>
+                  86-90 Paul Street<br />
+                  London EC2A 4NE
                 </p>
-                <p style={{ margin: 0 }}>
-                  15 Candleriggs Square, Glasgow G1 1TQ Scotland
+              </div>
+              <div>
+                <span className="kicker" style={{
+                  color: 'rgba(0,0,0,0.4)',
+                  marginBottom: '6px',
+                  fontSize: '12px',
+                }}>
+                  Glasgow
+                </span>
+                <p className="body-small" style={{ color: 'rgba(0,0,0,0.6)', margin: 0 }}>
+                  15 Candleriggs Square<br />
+                  Glasgow G1 1TQ Scotland
                 </p>
               </div>
             </div>

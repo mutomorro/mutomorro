@@ -14,18 +14,15 @@ export async function POST(request) {
 
     // Honeypot check - bots fill hidden fields, humans don't
     if (fax_number) {
-      console.log('[contact] Honeypot triggered, rejecting')
       return Response.json({ success: true }, { status: 200 })
     }
 
     // Time-based check - reject submissions faster than 3 seconds
     if (_t && (Date.now() - _t) < 3000) {
-      console.log('[contact] Timing check failed, rejecting')
       return Response.json({ success: true }, { status: 200 })
     }
 
     const { name, email, organisation, message, service } = formData
-    console.log(`[contact] Processing submission from ${name} <${email}>`)
 
     if (!name || !email || !message) {
       return Response.json(
@@ -48,13 +45,11 @@ export async function POST(request) {
       .single()
 
     const verification = getCachedVerification(existing) || await verifyEmail(emailNormalised)
-    console.log(`[contact] Verification result: ${verification.status}, shouldBlock: ${verification.shouldBlock}`)
 
     // Run notification email, submission storage, and contact upsert independently
     // so one failure doesn't block the others
 
     // 1. Send notification email to James
-    console.log('[contact] Sending notification email to james@mutomorro.com')
     try {
       await resend.emails.send({
         from: 'Mutomorro Website <hello@mutomorro.com>',
@@ -106,11 +101,10 @@ export async function POST(request) {
         `,
       })
     } catch (emailError) {
-      console.error('[contact] Notification email FAILED:', emailError)
+      console.error('Contact form notification email failed:', emailError)
     }
 
     // 2. Store submission in contact_submissions table
-    console.log('[contact] Storing in contact_submissions')
     try {
       const { error: submissionError } = await supabase
         .from('contact_submissions')
@@ -124,12 +118,10 @@ export async function POST(request) {
         })
 
       if (submissionError) {
-        console.error('[contact] contact_submissions INSERT error:', JSON.stringify(submissionError))
-      } else {
-        console.log('[contact] contact_submissions stored OK')
+        console.error('Supabase contact_submissions insert error:', submissionError)
       }
     } catch (dbError) {
-      console.error('[contact] Supabase storage FAILED:', dbError)
+      console.error('Contact form Supabase storage failed:', dbError)
     }
 
     // 3. Send confirmation email to the submitter (skip if email is blocked)
@@ -209,7 +201,7 @@ export async function POST(request) {
     return Response.json({ success: true })
 
   } catch (error) {
-    console.error('[contact] TOP-LEVEL error:', error)
+    console.error('Contact form error:', error)
     return Response.json({ success: true })
   }
 }

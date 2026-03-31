@@ -10,10 +10,10 @@ const supabase = createClient(
 
 export async function POST(request) {
   try {
-    const { company_website, _t, ...formData } = await request.json()
+    const { fax_number, _t, ...formData } = await request.json()
 
     // Honeypot check - bots fill hidden fields, humans don't
-    if (company_website) {
+    if (fax_number) {
       console.log('[contact] Honeypot triggered, rejecting')
       return Response.json({ success: true }, { status: 200 })
     }

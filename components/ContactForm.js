@@ -28,7 +28,7 @@ export default function ContactForm({ service }) {
       const res = await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...formData, service, company_website: honeypot, _t: formLoadedAt }),
+        body: JSON.stringify({ ...formData, service, fax_number: honeypot, _t: formLoadedAt }),
       })
 
       if (!res.ok) {
@@ -83,16 +83,16 @@ export default function ContactForm({ service }) {
         </div>
       )}
 
-      {/* Honeypot - hidden from real users */}
+      {/* Honeypot - hidden from real users, named to attract bots but not autofill */}
       <div style={{ position: 'absolute', left: '-9999px', opacity: 0, height: 0, overflow: 'hidden' }} aria-hidden="true" tabIndex={-1}>
-        <label htmlFor="company_website">Company Website</label>
+        <label htmlFor="fax_number">Fax</label>
         <input
           type="text"
-          id="company_website"
-          name="company_website"
+          id="fax_number"
+          name="fax_number"
           value={honeypot}
           onChange={(e) => setHoneypot(e.target.value)}
-          autoComplete="off"
+          autoComplete="nope"
           tabIndex={-1}
         />
       </div>

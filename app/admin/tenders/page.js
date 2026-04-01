@@ -16,7 +16,7 @@ const ratingColours = {
   no: '#DC2626',
 }
 
-const statusOptions = ['new', 'reviewing', 'bidding', 'submitted', 'won', 'lost', 'passed']
+const statusOptions = ['new', 'reviewing', 'bidding', 'submitted', 'won', 'lost', 'cancelled', 'passed']
 
 function relativeTime(dateStr) {
   if (!dateStr) return '-'
@@ -53,7 +53,7 @@ export default function AdminTenders() {
   const [loading, setLoading] = useState(true)
   const [page, setPage] = useState(1)
   const [temperature, setTemperature] = useState('hot,warm')
-  const [status, setStatus] = useState('new')
+  const [status, setStatus] = useState('active')
   const [rating, setRating] = useState('')
   const [sector, setSector] = useState('')
   const [source, setSource] = useState('')
@@ -154,11 +154,11 @@ export default function AdminTenders() {
         <FilterSelect label="Temperature" value={temperature} onChange={v => setTemperature(v)}
           options={[['hot,warm', 'Hot & Warm'], ['hot', 'Hot only'], ['warm', 'Warm only'], ['archived', 'Archived'], ['', 'All']]} />
         <FilterSelect label="Status" value={status} onChange={v => setStatus(v)}
-          options={[['', 'All'], ...statusOptions.map(s => [s, s.charAt(0).toUpperCase() + s.slice(1)])]} />
+          options={[['active', 'Active'], ['', 'All'], ...statusOptions.map(s => [s, s.charAt(0).toUpperCase() + s.slice(1)])]} />
         <FilterSelect label="Rating" value={rating} onChange={v => setRating(v)}
           options={[['', 'All'], ['unrated', 'Unrated'], ['yes', 'Yes'], ['maybe', 'Maybe'], ['no', 'No']]} />
         <FilterSelect label="Source" value={source} onChange={v => setSource(v)}
-          options={[['', 'All'], ['contracts-finder', 'Contracts Finder'], ['find-a-tender', 'Find a Tender'], ['google-alerts', 'Google Alerts'], ['watchlist', 'Watchlist']]} />
+          options={[['', 'All'], ['contracts-finder', 'Contracts Finder'], ['find-a-tender', 'Find a Tender'], ['pcs', 'PCS'], ['google-alerts', 'Google Alerts'], ['watchlist', 'Watchlist']]} />
         <FilterSelect label="Sort" value={sort} onChange={v => setSort(v)}
           options={[['score', 'Highest score'], ['newest', 'Newest'], ['deadline', 'Deadline soonest'], ['rated', 'Recently rated']]} />
         <input
@@ -308,7 +308,7 @@ function TenderRow({ tender, isSelected, onSelect, onRate, onStatusChange, savin
 
         {/* Source */}
         <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.25)', flexShrink: 0, minWidth: '50px', textAlign: 'right' }}>
-          {tender.source === 'contracts-finder' ? 'CF' : tender.source === 'find-a-tender' ? 'FaT' : tender.source === 'google-alerts' ? 'GA' : tender.source === 'watchlist' ? 'WL' : tender.source}
+          {tender.source === 'contracts-finder' ? 'CF' : tender.source === 'find-a-tender' ? 'FaT' : tender.source === 'pcs' ? 'PCS' : tender.source === 'google-alerts' ? 'GA' : tender.source === 'watchlist' ? 'WL' : tender.source}
         </div>
       </div>
 

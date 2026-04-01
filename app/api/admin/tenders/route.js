@@ -38,7 +38,11 @@ export async function GET(request) {
         query = query.eq('temperature', temperature)
       }
     }
-    if (status) query = query.eq('status', status)
+    if (status === 'active') {
+      query = query.not('status', 'in', '(cancelled,dismissed,passed)')
+    } else if (status) {
+      query = query.eq('status', status)
+    }
     if (sector) query = query.ilike('sector', `%${sector}%`)
     if (source) query = query.eq('source', source)
     if (noticeType) query = query.eq('notice_type', noticeType)

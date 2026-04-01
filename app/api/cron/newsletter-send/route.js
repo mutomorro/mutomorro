@@ -18,7 +18,7 @@ import NewsletterTemplate from '../../../../components/emails/newsletter-templat
 import { verifyEmail } from '../../../../components/email-verification.js'
 import { buildSummaryEmail } from '../../../../components/emails/newsletter-summary.js'
 
-export const maxDuration = 300
+export const maxDuration = 800
 
 // TODO: Future - read current issue from newsletter_config or newsletter_sends table.
 // For now, hardcoded to Issue 1: "The space between the lines"

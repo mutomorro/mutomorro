@@ -408,42 +408,48 @@ export async function GET(request) {
       })
     )
 
-    // Send via Resend
-    const { data: resendData, error: resendError } = await resend.batch.send(
-      emails.map(e => ({
-        from: 'James from Mutomorro <hello@mutomorro.com>',
-        to: [e.email],
-        subject,
-        html: e.html,
-        headers: {
-          'List-Unsubscribe': `<${e.unsubscribeUrl}>`,
-          'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
-        },
-        tags: [
-          { name: 'newsletter_send_id', value: sendId },
-          { name: 'type', value: 'newsletter' },
-        ],
-      }))
-    )
-
-    if (resendError) {
-      console.error('Newsletter cron: Resend batch error', resendError)
-    }
-
-    // Update recipient records with Resend IDs
+    // Send via Resend in chunks of 100 (Resend batch API limit)
+    const RESEND_BATCH_LIMIT = 100
     let batchSent = 0
-    const results = resendData?.data || resendData || []
 
-    for (let i = 0; i < emails.length; i++) {
-      const resendResult = Array.isArray(results) ? results[i] : null
-      const resendId = resendResult?.id || null
+    for (let chunk = 0; chunk < emails.length; chunk += RESEND_BATCH_LIMIT) {
+      const emailChunk = emails.slice(chunk, chunk + RESEND_BATCH_LIMIT)
 
-      if (resendId) {
-        batchSent++
-        await supabase
-          .from('newsletter_recipients')
-          .update({ resend_id: resendId, status: 'sent', sent_at: now })
-          .eq('id', emails[i].recipientId)
+      const { data: resendData, error: resendError } = await resend.batch.send(
+        emailChunk.map(e => ({
+          from: 'James from Mutomorro <hello@mutomorro.com>',
+          to: [e.email],
+          subject,
+          html: e.html,
+          headers: {
+            'List-Unsubscribe': `<${e.unsubscribeUrl}>`,
+            'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
+          },
+          tags: [
+            { name: 'newsletter_send_id', value: sendId },
+            { name: 'type', value: 'newsletter' },
+          ],
+        }))
+      )
+
+      if (resendError) {
+        console.error(`Newsletter cron: Resend batch error (chunk ${chunk / RESEND_BATCH_LIMIT + 1})`, resendError)
+        continue
+      }
+
+      const results = resendData?.data || resendData || []
+
+      for (let i = 0; i < emailChunk.length; i++) {
+        const resendResult = Array.isArray(results) ? results[i] : null
+        const resendId = resendResult?.id || null
+
+        if (resendId) {
+          batchSent++
+          await supabase
+            .from('newsletter_recipients')
+            .update({ resend_id: resendId, status: 'sent', sent_at: now })
+            .eq('id', emailChunk[i].recipientId)
+        }
       }
     }
 

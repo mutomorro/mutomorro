@@ -3,6 +3,8 @@ import Image from 'next/image'
 import { getAllProjects, getAllTools } from '../sanity/client'
 import HeroCanvas from '../components/HeroCanvas'
 
+export const revalidate = 3600
+
 export const metadata = {
   title: {
     absolute: 'Mutomorro - Organisational development consultancy',

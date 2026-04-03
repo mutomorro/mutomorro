@@ -3,6 +3,8 @@ import CTA from '../../components/CTA'
 import BackgroundPattern from '@/components/animations/BackgroundPattern'
 import ProjectsGrid from './ProjectsGrid'
 
+export const revalidate = 3600
+
 export const metadata = {
   title: 'Case studies - organisational development projects',
   description: 'Real examples of culture change, post-merger integration, service design, and organisational restructuring across housing, charity, public sector, and financial services.',

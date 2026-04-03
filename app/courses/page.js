@@ -2,6 +2,8 @@ import { getAllCourses } from '../../sanity/client'
 import CTA from '../../components/CTA'
 import CoursesGrid from './CoursesGrid'
 
+export const revalidate = 3600
+
 export const metadata = {
   title: 'Sessions - organisational development training',
   description: 'Collaborative learning sessions on change management, culture, leadership, systems thinking, service design, and more. Designed for teams and leaders.',

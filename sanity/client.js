@@ -7,6 +7,8 @@ export const client = createClient({
   useCdn: true,
 })
 
+const fetchOpts = { next: { revalidate: 3600 } }
+
 // ============================================
 // PROJECTS
 // ============================================
@@ -22,13 +24,14 @@ export async function getAllProjects() {
     shortSummary,
     "heroImageUrl": heroImage.asset->url,
     "relatedServices": relatedServices[]->{_id, title, "slug": slug.current}
-  }`)
+  }`, {}, fetchOpts)
 }
 
 export async function getProject(slug) {
   return await client.fetch(
     `*[_type == "project" && slug.current == $slug][0]`,
-    { slug }
+    { slug },
+    fetchOpts
   )
 }
 
@@ -45,7 +48,7 @@ export async function getAllTools() {
     shortSummary,
     heroImage,
     "relatedServices": relatedServices[]->{_id, title, "slug": slug.current}
-  }`)
+  }`, {}, fetchOpts)
 }
 
 export async function getTool(slug) {
@@ -54,7 +57,8 @@ export async function getTool(slug) {
       ...,
       "toolkitFileUrl": toolkitFile.asset->url
     }`,
-    { slug }
+    { slug },
+    fetchOpts
   )
 }
 
@@ -74,7 +78,7 @@ export async function getAllDimensions() {
     colour,
     tagline,
     shortSummary
-  }`)
+  }`, {}, fetchOpts)
 }
 
 export async function getDimension(slug) {
@@ -90,7 +94,8 @@ export async function getDimension(slug) {
         shortSummary
       }
     }`,
-    { slug }
+    { slug },
+    fetchOpts
   )
 }
 
@@ -100,7 +105,9 @@ export async function getDimension(slug) {
 
 export async function getFrameworkOverview() {
   return await client.fetch(
-    `*[_type == "frameworkOverview"][0]{ title, subtitle, intro, body }`
+    `*[_type == "frameworkOverview"][0]{ title, subtitle, intro, body }`,
+    {},
+    fetchOpts
   )
 }
 
@@ -117,7 +124,8 @@ export async function getDimensionArticles(dimensionSlug) {
       order,
       shortSummary
     }`,
-    { dimensionSlug }
+    { dimensionSlug },
+    fetchOpts
   )
 }
 
@@ -132,7 +140,8 @@ export async function getDimensionArticle(dimensionSlug, articleSlug) {
         colour
       }
     }`,
-    { dimensionSlug, articleSlug }
+    { dimensionSlug, articleSlug },
+    fetchOpts
   )
 }
 
@@ -150,7 +159,7 @@ export async function getAllArticles() {
     shortSummary,
     heroImage,
     "relatedServices": relatedServices[]->{_id, title, "slug": slug.current}
-  }`)
+  }`, {}, fetchOpts)
 }
 
 export async function getArticle(slug) {
@@ -165,7 +174,8 @@ export async function getArticle(slug) {
         colour
       }
     }`,
-    { slug }
+    { slug },
+    fetchOpts
   )
 }
 
@@ -184,7 +194,7 @@ export async function getAllCourses() {
     shortSummary,
     heroImage,
     "relatedServices": relatedServices[]->{_id, title, "slug": slug.current}
-  }`)
+  }`, {}, fetchOpts)
 }
 
 export async function getCourse(slug) {
@@ -199,7 +209,8 @@ export async function getCourse(slug) {
         colour
       }
     }`,
-    { slug }
+    { slug },
+    fetchOpts
   )
 }
 
@@ -219,7 +230,7 @@ export async function getAllServices() {
       order,
       heroTagline,
     }
-  `)
+  `, {}, fetchOpts)
 }
 
 // Get all services in a category
@@ -233,7 +244,7 @@ export async function getServicesByCategory(category) {
       categoryLabel,
       heroTagline,
     }
-  `, { category })
+  `, { category }, fetchOpts)
 }
 
 // Get single service - full page content
@@ -342,7 +353,7 @@ export async function getService(slug) {
         heroTagline,
       },
     }
-  `, { slug })
+  `, { slug }, fetchOpts)
 }
 
 // ============================================
@@ -400,7 +411,7 @@ export async function getServiceSubPage(serviceSlug, subPageSlug) {
       seoTitle,
       seoDescription,
     }
-  `, { serviceSlug, subPageSlug })
+  `, { serviceSlug, subPageSlug }, fetchOpts)
 }
 
 // Get all sub-pages for a given service (for listings or nav)
@@ -412,7 +423,7 @@ export async function getServiceSubPages(serviceSlug) {
       slug,
       heroTagline,
     }
-  `, { serviceSlug })
+  `, { serviceSlug }, fetchOpts)
 }
 
 // ============================================
@@ -431,7 +442,7 @@ export async function getAllCapabilityServices() {
       order,
       heroTagline,
     }
-  `)
+  `, {}, fetchOpts)
 }
 
 // Get single capability service - full page content
@@ -488,7 +499,7 @@ export async function getCapabilityService(slug) {
       seoDescription,
       seoKeywords,
     }
-  `, { slug })
+  `, { slug }, fetchOpts)
 }
 
 
@@ -506,13 +517,16 @@ export async function getResource(slug) {
       relatedTools[]->{title, "slug": slug.current},
       relatedArticles[]->{title, "slug": slug.current}
     }`,
-    { slug }
+    { slug },
+    fetchOpts
   )
 }
 
 export async function getAllResourceSlugs() {
   return await client.fetch(
-    `*[_type == "resource"]{ "slug": slug.current }`
+    `*[_type == "resource"]{ "slug": slug.current }`,
+    {},
+    fetchOpts
   )
 }
 
@@ -554,7 +568,7 @@ export async function getSectorLandingPage(slug) {
         alt
       }
     }
-  `, { slug })
+  `, { slug }, fetchOpts)
 }
 
 export async function getAllSectorLandingPages() {
@@ -566,5 +580,5 @@ export async function getAllSectorLandingPages() {
       heroHeading,
       heroSubheading
     }
-  `)
+  `, {}, fetchOpts)
 }

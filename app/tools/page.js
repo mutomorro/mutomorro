@@ -2,6 +2,8 @@ import { getAllTools } from '../../sanity/client'
 import CTA from '../../components/CTA'
 import ToolsGrid from './ToolsGrid'
 
+export const revalidate = 3600
+
 export const metadata = {
   title: 'Tools and templates for organisational development',
   description: 'Free downloadable tools, templates, and frameworks. Practical resources for leaders working on culture, change, strategy, and organisational design.',

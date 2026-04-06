@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback } from 'react';
+import { useIsDesktop } from '../../hooks/useIsDesktop';
 import useCanvas from '../hooks/useCanvas';
 
 // --- Shared utilities (from bg-patterns-auto.html v7) ---
@@ -187,6 +188,12 @@ const FADE_GRADIENTS = {
 // --- Component ---
 
 export default function BackgroundPattern({ variant = 'network', fade, children, className = '', style = {} }) {
+  const isDesktop = useIsDesktop();
+
+  if (!isDesktop) {
+    return <div className={className} style={{ position: 'relative', ...style }}>{children}</div>;
+  }
+
   const createFn = VARIANTS[variant];
 
   if (!createFn) {

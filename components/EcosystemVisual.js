@@ -1,8 +1,10 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
+import { useIsDesktop } from '../hooks/useIsDesktop'
 
 export default function EcosystemVisual({ centreLabel = 'Intentional', centreSubtitle = 'Ecosystems' }) {
+  const isDesktop = useIsDesktop()
   const canvasRef = useRef(null)
   const svgRef = useRef(null)
 
@@ -192,6 +194,8 @@ export default function EcosystemVisual({ centreLabel = 'Intentional', centreSub
       if (animId) cancelAnimationFrame(animId)
     }
   }, [centreLabel, centreSubtitle])
+
+  if (!isDesktop) return null
 
   return (
     <div style={{

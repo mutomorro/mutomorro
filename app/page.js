@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { getAllProjects, getAllTools } from '../sanity/client'
-import HeroCanvas from '../components/HeroCanvas'
+import HeroCanvasDesktop from '../components/HeroCanvasDesktop'
 
 export const revalidate = 3600
 
@@ -89,7 +89,7 @@ export default async function Home() {
         background: '#221C2B',
         overflow: 'hidden',
       }}>
-        <HeroCanvas />
+        <HeroCanvasDesktop />
         <div style={{
           position: 'absolute',
           top: 0,

@@ -1,5 +1,6 @@
 'use client'
 import dynamic from 'next/dynamic'
+import { useIsDesktop } from '../../hooks/useIsDesktop'
 
 const heroMap = {
   'culture-change-consultancy': dynamic(() => import('./CultureChangeHero')),
@@ -19,6 +20,8 @@ const heroMap = {
 }
 
 export default function ServiceHero({ slug }) {
+  const isDesktop = useIsDesktop()
+  if (!isDesktop) return null
   const HeroComponent = heroMap[slug]
   if (!HeroComponent) return null
   return <HeroComponent />

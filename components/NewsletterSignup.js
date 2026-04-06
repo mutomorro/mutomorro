@@ -13,12 +13,14 @@ export default function NewsletterSignup({ variant = 'inline' }) {
   const isFooterRow = variant === 'footer-row'
   const isHomepage = variant === 'homepage'
 
+  const honeypotId = `company_website_${variant}`
+
   const honeypotField = (
     <div style={{ position: 'absolute', left: '-9999px', opacity: 0, height: 0, overflow: 'hidden' }} aria-hidden="true" tabIndex={-1}>
-      <label htmlFor="company_website">Company Website</label>
+      <label htmlFor={honeypotId}>Company Website</label>
       <input
         type="text"
-        id="company_website"
+        id={honeypotId}
         name="company_website"
         value={honeypot}
         onChange={(e) => setHoneypot(e.target.value)}

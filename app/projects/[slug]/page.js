@@ -1,3 +1,4 @@
+import { notFound } from 'next/navigation'
 import { getProject } from '../../../sanity/client'
 import { client } from '../../../sanity/client'
 import Image from 'next/image'
@@ -45,6 +46,7 @@ export async function generateMetadata({ params }) {
 export default async function CaseStudy({ params }) {
   const { slug } = await params
   const project = await getProject(slug)
+  if (!project) notFound()
 
   const jsonLd = {
     '@context': 'https://schema.org',

@@ -1,3 +1,4 @@
+import { notFound } from 'next/navigation'
 import { getCourse } from '../../../sanity/client'
 import { client } from '../../../sanity/client'
 import Image from 'next/image'
@@ -46,6 +47,7 @@ export async function generateMetadata({ params }) {
 export default async function CoursePage({ params }) {
   const { slug } = await params
   const course = await getCourse(slug)
+  if (!course) notFound()
 
   return (
     <main className="page-course">

@@ -1,3 +1,4 @@
+import { notFound } from 'next/navigation'
 import { getArticle } from '../../../sanity/client'
 import { client } from '../../../sanity/client'
 import Image from 'next/image'
@@ -47,6 +48,7 @@ export async function generateMetadata({ params }) {
 export default async function ArticlePage({ params }) {
   const { slug } = await params
   const article = await getArticle(slug)
+  if (!article) notFound()
 
   const jsonLd = {
     '@context': 'https://schema.org',

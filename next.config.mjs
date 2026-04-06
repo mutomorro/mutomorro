@@ -26,6 +26,18 @@ const nextConfig = {
 
 
       // =========================================================
+      // 500-error fixes - 6 April 2026
+      // =========================================================
+
+      { source: '/courses/being-an-effective-change-sponsor', destination: '/courses/effective-change-sponsor', permanent: true },
+      { source: '/courses/foundations-for-positive-change', destination: '/courses', permanent: true },
+      { source: '/projects/culture-change-in-housing', destination: '/projects/culture-change-in-social-housing', permanent: true },
+      { source: '/projects/improving-regulation-framework', destination: '/projects/public-sector-service-design-case-study', permanent: true },
+      { source: '/articles/leadership-vulnerability-in-storytelling', destination: '/articles', permanent: true },
+      { source: '/articles/organisational-culture', destination: '/articles', permanent: true },
+
+
+      // =========================================================
       // PATTERN REDIRECTS - whole sections
       // Slug stays the same, just the path prefix changes
       // =========================================================

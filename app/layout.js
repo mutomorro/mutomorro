@@ -5,6 +5,7 @@ import LayoutShell from '../components/LayoutShell'
 const sourceSans = Source_Sans_3({
   subsets: ['latin'],
   weight: ['300', '400', '600'],
+  display: 'swap',
   variable: '--font-source-sans',
 })
 

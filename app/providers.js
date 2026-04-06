@@ -12,6 +12,11 @@ export function PostHogProvider({ children }) {
       capture_pageview: false,
       capture_pageleave: true,
       persistence: 'memory',
+      disable_session_recording: true,
+      disable_surveys: true,
+      autocapture: {
+        capture_dead_clicks: false,
+      },
     })
   }, [])
 

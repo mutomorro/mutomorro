@@ -1,5 +1,6 @@
 'use client'
 import dynamic from 'next/dynamic'
+import { useIsDesktop } from '../../hooks/useIsDesktop'
 
 const cardMap = {
   'post-merger-integration-consultancy': [
@@ -89,6 +90,8 @@ const cardMap = {
 }
 
 export default function RecognitionCard({ slug, index }) {
+  const isDesktop = useIsDesktop()
+  if (!isDesktop) return null
   const cards = cardMap[slug]
   if (!cards || !cards[index]) return null
   const CardComponent = cards[index]

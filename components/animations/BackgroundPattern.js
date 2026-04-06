@@ -190,15 +190,7 @@ const FADE_GRADIENTS = {
 export default function BackgroundPattern({ variant = 'network', fade, children, className = '', style = {} }) {
   const isDesktop = useIsDesktop();
 
-  if (!isDesktop) {
-    return <div className={className} style={{ position: 'relative', ...style }}>{children}</div>;
-  }
-
   const createFn = VARIANTS[variant];
-
-  if (!createFn) {
-    console.warn(`BackgroundPattern: unknown variant "${variant}". Use: ${Object.keys(VARIANTS).join(', ')}`);
-  }
 
   const drawFactory = useCallback(
     (ctx, w, h) => {
@@ -211,6 +203,10 @@ export default function BackgroundPattern({ variant = 'network', fade, children,
   const canvasRef = useCanvas(drawFactory);
 
   const fadeGradient = fade ? FADE_GRADIENTS[fade] : null;
+
+  if (!isDesktop) {
+    return <div className={className} style={{ position: 'relative', ...style }}>{children}</div>;
+  }
 
   return (
     <div

@@ -67,7 +67,17 @@ body {
   color: var(--black);
   font-family: var(--font);
   font-weight: 400;
+  font-size: 16px;
+  line-height: 1.6;
   -webkit-font-smoothing: antialiased;
+}
+
+@media (min-width: 768px) {
+  body {
+    font-weight: 350;
+    font-size: 17px;
+    line-height: 1.65;
+  }
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -151,7 +161,6 @@ a:hover {
 
 .body-text {
   font-size: 18px;
-  font-weight: 300;
   line-height: 1.75;
   max-width: 640px;
 }
@@ -159,14 +168,12 @@ a:hover {
 
 .body-small {
   font-size: 16px;
-  font-weight: 300;
   line-height: 1.75;
 }
 
 .lead-text,
 .lead {
   font-size: 22px;
-  font-weight: 300;
   line-height: 1.6;
   color: rgba(0,0,0,0.55);
   max-width: 640px;
@@ -184,7 +191,6 @@ a:hover {
 
 .pull-quote {
   font-size: clamp(24px, 3vw, 36px);
-  font-weight: 300;
   line-height: 1.4;
   border-left: 3px solid var(--accent);
   padding-left: 28px;
@@ -195,7 +201,6 @@ a:hover {
 
 .stat-number {
   font-size: clamp(48px, 5vw, 72px);
-  font-weight: 300;
   line-height: 1;
   letter-spacing: -0.02em;
 }
@@ -412,7 +417,6 @@ a:hover {
 .footer-link {
   color: rgba(255,255,255,0.75);
   font-size: 15px;
-  font-weight: 300;
   text-decoration: none;
   background-image: linear-gradient(var(--accent), var(--accent));
   background-size: 0% 1.5px;
@@ -496,7 +500,6 @@ a:hover {
 }
 .nav-panel-link__desc {
   font-size: 14px;
-  font-weight: 300;
   color: rgba(0,0,0,0.45);
   margin: 0;
 }
@@ -549,7 +552,6 @@ a:hover {
 }
 .nav-contents-row__desc {
   font-size: 18px;
-  font-weight: 300;
   line-height: 1.4;
   color: rgba(0,0,0,0.45);
 }
@@ -656,7 +658,6 @@ a:hover {
 }
 .explore-dest-card__desc {
   font-size: 13px;
-  font-weight: 300;
   color: rgba(0,0,0,0.5);
 }
 .explore-dest-card__chevron {
@@ -692,7 +693,6 @@ a:hover {
 .explore-courses-card__desc {
   display: block;
   font-size: 13px;
-  font-weight: 300;
   color: rgba(255,255,255,0.5);
 }
 .explore-courses-card__chevron {
@@ -753,7 +753,6 @@ a:hover {
 }
 .explore-featured__desc {
   font-size: 14px;
-  font-weight: 300;
   color: rgba(0,0,0,0.5);
   line-height: 1.6;
   margin-bottom: 16px;
@@ -802,7 +801,6 @@ a:hover {
 }
 .explore-taster__meta {
   font-size: 11px;
-  font-weight: 300;
   opacity: 0.5;
 }
 
@@ -914,7 +912,6 @@ a:hover {
   margin-bottom: 12px;
   font-size: 16px;
   line-height: 1.55;
-  font-weight: 300;
   color: var(--dark);
 }
 .practice-list li::before {
@@ -990,7 +987,6 @@ a:hover {
 .journey-strip__desc {
   margin: 0;
   font-size: 16px;
-  font-weight: 300;
   color: rgba(0,0,0,0.75);
   text-align: center;
   max-width: 240px;
@@ -1085,7 +1081,6 @@ a:hover {
 }
 .stage-outcome-box__text {
   font-size: 16px;
-  font-weight: 300;
   color: rgba(0,0,0,0.6);
   line-height: 1.6;
   margin: 0;
@@ -1236,7 +1231,6 @@ a:hover {
 .bento-box__desc {
   color: rgba(255,255,255,0.75);
   font-size: 16px;
-  font-weight: 300;
   line-height: 1.6;
   margin: 0;
 }
@@ -1350,7 +1344,6 @@ a:hover {
 }
 .card-a__text {
   font-size: 16px;
-  font-weight: 300;
   line-height: 1.7;
   color: rgba(0,0,0,0.75);
 }
@@ -1454,7 +1447,6 @@ a:hover {
 .card-c:hover .card-c__title { color: #fff; }
 .card-c__text {
   font-size: 16px;
-  font-weight: 300;
   line-height: 1.7;
   color: rgba(0,0,0,0.75);
   transition: color 0.3s;
@@ -1523,7 +1515,6 @@ a:hover {
 }
 .card-d__text {
   font-size: 16px;
-  font-weight: 300;
   line-height: 1.7;
   color: rgba(0,0,0,0.75);
 }
@@ -1912,7 +1903,6 @@ a:hover {
   border-left: 3px solid var(--accent);
   padding: 20px 24px;
   font-size: 16px;
-  font-weight: 300;
   line-height: 1.6;
 }
 
@@ -1920,7 +1910,6 @@ a:hover {
   border-left: 3px solid var(--pink);
   padding: 20px 24px;
   font-size: 16px;
-  font-weight: 300;
   line-height: 1.6;
 }
 
@@ -2038,7 +2027,6 @@ a:hover {
   font-size: 18px;
   line-height: 1.75;
   color: var(--dark);
-  font-weight: 300;
   margin: 0 0 1.25rem 0;
 }
 
@@ -2075,7 +2063,6 @@ a:hover {
 .portable-text li {
   font-size: 18px;
   line-height: 1.75;
-  font-weight: 300;
   color: var(--dark);
   margin-bottom: 0.5rem;
 }
@@ -2395,7 +2382,6 @@ a:hover {
   font-size: 0.95rem;
   line-height: 1.6;
   color: #666;
-  font-weight: 300;
   margin: 0;
 }
 
@@ -2505,7 +2491,6 @@ a:hover {
 }
 .mid-page-cta__text {
   font-size: 18px;
-  font-weight: 300;
   font-style: italic;
   color: rgba(0,0,0,0.55);
   margin: 0 0 20px;
@@ -3177,7 +3162,6 @@ a:hover {
 }
 .mobile-nav__about-desc {
   font-size: 16px;
-  font-weight: 300;
   line-height: 1.5;
   color: rgba(0,0,0,0.5);
   display: block;
@@ -3549,7 +3533,6 @@ a:hover {
 .cookie-banner__body {
   color: rgba(255,255,255,0.85);
   font-size: 15px;
-  font-weight: 300;
   line-height: 1.6;
   margin: 0;
 }
@@ -3589,9 +3572,6 @@ a:hover {
   text-transform: uppercase;
   letter-spacing: 0.1em;
   color: rgba(0,0,0,0.5);
-}
-.privacy-table td {
-  font-weight: 300;
 }
 .privacy-table code {
   font-size: 13px;
@@ -3647,7 +3627,6 @@ a:hover {
   border-left: 3px solid #9B51E0;
   background: #FFFFFF;
   font-size: 18px;
-  font-weight: 300;
   line-height: 1.75;
   color: #221C2B;
   flex: 1;
@@ -3693,7 +3672,6 @@ a:hover {
 
 .sector-service-card__angle {
   font-size: 15px;
-  font-weight: 300;
   line-height: 1.65;
   color: rgba(0, 0, 0, 0.7);
   margin: 12px 0 0;

@@ -113,7 +113,7 @@
   padding: 20px 28px;
   border-top: 1px solid rgba(255,255,255,0.06);
   font-size: 13px;
-  font-weight: 300;
+
   color: rgba(255,255,255,0.18);
   line-height: 1.6;
 }
@@ -284,7 +284,7 @@
 
 .de-overview-intro p {
   font-size: 19px;
-  font-weight: 300;
+
   line-height: 1.7;
   color: var(--dark);
   margin-bottom: 12px;
@@ -393,7 +393,7 @@
 
 .de-tagline {
   font-size: 17px;
-  font-weight: 300;
+
   font-style: italic;
   line-height: 1.5;
   margin-bottom: 24px;
@@ -402,7 +402,7 @@
 
 .de-description {
   font-size: 17px;
-  font-weight: 300;
+
   line-height: 1.75;
   color: var(--dark);
   margin-bottom: 28px;
@@ -457,7 +457,7 @@
 
 .de-question-item {
   font-size: 16px;
-  font-weight: 300;
+
   line-height: 1.65;
   color: var(--dark);
   padding-left: 20px;
@@ -519,7 +519,7 @@
   padding-top: 32px;
   border-top: 1px solid rgba(34, 28, 43, 0.08);
   font-size: 15px;
-  font-weight: 300;
+
   line-height: 1.65;
   color: var(--dark);
   opacity: 0.6;
@@ -600,7 +600,7 @@
 
 .ew-dim-tagline {
   font-size: 18px;
-  font-weight: 300;
+
   color: rgba(34,28,43,0.45);
   font-style: italic;
   margin-bottom: 20px;
@@ -608,7 +608,7 @@
 
 .ew-dim-lead {
   font-size: 18px;
-  font-weight: 300;
+
   line-height: 1.75;
   color: rgba(34,28,43,0.55);
   max-width: 720px;
@@ -616,7 +616,7 @@
 
 .ew-dim-lens {
   font-size: 17px;
-  font-weight: 300;
+
   line-height: 1.6;
   color: var(--dark);
   font-style: italic;
@@ -654,7 +654,7 @@
 
 .ew-section-page p {
   font-size: 18px;
-  font-weight: 300;
+
   line-height: 1.75;
   color: var(--dark);
   margin-bottom: 20px;
@@ -704,7 +704,7 @@
 .ew-section-page li {
   padding: 8px 0;
   font-size: 17px;
-  font-weight: 300;
+
   color: var(--dark);
   line-height: 1.65;
   padding-left: 20px;
@@ -727,7 +727,7 @@
   background: var(--warm);
   margin: 28px 0;
   font-size: 18px;
-  font-weight: 300;
+
   line-height: 1.7;
   color: var(--dark);
 }
@@ -752,7 +752,7 @@
 
 .ew-definition-callout p {
   font-size: 18px;
-  font-weight: 300;
+
   line-height: 1.7;
   color: var(--dark);
   margin: 0;
@@ -771,7 +771,7 @@
   padding: 11px 0;
   border-bottom: 1px solid rgba(0,0,0,0.05);
   font-size: 17px;
-  font-weight: 300;
+
   color: var(--dark);
   display: flex;
   gap: 14px;
@@ -841,7 +841,7 @@
 .ew-comparison-cell {
   padding: 14px 20px;
   font-size: 16px;
-  font-weight: 300;
+
   color: var(--dark);
   line-height: 1.55;
 }
@@ -870,7 +870,7 @@
 
 .ew-reflection-item {
   font-size: 17px;
-  font-weight: 300;
+
   line-height: 1.65;
   color: var(--dark);
   padding: 12px 0;
@@ -914,7 +914,7 @@
 
 .ew-principle-desc {
   font-size: 16px;
-  font-weight: 300;
+
   color: var(--dark);
   line-height: 1.75;
 }
@@ -957,7 +957,7 @@
 
 .ew-connection-text {
   font-size: 16px;
-  font-weight: 300;
+
   color: var(--dark);
   line-height: 1.75;
   padding-left: 18px;
@@ -1089,7 +1089,7 @@
 
 .ew-article-row-summary {
   font-size: 16px;
-  font-weight: 300;
+
   color: var(--dark);
   line-height: 1.5;
   max-width: 600px;
@@ -1162,7 +1162,7 @@
 
 .ew-related-summary {
   font-size: 16px;
-  font-weight: 300;
+
   color: var(--dark);
   flex: 2;
 }
@@ -1185,7 +1185,7 @@
 
 .ew-section-page .portable-text p {
   font-size: 18px;
-  font-weight: 300;
+
   line-height: 1.75;
   color: var(--dark);
   margin-bottom: 20px;
@@ -1220,7 +1220,7 @@
 .ew-section-page .portable-text li {
   padding: 8px 0;
   font-size: 17px;
-  font-weight: 300;
+
   color: var(--dark);
   line-height: 1.65;
   padding-left: 20px;

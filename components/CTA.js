@@ -13,7 +13,7 @@ export default function CTA({
   return (
     <BackgroundPattern variant="network" className="section--full dark-bg section-padding-cta" style={{
       textAlign: 'center',
-      background: '#423B49',
+      background: 'radial-gradient(ellipse at 50% 120%, rgba(60,30,70,0.9) 0%, #221C2B 70%)',
     }}>
       <div style={{ maxWidth: '620px', margin: '0 auto', position: 'relative' }}>
         <span className="kicker" style={{ marginBottom: '20px' }}>{label}</span>

@@ -49,7 +49,7 @@ export default async function CaseStudy({ params }) {
   const project = await getProject(slug)
   if (!project) notFound()
 
-  const heroImageUrl = project.heroImage ? urlFor(project.heroImage).width(600).url() : null
+  const heroImageUrl = project.heroImage ? urlFor(project.heroImage).width(900).url() : null
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -170,10 +170,10 @@ export default async function CaseStudy({ params }) {
                 <Image
                   src={heroImageUrl}
                   alt={project.title || ''}
-                  width={600}
-                  height={400}
+                  width={900}
+                  height={600}
                   priority
-                  sizes="(max-width: 768px) 100vw, 600px"
+                  sizes="(max-width: 768px) 100vw, 50vw"
                   style={{
                     width: '100%',
                     height: 'auto',

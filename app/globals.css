@@ -2146,7 +2146,7 @@ a:hover {
 
 .content-hero-grid {
   display: grid;
-  grid-template-columns: 55% 1fr;
+  grid-template-columns: 1fr 1fr;
   gap: 48px;
   align-items: center;
 }

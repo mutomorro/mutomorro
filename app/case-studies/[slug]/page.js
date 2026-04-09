@@ -16,7 +16,7 @@ export default async function CaseStudy({ params }) {
   const { slug } = await params
   const project = await getProject(slug)
 
-  const heroImageUrl = project.heroImage ? urlFor(project.heroImage).width(600).url() : null
+  const heroImageUrl = project.heroImage ? urlFor(project.heroImage).width(900).url() : null
 
   return (
     <main style={{ fontFamily: 'var(--font-source-sans), sans-serif', color: '#1a1a1a' }}>
@@ -51,10 +51,10 @@ export default async function CaseStudy({ params }) {
                 <Image
                   src={heroImageUrl}
                   alt={project.title || ''}
-                  width={600}
-                  height={400}
+                  width={900}
+                  height={600}
                   priority
-                  sizes="(max-width: 768px) 100vw, 600px"
+                  sizes="(max-width: 768px) 100vw, 50vw"
                   style={{
                     width: '100%',
                     height: 'auto',

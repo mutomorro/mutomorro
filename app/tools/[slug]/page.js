@@ -39,7 +39,7 @@ export default async function ToolPage({ params }) {
   const tool = await getTool(slug)
 
   const pdfUrl = tool.toolkitFileUrl || null
-  const heroImageUrl = tool.heroImage ? urlFor(tool.heroImage).width(600).url() : null
+  const heroImageUrl = tool.heroImage ? urlFor(tool.heroImage).width(900).url() : null
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -145,10 +145,10 @@ export default async function ToolPage({ params }) {
                 <Image
                   src={heroImageUrl}
                   alt={tool.title || ''}
-                  width={600}
-                  height={400}
+                  width={900}
+                  height={600}
                   priority
-                  sizes="(max-width: 768px) 100vw, 600px"
+                  sizes="(max-width: 768px) 100vw, 50vw"
                   style={{
                     width: '100%',
                     height: 'auto',

@@ -97,7 +97,7 @@ export default async function ToolPage({ params }) {
 
       {/* Hero */}
       <section className="section--full dark-bg section-padding-hero">
-        <div className={`section__inner tool-hero-grid${heroImageUrl ? '' : ' tool-hero-grid--single'}`}>
+        <div className={`section__inner content-hero-grid${heroImageUrl ? '' : ' content-hero-grid--single'}`}>
           {/* Left: text content */}
           <div>
             {/* Breadcrumb */}
@@ -140,7 +140,7 @@ export default async function ToolPage({ params }) {
 
           {/* Right: hero image with perspective shift */}
           {heroImageUrl && (
-            <div className="tool-hero-image-wrap">
+            <div className="content-hero-image-wrap">
               <div className="img-perspective" style={{ maxWidth: '100%' }}>
                 <Image
                   src={heroImageUrl}

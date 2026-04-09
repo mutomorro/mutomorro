@@ -50,6 +50,8 @@ export default async function ArticlePage({ params }) {
   const article = await getArticle(slug)
   if (!article) notFound()
 
+  const heroImageUrl = article.heroImage ? urlFor(article.heroImage).width(600).url() : null
+
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Article',
@@ -108,25 +110,47 @@ export default async function ArticlePage({ params }) {
       {/* Hero */}
       <BackgroundPattern variant="constellation" style={{ background: 'var(--dark)' }}>
         <section className="section--full dark-bg section-padding-hero" style={{ background: 'transparent' }}>
-          <div className="wrap--narrow">
-            {/* Breadcrumb */}
-            <div className="breadcrumb">
-              <Link href="/articles" className="breadcrumb__link">Thinking</Link>
-              <span className="breadcrumb__sep">/</span>
-              <span className="breadcrumb__current">{article.category}</span>
+          <div className={`section__inner content-hero-grid${heroImageUrl ? '' : ' content-hero-grid--single'}`}>
+            <div>
+              {/* Breadcrumb */}
+              <div className="breadcrumb">
+                <Link href="/articles" className="breadcrumb__link">Thinking</Link>
+                <span className="breadcrumb__sep">/</span>
+                <span className="breadcrumb__current">{article.category}</span>
+              </div>
+
+              <span className="kicker" style={{ marginBottom: '16px' }}>{article.category}</span>
+              <h1 className="heading-h1" style={{
+                color: '#ffffff',
+                margin: '0 0 32px',
+              }}>
+                {article.title}
+              </h1>
+              {article.shortSummary && (
+                <p className="lead-text" style={{ color: 'rgba(255,255,255,0.6)' }}>
+                  {article.shortSummary}
+                </p>
+              )}
             </div>
 
-            <span className="kicker" style={{ marginBottom: '16px' }}>{article.category}</span>
-            <h1 className="heading-h1" style={{
-              color: '#ffffff',
-              margin: '0 0 32px',
-            }}>
-              {article.title}
-            </h1>
-            {article.shortSummary && (
-              <p className="lead-text" style={{ color: 'rgba(255,255,255,0.6)' }}>
-                {article.shortSummary}
-              </p>
+            {heroImageUrl && (
+              <div className="content-hero-image-wrap">
+                <div className="img-perspective" style={{ maxWidth: '100%' }}>
+                  <Image
+                    src={heroImageUrl}
+                    alt={article.title || ''}
+                    width={600}
+                    height={400}
+                    priority
+                    sizes="(max-width: 768px) 100vw, 600px"
+                    style={{
+                      width: '100%',
+                      height: 'auto',
+                      display: 'block',
+                    }}
+                  />
+                </div>
+              </div>
             )}
           </div>
         </section>

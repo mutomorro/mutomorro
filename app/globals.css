@@ -2141,40 +2141,40 @@ a:hover {
 }
 
 /* ================================================
-   TOOL HERO GRID
+   CONTENT HERO GRID (tools, articles, case studies)
    ================================================ */
 
-.tool-hero-grid {
+.content-hero-grid {
   display: grid;
   grid-template-columns: 55% 1fr;
   gap: 48px;
   align-items: center;
 }
 
-.tool-hero-grid--single {
+.content-hero-grid--single {
   grid-template-columns: 1fr;
 }
 
 /* Desktop: image aligned right */
-.tool-hero-image-wrap {
+.content-hero-image-wrap {
   display: flex;
   justify-content: flex-end;
   align-items: center;
 }
 
 @media (max-width: 767px) {
-  .tool-hero-grid {
+  .content-hero-grid {
     grid-template-columns: 1fr;
     gap: 32px;
   }
 
   /* Full-bleed hero image on mobile — break out of section + inner padding */
-  .tool-hero-image-wrap {
+  .content-hero-image-wrap {
     margin-left: -44px;
     margin-right: -44px;
     display: block;
   }
-  .tool-hero-image-wrap .img-perspective {
+  .content-hero-image-wrap .img-perspective {
     max-width: none !important;
     border-radius: 0;
     box-shadow: none;

@@ -48,6 +48,8 @@ export default async function CaseStudy({ params }) {
   const project = await getProject(slug)
   if (!project) notFound()
 
+  const heroImageUrl = project.heroImage ? urlFor(project.heroImage).width(600).url() : null
+
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Article',
@@ -139,31 +141,53 @@ export default async function CaseStudy({ params }) {
 
       {/* Hero */}
       <section className="section--full dark-bg section-padding-hero">
-        <div className="wrap--narrow">
-          {/* Breadcrumb */}
-          <div className="breadcrumb">
-            <Link href="/projects" className="breadcrumb__link">Projects</Link>
+        <div className={`section__inner content-hero-grid${heroImageUrl ? '' : ' content-hero-grid--single'}`}>
+          <div>
+            {/* Breadcrumb */}
+            <div className="breadcrumb">
+              <Link href="/projects" className="breadcrumb__link">Projects</Link>
+              {project.clientSector && (
+                <>
+                  <span className="breadcrumb__sep">/</span>
+                  <span className="breadcrumb__current">{project.clientSector}</span>
+                </>
+              )}
+            </div>
+
             {project.clientSector && (
-              <>
-                <span className="breadcrumb__sep">/</span>
-                <span className="breadcrumb__current">{project.clientSector}</span>
-              </>
+              <span className="kicker" style={{ marginBottom: '16px' }}>{project.clientSector}</span>
+            )}
+            <h1 className="heading-h1" style={{
+              color: '#ffffff',
+              margin: '0 0 32px',
+            }}>
+              {project.title}
+            </h1>
+            {project.shortSummary && (
+              <p className="lead-text" style={{ color: 'rgba(255,255,255,0.6)' }}>
+                {project.shortSummary}
+              </p>
             )}
           </div>
 
-          {project.clientSector && (
-            <span className="kicker" style={{ marginBottom: '16px' }}>{project.clientSector}</span>
-          )}
-          <h1 className="heading-h1" style={{
-            color: '#ffffff',
-            margin: '0 0 32px',
-          }}>
-            {project.title}
-          </h1>
-          {project.shortSummary && (
-            <p className="lead-text" style={{ color: 'rgba(255,255,255,0.6)' }}>
-              {project.shortSummary}
-            </p>
+          {heroImageUrl && (
+            <div className="content-hero-image-wrap">
+              <div className="img-perspective" style={{ maxWidth: '100%' }}>
+                <Image
+                  src={heroImageUrl}
+                  alt={project.title || ''}
+                  width={600}
+                  height={400}
+                  priority
+                  sizes="(max-width: 768px) 100vw, 600px"
+                  style={{
+                    width: '100%',
+                    height: 'auto',
+                    display: 'block',
+                  }}
+                />
+              </div>
+            </div>
           )}
         </div>
       </section>

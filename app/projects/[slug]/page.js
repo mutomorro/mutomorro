@@ -195,7 +195,7 @@ export default async function CaseStudy({ params }) {
             if (!content) return null
 
             return (
-              <div key={key} className="scroll-in" style={{
+              <div key={key} style={{
                 marginBottom: '4rem',
                 paddingBottom: '4rem',
                 borderBottom: '1px solid rgba(0,0,0,0.06)',
@@ -214,7 +214,7 @@ export default async function CaseStudy({ params }) {
           {!project.clientAndContext && !project.theObjective && !project.theApproach && (
             <>
               {project.challenge && (
-                <div className="scroll-in" style={{ marginBottom: '4rem', paddingBottom: '4rem', borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
+                <div style={{ marginBottom: '4rem', paddingBottom: '4rem', borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
                   <span className="kicker" style={{ color: 'var(--accent)', marginBottom: '20px' }}>The challenge</span>
                   <div className="portable-text">
                     <PortableText value={project.challenge} components={portableTextComponents} />
@@ -222,7 +222,7 @@ export default async function CaseStudy({ params }) {
                 </div>
               )}
               {project.approach && (
-                <div className="scroll-in" style={{ marginBottom: '4rem', paddingBottom: '4rem', borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
+                <div style={{ marginBottom: '4rem', paddingBottom: '4rem', borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
                   <span className="kicker" style={{ color: 'var(--accent)', marginBottom: '20px' }}>Our approach</span>
                   <div className="portable-text">
                     <PortableText value={project.approach} components={portableTextComponents} />
@@ -230,7 +230,7 @@ export default async function CaseStudy({ params }) {
                 </div>
               )}
               {project.outcome && (
-                <div className="scroll-in" style={{ marginBottom: '4rem', paddingBottom: '4rem', borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
+                <div style={{ marginBottom: '4rem', paddingBottom: '4rem', borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
                   <span className="kicker" style={{ color: 'var(--accent)', marginBottom: '20px' }}>The outcome</span>
                   <div className="portable-text">
                     <PortableText value={project.outcome} components={portableTextComponents} />

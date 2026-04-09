@@ -54,7 +54,7 @@ export default async function CoursePage({ params }) {
 
       {/* Hero */}
       <BackgroundPattern variant="constellation" style={{ background: 'var(--dark)' }}>
-        <section className="section--full dark-bg" style={{ padding: '100px 48px 120px', background: 'transparent' }}>
+        <section className="section--full dark-bg section-padding-hero" style={{ background: 'transparent' }}>
           <div className="wrap--narrow">
             {/* Breadcrumb */}
             <div className="breadcrumb">
@@ -100,7 +100,7 @@ export default async function CoursePage({ params }) {
       </BackgroundPattern>
 
       {/* Body */}
-      <section className="section--full" style={{ padding: '80px 48px', background: 'var(--white)' }}>
+      <section className="section--full section-padding" style={{ background: 'var(--white)' }}>
         <div className="wrap--narrow">
           <div className="portable-text">
             <PortableText

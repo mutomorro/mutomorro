@@ -16,7 +16,7 @@ export default async function Tools() {
     <main>
 
       {/* Hero */}
-      <section className="section--full dark-bg" style={{ padding: '100px 48px 120px' }}>
+      <section className="section--full dark-bg section-padding-hero">
         <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
           <span className="kicker" style={{ marginBottom: '20px' }}>Tools and frameworks</span>
           <h1 className="heading-h1 heading-gradient" style={{
@@ -32,7 +32,7 @@ export default async function Tools() {
       </section>
 
       {/* Tool cards */}
-      <section className="section--full" style={{ padding: '80px 48px', background: 'var(--white)' }}>
+      <section className="section--full section-padding" style={{ background: 'var(--white)' }}>
         <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
           <ToolsGrid items={tools} />
         </div>

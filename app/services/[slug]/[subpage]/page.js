@@ -56,7 +56,7 @@ export default async function ServiceSubPage({ params }) {
       {/* ==========================================
           HERO (dark)
           ========================================== */}
-      <section className="section--full dark-bg" style={{ padding: '100px 48px 120px' }}>
+      <section className="section--full dark-bg section-padding-hero">
         <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
           {/* Breadcrumb */}
           <div className="breadcrumb">
@@ -93,9 +93,8 @@ export default async function ServiceSubPage({ params }) {
         return (
           <section
             key={index}
-            className={isWarm ? 'section--full warm-bg' : ''}
+            className={isWarm ? 'section--full warm-bg section-padding' : 'section-padding'}
             style={{
-              padding: '5rem 48px',
               backgroundColor: isWarm ? 'var(--warm)' : undefined,
             }}
           >
@@ -120,7 +119,7 @@ export default async function ServiceSubPage({ params }) {
           PROOF / CASE STUDIES
           ========================================== */}
       {(page.proofHeading || page.relatedProjects?.length > 0) && (
-        <section style={{ padding: '5rem 48px', backgroundColor: 'var(--warm)' }}>
+        <section className="section-padding" style={{ backgroundColor: 'var(--warm)' }}>
           <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
             {page.proofHeading && (
               <h2
@@ -197,7 +196,7 @@ export default async function ServiceSubPage({ params }) {
           LINK BACK TO PARENT
           ========================================== */}
       {page.parentLinkText && parentSlug && (
-        <section style={{ padding: '3rem 48px 0' }}>
+        <section className="section-padding">
           <div style={{ maxWidth: '800px', margin: '0 auto' }}>
             <p style={{
               fontSize: '18px',

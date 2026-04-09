@@ -17,7 +17,7 @@ export default async function Projects() {
     <main>
 
       {/* Hero */}
-      <BackgroundPattern variant="network" className="section--full dark-bg" style={{ padding: '100px 48px 120px' }}>
+      <BackgroundPattern variant="network" className="section--full dark-bg section-padding-hero">
         <div style={{ maxWidth: '1350px', margin: '0 auto', position: 'relative' }}>
           <span className="kicker" style={{ marginBottom: '20px' }}>Projects and experience</span>
           <h1 className="heading-h1 heading-gradient" style={{
@@ -34,7 +34,7 @@ export default async function Projects() {
 
       {/* All projects */}
       {projects.length > 0 && (
-        <section className="section--full" style={{ padding: '80px 48px', background: 'var(--white)' }}>
+        <section className="section--full section-padding" style={{ background: 'var(--white)' }}>
           <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
             <ProjectsGrid items={projects} />
           </div>

@@ -68,7 +68,7 @@ export default function HowWeWorkPage() {
     <main className="how-we-work-page">
 
       {/* Hero */}
-      <BackgroundPattern variant="network" className="section--full dark-bg" style={{ padding: '100px 48px 120px' }}>
+      <BackgroundPattern variant="network" className="section--full dark-bg section-padding-hero">
         <div style={{ maxWidth: '1350px', margin: '0 auto', position: 'relative' }}>
           <span className="kicker" style={{ marginBottom: '20px' }}>How we work</span>
           <h1 className="heading-display heading-gradient" style={{ maxWidth: '900px', margin: '0 0 32px' }}>
@@ -81,7 +81,7 @@ export default function HowWeWorkPage() {
       </BackgroundPattern>
 
       {/* Intro */}
-      <section className="section--full" style={{ padding: '80px 48px', background: 'var(--white)' }}>
+      <section className="section--full section-padding" style={{ background: 'var(--white)' }}>
         <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
           <div className="scroll-in" style={{
             display: 'grid',
@@ -107,7 +107,7 @@ export default function HowWeWorkPage() {
       </section>
 
       {/* Four stages */}
-      <section className="section--full warm-bg" style={{ padding: '80px 48px' }}>
+      <section className="section--full warm-bg section-padding">
         <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
           <div className="scroll-in" style={{ marginBottom: '3rem' }}>
             <span className="kicker" style={{ color: 'var(--accent)', marginBottom: '20px' }}>
@@ -199,7 +199,7 @@ export default function HowWeWorkPage() {
       </section>
 
       {/* Flexible entry */}
-      <section className="section--full" style={{ padding: '80px 48px', background: 'var(--white)' }}>
+      <section className="section--full section-padding" style={{ background: 'var(--white)' }}>
         <div style={{
           maxWidth: '1350px',
           margin: '0 auto',
@@ -251,7 +251,7 @@ export default function HowWeWorkPage() {
       </section>
 
       {/* Principles */}
-      <section className="section--full dark-bg" style={{ padding: '80px 48px' }}>
+      <section className="section--full dark-bg section-padding">
         <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
           <div className="scroll-in" style={{ marginBottom: '3rem' }}>
             <span className="kicker" style={{ marginBottom: '20px' }}>How we show up</span>

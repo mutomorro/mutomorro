@@ -8,7 +8,7 @@ export const metadata = {
 export default function PrivacyPage() {
   return (
     <main>
-      <section className="section--full dark-bg" style={{ padding: '100px 48px 120px' }}>
+      <section className="section--full dark-bg section-padding-hero">
         <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
           <span className="kicker">PRIVACY</span>
           <h1 className="heading-display heading-gradient" style={{ maxWidth: '900px' }}>
@@ -20,7 +20,7 @@ export default function PrivacyPage() {
         </div>
       </section>
 
-      <section style={{ padding: '80px 48px', maxWidth: '800px', margin: '0 auto' }}>
+      <section className="section-padding" style={{ maxWidth: '800px', margin: '0 auto' }}>
 
         <h2 className="heading-h2" style={{ marginBottom: '24px' }}>What cookies we use</h2>
         <p style={{ marginBottom: '32px' }}>

@@ -12,7 +12,7 @@ export default async function ContactPage({ searchParams }) {
     <main className="contact-page">
 
       {/* Hero */}
-      <section className="section--full dark-bg" style={{ padding: '100px 48px 120px' }}>
+      <section className="section--full dark-bg section-padding-hero">
         <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
           <span className="kicker" style={{ marginBottom: '20px' }}>Get in touch</span>
           <h1 className="heading-display heading-gradient" style={{ maxWidth: '900px', margin: '0 0 32px' }}>
@@ -26,7 +26,7 @@ export default async function ContactPage({ searchParams }) {
       </section>
 
       {/* Form section */}
-      <section className="section--full" style={{ padding: '80px 48px', background: 'var(--white)' }}>
+      <section className="section--full section-padding" style={{ background: 'var(--white)' }}>
         <div className="contact-grid" style={{
           maxWidth: '1350px',
           margin: '0 auto',

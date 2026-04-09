@@ -25,8 +25,7 @@ export default function NotFound() {
   }, [])
 
   return (
-    <section className="section--full" style={{
-      padding: '80px 48px',
+    <section className="section--full section-padding" style={{
       background: 'var(--white)',
       minHeight: '70vh',
       display: 'flex',

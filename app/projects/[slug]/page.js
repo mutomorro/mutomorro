@@ -138,7 +138,7 @@ export default async function CaseStudy({ params }) {
       />
 
       {/* Hero */}
-      <section className="section--full dark-bg" style={{ padding: '100px 48px 120px' }}>
+      <section className="section--full dark-bg section-padding-hero">
         <div className="wrap--narrow">
           {/* Breadcrumb */}
           <div className="breadcrumb">
@@ -169,7 +169,7 @@ export default async function CaseStudy({ params }) {
       </section>
 
       {/* Content sections */}
-      <section className="section--full" style={{ padding: '80px 48px', background: 'var(--white)' }}>
+      <section className="section--full section-padding" style={{ background: 'var(--white)' }}>
         <div className="wrap--narrow">
 
           {sections.map(({ key, label }) => {

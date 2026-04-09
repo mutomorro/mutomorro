@@ -17,7 +17,7 @@ export default async function DevelopLandingPage() {
       {/* ==========================================
           HERO (dark)
           ========================================== */}
-      <section className="section--full dark-bg" style={{ padding: '100px 48px 120px' }}>
+      <section className="section--full dark-bg section-padding-hero">
         <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
           {/* Breadcrumb */}
           <div className="breadcrumb" style={{ marginBottom: '24px' }}>
@@ -39,7 +39,7 @@ export default async function DevelopLandingPage() {
       {/* ==========================================
           FOR LEADERS (white)
           ========================================== */}
-      <section style={{ padding: '80px 48px', background: 'var(--white)' }}>
+      <section className="section-padding" style={{ background: 'var(--white)' }}>
         <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
           <span className="kicker" style={{ marginBottom: '16px' }}>For Leaders</span>
           <h2 style={{
@@ -99,7 +99,7 @@ export default async function DevelopLandingPage() {
       {/* ==========================================
           FOR TEAMS (warm)
           ========================================== */}
-      <section style={{ padding: '80px 48px', background: 'var(--warm)' }}>
+      <section className="section-padding" style={{ background: 'var(--warm)' }}>
         <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
           <span className="kicker" style={{ marginBottom: '16px' }}>For Teams</span>
           <h2 style={{
@@ -159,7 +159,7 @@ export default async function DevelopLandingPage() {
       {/* ==========================================
           CTA (dark)
           ========================================== */}
-      <section className="section--full dark-bg" style={{ padding: '80px 48px', textAlign: 'center' }}>
+      <section className="section--full dark-bg section-padding" style={{ textAlign: 'center' }}>
         <div style={{ maxWidth: '600px', margin: '0 auto' }}>
           <h2 style={{
             fontSize: 'clamp(24px, 3vw, 36px)',

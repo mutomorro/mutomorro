@@ -55,11 +55,9 @@ export default async function SectorLandingPage({ params }) {
       {/* ==========================================
           SECTION 1 - HERO (dark)
           ========================================== */}
-      <section className="section--full dark-bg" style={{
+      <section className="section--full dark-bg section-padding-flush" style={{
         paddingTop: 'clamp(80px, 12vh, 140px)',
         paddingBottom: 'clamp(60px, 8vh, 100px)',
-        paddingLeft: '48px',
-        paddingRight: '48px',
       }}>
         <div style={{ maxWidth: '800px', margin: '0 auto', textAlign: 'center' }}>
           <span className="kicker" style={{ color: '#FFA200' }}>{page.sectorLabel}</span>
@@ -82,7 +80,7 @@ export default async function SectorLandingPage({ params }) {
       {/* ==========================================
           SECTION 2 - SECTOR CONTEXT (warm)
           ========================================== */}
-      <section className="section--full" style={{ padding: '80px 48px', background: '#FAF6F1' }}>
+      <section className="section--full section-padding" style={{ background: '#FAF6F1' }}>
         <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
           <h2 className="heading-h2 scroll-in" style={{ marginBottom: '2rem' }}>
             {page.contextHeading}
@@ -133,7 +131,7 @@ export default async function SectorLandingPage({ params }) {
           SECTION 4 - RELEVANT SERVICES (white)
           ========================================== */}
       {page.featuredServices?.length > 0 && (
-        <BackgroundPattern variant="network" className="section--full" style={{ padding: '80px 48px' }}>
+        <BackgroundPattern variant="network" className="section--full section-padding">
           <div style={{ maxWidth: '1350px', margin: '0 auto', position: 'relative' }}>
             <h2 className="heading-h2 scroll-in" style={{ marginBottom: page.servicesIntro ? '1rem' : '2.5rem' }}>
               {page.servicesHeading}
@@ -173,7 +171,7 @@ export default async function SectorLandingPage({ params }) {
           SECTION 5 - CASE STUDIES (warm)
           ========================================== */}
       {page.featuredProjects?.length > 0 && (
-        <section className="section--full" style={{ padding: '80px 48px', background: '#FAF6F1' }}>
+        <section className="section--full section-padding" style={{ background: '#FAF6F1' }}>
           <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
             <h2 className="heading-h2 scroll-in" style={{ marginBottom: page.caseStudiesIntro ? '1rem' : '2.5rem' }}>
               {page.caseStudiesHeading}
@@ -231,7 +229,7 @@ export default async function SectorLandingPage({ params }) {
           SECTION 6 - USEFUL RESOURCES (white)
           ========================================== */}
       {(page.featuredTools?.length > 0 || page.featuredArticles?.length > 0) && (
-        <section className="section--full" style={{ padding: '80px 48px' }}>
+        <section className="section--full section-padding">
           <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
             <h2 className="heading-h2 scroll-in" style={{ marginBottom: '2.5rem' }}>
               {page.resourcesHeading}
@@ -274,7 +272,7 @@ export default async function SectorLandingPage({ params }) {
           SECTION 7 - BRIDGE TEXT + CTA
           ========================================== */}
       {page.bridgeText && (
-        <section className="section--full dark-bg bridge-text" style={{ padding: '48px 48px', background: '#423B49' }}>
+        <section className="section--full dark-bg bridge-text section-padding" style={{ background: '#423B49' }}>
           <div style={{
             maxWidth: '800px',
             margin: '0 auto',

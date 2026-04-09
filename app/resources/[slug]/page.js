@@ -56,7 +56,7 @@ export default async function ResourcePage({ params }) {
   return (
     <main>
       {/* Dark header with title, preview image, and form */}
-      <section className="section--full dark-bg" style={{ padding: '80px 48px 72px' }}>
+      <section className="section--full dark-bg section-padding">
         <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
           {/* Title block */}
           <span className="kicker" style={{ marginBottom: '16px' }}>{typeLabel.toUpperCase()}</span>
@@ -143,7 +143,7 @@ export default async function ResourcePage({ params }) {
       </section>
 
       {/* Warm content area - 50/50 two column */}
-      <section className="section--full warm-bg" style={{ padding: '80px 48px' }}>
+      <section className="section--full warm-bg section-padding">
         <div className="resource-content-grid" style={{
           maxWidth: '1350px',
           margin: '0 auto',

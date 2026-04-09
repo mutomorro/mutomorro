@@ -50,7 +50,7 @@ export default function PhilosophyPage() {
       </PhilosophyHero>
 
       {/* Section 2: Opening - the idea */}
-      <section className="section--full warm-bg" style={{ padding: '80px 48px' }}>
+      <section className="section--full warm-bg section-padding">
         <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
           <div className="scroll-in" style={{ maxWidth: '720px' }}>
             <span className="kicker" style={{ color: 'var(--accent)', marginBottom: '20px' }}>
@@ -84,7 +84,7 @@ export default function PhilosophyPage() {
       <PerspectiveShiftStepper />
 
       {/* Section 6: Three systems concepts */}
-      <section className="section--full dark-bg" style={{ padding: '80px 48px' }}>
+      <section className="section--full dark-bg section-padding">
         <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
           <div className="scroll-in" style={{ marginBottom: '3rem' }}>
             <span className="kicker" style={{ marginBottom: '20px' }}>Systems concepts</span>
@@ -138,7 +138,7 @@ export default function PhilosophyPage() {
       <OutcomesConstellation />
 
       {/* Section 8: Bridge to EMERGENT Framework */}
-      <section className="section--full" style={{ padding: '80px 48px', background: 'var(--white)' }}>
+      <section className="section--full section-padding" style={{ background: 'var(--white)' }}>
         <div style={{
           maxWidth: '1350px',
           margin: '0 auto',

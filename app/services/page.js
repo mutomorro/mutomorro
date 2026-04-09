@@ -48,7 +48,7 @@ export default async function Services() {
     <main>
 
       {/* Hero */}
-      <section className="section--full dark-bg" style={{ padding: '100px 48px 120px' }}>
+      <section className="section--full dark-bg section-padding-hero">
         <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
           <span className="kicker" style={{ marginBottom: '20px' }}>How we help</span>
           <h1 className="heading-h1 heading-gradient" style={{
@@ -68,9 +68,8 @@ export default async function Services() {
       {categories.map((cat, catIndex) => (
         <section
           key={cat.slug}
-          className="section--full"
+          className="section--full section-padding"
           style={{
-            padding: '80px 48px',
             background: catIndex % 2 === 0 ? 'var(--white)' : 'var(--warm)',
           }}
         >

@@ -90,7 +90,7 @@ export default async function Home() {
         overflow: 'hidden',
       }}>
         <HeroCanvasDesktop />
-        <div style={{
+        <div className="section-padding-flush" style={{
           position: 'absolute',
           top: 0,
           left: 0,
@@ -99,7 +99,6 @@ export default async function Home() {
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'center',
-          padding: '0 48px',
           zIndex: 10,
           pointerEvents: 'none',
         }}>
@@ -115,7 +114,7 @@ export default async function Home() {
       </section>
 
       {/* ─── Section 2: Who we are + route cards ─── */}
-      <section className="section--full" style={{ padding: '80px 48px', background: 'var(--white)' }}>
+      <section className="section--full section-padding" style={{ background: 'var(--white)' }}>
         <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
           {/* Positioning block */}
           <div className="scroll-fade-up" style={{ maxWidth: '800px', marginBottom: '64px' }}>
@@ -159,7 +158,7 @@ export default async function Home() {
       <LogoStrip />
 
       {/* ─── Section 3: What we work on ─── */}
-      <BackgroundPattern variant="constellation" className="section--full warm-bg" style={{ padding: '80px 48px' }}>
+      <BackgroundPattern variant="constellation" className="section--full warm-bg section-padding">
         <div style={{ maxWidth: '1350px', margin: '0 auto', position: 'relative' }}>
           <div className="scroll-fade-up" style={{ marginBottom: '3rem' }}>
             <span className="kicker" style={{ color: 'var(--accent)' }}>What we work on</span>
@@ -215,7 +214,7 @@ export default async function Home() {
       </BackgroundPattern>
 
       {/* ─── Section 4: Proof (case studies) ─── */}
-      <section className="section--full dark-bg" style={{ padding: '80px 48px', background: '#221C2B' }}>
+      <section className="section--full dark-bg section-padding" style={{ background: '#221C2B' }}>
         <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
           <div className="scroll-fade-up" style={{ marginBottom: '40px' }}>
             <span className="kicker" style={{ color: '#FFA200' }}>Projects and experience</span>
@@ -265,7 +264,7 @@ export default async function Home() {
       </section>
 
       {/* ─── Section 5: Tools ─── */}
-      <section className="section--full" style={{ padding: '80px 48px', background: 'var(--white)' }}>
+      <section className="section--full section-padding" style={{ background: 'var(--white)' }}>
         <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
           <div className="homepage-tools-grid" style={{
             display: 'grid',
@@ -322,8 +321,7 @@ export default async function Home() {
       </section>
 
       {/* ─── Section 6: Newsletter + CTA ─── */}
-      <BackgroundPattern variant="network" className="section--full dark-bg" style={{
-        padding: '80px 48px',
+      <BackgroundPattern variant="network" className="section--full dark-bg section-padding" style={{
         background: '#221C2B',
       }}>
         <div className="homepage-newsletter-grid" style={{

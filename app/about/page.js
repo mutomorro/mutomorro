@@ -14,7 +14,7 @@ export default function About() {
     <main className="about-page">
 
       {/* Section 1: Hero */}
-      <BackgroundPattern variant="network" className="section--full dark-bg" style={{ padding: '100px 48px 120px' }}>
+      <BackgroundPattern variant="network" className="section--full dark-bg section-padding-hero">
         <div style={{ maxWidth: '1350px', margin: '0 auto', position: 'relative' }}>
           <span className="kicker" style={{ marginBottom: '20px' }}>About Mutomorro</span>
           <h1 className="heading-display heading-gradient" style={{ maxWidth: '900px', margin: '0 0 32px' }}>
@@ -27,7 +27,7 @@ export default function About() {
       </BackgroundPattern>
 
       {/* Section 2: The short version */}
-      <section className="section--full warm-bg" style={{ padding: '80px 48px' }}>
+      <section className="section--full warm-bg section-padding">
         <div style={{
           maxWidth: '1350px',
           margin: '0 auto',
@@ -63,7 +63,7 @@ export default function About() {
       <LogoStrip />
 
       {/* Section 4: Who we are */}
-      <section className="section--full" style={{ padding: '80px 48px', background: 'var(--white)' }}>
+      <section className="section--full section-padding" style={{ background: 'var(--white)' }}>
         <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
           <div style={{
             display: 'grid',
@@ -132,7 +132,7 @@ export default function About() {
       </section>
 
       {/* Section 5: What we work on */}
-      <section className="section--full" style={{ padding: '80px 48px', background: 'var(--warm)' }}>
+      <section className="section--full section-padding" style={{ background: 'var(--warm)' }}>
         <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
           <div className="scroll-in" style={{ marginBottom: '3rem' }}>
             <span className="kicker" style={{ color: 'var(--accent)', marginBottom: '20px' }}>
@@ -199,7 +199,7 @@ export default function About() {
       </section>
 
       {/* Section 6: How we work */}
-      <section className="section--full dark-bg" style={{ padding: '80px 48px' }}>
+      <section className="section--full dark-bg section-padding">
         <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
           <div className="scroll-in" style={{ marginBottom: '3rem', maxWidth: '720px' }}>
             <span className="kicker" style={{ marginBottom: '20px' }}>How we work</span>
@@ -257,7 +257,7 @@ export default function About() {
       </section>
 
       {/* Section 7: Explore further */}
-      <section className="section--full warm-bg" style={{ padding: '80px 48px' }}>
+      <section className="section--full warm-bg section-padding">
         <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
           <div className="grid-3">
             {[

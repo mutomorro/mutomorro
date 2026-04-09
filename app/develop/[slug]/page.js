@@ -21,8 +21,7 @@ const BENTO_COLOURS = ['#80388F', '#9B51E0', '#FF4279', '#E08F00', '#221C2B']
 // Mid-page CTA
 function MidPageCta({ text, buttonLabel, serviceTitle }) {
   return (
-    <div style={{
-      padding: '12px 48px 68px',
+    <div className="section-padding" style={{
       textAlign: 'center',
     }}>
       <p style={{
@@ -92,7 +91,7 @@ export default async function CapabilityServicePage({ params }) {
       {/* ==========================================
           HERO (dark)
           ========================================== */}
-      <section className="section--full dark-bg" style={{ padding: '100px 48px 120px' }}>
+      <section className="section--full dark-bg section-padding-hero">
         <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
           {/* Breadcrumb */}
           <div className="breadcrumb" style={{ marginBottom: '24px' }}>
@@ -139,7 +138,7 @@ export default async function CapabilityServicePage({ params }) {
           WHO IT'S FOR (warm)
           ========================================== */}
       {service.audienceBody?.length > 0 && (
-        <section id="who-its-for" className="section--full" style={{ padding: '80px 48px', background: 'var(--warm)', position: 'relative' }}>
+        <section id="who-its-for" className="section--full section-padding" style={{ background: 'var(--warm)', position: 'relative' }}>
           {/* Shadow gradient from anchor nav */}
           <div style={{
             position: 'absolute',
@@ -172,7 +171,7 @@ export default async function CapabilityServicePage({ params }) {
           HOW IT WORKS / STRUCTURE (white)
           ========================================== */}
       {service.structureItems?.length > 0 && (
-        <section id="how-it-works" className="section--full" style={{ padding: '80px 48px', background: 'var(--white)' }}>
+        <section id="how-it-works" className="section--full section-padding" style={{ background: 'var(--white)' }}>
           <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
             <div className="scroll-in">
               <span className="kicker" style={{ color: 'var(--accent)', marginBottom: '16px' }}>
@@ -251,9 +250,8 @@ export default async function CapabilityServicePage({ params }) {
           BRIDGE TEXT (mid-dark)
           ========================================== */}
       {service.differenceItems?.length > 0 && (
-        <section style={{
+        <section className="section-padding" style={{
           background: '#423B49',
-          padding: '60px 48px',
           textAlign: 'center',
         }}>
           <div style={{ maxWidth: '700px', margin: '0 auto' }}>
@@ -275,7 +273,7 @@ export default async function CapabilityServicePage({ params }) {
           WHAT'S DIFFERENT (warm)
           ========================================== */}
       {service.differenceItems?.length > 0 && (
-        <section id="whats-different" className="section--full" style={{ padding: '80px 48px', background: 'var(--warm)' }}>
+        <section id="whats-different" className="section--full section-padding" style={{ background: 'var(--warm)' }}>
           <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
             <div className="scroll-in">
               <span className="kicker" style={{ color: '#FF4279', marginBottom: '16px' }}>
@@ -332,7 +330,7 @@ export default async function CapabilityServicePage({ params }) {
           WHAT YOU TAKE AWAY (white) - bento grid
           ========================================== */}
       {service.takeawayItems?.length > 0 && (
-        <section id="what-you-take-away" className="section--full" style={{ padding: '80px 48px', background: 'var(--white)' }}>
+        <section id="what-you-take-away" className="section--full section-padding" style={{ background: 'var(--white)' }}>
           <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
             <div className="scroll-in">
               <span className="kicker" style={{ color: '#FF4279', marginBottom: '16px' }}>

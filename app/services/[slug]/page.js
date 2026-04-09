@@ -122,7 +122,7 @@ export default async function ServicePage({ params }) {
       {/* ==========================================
           SECTION 1: HERO (dark)
           ========================================== */}
-      <section className="section--full dark-bg" style={{ padding: '100px 48px 120px', position: 'relative', overflow: 'hidden' }}>
+      <section className="section--full dark-bg section-padding-hero" style={{ position: 'relative', overflow: 'hidden' }}>
         <div style={{ display: 'flex', maxWidth: '1350px', margin: '0 auto', position: 'relative', zIndex: 2 }}>
           <div style={{ flex: '1 1 55%', maxWidth: '600px' }}>
             {/* Breadcrumb */}
@@ -192,7 +192,7 @@ export default async function ServicePage({ params }) {
       {/* ==========================================
           SECTION 2: CONTEXT (warm)
           ========================================== */}
-      <BackgroundPattern variant="woven" className="section--full" style={{ padding: '80px 48px', background: '#FAF6F1', position: 'relative' }}>
+      <BackgroundPattern variant="woven" className="section--full section-padding" style={{ background: '#FAF6F1', position: 'relative' }}>
         {/* Shadow gradient from anchor nav dark zone */}
         <div style={{
           position: 'absolute',
@@ -286,7 +286,7 @@ export default async function ServicePage({ params }) {
       {/* ==========================================
           SECTION 4: RECOGNITION (white)
           ========================================== */}
-      <section id="recognition" className="section--full" style={{ padding: '80px 48px', background: 'var(--white)' }}>
+      <section id="recognition" className="section--full section-padding" style={{ background: 'var(--white)' }}>
         <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
           <div className="scroll-in">
             <span className="kicker" style={{ color: '#FF4279', marginBottom: '16px' }}>Recognition</span>
@@ -327,7 +327,7 @@ export default async function ServicePage({ params }) {
           BRIDGE TEXT (mid-dark #423B49)
           ========================================== */}
       {service.recognitionBridge && (
-        <section className="section--full dark-bg bridge-text" style={{ padding: '80px 48px', background: '#423B49' }}>
+        <section className="section--full dark-bg bridge-text section-padding" style={{ background: '#423B49' }}>
           <div className="scroll-in" style={{
             maxWidth: '860px',
             margin: '0 auto',
@@ -350,7 +350,7 @@ export default async function ServicePage({ params }) {
           SECTION 5: EXAMPLES (white)
           ========================================== */}
       {(service.relatedProjects?.length > 0 || service.testimonialQuote) && (
-        <section id="examples" className="section--full" style={{ padding: '80px 48px', background: 'var(--white)' }}>
+        <section id="examples" className="section--full section-padding" style={{ background: 'var(--white)' }}>
           <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
             <div className="scroll-in">
               <span className="kicker" style={{ color: 'var(--accent)', marginBottom: '16px' }}>Proof in practice</span>
@@ -453,7 +453,7 @@ export default async function ServicePage({ params }) {
           SECTION 6: STATS STRIP (full dark #221C2B)
           ========================================== */}
       {service.stats?.length > 0 && (
-        <BackgroundPattern variant="constellation" className="section--full dark-bg" style={{ background: '#221C2B', padding: '72px 48px' }}>
+        <BackgroundPattern variant="constellation" className="section--full dark-bg section-padding" style={{ background: '#221C2B' }}>
           <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
             <div className="stats-grid" style={{
               display: 'grid',
@@ -495,7 +495,7 @@ export default async function ServicePage({ params }) {
       {/* ==========================================
           SECTION 8: APPROACH OVERVIEW (white)
           ========================================== */}
-      <BackgroundPattern variant="network" className="section--full" style={{ padding: '80px 48px', background: '#FFFFFF' }}>
+      <BackgroundPattern variant="network" className="section--full section-padding" style={{ background: '#FFFFFF' }}>
         <div id="approach" style={{ maxWidth: '1350px', margin: '0 auto' }}>
           <div className="scroll-in">
             <span className="kicker" style={{ color: 'var(--accent)', marginBottom: '16px' }}>Approach</span>
@@ -526,9 +526,8 @@ export default async function ServicePage({ params }) {
         <section
           key={stage._key || i}
           data-stage-index={i}
-          className="section--full"
+          className="section--full section-padding"
           style={{
-            padding: '60px 48px 80px',
             background: i % 2 === 0 ? 'var(--warm)' : 'var(--white)',
           }}
         >
@@ -603,7 +602,7 @@ export default async function ServicePage({ params }) {
       {/* ==========================================
           SECTION 9: PERSPECTIVE (warm)
           ========================================== */}
-      <section id="perspective" className="section--full warm-bg" style={{ padding: '80px 48px' }}>
+      <section id="perspective" className="section--full warm-bg section-padding">
         {service.perspectiveImageUrl ? (
           /* With image: existing two-column layout */
           <div style={{
@@ -695,7 +694,7 @@ export default async function ServicePage({ params }) {
       {/* ==========================================
           SECTION 10: OUTCOMES (warm)
           ========================================== */}
-      <section id="outcomes" className="section--full warm-bg" style={{ padding: '80px 48px' }}>
+      <section id="outcomes" className="section--full warm-bg section-padding">
         <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
           <div className="scroll-in">
             <span className="kicker" style={{ color: '#FF4279', marginBottom: '16px' }}>Outcomes</span>
@@ -767,7 +766,7 @@ export default async function ServicePage({ params }) {
           RELATED DIMENSIONS
           ========================================== */}
       {service.relatedDimensions?.length > 0 && (
-        <section className="section--full warm-bg" style={{ padding: '60px 48px' }}>
+        <section className="section--full warm-bg section-padding">
           <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
             <span className="kicker" style={{ marginBottom: '24px' }}>
               EMERGENT dimensions this connects to
@@ -813,7 +812,7 @@ export default async function ServicePage({ params }) {
           RELATED SERVICES
           ========================================== */}
       {service.relatedServices?.length > 0 && (
-        <section className="section--full" style={{ padding: '80px 48px', background: 'var(--white)' }}>
+        <section className="section--full section-padding" style={{ background: 'var(--white)' }}>
           <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
             <span className="kicker" style={{ marginBottom: '2rem' }}>
               You might also be interested in

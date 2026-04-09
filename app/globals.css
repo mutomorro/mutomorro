@@ -2155,11 +2155,9 @@ a:hover {
   grid-template-columns: 1fr;
 }
 
-/* Desktop: image aligned right */
+/* Desktop: image fills its grid cell */
 .content-hero-image-wrap {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
+  display: block;
 }
 
 @media (max-width: 767px) {

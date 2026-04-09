@@ -193,7 +193,7 @@ export default function EcosystemVisual({ centreLabel = 'Intentional', centreSub
     return () => {
       if (animId) cancelAnimationFrame(animId)
     }
-  }, [centreLabel, centreSubtitle])
+  }, [isDesktop, centreLabel, centreSubtitle])
 
   if (!isDesktop) return null
 

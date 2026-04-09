@@ -6,6 +6,7 @@ import Link from 'next/link'
 import CTA from '../../../components/CTA'
 import { PortableText } from '@portabletext/react'
 import { urlFor } from '../../../sanity/image'
+import Lightbox from '../../../components/Lightbox'
 
 export const revalidate = 3600
 
@@ -105,14 +106,7 @@ export default async function CaseStudy({ params }) {
     types: {
       image: ({ value }) => (
         <div className="img-mat" style={{ margin: '2.5rem 0' }}>
-          <Image
-            src={urlFor(value).width(900).url()}
-            alt={value.alt || ''}
-            width={900}
-            height={506}
-            sizes="(max-width: 768px) 100vw, 800px"
-            style={{ width: '100%', height: 'auto', display: 'block' }}
-          />
+          <Lightbox src={urlFor(value).width(900).url()} alt={value.alt || ''} cover={false} />
         </div>
       ),
     },

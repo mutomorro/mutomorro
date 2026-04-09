@@ -2,7 +2,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
 
-export default function Lightbox({ src, alt }) {
+export default function Lightbox({ src, alt, cover = true }) {
   const [open, setOpen] = useState(false)
   const overlayRef = useRef(null)
 
@@ -38,7 +38,7 @@ export default function Lightbox({ src, alt }) {
         onClick={handleOpen}
         role="button"
         tabIndex={0}
-        style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', cursor: 'zoom-in' }}
+        style={{ width: '100%', height: cover ? '100%' : 'auto', objectFit: cover ? 'cover' : undefined, display: 'block', cursor: 'zoom-in' }}
       />
 
       {open && createPortal(

@@ -11,8 +11,7 @@ export default function CTA({
   secondaryLink,
 }) {
   return (
-    <BackgroundPattern variant="network" className="section--full dark-bg" style={{
-      padding: '7rem 48px',
+    <BackgroundPattern variant="network" className="section--full dark-bg section-padding-cta" style={{
       textAlign: 'center',
       background: '#423B49',
     }}>

@@ -3,22 +3,13 @@ import NewsletterSignup from './NewsletterSignup'
 
 export default function Footer() {
     return (
-        <footer style={{
+        <footer className="footer-wrapper" style={{
             backgroundColor: 'var(--dark)',
             color: '#ffffff',
-            padding: '5rem 48px 2rem',
         }}>
 
             {/* Newsletter row */}
-            <div style={{
-                maxWidth: '1350px',
-                margin: '0 auto',
-                paddingBottom: '3rem',
-                borderBottom: '1px solid rgba(255,255,255,0.1)',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '3rem',
-            }}>
+            <div className="footer-newsletter-row">
                 <div style={{ flexShrink: 0 }}>
                     <p style={{
                         fontSize: '13px',
@@ -46,16 +37,7 @@ export default function Footer() {
             </div>
 
             {/* Main footer columns */}
-            <div style={{
-                maxWidth: '1350px',
-                margin: '0 auto',
-                paddingTop: '3rem',
-                display: 'grid',
-                gridTemplateColumns: '2fr 1fr 1fr 1fr 1.5fr',
-                gap: '3rem',
-                paddingBottom: '3rem',
-                borderBottom: '1px solid rgba(255,255,255,0.1)',
-            }}>
+            <div className="footer-grid">
 
                 {/* Brand */}
                 <div>
@@ -175,17 +157,7 @@ export default function Footer() {
             </div>
 
             {/* Bottom bar */}
-            <div style={{
-                maxWidth: '1350px',
-                margin: '0 auto',
-                paddingTop: '1.5rem',
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                fontSize: '13px',
-                color: 'rgba(255,255,255,0.35)',
-                fontWeight: '300',
-            }}>
+            <div className="footer-bottom">
                 <p style={{ margin: 0 }}>© {new Date().getFullYear()} Mutomorro. All rights reserved.</p>
                 <div style={{ display: 'flex', gap: '1.5rem' }}>
                     <Link href="/privacy" className="footer-link" style={{ fontSize: '13px', color: 'rgba(255,255,255,0.35)' }}>Privacy</Link>

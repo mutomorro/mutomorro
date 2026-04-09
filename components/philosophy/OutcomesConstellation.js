@@ -117,7 +117,7 @@ export default function OutcomesConstellation() {
   const activeConnections = hovered >= 0 ? connectedTo(hovered) : null;
 
   return (
-    <section className="section--full warm-bg" style={{ padding: '80px 48px' }}>
+    <section className="section--full warm-bg section-padding">
       <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
         <div className="scroll-in" style={{ marginBottom: '3rem' }}>
           <span className="kicker" style={{ color: 'var(--accent)', marginBottom: '20px' }}>

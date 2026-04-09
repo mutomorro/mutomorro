@@ -57,8 +57,7 @@ export default async function DimensionSectionPage({ params }) {
       {/* ==========================================
           HERO
           ========================================== */}
-      <div style={{
-        padding: '48px 72px 40px',
+      <div className="section-padding-dimension" style={{
         maxWidth: '800px',
       }}>
         {/* Breadcrumb */}

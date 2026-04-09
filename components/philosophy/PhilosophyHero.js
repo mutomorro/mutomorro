@@ -365,8 +365,8 @@ export default function PhilosophyHero({ children }) {
 
   return (
     <section
-      className="section--full dark-bg"
-      style={{ padding: '100px 48px 120px', position: 'relative', overflow: 'hidden' }}
+      className="section--full dark-bg section-padding-hero"
+      style={{ position: 'relative', overflow: 'hidden' }}
     >
       {isMounted && (
         <canvas

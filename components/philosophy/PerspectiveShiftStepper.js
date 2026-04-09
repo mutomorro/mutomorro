@@ -802,8 +802,8 @@ export default function PerspectiveShiftStepper() {
   return (
     <section
       ref={sectionRef}
-      className="section--full"
-      style={{ padding: '80px 48px', background: 'var(--white)' }}
+      className="section--full section-padding"
+      style={{ background: 'var(--white)' }}
     >
       <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
         {/* Section intro */}

@@ -257,7 +257,7 @@ export default function ConvergenceSection() {
   // --- Reduced motion ---
   if (reduced) {
     return (
-      <section style={{ padding: '80px 48px', background: '#FFFFFF' }}>
+      <section className="section-padding" style={{ background: '#FFFFFF' }}>
         <div style={{ maxWidth: '1350px', margin: '0 auto', textAlign: 'center' }}>
           <span style={{
             fontSize: '13px', fontWeight: '400', letterSpacing: '0.15em',
@@ -352,7 +352,7 @@ export default function ConvergenceSection() {
             height: '100%',
             maxWidth: '1350px',
             margin: '0 auto',
-            padding: '0 48px',
+            padding: '0',
             boxSizing: 'border-box',
           }}
         >

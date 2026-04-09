@@ -233,8 +233,8 @@ export default function PatternNarrative({ section2Content, section3Content }) {
       {/* Section 2: The familiar world */}
       <section
         ref={s2Ref}
-        className="section--full"
-        style={{ padding: '80px 48px', background: 'var(--white)', position: 'relative' }}
+        className="section--full section-padding"
+        style={{ background: 'var(--white)', position: 'relative' }}
       >
         {mounted && !isMobile && (
           <canvas
@@ -256,8 +256,8 @@ export default function PatternNarrative({ section2Content, section3Content }) {
       {/* Section 3: The shift */}
       <section
         ref={s3Ref}
-        className="section--full warm-bg"
-        style={{ padding: '80px 48px', position: 'relative' }}
+        className="section--full warm-bg section-padding"
+        style={{ position: 'relative' }}
       >
         {mounted && !isMobile && (
           <canvas

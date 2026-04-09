@@ -114,7 +114,7 @@ export default function NavPanel({ isOpen, onClose, onMouseEnter, onMouseLeave, 
           ✕
         </button>
 
-        <div ref={innerRef} className="nav-panel__inner" style={{ maxWidth: 'calc(1350px + 96px)', margin: '0 auto', padding: '4rem 48px 5rem' }}>
+        <div ref={innerRef} className="nav-panel__inner section-padding-nav-panel" style={{ maxWidth: 'calc(1350px + 96px)', margin: '0 auto' }}>
           {children}
         </div>
       </div>

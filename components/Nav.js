@@ -369,7 +369,7 @@ export default function Nav() {
 
           {/* Building Capability - tonal shift background, full-width bleed */}
           <div className="nav-panel-stagger nav-capability-bar">
-            <div style={{ maxWidth: 'calc(1350px + 96px)', margin: '0 auto', padding: '0 48px', display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0 2rem' }}>
+            <div className="section-padding-flush" style={{ maxWidth: 'calc(1350px + 96px)', margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0 2rem' }}>
               {/* Leadership Programme - featured card */}
               <div className="nav-menu-col">
                 <span className="kicker" style={{ marginBottom: '20px' }}>Leadership Programme</span>

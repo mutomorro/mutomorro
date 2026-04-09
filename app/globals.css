@@ -2155,10 +2155,29 @@ a:hover {
   grid-template-columns: 1fr;
 }
 
+/* Desktop: image aligned right */
+.tool-hero-image-wrap {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
 @media (max-width: 767px) {
   .tool-hero-grid {
     grid-template-columns: 1fr;
     gap: 32px;
+  }
+
+  /* Full-bleed hero image on mobile — break out of section + inner padding */
+  .tool-hero-image-wrap {
+    margin-left: -44px;
+    margin-right: -44px;
+    display: block;
+  }
+  .tool-hero-image-wrap .img-perspective {
+    max-width: none !important;
+    border-radius: 0;
+    box-shadow: none;
   }
 }
 
@@ -3014,18 +3033,18 @@ a:hover {
 .filter-pills {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
-  margin: 0 0 40px;
+  gap: 4px;
+  margin: 0 0 28px;
 }
 
 .filter-pill {
   border: 1px solid #221C2B;
   background: #fff;
   color: #221C2B;
-  font: 400 11px/1 var(--font);
+  font: 500 8px/1 var(--font);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  padding: 7px 12px;
+  letter-spacing: 0.03em;
+  padding: 4px 7px;
   cursor: pointer;
   border-radius: 0;
   transition: background 0.2s, color 0.2s, border-color 0.2s;
@@ -3052,12 +3071,12 @@ a:hover {
 /* Filter pills - mobile */
 @media (max-width: 768px) {
   .filter-pills {
-    gap: 6px;
-    margin: 0 0 28px;
+    gap: 3px;
+    margin: 0 0 20px;
   }
   .filter-pill {
-    font-size: 11px;
-    padding: 6px 10px;
+    font-size: 8px;
+    padding: 4px 6px;
   }
 }
 

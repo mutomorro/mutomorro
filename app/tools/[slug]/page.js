@@ -140,11 +140,7 @@ export default async function ToolPage({ params }) {
 
           {/* Right: hero image with perspective shift */}
           {heroImageUrl && (
-            <div style={{
-              display: 'flex',
-              justifyContent: 'flex-end',
-              alignItems: 'center',
-            }}>
+            <div className="tool-hero-image-wrap">
               <div className="img-perspective" style={{ maxWidth: '100%' }}>
                 <Image
                   src={heroImageUrl}

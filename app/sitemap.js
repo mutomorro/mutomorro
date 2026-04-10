@@ -5,20 +5,20 @@ const BASE_URL = 'https://mutomorro.com'
 export default async function sitemap() {
   // Static pages
   const staticPages = [
-    { url: BASE_URL, changeFrequency: 'weekly', priority: 1.0 },
-    { url: `${BASE_URL}/about`, changeFrequency: 'monthly', priority: 0.7 },
-    { url: `${BASE_URL}/philosophy`, changeFrequency: 'monthly', priority: 0.6 },
-    { url: `${BASE_URL}/how-we-work`, changeFrequency: 'monthly', priority: 0.7 },
-    { url: `${BASE_URL}/contact`, changeFrequency: 'monthly', priority: 0.8 },
-    { url: `${BASE_URL}/services`, changeFrequency: 'monthly', priority: 0.9 },
-    { url: `${BASE_URL}/develop`, changeFrequency: 'monthly', priority: 0.7 },
-    { url: `${BASE_URL}/emergent-framework`, changeFrequency: 'monthly', priority: 0.7 },
-    { url: `${BASE_URL}/states-of-vitality`, changeFrequency: 'monthly', priority: 0.8 },
-    { url: `${BASE_URL}/tools`, changeFrequency: 'weekly', priority: 0.8 },
-    { url: `${BASE_URL}/articles`, changeFrequency: 'weekly', priority: 0.7 },
-    { url: `${BASE_URL}/courses`, changeFrequency: 'monthly', priority: 0.7 },
-    { url: `${BASE_URL}/projects`, changeFrequency: 'monthly', priority: 0.7 },
-    { url: `${BASE_URL}/privacy`, changeFrequency: 'yearly', priority: 0.3 },
+    { url: `${BASE_URL}/`, changeFrequency: 'weekly', priority: 1.0 },
+    { url: `${BASE_URL}/about/`, changeFrequency: 'monthly', priority: 0.7 },
+    { url: `${BASE_URL}/philosophy/`, changeFrequency: 'monthly', priority: 0.6 },
+    { url: `${BASE_URL}/how-we-work/`, changeFrequency: 'monthly', priority: 0.7 },
+    { url: `${BASE_URL}/contact/`, changeFrequency: 'monthly', priority: 0.8 },
+    { url: `${BASE_URL}/services/`, changeFrequency: 'monthly', priority: 0.9 },
+    { url: `${BASE_URL}/develop/`, changeFrequency: 'monthly', priority: 0.7 },
+    { url: `${BASE_URL}/emergent-framework/`, changeFrequency: 'monthly', priority: 0.7 },
+    { url: `${BASE_URL}/states-of-vitality/`, changeFrequency: 'monthly', priority: 0.8 },
+    { url: `${BASE_URL}/tools/`, changeFrequency: 'weekly', priority: 0.8 },
+    { url: `${BASE_URL}/articles/`, changeFrequency: 'weekly', priority: 0.7 },
+    { url: `${BASE_URL}/courses/`, changeFrequency: 'monthly', priority: 0.7 },
+    { url: `${BASE_URL}/projects/`, changeFrequency: 'monthly', priority: 0.7 },
+    { url: `${BASE_URL}/privacy/`, changeFrequency: 'yearly', priority: 0.3 },
   ]
 
   // Fetch all dynamic content from Sanity
@@ -35,49 +35,49 @@ export default async function sitemap() {
 
   const dynamicEntries = [
     ...services.map(s => ({
-      url: `${BASE_URL}/services/${s.slug}`,
+      url: `${BASE_URL}/services/${s.slug}/`,
       lastModified: s._updatedAt,
       changeFrequency: 'monthly',
       priority: 0.9,
     })),
     ...tools.map(t => ({
-      url: `${BASE_URL}/tools/${t.slug}`,
+      url: `${BASE_URL}/tools/${t.slug}/`,
       lastModified: t._updatedAt,
       changeFrequency: 'monthly',
       priority: 0.7,
     })),
     ...articles.map(a => ({
-      url: `${BASE_URL}/articles/${a.slug}`,
+      url: `${BASE_URL}/articles/${a.slug}/`,
       lastModified: a._updatedAt,
       changeFrequency: 'monthly',
       priority: 0.6,
     })),
     ...projects.map(p => ({
-      url: `${BASE_URL}/projects/${p.slug}`,
+      url: `${BASE_URL}/projects/${p.slug}/`,
       lastModified: p._updatedAt,
       changeFrequency: 'monthly',
       priority: 0.7,
     })),
     ...courses.map(c => ({
-      url: `${BASE_URL}/courses/${c.slug}`,
+      url: `${BASE_URL}/courses/${c.slug}/`,
       lastModified: c._updatedAt,
       changeFrequency: 'monthly',
       priority: 0.6,
     })),
     ...capabilities.map(c => ({
-      url: `${BASE_URL}/develop/${c.slug}`,
+      url: `${BASE_URL}/develop/${c.slug}/`,
       lastModified: c._updatedAt,
       changeFrequency: 'monthly',
       priority: 0.7,
     })),
     ...dimensions.map(d => ({
-      url: `${BASE_URL}/emergent-framework/${d.slug}`,
+      url: `${BASE_URL}/emergent-framework/${d.slug}/`,
       lastModified: d._updatedAt,
       changeFrequency: 'monthly',
       priority: 0.6,
     })),
     ...dimensionArticles.map(da => ({
-      url: `${BASE_URL}/emergent-framework/${da.dimensionSlug}/${da.slug}`,
+      url: `${BASE_URL}/emergent-framework/${da.dimensionSlug}/${da.slug}/`,
       lastModified: da._updatedAt,
       changeFrequency: 'monthly',
       priority: 0.5,

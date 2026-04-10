@@ -2582,6 +2582,79 @@ a:hover {
 }
 
 /* ============================================
+   TRIPLE CTA (inline service page CTAs)
+   ============================================ */
+
+.triple-cta {
+  padding: 20px 0 8px;
+}
+.triple-cta__prompt {
+  font-size: 15px;
+  font-weight: 300;
+  font-style: italic;
+  color: #888;
+  margin: 0 0 12px;
+  line-height: 1.5;
+}
+.triple-cta__buttons {
+  display: inline-flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.triple-cta__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 24px;
+  font-family: 'Source Sans 3', 'Source Sans Pro', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+  min-height: 40px;
+  border-radius: 0;
+  transition: opacity 0.15s;
+}
+.triple-cta__btn:hover { opacity: 0.85; }
+
+/* Light background variants */
+.triple-cta__btn--primary {
+  background: #221C2B;
+  color: #FAF6F1;
+}
+.triple-cta__btn--secondary {
+  background: transparent;
+  color: #221C2B;
+  border: 1px solid #221C2B;
+}
+.triple-cta__btn--tertiary {
+  background: transparent;
+  color: #9B51E0;
+  border: 1px solid #9B51E0;
+}
+
+/* Dark background variants */
+.triple-cta__buttons--dark {
+  justify-content: center;
+}
+.triple-cta__btn--primary-dark {
+  background: #FAF6F1;
+  color: #221C2B;
+}
+.triple-cta__btn--secondary-dark {
+  background: transparent;
+  color: #FAF6F1;
+  border: 1px solid #FAF6F1;
+}
+.triple-cta__btn--tertiary-dark {
+  background: transparent;
+  color: #9B51E0;
+  border: 1px solid #9B51E0;
+}
+
+/* ============================================
    SERVICE PAGE - MOBILE RESPONSIVE
    Breakpoint: 767px (mobile) / 768px+ (desktop)
    ============================================ */
@@ -2712,6 +2785,17 @@ a:hover {
     display: block;
     width: 100%;
     text-align: center;
+  }
+
+  /* --- 7b. Triple CTA --- */
+  .triple-cta__buttons,
+  .triple-cta__buttons--dark {
+    flex-direction: column;
+    width: 100%;
+  }
+  .triple-cta__btn {
+    width: 100%;
+    min-height: 44px;
   }
 
   /* --- 8. Bridge text --- */

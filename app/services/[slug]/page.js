@@ -4,6 +4,7 @@ import { client, getService } from '../../../sanity/client'
 import { PortableText } from '@portabletext/react'
 import { notFound } from 'next/navigation'
 import CTA from '../../../components/CTA'
+import ServiceTripleCta, { ServiceTripleCtaDark } from '../../../components/ServiceTripleCta'
 import EcosystemVisual from '../../../components/EcosystemVisual'
 import { JourneyStrip, ProgressBar } from '../../../components/ApproachJourney'
 import ServiceHero from '../../../components/heroes/ServiceHero'
@@ -230,6 +231,13 @@ export default async function ServicePage({ params }) {
                   <div className="portable-text" style={{ color: 'rgba(0,0,0,0.7)' }}>
                     <PortableText value={service.contextBody} />
                   </div>
+                  <ServiceTripleCta
+                    prompt="Interested so far?"
+                    serviceTitle={service.title}
+                    heroHeading={service.heroHeading}
+                    slug={slug}
+                    position="after-context"
+                  />
                 </div>
 
                 {/* Fan composition of stage interface screenshots */}
@@ -319,6 +327,14 @@ export default async function ServicePage({ params }) {
               ))}
             </div>
           )}
+
+          <ServiceTripleCta
+            prompt="Want to keep exploring this topic?"
+            serviceTitle={service.title}
+            heroHeading={service.heroHeading}
+            slug={slug}
+            position="after-recognition"
+          />
 
         </div>
       </section>
@@ -439,14 +455,20 @@ export default async function ServicePage({ params }) {
       )}
 
       {/* ==========================================
-          MID-PAGE CTA: AFTER PROOF
+          TRIPLE CTA: AFTER EXAMPLES
           ========================================== */}
       {(service.relatedProjects?.length > 0 || service.testimonialQuote) && (
-        <MidPageCta
-          text={service.midCtaAfterProofText || "Want to explore what this could look like for your organisation?"}
-          buttonLabel={service.midCtaAfterProofButton || "Let\u2019s talk"}
-          serviceTitle={service.title}
-        />
+        <section className="section--full section-padding" style={{ background: 'var(--white)', paddingTop: 0 }}>
+          <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
+            <ServiceTripleCta
+              prompt="Want to explore what this could look like for you?"
+              serviceTitle={service.title}
+              heroHeading={service.heroHeading}
+              slug={slug}
+              position="after-examples"
+            />
+          </div>
+        </section>
       )}
 
       {/* ==========================================
@@ -598,6 +620,24 @@ export default async function ServicePage({ params }) {
           </div>
         </section>
       ))}
+
+      {/* ==========================================
+          TRIPLE CTA: AFTER STAGES
+          ========================================== */}
+      <section className="section--full" style={{
+        background: (service.stages?.length || 0) % 2 === 0 ? 'var(--warm)' : 'var(--white)',
+        padding: '0 48px 48px',
+      }}>
+        <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
+          <ServiceTripleCta
+            prompt="Like how we think about this?"
+            serviceTitle={service.title}
+            heroHeading={service.heroHeading}
+            slug={slug}
+            position="after-stages"
+          />
+        </div>
+      </section>
 
       {/* ==========================================
           SECTION 9: PERSPECTIVE (warm)
@@ -754,13 +794,19 @@ export default async function ServicePage({ params }) {
       </section>
 
       {/* ==========================================
-          MID-PAGE CTA: AFTER OUTCOMES
+          TRIPLE CTA: AFTER OUTCOMES
           ========================================== */}
-      <MidPageCta
-        text={service.midCtaAfterOutcomesText || "Ready to make this happen?"}
-        buttonLabel={service.midCtaAfterOutcomesButton || "Get in touch"}
-        serviceTitle={service.title}
-      />
+      <section className="section--full warm-bg" style={{ padding: '0 48px 48px' }}>
+        <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
+          <ServiceTripleCta
+            prompt="Ready to take the next step?"
+            serviceTitle={service.title}
+            heroHeading={service.heroHeading}
+            slug={slug}
+            position="after-outcomes"
+          />
+        </div>
+      </section>
 
       {/* ==========================================
           RELATED DIMENSIONS
@@ -851,13 +897,13 @@ export default async function ServicePage({ params }) {
       )}
 
       {/* ==========================================
-          SECTION 11: CTA (dark)
+          SECTION 11: CTA (dark - triple)
           ========================================== */}
-      <CTA
-        heading={service.ctaHeading || 'Want to explore how this could work for your organisation?'}
-        body={service.ctaBody || 'Every organisation is different, so we always start with a conversation. No pitch, no obligation - just an honest discussion about where you are and whether our approach feels right.'}
-        buttonText={service.ctaButtonLabel || "Let's have a conversation"}
-        buttonLink={service.ctaButtonUrl || '/contact'}
+      <ServiceTripleCtaDark
+        serviceTitle={service.title}
+        heroHeading={service.heroHeading}
+        slug={slug}
+        position="bottom"
       />
 
     </main>

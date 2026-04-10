@@ -9,7 +9,7 @@ export default function Footer() {
         }}>
 
             {/* Newsletter row */}
-            <div className="footer-newsletter-row">
+            <div id="newsletter" className="footer-newsletter-row">
                 <div style={{ flexShrink: 0 }}>
                     <p style={{
                         fontSize: '13px',

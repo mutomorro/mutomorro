@@ -785,20 +785,7 @@ export default async function ServicePage({ params }) {
         </div>
       </section>
 
-      {/* ==========================================
-          TRIPLE CTA: AFTER OUTCOMES
-          ========================================== */}
-      <section className="section--full" style={{ background: 'var(--white)', padding: '0 48px 48px' }}>
-        <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
-          <ServiceTripleCta
 
-            serviceTitle={service.title}
-            heroHeading={service.heroHeading}
-            slug={slug}
-            position="after-outcomes"
-          />
-        </div>
-      </section>
 
       {/* ==========================================
           RELATED DIMENSIONS

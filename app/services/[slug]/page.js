@@ -232,7 +232,7 @@ export default async function ServicePage({ params }) {
                     <PortableText value={service.contextBody} />
                   </div>
                   <ServiceTripleCta
-                    prompt="Interested so far?"
+
                     serviceTitle={service.title}
                     heroHeading={service.heroHeading}
                     slug={slug}
@@ -329,7 +329,7 @@ export default async function ServicePage({ params }) {
           )}
 
           <ServiceTripleCta
-            prompt="Want to keep exploring this topic?"
+
             serviceTitle={service.title}
             heroHeading={service.heroHeading}
             slug={slug}
@@ -461,7 +461,7 @@ export default async function ServicePage({ params }) {
         <section className="section--full section-padding" style={{ background: 'var(--white)', paddingTop: 0 }}>
           <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
             <ServiceTripleCta
-              prompt="Want to explore what this could look like for you?"
+
               serviceTitle={service.title}
               heroHeading={service.heroHeading}
               slug={slug}
@@ -622,22 +622,14 @@ export default async function ServicePage({ params }) {
       ))}
 
       {/* ==========================================
-          TRIPLE CTA: AFTER STAGES
+          TRIPLE CTA: AFTER STAGES (dark, centred)
           ========================================== */}
-      <section className="section--full" style={{
-        background: (service.stages?.length || 0) % 2 === 0 ? 'var(--warm)' : 'var(--white)',
-        padding: '0 48px 48px',
-      }}>
-        <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
-          <ServiceTripleCta
-            prompt="Like how we think about this?"
-            serviceTitle={service.title}
-            heroHeading={service.heroHeading}
-            slug={slug}
-            position="after-stages"
-          />
-        </div>
-      </section>
+      <ServiceTripleCtaDark
+        serviceTitle={service.title}
+        heroHeading={service.heroHeading}
+        slug={slug}
+        position="after-stages"
+      />
 
       {/* ==========================================
           SECTION 9: PERSPECTIVE (warm)
@@ -732,9 +724,9 @@ export default async function ServicePage({ params }) {
       </section>
 
       {/* ==========================================
-          SECTION 10: OUTCOMES (warm)
+          SECTION 10: OUTCOMES (white)
           ========================================== */}
-      <section id="outcomes" className="section--full warm-bg section-padding">
+      <section id="outcomes" className="section--full section-padding" style={{ background: 'var(--white)' }}>
         <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
           <div className="scroll-in">
             <span className="kicker" style={{ color: '#FF4279', marginBottom: '16px' }}>Outcomes</span>
@@ -796,10 +788,10 @@ export default async function ServicePage({ params }) {
       {/* ==========================================
           TRIPLE CTA: AFTER OUTCOMES
           ========================================== */}
-      <section className="section--full warm-bg" style={{ padding: '0 48px 48px' }}>
+      <section className="section--full" style={{ background: 'var(--white)', padding: '0 48px 48px' }}>
         <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
           <ServiceTripleCta
-            prompt="Ready to take the next step?"
+
             serviceTitle={service.title}
             heroHeading={service.heroHeading}
             slug={slug}

@@ -22,7 +22,7 @@ export default function ServiceTripleCta({ prompt, serviceTitle, heroHeading, sl
 
   return (
     <div className="triple-cta">
-      <p className="triple-cta__prompt">{prompt}</p>
+      {prompt && <p className="triple-cta__prompt">{prompt}</p>}
       <div className="triple-cta__buttons">
         <a
           href={`/contact?service=${encodeURIComponent(serviceTitle)}`}

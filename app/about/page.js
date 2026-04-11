@@ -18,10 +18,10 @@ export default function About() {
         <div style={{ maxWidth: '1350px', margin: '0 auto', position: 'relative' }}>
           <span className="kicker" style={{ marginBottom: '20px' }}>About Mutomorro</span>
           <h1 className="heading-display heading-gradient" style={{ maxWidth: '900px', margin: '0 0 32px' }}>
-            We help leaders redesign how their organisations work
+            Over 20 years helping organisations become better places to work
           </h1>
           <p className="lead-text" style={{ color: 'rgba(255,255,255,0.6)', maxWidth: '680px' }}>
-            The structures, the culture, the operations, the way people experience change. We work across the whole system - because that's where lasting change happens.
+            Helping organisations become better at what they do - and better for the people inside them.
           </p>
         </div>
       </BackgroundPattern>

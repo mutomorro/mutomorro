@@ -7,12 +7,12 @@ export const revalidate = 3600
 
 export const metadata = {
   title: {
-    absolute: 'Mutomorro - Organisational development consultancy',
+    absolute: 'Mutomorro - We help leaders redesign how their organisations work',
   },
-  description: 'We help leaders redesign how their organisations work. Systems-led organisational development across purpose, structure, people, and service.',
+  description: 'Organisational design, development and strategic change. We work across purpose, strategy, structure, culture, and capability to help organisations work better.',
   openGraph: {
-    title: 'Mutomorro - Organisational development consultancy',
-    description: 'We help leaders redesign how their organisations work. Systems-led organisational development across purpose, structure, people, and service.',
+    title: 'Mutomorro - We help leaders redesign how their organisations work',
+    description: 'Organisational design, development and strategic change. We work across purpose, strategy, structure, culture, and capability to help organisations work better.',
     type: 'website',
   },
 }
@@ -88,7 +88,7 @@ export default async function Home() {
               maxWidth: '900px',
               fontSize: 'clamp(66px, 9vw, 108px)',
             }}>
-              Designing thriving organisations for the new world of work
+              We help leaders redesign how their organisations work
             </h1>
           </div>
         </div>

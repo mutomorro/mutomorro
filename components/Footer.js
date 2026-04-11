@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import NewsletterSignup from './NewsletterSignup'
 
 export default function Footer() {
@@ -41,14 +42,13 @@ export default function Footer() {
 
                 {/* Brand */}
                 <div>
-                    <span className="heading-gradient" style={{
-                        fontSize: '1.25rem',
-                        fontWeight: '400',
-                        display: 'block',
-                        marginBottom: '1rem',
-                    }}>
-                        Mutomorro
-                    </span>
+                    <Image
+                        src="/logo-white.svg"
+                        alt="Mutomorro"
+                        width={140}
+                        height={28}
+                        style={{ display: 'block', marginBottom: '1rem' }}
+                    />
                     <p style={{
                         fontSize: '15px',
                         lineHeight: '1.7',
@@ -56,7 +56,7 @@ export default function Footer() {
                         fontWeight: '300',
                         margin: 0,
                     }}>
-                        Helping organisations become intentional ecosystems - places where people and purpose thrive together.
+                        We help organisations become better places to work and better at what they do.
                     </p>
                 </div>
 
@@ -64,10 +64,10 @@ export default function Footer() {
                 <div>
                     <p className="footer-heading">How We Help</p>
                     <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                        <li><Link href="/how-we-help/purpose-and-direction" className="footer-link">Purpose & Direction</Link></li>
-                        <li><Link href="/how-we-help/structure-and-operations" className="footer-link">Structure & Operations</Link></li>
-                        <li><Link href="/how-we-help/people-and-capability" className="footer-link">People & Capability</Link></li>
-                        <li><Link href="/how-we-help/service-and-experience" className="footer-link">Service & Experience</Link></li>
+                        <li><Link href="/services/#purpose-direction" className="footer-link">Purpose & Direction</Link></li>
+                        <li><Link href="/services/#structure-operations" className="footer-link">Structure & Operations</Link></li>
+                        <li><Link href="/services/#people-capability" className="footer-link">People & Capability</Link></li>
+                        <li><Link href="/services/#service-experience" className="footer-link">Service & Experience</Link></li>
                         <li><Link href="/projects" className="footer-link">Projects and experience</Link></li>
                     </ul>
                 </div>

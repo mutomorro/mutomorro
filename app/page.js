@@ -20,25 +20,6 @@ import LogoStrip from '../components/LogoStrip'
 import NewsletterSignup from '../components/NewsletterSignup'
 import BackgroundPattern from '../components/animations/BackgroundPattern'
 
-// Route cards for section 2
-const routeCards = [
-  {
-    label: 'About Mutomorro',
-    description: 'The story, the approach, the person behind it.',
-    href: '/about',
-  },
-  {
-    label: 'Our philosophy',
-    description: 'A different way of seeing organisations - and why it matters.',
-    href: '/philosophy',
-  },
-  {
-    label: 'The EMERGENT Framework',
-    description: 'Eight dimensions of organisational health - a practical lens for understanding how organisations really work.',
-    href: '/emergent-framework',
-  },
-]
-
 // Featured case studies (by slug - matched from Sanity)
 const featuredProjectSlugs = [
   'housing-association-merger-integration',
@@ -113,61 +94,24 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* ─── Section 2: Who we are + route cards ─── */}
+      {/* ─── Section 2: Positioning + service area cards ─── */}
       <section className="section--full section-padding" style={{ background: 'var(--white)' }}>
         <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
           {/* Positioning block */}
           <div className="scroll-fade-up" style={{ maxWidth: '800px', marginBottom: '64px' }}>
             <h2 className="heading-h2" style={{ marginBottom: '24px' }}>
-              Systems-led organisational design, development and strategic change
+              Organisational design, development and strategic change
             </h2>
             <p className="body-text" style={{ maxWidth: '720px', color: 'rgba(0,0,0,0.7)' }}>
-              Mutomorro helps organisations understand themselves as living systems - and design from there. We work across purpose, strategy, structure, culture, and capability to help organisations thrive, not just function.
+              We help leaders make their organisations better places to work and better at what they do. We work across purpose, strategy, structure, culture, and capability - and we start from where you are.
             </p>
             <p className="body-text" style={{ maxWidth: '720px', marginTop: '16px', color: 'rgba(0,0,0,0.7)' }}>
-              Whether you're navigating a merger, rethinking how you're structured, or trying to shift a culture that isn't working - we start from where you are.
+              Whether you're navigating a merger, rethinking how you're structured, or trying to shift a culture that isn't working, we can help.
             </p>
           </div>
 
-          {/* Route cards */}
-          <div className="grid-3 scroll-fade-up" style={{ animationDelay: '0.1s' }}>
-            {routeCards.map((card) => (
-              <Link
-                key={card.href}
-                href={card.href}
-                className="card-a"
-              >
-                <div className="card-a__corner" />
-                <div className="card-a__body">
-                  <h3 className="card-a__title">{card.label}</h3>
-                  <p className="card-a__text">{card.description}</p>
-                </div>
-                <div className="card-a__footer">
-                  <div className="card-a__footer-bg" />
-                  <span className="card-a__action">
-                    Explore <span className="arrow">→</span>
-                  </span>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ─── Logo strip ─── */}
-      <LogoStrip />
-
-      {/* ─── Section 3: What we work on ─── */}
-      <BackgroundPattern variant="constellation" className="section--full warm-bg section-padding">
-        <div style={{ maxWidth: '1350px', margin: '0 auto', position: 'relative' }}>
-          <div className="scroll-fade-up" style={{ marginBottom: '3rem' }}>
-            <span className="kicker" style={{ color: 'var(--accent)' }}>What we work on</span>
-            <h2 className="heading-h2" style={{ margin: '0 0 16px', maxWidth: '700px' }}>
-              We work in four areas of organisational life
-            </h2>
-          </div>
-
-          <div className="grid-4 scroll-fade-up">
+          {/* Service area cards */}
+          <div className="grid-4 scroll-fade-up" style={{ animationDelay: '0.1s' }}>
             {[
               {
                 title: 'Purpose & Direction',
@@ -211,9 +155,12 @@ export default async function Home() {
             ))}
           </div>
         </div>
-      </BackgroundPattern>
+      </section>
 
-      {/* ─── Section 4: Proof (case studies) ─── */}
+      {/* ─── Logo strip ─── */}
+      <LogoStrip />
+
+      {/* ─── Section 3: Proof (case studies) ─── */}
       <section className="section--full dark-bg section-padding" style={{ background: '#221C2B' }}>
         <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
           <div className="scroll-fade-up" style={{ marginBottom: '40px' }}>

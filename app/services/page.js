@@ -68,6 +68,7 @@ export default async function Services() {
       {categories.map((cat, catIndex) => (
         <section
           key={cat.slug}
+          id={cat.slug}
           className="section--full section-padding"
           style={{
             background: catIndex % 2 === 0 ? 'var(--white)' : 'var(--warm)',

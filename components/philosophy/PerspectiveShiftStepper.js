@@ -753,11 +753,11 @@ export default function PerspectiveShiftStepper() {
               Shifting perspectives
             </span>
             <h2 className="heading-h2" style={{ margin: '0 0 16px', maxWidth: '600px' }}>
-              Six shifts that change how you see your organisation
+              Six ideas that change how organisations work
             </h2>
             <p className="body-text" style={{ maxWidth: '620px', margin: 0 }}>
               Systems thinking isn't just another framework - it's a fundamentally different way of seeing.
-              Here are the shifts that change what you notice, and what becomes possible.
+              These ideas shape how we work with every organisation we help.
             </p>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column' }}>

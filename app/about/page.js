@@ -262,18 +262,18 @@ export default function About() {
           <div className="grid-3">
             {[
               {
-                label: 'Our thinking',
-                title: 'Intentional Ecosystems',
-                body: 'How we think about organisations - the philosophy behind everything we do.',
-                href: '/philosophy',
-                cta: 'Explore our philosophy',
+                label: 'Recent projects',
+                title: 'Our work',
+                body: 'Real examples of how we\'ve helped organisations navigate change, redesign how they work, and build something that lasts.',
+                href: '/projects',
+                cta: 'See our projects',
               },
               {
-                label: 'Our framework',
-                title: 'The EMERGENT Framework',
-                body: 'Eight dimensions of organisational health - and how they connect.',
-                href: '/emergent-framework',
-                cta: 'Explore the framework',
+                label: 'Where we help',
+                title: 'Our services',
+                body: 'We work across four areas - purpose and direction, structure and operations, people and capability, service and experience.',
+                href: '/services',
+                cta: 'Explore our services',
               },
               {
                 label: 'In practice',

@@ -5,7 +5,7 @@ import CoursesGrid from './CoursesGrid'
 export const revalidate = 3600
 
 export const metadata = {
-  title: 'Sessions - organisational development training',
+  title: 'Courses - organisational development training',
   description: 'Collaborative learning sessions on change management, culture, leadership, systems thinking, service design, and more. Designed for teams and leaders.',
 }
 
@@ -26,7 +26,7 @@ export default async function Courses() {
             Learn and develop
           </h1>
           <p className="lead-text" style={{ color: 'rgba(255,255,255,0.6)', maxWidth: '600px' }}>
-            Ready-made courses on leadership, change, culture and organisational health.
+            Ready-made courses on leadership, change, culture and how organisations work.
           </p>
         </div>
       </section>

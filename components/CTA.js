@@ -3,8 +3,8 @@ import BackgroundPattern from '@/components/animations/BackgroundPattern'
 
 export default function CTA({
   label = 'Let\'s talk',
-  heading = 'Interested in working together?',
-  body = 'Whether you\'re navigating a big change, rethinking how things work, or building on what\'s already good - we\'d love to hear from you.',
+  heading = 'Let\'s talk about what you\'re working on',
+  body = 'Whether you\'re navigating a merger, rethinking how you\'re structured, or trying to shift a culture that isn\'t working - start with a conversation.',
   buttonText = 'Talk to us',
   buttonLink = '/contact',
   secondaryText,

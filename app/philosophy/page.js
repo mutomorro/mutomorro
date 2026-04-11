@@ -21,16 +21,19 @@ const concepts = [
     title: 'Leverage points',
     headline: 'Small changes in the right place create disproportionate impact. Not all interventions are equal.',
     body: 'Some changes require massive effort for minimal results. Others create ripples that multiply across your entire ecosystem. The key is finding leverage points - places where focused attention creates cascading positive effects. Change how decisions get made in one area, and coordination improves across multiple teams. Strengthen one dimension, and others lift with it.',
+    example: 'A housing association struggling with tenant satisfaction found the root cause wasn\'t frontline service - it was how information flowed between teams. Fixing that one thing improved satisfaction scores across every department.',
   },
   {
     title: 'Feedback loops',
     headline: 'Actions circle back to influence themselves. Understanding these loops reveals why patterns persist.',
     body: "Reinforcing loops amplify change - success builds more success, or decline accelerates decline. Balancing loops resist change, maintaining stability even when you're trying to shift things. Understanding which loops operate in your organisation explains why some patterns feel stuck whilst others gain momentum. It reveals where you're fighting the system - and where you can work with it.",
+    example: 'A charity kept investing in staff training, but nothing changed. The loop: managers weren\'t given time to apply what they\'d learned, so skills faded, so more training was commissioned. Breaking the loop meant changing how managers\' time was protected - not adding more courses.',
   },
   {
     title: 'Structures shape behaviour',
     headline: 'People respond to the systems around them. Change the structure, behaviour shifts naturally.',
     body: "When organisations face behavioural challenges, the instinct is to address the people. Systems thinking looks deeper - what structures are creating these behaviours? If information doesn't flow, structures might not support sharing. If people resist change, structures might be rewarding the status quo. Redesign the structures and people naturally respond differently. Change becomes sustainable because it's built into how the system works.",
+    example: 'An organisation wanted more cross-team collaboration but kept getting silos. The issue wasn\'t attitude - it was that every team had its own budget line and its own targets. Redesigning the goal structure made collaboration the natural path, not the effortful one.',
   },
 ]
 
@@ -42,10 +45,10 @@ export default function PhilosophyPage() {
       <PhilosophyHero>
         <span className="kicker" style={{ marginBottom: '20px' }}>Philosophy</span>
         <h1 className="heading-display heading-gradient" style={{ maxWidth: '900px', margin: '0 0 32px' }}>
-          Designing intentional ecosystems
+          Why we think about organisations differently
         </h1>
         <p className="lead-text" style={{ color: 'rgba(255,255,255,0.6)', maxWidth: '680px' }}>
-          What if the way we think about organisations is the problem? Not the strategy. Not the people. Not the structure. The thinking underneath all of it.
+          Most approaches to improving organisations focus on fixing individual parts. We've found that the biggest shifts come from understanding how everything connects.
         </p>
       </PhilosophyHero>
 
@@ -57,7 +60,7 @@ export default function PhilosophyPage() {
               Our thinking
             </span>
             <h2 className="heading-h2" style={{ margin: '0 0 24px', maxWidth: '700px' }}>
-              What if everything is connected?
+              Everything is connected
             </h2>
             <div className="body-text" style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
               <p>
@@ -67,7 +70,7 @@ export default function PhilosophyPage() {
                 Most approaches to developing organisations were built for a simpler time - when you could break things into parts, fix each piece, and the whole got better. The world leaders navigate today doesn't work that way. It's more connected, more complex, and moving faster than any fixed plan can keep up with.
               </p>
               <p style={{ fontWeight: '400', fontSize: '1.1rem' }}>
-                Once you see this, you can't unsee it. And everything about how you lead starts to shift.
+                Once you see this, it changes how you approach every challenge - from restructures to culture change to how you design services.
               </p>
             </div>
           </div>
@@ -89,10 +92,10 @@ export default function PhilosophyPage() {
           <div className="scroll-in" style={{ marginBottom: '3rem' }}>
             <span className="kicker" style={{ marginBottom: '20px' }}>Systems concepts</span>
             <h2 className="heading-h2" style={{ color: '#ffffff', margin: '0 0 16px', maxWidth: '600px' }}>
-              Three ideas that explain almost everything
+              Three concepts we come back to again and again
             </h2>
             <p className="body-text" style={{ color: 'rgba(255,255,255,0.6)', maxWidth: '620px', margin: 0 }}>
-              Once you start seeing systems, these concepts become essential for understanding organisations and creating lasting change.
+              These three ideas run through almost every project we work on. They're simple, but they explain a lot.
             </p>
           </div>
 
@@ -123,6 +126,16 @@ export default function PhilosophyPage() {
                     <p className="body-text" style={{ color: 'rgba(255,255,255,0.6)', margin: 0 }}>
                       {c.body}
                     </p>
+                    {c.example && (
+                      <p className="body-text" style={{
+                        color: 'rgba(255,255,255,0.45)',
+                        margin: '16px 0 0',
+                        fontStyle: 'italic',
+                        fontSize: '15px',
+                      }}>
+                        {c.example}
+                      </p>
+                    )}
                   </div>
                   <div>
                     {DemoComponent && <DemoComponent />}
@@ -169,7 +182,7 @@ export default function PhilosophyPage() {
 
       {/* Section 9: CTA */}
       <CTA
-        heading="Ready to see your organisation differently?"
+        heading="Want to explore what this means for your organisation?"
         body="Start with a conversation. No framework, no methodology - just a different way of looking at what you're navigating. And if it resonates, we'll explore where it leads."
         secondaryText="How we work"
         secondaryLink="/how-we-work"

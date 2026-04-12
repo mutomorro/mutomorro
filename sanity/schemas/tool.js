@@ -101,6 +101,22 @@ export default {
         'Which services is this tool most relevant to? Creates cross-links between tools and service pages.',
     },
     {
+      name: 'relatedArticles',
+      title: 'Related Articles',
+      type: 'array',
+      group: 'taxonomy',
+      of: [{ type: 'reference', to: [{ type: 'article' }] }],
+      description: 'Articles that relate to this tool. Creates cross-links between tools and article pages.',
+    },
+    {
+      name: 'relatedTools',
+      title: 'Related Tools',
+      type: 'array',
+      group: 'taxonomy',
+      of: [{ type: 'reference', to: [{ type: 'tool' }] }],
+      description: 'Other tools that relate to this one. Creates cross-links between tool pages.',
+    },
+    {
       name: 'topics',
       title: 'Topics',
       type: 'array',

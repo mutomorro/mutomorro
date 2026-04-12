@@ -85,6 +85,8 @@ const nextConfig = {
       { source: '/ecosystem-design', destination: '/services/', permanent: true },
       { source: '/application', destination: '/services/', permanent: true },
       { source: '/services-old', destination: '/services/', permanent: true },
+      { source: '/customer-experience', destination: '/services/customer-experience-consultancy/', permanent: true },
+      { source: '/terms', destination: '/privacy/', permanent: true },
       { source: '/checkout', destination: '/contact/', permanent: true },
       { source: '/checkout-2', destination: '/contact/', permanent: true },
       { source: '/enquiry', destination: '/contact/', permanent: true },

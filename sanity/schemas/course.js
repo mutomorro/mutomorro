@@ -93,6 +93,20 @@ export default defineType({
       description: 'Which services relate to this content (used for filtering on list pages)',
     }),
     defineField({
+      name: 'relatedArticles',
+      title: 'Related Articles',
+      type: 'array',
+      of: [{ type: 'reference', to: [{ type: 'article' }] }],
+      description: 'Articles that relate to this course.',
+    }),
+    defineField({
+      name: 'relatedTools',
+      title: 'Related Tools',
+      type: 'array',
+      of: [{ type: 'reference', to: [{ type: 'tool' }] }],
+      description: 'Tools that relate to this course.',
+    }),
+    defineField({
       name: 'relatedDimensions',
       title: 'Related dimensions',
       type: 'array',

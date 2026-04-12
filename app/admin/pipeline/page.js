@@ -154,9 +154,9 @@ export default function PipelinePage() {
       </h1>
 
       {loading ? (
-        <div style={{ display: 'flex', gap: '12px' }}>
+        <div style={{ display: 'flex', gap: '12px', overflowX: 'auto' }}>
           {[1, 2, 3, 4, 5, 6].map((i) => (
-            <div key={i} style={{ flex: 1, height: '200px', background: 'rgba(255,255,255,0.04)', borderRadius: '8px', animation: 'pulse 1.5s ease-in-out infinite' }} />
+            <div key={i} style={{ flex: '1 0 140px', minWidth: '140px', height: '200px', background: 'rgba(255,255,255,0.04)', borderRadius: '8px', animation: 'pulse 1.5s ease-in-out infinite' }} />
           ))}
         </div>
       ) : (

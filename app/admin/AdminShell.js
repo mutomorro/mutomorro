@@ -195,6 +195,9 @@ export default function AdminShell({ children }) {
         marginLeft: '220px',
         padding: '32px 40px',
         minHeight: '100vh',
+        maxWidth: 'calc(100vw - 220px)',
+        overflowX: 'hidden',
+        boxSizing: 'border-box',
       }}
         className="admin-main"
       >
@@ -234,6 +237,7 @@ export default function AdminShell({ children }) {
             margin-left: 0 !important;
             padding: 16px !important;
             padding-top: 72px !important;
+            max-width: 100vw !important;
           }
         }
       `}</style>

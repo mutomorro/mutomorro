@@ -167,9 +167,15 @@ export default function AnalyticsPage() {
           .admin-analytics-cols {
             grid-template-columns: 1fr !important;
           }
+          .admin-conversions-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+          }
         }
         @media (max-width: 480px) {
           .admin-metrics-grid {
+            grid-template-columns: 1fr !important;
+          }
+          .admin-conversions-grid {
             grid-template-columns: 1fr !important;
           }
         }
@@ -313,7 +319,7 @@ function DataTable({ rows, countLabel = 'Count' }) {
         {rows.map((r, i) => (
           <tr key={i}>
             <td style={tdStyle}>
-              <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'block', maxWidth: '260px' }}>
+              <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'block' }}>
                 {r.label || 'Unknown'}
               </span>
             </td>
@@ -383,7 +389,7 @@ function CustomEventsTable({ events }) {
 
   return (
     <div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '20px' }}>
+      <div className="admin-conversions-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '20px' }}>
         {events.map((e, i) => (
           <div key={i} style={{ padding: '12px 0' }}>
             <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '4px' }}>
@@ -397,7 +403,7 @@ function CustomEventsTable({ events }) {
       </div>
 
       {/* Sparklines for each event */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px' }}>
+      <div className="admin-conversions-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px' }}>
         {events.map((e, i) => (
           <Sparkline key={i} data={e.days} colour={eventColours[e.event] || '#9B51E0'} />
         ))}

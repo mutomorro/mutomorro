@@ -218,8 +218,11 @@ export default function AdminTenders() {
       <style>{`
         @keyframes pulse { 0%, 100% { opacity: 0.4; } 50% { opacity: 0.8; } }
         @media (max-width: 768px) {
-          .admin-tender-filters {
-            flex-direction: column;
+          .admin-tender-detail-grid {
+            grid-template-columns: 1fr !important;
+          }
+          .admin-tender-row-inner {
+            flex-wrap: wrap !important;
           }
         }
       `}</style>
@@ -239,7 +242,7 @@ function TenderRow({ tender, isSelected, onSelect, onRate, onStatusChange, savin
       background: isSelected ? 'rgba(155,81,224,0.08)' : rowStyle.background,
     }}>
       {/* Main row content */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', minWidth: 0 }}>
+      <div className="admin-tender-row-inner" style={{ display: 'flex', alignItems: 'center', gap: '12px', minWidth: 0 }}>
         {/* Temperature dot */}
         <div style={{
           width: '8px', height: '8px', borderRadius: '50%', flexShrink: 0,
@@ -345,7 +348,7 @@ function DetailPanel({ detail, loading, onPatch, saving }) {
 
   return (
     <div style={detailStyle}>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+      <div className="admin-tender-detail-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
         {/* Left column */}
         <div>
           {/* Key info */}
@@ -516,7 +519,9 @@ const inputStyle = {
   border: '1px solid rgba(255,255,255,0.08)',
   color: '#fff',
   fontFamily: 'inherit',
-  minWidth: '140px',
+  minWidth: '100px',
+  maxWidth: '100%',
+  boxSizing: 'border-box',
 }
 
 const selectStyle = {
@@ -538,6 +543,7 @@ const textareaStyle = {
   color: '#fff',
   fontFamily: 'inherit',
   resize: 'vertical',
+  boxSizing: 'border-box',
 }
 
 const miniBtn = {

@@ -410,9 +410,9 @@ function WeekView({ days, itemsForDate, onAddClick, onItemClick, onStatusCycle, 
 
 function MonthView({ days, monthStart, monthEnd, itemsForDate, onDayClick, onItemClick }) {
   return (
-    <div>
+    <div style={{ overflowX: 'auto' }}>
       {/* Day headers */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '4px', marginBottom: '4px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '4px', marginBottom: '4px', minWidth: '500px' }}>
         {dayNames.map((name) => (
           <div key={name} style={{ textAlign: 'center', fontSize: '12px', color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', letterSpacing: '0.5px', padding: '8px 0' }}>
             {name}
@@ -421,7 +421,7 @@ function MonthView({ days, monthStart, monthEnd, itemsForDate, onDayClick, onIte
       </div>
 
       {/* Day grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '4px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '4px', minWidth: '500px' }}>
         {days.map((day) => {
           const dateStr = formatDateStr(day)
           const dayItems = itemsForDate(dateStr)
@@ -531,7 +531,7 @@ function ItemModal({ item, defaultDate, onSave, onDelete, onClose }) {
         top: '50%',
         left: '50%',
         transform: 'translate(-50%, -50%)',
-        width: '100%',
+        width: 'calc(100% - 32px)',
         maxWidth: '480px',
         maxHeight: '85vh',
         overflowY: 'auto',
@@ -540,6 +540,7 @@ function ItemModal({ item, defaultDate, onSave, onDelete, onClose }) {
         borderRadius: '10px',
         padding: '28px',
         zIndex: 1001,
+        boxSizing: 'border-box',
       }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
           <h2 style={{ fontSize: '18px', fontWeight: 400, color: '#fff' }}>

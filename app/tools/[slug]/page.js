@@ -6,6 +6,7 @@ import ToolDownloadForm from '../../../components/ToolDownloadForm'
 import ToolFloatingBar from '../../../components/ToolFloatingBar'
 import Link from 'next/link'
 import { urlFor } from '../../../sanity/image'
+import RelatedContent from '../../../components/RelatedContent'
 
 export const revalidate = 3600
 
@@ -210,6 +211,11 @@ export default async function ToolPage({ params }) {
             </a>
             {' '}- ideas, practical approaches, and useful tools for people working on making their organisations better.
           </p>
+
+          <RelatedContent
+            relatedTools={tool.relatedTools}
+            relatedArticles={tool.relatedArticles}
+          />
         </div>
       </section>
 

@@ -1,0 +1,231 @@
+============================================================
+MUTOMORRO INTERNAL LINK AUDIT
+Generated: 2026-04-12T11:19:55.807Z
+============================================================
+
+OVERVIEW
+----------------------------------------
+Total pages crawled:      210
+Total internal links:     12312
+Body content links:       345
+Orphan pages:             79
+Dead-end pages:           99
+Potential broken links:   53
+Generic anchor texts:     0
+Pages with errors:        0
+
+ORPHAN PAGES (no content links pointing to them)
+----------------------------------------
+  /states-of-vitality/  -  States of Vitality - organisational health diagnostic | Mutomorro
+  /privacy/  -  Privacy and cookies | Mutomorro
+  /tools/5-conflict-styles/  -  5 Conflict Styles (Thomas-Kilmann) - guide | Mutomorro
+  /tools/5-whys/  -  5 Whys - root cause analysis guide | Mutomorro
+  /tools/5ds-of-appreciative-inquiry/  -  5Ds of Appreciative Inquiry - overview | Mutomorro
+  /tools/6-team-conditions-for-team-effectiveness/  -  6 Team Conditions for Effectiveness - guide | Mutomorro
+  /tools/audience-personas/  -  Audience Personas - guide and template | Mutomorro
+  /tools/bpm-lifecycle/  -  BPM Lifecycle - business process guide | Mutomorro
+  /tools/bridges-transition-model/  -  Bridges Transition Model - overview | Mutomorro
+  /tools/burke-litwin-change-model/  -  Burke-Litwin Change Model - overview | Mutomorro
+  /tools/contextual-inquiry/  -  Contextual Inquiry - user research guide | Mutomorro
+  /tools/daci-framework/  -  DACI Framework - decision-making guide | Mutomorro
+  /tools/disc-styles/  -  DiSC Styles - guide and template | Mutomorro
+  /tools/eisenhower-matrix/  -  Eisenhower Matrix - prioritisation guide | Mutomorro
+  /tools/five-dysfunctions-of-a-team/  -  Five Dysfunctions of a Team - overview | Mutomorro
+  /tools/gemba-walk/  -  Gemba Walk - Lean leadership guide | Mutomorro
+  /tools/heart-of-business/  -  Heart of Business - purpose-led leadership | Mutomorro
+  /tools/lewins-change-model/  -  Lewin's Change Model - overview | Mutomorro
+  /tools/mckinsey-7-s-model/  -  McKinsey 7-S Model - strategy guide | Mutomorro
+  /tools/mendelow-power-interest-matrix/  -  Mendelow Power-Interest Matrix - guide | Mutomorro
+  /tools/narrative-strategy/  -  Narrative Strategy - storytelling guide | Mutomorro
+  /tools/nonprofit-business-model-canvas/  -  Nonprofit Business Model Canvas - guide | Mutomorro
+  /tools/ooda-loop/  -  OODA Loop - decision-making guide | Mutomorro
+  /tools/orca/  -  ORCA - change readiness assessment guide | Mutomorro
+  /tools/organisational-maturity-model/  -  Organisational Maturity Model - overview | Mutomorro
+  /tools/polism-canvas/  -  POLISM Canvas - operating model guide | Mutomorro
+  /tools/problem-statement/  -  Problem Statement - how to write one | Mutomorro
+  /tools/project-aristotle-effective-teams/  -  Project Aristotle - team effectiveness guide | Mutomorro
+  /tools/project-oxygen/  -  Project Oxygen - great managers guide | Mutomorro
+  /tools/rasci-framework/  -  RASCI Framework - roles and decisions guide | Mutomorro
+  /tools/satir-change-model/  -  Satir Change Model - overview and template | Mutomorro
+  /tools/service-blueprints/  -  Service Blueprints - design guide | Mutomorro
+  /tools/six-thinking-hats/  -  Six Thinking Hats - decision-making guide | Mutomorro
+  /tools/t7-model-for-teams/  -  T7 Model for Teams - effectiveness guide | Mutomorro
+  /tools/tesi-model/  -  TESI Model - team emotional intelligence | Mutomorro
+  /tools/the-heros-journey/  -  The Hero's Journey for organisations | Mutomorro
+  /tools/the-star-method/  -  The STAR Method - storytelling guide | Mutomorro
+  /tools/vuca-prime/  -  VUCA Prime - leadership guide and template | Mutomorro
+  /tools/wicked-problems/  -  Wicked Problems - understanding complexity | Mutomorro
+  /articles/adaptive-organisational-design/  -  Adaptive Organisational Design: A Practical Guide | Mutomorro
+  /articles/impact-measurement-framework/  -  Impact Measurement Framework: How to Build One | Mutomorro
+  /articles/building-anti-fragile-organisations/  -  Building Organisational Resilience: What It Takes | Mutomorro
+  /articles/charity-technology-guide/  -  Using technology to increase your impact | Mutomorro
+  /articles/developing-future-literacy/  -  Developing future literacy | Mutomorro
+  /articles/emotional-intelligence-for-leaders/  -  Emotional Intelligence for Leaders: A Practical Guide | Mutomorro
+  /articles/governance-the-enables-innovation/  -  Governance the enables innovation | Mutomorro
+  /articles/leadership-vulnerability-in-storytelling-drives-performance/  -  Leadership vulnerability in storytelling drives performance | Mutomorro
+  /articles/building-the-case-for-change/  -  Building the Case for Change: A Practical Guide | Mutomorro
+  /articles/storytelling-for-social-change/  -  Master storytelling for social change | Mutomorro
+  /articles/storytelling-with-data/  -  Storytelling with data - from overwhelm to insight | Mutomorro
+  /articles/strategic-planning-as-culture-development/  -  Strategic planning as culture development | Mutomorro
+  /articles/sustainability-as-an-innovation-driver/  -  Sustainability as an innovation driver | Mutomorro
+  /articles/reducing-organisational-friction/  -  Reducing Organisational Friction: What to Look For | Mutomorro
+  /articles/why-design-thinking-must-embed-in-business-strategy/  -  Why design thinking must be embedded in business strategy | Mutomorro
+  /projects/organisational-alignment-restructuring-case-study/  -  Organisational Alignment During Restructuring Case Study | Mutomorro
+  /courses/defining-organisational-purpose/  -  Defining Organisational Purpose Training | Mutomorro
+  /courses/organisational-culture-change-training/  -  Organisational culture change training | Mutomorro
+  /courses/building-a-theory-of-change/  -  Building a Theory of Change | Mutomorro
+  /courses/high-performing-teams-training/  -  High-performing teams training | Mutomorro
+  /courses/building-shared-purpose-in-teams/  -  Building Shared Purpose in Teams | Mutomorro
+  /courses/building-the-case-for-change/  -  Building the case for change - a course for leaders | Mutomorro
+  /courses/preventing-burnout-at-work/  -  Preventing burnout at work - a course for leaders | Mutomorro
+  /courses/continuous-improvement-training/  -  Continuous Improvement Training | Mutomorro
+  /courses/employee-recognition-training/  -  Employee recognition training | Mutomorro
+  /courses/building-a-collaborative-culture/  -  Building a collaborative culture | Mutomorro
+  /courses/data-storytelling-training/  -  Data storytelling training | Mutomorro
+  /courses/defining-value-in-service-delivery/  -  Defining Value in Service Delivery | Mutomorro
+  /courses/driving-organisational-change/  -  Driving organisational change - a course for change teams | Mutomorro
+  /courses/effective-change-sponsor/  -  Being an effective change sponsor | Mutomorro
+  /courses/employee-wellbeing-training/  -  Employee wellbeing training | Mutomorro
+  /courses/design-thinking-training/  -  Design Thinking Training | Mutomorro
+  /courses/leading-a-team-through-change/  -  Leading a team through change - a course for managers | Mutomorro
+  /courses/leading-your-team-through-change/  -  Leading a team through change - a course for managers | Mutomorro
+  /courses/reducing-customer-effort/  -  Reducing Customer Effort Training | Mutomorro
+  /courses/scenario-planning-for-leaders/  -  Scenario Planning for Leaders | Mutomorro
+  /courses/lean-process-design-training/  -  Lean Process Design Training | Mutomorro
+  /courses/systems-thinking-for-organisational-change/  -  Systems Thinking for Organisational Change | Mutomorro
+  /courses/user-journey-mapping-training/  -  User Journey Mapping Training | Mutomorro
+  /courses/workflow-optimisation-training/  -  Workflow Optimisation Training | Mutomorro
+
+DEAD-END PAGES (no body content links going out)
+----------------------------------------
+  /how-we-work/  -  How we work with organisations | Mutomorro (45 nav/footer links only)
+  /contact/  -  Get in touch | Mutomorro (42 nav/footer links only)
+  /emergent-framework/  -  The EMERGENT Framework - eight dimensions of organisational health | Mutomorro (91 nav/footer links only)
+  /states-of-vitality/  -  States of Vitality - organisational health diagnostic | Mutomorro (43 nav/footer links only)
+  /tools/  -  Tools and templates for organisational development | Mutomorro (43 nav/footer links only)
+  /articles/  -  Articles - thinking on organisational development | Mutomorro (43 nav/footer links only)
+  /courses/  -  Courses - organisational development training | Mutomorro (43 nav/footer links only)
+  /projects/  -  Case studies - organisational development projects | Mutomorro (43 nav/footer links only)
+  /privacy/  -  Privacy and cookies | Mutomorro (43 nav/footer links only)
+  /tools/4-stages-of-psychological-safety/  -  4 Stages of Psychological Safety - guide | Mutomorro (46 nav/footer links only)
+  /tools/5-conflict-styles/  -  5 Conflict Styles (Thomas-Kilmann) - guide | Mutomorro (46 nav/footer links only)
+  /tools/5-whys/  -  5 Whys - root cause analysis guide | Mutomorro (46 nav/footer links only)
+  /tools/8-wastes-of-lean/  -  8 Wastes of Lean - guide and template | Mutomorro (46 nav/footer links only)
+  /tools/belbins-team-roles/  -  Belbin's Team Roles - overview and guide | Mutomorro (46 nav/footer links only)
+  /tools/bridges-transition-model/  -  Bridges Transition Model - overview | Mutomorro (46 nav/footer links only)
+  /tools/burke-litwin-change-model/  -  Burke-Litwin Change Model - overview | Mutomorro (46 nav/footer links only)
+  /tools/cedar-feedback-model/  -  CEDAR Feedback Model - guide | Mutomorro (46 nav/footer links only)
+  /tools/change-curve/  -  Change Curve (Kubler-Ross) - overview | Mutomorro (46 nav/footer links only)
+  /tools/daci-framework/  -  DACI Framework - decision-making guide | Mutomorro (46 nav/footer links only)
+  /tools/eisenhower-matrix/  -  Eisenhower Matrix - prioritisation guide | Mutomorro (46 nav/footer links only)
+  /tools/empathy-map/  -  Empathy Map - guide and template | Mutomorro (46 nav/footer links only)
+  /tools/gemba-walk/  -  Gemba Walk - Lean leadership guide | Mutomorro (46 nav/footer links only)
+  /tools/iceberg-model/  -  Iceberg Model - systems thinking guide | Mutomorro (46 nav/footer links only)
+  /tools/kaizen-cycle/  -  Kaizen Cycle - continuous improvement guide | Mutomorro (46 nav/footer links only)
+  /tools/lewins-change-model/  -  Lewin's Change Model - overview | Mutomorro (46 nav/footer links only)
+  /tools/mendelow-power-interest-matrix/  -  Mendelow Power-Interest Matrix - guide | Mutomorro (46 nav/footer links only)
+  /tools/orca/  -  ORCA - change readiness assessment guide | Mutomorro (46 nav/footer links only)
+  /tools/organisational-maturity-model/  -  Organisational Maturity Model - overview | Mutomorro (46 nav/footer links only)
+  /tools/pdca-cycle/  -  PDCA Cycle - continuous improvement guide | Mutomorro (46 nav/footer links only)
+  /tools/polism-canvas/  -  POLISM Canvas - operating model guide | Mutomorro (46 nav/footer links only)
+  /tools/project-oxygen/  -  Project Oxygen - great managers guide | Mutomorro (46 nav/footer links only)
+  /tools/rasci-framework/  -  RASCI Framework - roles and decisions guide | Mutomorro (46 nav/footer links only)
+  /tools/service-blueprints/  -  Service Blueprints - design guide | Mutomorro (46 nav/footer links only)
+  /tools/six-thinking-hats/  -  Six Thinking Hats - decision-making guide | Mutomorro (46 nav/footer links only)
+  /tools/tesi-model/  -  TESI Model - team emotional intelligence | Mutomorro (46 nav/footer links only)
+  /tools/theory-of-change/  -  Theory of Change - guide and template | Mutomorro (46 nav/footer links only)
+  /tools/vuca-prime/  -  VUCA Prime - leadership guide and template | Mutomorro (46 nav/footer links only)
+  /tools/wicked-problems/  -  Wicked Problems - understanding complexity | Mutomorro (46 nav/footer links only)
+  /articles/charity-technology-guide/  -  Using technology to increase your impact | Mutomorro (46 nav/footer links only)
+  /articles/developing-future-literacy/  -  Developing future literacy | Mutomorro (46 nav/footer links only)
+  /articles/governance-the-enables-innovation/  -  Governance the enables innovation | Mutomorro (46 nav/footer links only)
+  /articles/storytelling-for-social-change/  -  Master storytelling for social change | Mutomorro (46 nav/footer links only)
+  /articles/storytelling-with-data/  -  Storytelling with data - from overwhelm to insight | Mutomorro (46 nav/footer links only)
+  /articles/strategic-planning-as-culture-development/  -  Strategic planning as culture development | Mutomorro (46 nav/footer links only)
+  /articles/sustainability-as-an-innovation-driver/  -  Sustainability as an innovation driver | Mutomorro (46 nav/footer links only)
+  /articles/why-design-thinking-must-embed-in-business-strategy/  -  Why design thinking must be embedded in business strategy | Mutomorro (46 nav/footer links only)
+  /projects/organisational-alignment-restructuring-case-study/  -  Organisational Alignment During Restructuring Case Study | Mutomorro (46 nav/footer links only)
+  /projects/change-management-training-case-study/  -  Change Management Training Case Study | Mutomorro (46 nav/footer links only)
+  /projects/charity-culture-change-case-study/  -  Charity Culture Change Case Study | Mutomorro (46 nav/footer links only)
+  /projects/charity-organisational-design/  -  Charity Organisational Design Case Study | Mutomorro (46 nav/footer links only)
+  ... and 49 more
+
+POTENTIAL BROKEN LINKS (linked to but not in sitemap)
+----------------------------------------
+  /services/purpose-direction/
+  /services/structure-operations/
+  /services/people-capability/
+  /services/service-experience/
+  /terms/
+  /downloads/Change%20Management%20Consultancy%20-%20Mutomorro.pdf/
+  /downloads/Culture%20Change%20Consultancy%20-%20Mutomorro.pdf/
+  /services/culture-change-consultancy/culture-change-programmes/
+  /downloads/Customer%20Experience%20Consultancy%20-%20Mutomorro.pdf/
+  /downloads/Employee%20Experience%20Consultancy%20-%20Mutomorro.pdf/
+  /downloads/Operational%20Effectiveness%20Consultancy%20-%20Mutomorro.pdf/
+  /downloads/Organisational%20Capacity%20Building%20-%20Mutomorro.pdf/
+  /downloads/Organisational%20Design%20Consultancy%20-%20Mutomorro.pdf/
+  /downloads/Organisational%20Development%20Consultancy%20-%20Mutomorro.pdf/
+  /downloads/Organisational%20Purpose%20Consultancy%20-%20Mutomorro.pdf/
+  /downloads/Organisational%20Restructuring%20Consultancy%20-%20Mutomorro.pdf/
+  /downloads/Post-Merger%20Integration%20Consultancy%20-%20Mutomorro.pdf/
+  /downloads/Scaling%20Operations%20Consultancy%20-%20Mutomorro.pdf/
+  /downloads/Service%20Design%20Consultancy%20-%20Mutomorro.pdf/
+  /downloads/Strategic%20Alignment%20Consultancy%20-%20Mutomorro.pdf/
+  /pestle-analysis/
+  /change-management/
+  /use/teamwork-tools/
+  /service-areas/change-management/
+  /customer-experience/
+  /service-areas/purpose-and-impact/
+  /process-improvement/
+  /services/co-creation/
+  /culture-change/
+  /systems-thinking/
+  ... and 23 more
+
+TOP 20 PAGES BY INBOUND LINKS
+----------------------------------------
+   585 links -> /contact/
+   515 links -> /emergent-framework/
+   479 links -> /tools/
+   449 links -> /courses/
+   443 links -> /articles/
+   432 links -> /philosophy/
+   432 links -> /projects/
+   419 links -> /about/
+   418 links -> /states-of-vitality/
+   233 links -> /services/
+   224 links -> /services/change-management-consultancy/
+   224 links -> /services/organisational-development-consultancy/
+   216 links -> /services/operational-effectiveness-consultancy/
+   215 links -> /services/organisational-purpose-consultancy/
+   214 links -> /services/organisational-design-consultancy/
+   214 links -> /services/employee-experience-consultancy/
+   213 links -> /services/customer-experience-consultancy/
+   213 links -> /services/service-design-consultancy/
+   212 links -> /services/culture-change-consultancy/
+   212 links -> /services/strategic-alignment-consultancy/
+
+BOTTOM 20 PAGES BY INBOUND LINKS (weakest)
+----------------------------------------
+     1 links -> /tools/belbins-team-roles/
+     1 links -> /tools/pestle-analysis/
+     1 links -> /downloads/Change%20Management%20Consultancy%20-%20Mutomorro.pdf/
+     1 links -> /projects/public-sector-change-management-case-study/
+     1 links -> /downloads/Culture%20Change%20Consultancy%20-%20Mutomorro.pdf/
+     1 links -> /services/culture-change-consultancy/culture-change-programmes/
+     1 links -> /downloads/Customer%20Experience%20Consultancy%20-%20Mutomorro.pdf/
+     1 links -> /downloads/Employee%20Experience%20Consultancy%20-%20Mutomorro.pdf/
+     1 links -> /downloads/Operational%20Effectiveness%20Consultancy%20-%20Mutomorro.pdf/
+     1 links -> /downloads/Organisational%20Capacity%20Building%20-%20Mutomorro.pdf/
+     1 links -> /downloads/Organisational%20Design%20Consultancy%20-%20Mutomorro.pdf/
+     1 links -> /downloads/Organisational%20Development%20Consultancy%20-%20Mutomorro.pdf/
+     1 links -> /downloads/Organisational%20Purpose%20Consultancy%20-%20Mutomorro.pdf/
+     1 links -> /downloads/Organisational%20Restructuring%20Consultancy%20-%20Mutomorro.pdf/
+     1 links -> /downloads/Post-Merger%20Integration%20Consultancy%20-%20Mutomorro.pdf/
+     1 links -> /downloads/Scaling%20Operations%20Consultancy%20-%20Mutomorro.pdf/
+     1 links -> /downloads/Service%20Design%20Consultancy%20-%20Mutomorro.pdf/
+     1 links -> /downloads/Strategic%20Alignment%20Consultancy%20-%20Mutomorro.pdf/
+     1 links -> /pestle-analysis/
+     1 links -> /use/teamwork-tools/

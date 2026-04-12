@@ -21,6 +21,7 @@
     "csv-parse": "^6.1.0",
     "csv-parser": "^3.2.0",
     "dotenv": "^17.3.1",
+    "jsdom": "^29.0.2",
     "next": "^16.2.1",
     "next-sanity": "^12.1.0",
     "posthog-js": "^1.364.1",

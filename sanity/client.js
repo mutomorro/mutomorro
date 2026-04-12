@@ -55,7 +55,9 @@ export async function getTool(slug) {
   return await client.fetch(
     `*[_type == "tool" && slug.current == $slug][0] {
       ...,
-      "toolkitFileUrl": toolkitFile.asset->url
+      "toolkitFileUrl": toolkitFile.asset->url,
+      relatedArticles[]->{ _id, title, slug, shortSummary, heroImage, category },
+      relatedTools[]->{ _id, title, slug, shortSummary, heroImage, category }
     }`,
     { slug },
     fetchOpts
@@ -207,7 +209,9 @@ export async function getCourse(slug) {
         anchor,
         slug,
         colour
-      }
+      },
+      relatedArticles[]->{ _id, title, slug, shortSummary, heroImage, category },
+      relatedTools[]->{ _id, title, slug, shortSummary, heroImage, category }
     }`,
     { slug },
     fetchOpts

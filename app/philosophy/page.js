@@ -6,10 +6,10 @@ import PhilosophyHero from '@/components/philosophy/PhilosophyHero'
 import LeveragePointsDemo from '@/components/philosophy/LeveragePointsDemo'
 import FeedbackLoopsDemo from '@/components/philosophy/FeedbackLoopsDemo'
 import StructuresBehaviourDemo from '@/components/philosophy/StructuresBehaviourDemo'
-import ConvergenceSection from '@/components/philosophy/ConvergenceSection'
+import IntentionalEcosystemsStory from '@/components/philosophy/IntentionalEcosystemsStory'
 import OutcomesConstellation from '@/components/philosophy/OutcomesConstellation'
 import EmergentConstellation from '@/components/philosophy/EmergentConstellation'
-import NetworkDivider from '@/components/philosophy/NetworkDivider'
+import EcosystemVisual from '@/components/EcosystemVisual'
 
 export const metadata = {
   title: 'Our philosophy - Intentional Ecosystems',
@@ -53,8 +53,15 @@ export default function PhilosophyPage() {
       </PhilosophyHero>
 
       {/* Section 2: Opening - the idea */}
-      <section className="section--full warm-bg section-padding">
-        <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
+      <section className="section--full section-padding" style={{ background: 'var(--white)' }}>
+        <div style={{
+          maxWidth: '1350px',
+          margin: '0 auto',
+          display: 'grid',
+          gridTemplateColumns: '1fr 1fr',
+          gap: '4rem',
+          alignItems: 'center',
+        }}>
           <div className="scroll-in" style={{ maxWidth: '720px' }}>
             <span className="kicker" style={{ color: 'var(--accent)', marginBottom: '20px' }}>
               Our thinking
@@ -74,14 +81,14 @@ export default function PhilosophyPage() {
               </p>
             </div>
           </div>
+          <div className="scroll-in delay-1">
+            <EcosystemVisual />
+          </div>
         </div>
       </section>
 
-      {/* Section 3: Intentional + Ecosystems - convergence animation */}
-      <ConvergenceSection />
-
-      {/* Divider: network dissolve strip */}
-      <NetworkDivider />
+      {/* Section 3: Intentional Ecosystems - six-slide story */}
+      <IntentionalEcosystemsStory />
 
       {/* Section 5: Six perspective shifts - interactive stepper */}
       <PerspectiveShiftStepper />

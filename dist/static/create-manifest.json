@@ -1,5 +1,5 @@
 {
-  "createdAt": "2026-03-27T08:22:09.982Z",
+  "createdAt": "2026-04-12T12:04:45.678Z",
   "studioVersion": "5.18.0",
   "version": 3,
   "workspaces": [
@@ -13,7 +13,7 @@
       },
       "name": "mutomorro",
       "projectId": "c6pg4t4h",
-      "schema": "a08000d5.create-schema.json",
+      "schema": "9ec26958.create-schema.json",
       "title": "Mutomorro",
       "tools": "b5bec055.create-tools.json"
     }

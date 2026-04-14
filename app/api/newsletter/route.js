@@ -58,6 +58,11 @@ export async function POST(request) {
         return Response.json({ success: true, alreadyUnsubscribed: true })
       }
 
+      // Already subscribed - no action needed
+      if (['confirmed', 'active'].includes(existing.newsletter_status)) {
+        return Response.json({ success: true, alreadySubscribed: true })
+      }
+
       // Merge sources and tags
       const mergedSources = [...new Set([...(existing.sources || []), 'newsletter-signup'])]
       const mergedTags = [...new Set([...(existing.tags || []), 'newsletter-signup'])]

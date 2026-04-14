@@ -46,10 +46,12 @@ export default function NewsletterSignup({ variant = 'inline' }) {
       })
 
       if (!res.ok) throw new Error()
+      const data = await res.json()
       posthog.capture('newsletter_signup', {
         source_page: window.location.pathname,
+        already_subscribed: !!data.alreadySubscribed,
       })
-      setStatus('success')
+      setStatus(data.alreadySubscribed ? 'already' : 'success')
       setFormData({ firstName: '', email: '' })
     } catch {
       setStatus('error')
@@ -68,6 +70,23 @@ export default function NewsletterSignup({ variant = 'inline' }) {
           margin: 0,
         }}>
           You're in. We'll be in touch.
+        </p>
+      </div>
+    )
+  }
+
+  // ── Already subscribed state ──
+  if (status === 'already') {
+    return (
+      <div className="feedback-success" style={(isFooter || isHomepage) ? { borderLeftColor: 'var(--accent)' } : undefined}>
+        <p style={{
+          fontSize: (isFooter || isHomepage) ? '15px' : '17px',
+          fontWeight: '400',
+          lineHeight: '1.5',
+          color: (isFooter || isHomepage) ? 'rgba(255,255,255,0.9)' : 'var(--dark)',
+          margin: 0,
+        }}>
+          You're already on the list - nothing else needed.
         </p>
       </div>
     )

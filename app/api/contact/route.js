@@ -45,7 +45,7 @@ export async function POST(request) {
     // Check if this person already exists (for cached verification)
     const { data: existing } = await supabase
       .from('contacts')
-      .select('id, zb_status')
+      .select('id, sources, tags, first_source, first_name, last_name, organisation_name, zb_status')
       .eq('signup_email', emailNormalised)
       .single()
 
@@ -155,12 +155,37 @@ export async function POST(request) {
       return Response.json({ success: true })
     }
 
-    // 5. Upsert contact in Supabase
+    // 5. Create or update contact in Supabase
     try {
-      const { data: contact, error: contactError } = await supabase
-        .from('contacts')
-        .upsert(
-          {
+      let contactId = null
+
+      if (existing) {
+        // Merge sources and tags - don't overwrite
+        const mergedSources = [...new Set([...(existing.sources || []), 'contact-form'])]
+        const mergedTags = [...new Set([...(existing.tags || []), 'inbound-enquiry'])]
+
+        const { error: updateError } = await supabase
+          .from('contacts')
+          .update({
+            first_name: existing.first_name || firstName,
+            last_name: existing.last_name || lastName,
+            organisation_name: existing.organisation_name || organisation || null,
+            sources: mergedSources,
+            tags: mergedTags,
+            zb_status: verification.status,
+          })
+          .eq('id', existing.id)
+
+        if (updateError) {
+          console.error('Supabase contact update error:', updateError)
+        }
+        contactId = existing.id
+
+      } else {
+        // New contact
+        const { data: created, error: insertError } = await supabase
+          .from('contacts')
+          .insert({
             signup_email: emailNormalised,
             first_name: firstName,
             last_name: lastName,
@@ -169,25 +194,22 @@ export async function POST(request) {
             first_source: 'contact-form',
             tags: ['inbound-enquiry'],
             zb_status: verification.status,
-          },
-          {
-            onConflict: 'signup_email',
-            ignoreDuplicates: false,
-          }
-        )
-        .select('id')
-        .single()
+          })
+          .select('id')
+          .single()
 
-      if (contactError) {
-        console.error('Supabase contact upsert error:', contactError)
+        if (insertError) {
+          console.error('Supabase contact insert error:', insertError)
+        }
+        contactId = created?.id
       }
 
       // 6. Log a high-strength signal
-      if (contact?.id) {
+      if (contactId) {
         const { error: signalError } = await supabase
           .from('signals')
           .insert({
-            contact_id: contact.id,
+            contact_id: contactId,
             type: 'inbound-enquiry',
             detail: service
               ? `[${service}] ${message.substring(0, 500)}`

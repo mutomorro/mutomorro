@@ -66,7 +66,7 @@ export default async function ArticlePage({ params }) {
       name: 'Mutomorro',
       url: 'https://mutomorro.com',
     },
-    url: `https://mutomorro.com/articles/${article.slug.current}`,
+    url: `https://mutomorro.com/articles/${article.slug.current}/`,
     ...(article._createdAt && { datePublished: article._createdAt }),
     ...(article._updatedAt && { dateModified: article._updatedAt }),
   }
@@ -79,19 +79,19 @@ export default async function ArticlePage({ params }) {
         '@type': 'ListItem',
         position: 1,
         name: 'Thinking',
-        item: 'https://mutomorro.com/articles',
+        item: 'https://mutomorro.com/articles/',
       },
       ...(article.category ? [{
         '@type': 'ListItem',
         position: 2,
         name: article.category,
-        item: 'https://mutomorro.com/articles',
+        item: 'https://mutomorro.com/articles/',
       }] : []),
       {
         '@type': 'ListItem',
         position: article.category ? 3 : 2,
         name: article.title,
-        item: `https://mutomorro.com/articles/${article.slug.current}`,
+        item: `https://mutomorro.com/articles/${article.slug.current}/`,
       },
     ],
   }

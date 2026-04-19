@@ -87,7 +87,7 @@ export default async function ServicePage({ params }) {
       name: 'Mutomorro',
       url: 'https://mutomorro.com',
     },
-    url: `https://mutomorro.com/services/${service.slug.current}`,
+    url: `https://mutomorro.com/services/${service.slug.current}/`,
   }
 
   const breadcrumbJsonLd = {
@@ -98,13 +98,13 @@ export default async function ServicePage({ params }) {
         '@type': 'ListItem',
         position: 1,
         name: 'How we help',
-        item: 'https://mutomorro.com/services',
+        item: 'https://mutomorro.com/services/',
       },
       {
         '@type': 'ListItem',
         position: 2,
         name: service.heroHeading || service.title,
-        item: `https://mutomorro.com/services/${service.slug.current}`,
+        item: `https://mutomorro.com/services/${service.slug.current}/`,
       },
     ],
   }

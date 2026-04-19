@@ -65,7 +65,7 @@ export default async function CaseStudy({ params }) {
       name: 'Mutomorro',
       url: 'https://mutomorro.com',
     },
-    url: `https://mutomorro.com/projects/${project.slug.current}`,
+    url: `https://mutomorro.com/projects/${project.slug.current}/`,
   }
 
   const breadcrumbJsonLd = {
@@ -76,19 +76,19 @@ export default async function CaseStudy({ params }) {
         '@type': 'ListItem',
         position: 1,
         name: 'Projects',
-        item: 'https://mutomorro.com/projects',
+        item: 'https://mutomorro.com/projects/',
       },
       ...(project.clientSector ? [{
         '@type': 'ListItem',
         position: 2,
         name: project.clientSector,
-        item: 'https://mutomorro.com/projects',
+        item: 'https://mutomorro.com/projects/',
       }] : []),
       {
         '@type': 'ListItem',
         position: project.clientSector ? 3 : 2,
         name: project.title,
-        item: `https://mutomorro.com/projects/${project.slug.current}`,
+        item: `https://mutomorro.com/projects/${project.slug.current}/`,
       },
     ],
   }

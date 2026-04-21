@@ -59,6 +59,9 @@ verify-batch.mjs
 # design reference (local only)
 /design-reference/
 
+# internal running/session summaries (local only)
+/docs/running-summaries/
+
 # script output files
 internal-link-audit.*
 link-audit-summary.txt

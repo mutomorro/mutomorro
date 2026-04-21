@@ -46,6 +46,9 @@ next-env.d.ts
 # claude code
 /.claude/
 
+# local test input for warm-up manual sends
+/tmp/
+
 # one-off scripts and migration tools
 /scripts/
 /wp-export/

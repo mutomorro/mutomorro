@@ -35,32 +35,17 @@ export async function GET(request) {
       supabase.from('contacts').select('id', { count: 'exact', head: true }).in('newsletter_status', ['active', 'confirmed']).gte('newsletter_consent_date', weekAgo.toISOString()),
       supabase.from('contacts').select('id', { count: 'exact', head: true }).in('newsletter_status', ['active', 'confirmed']).gte('newsletter_consent_date', monthAgo.toISOString()),
       supabase.from('newsletter_sends').select('id, subject, status, total_recipients, total_sent, total_delivered, total_opened, total_clicked, total_bounced, created_at, completed_at').gte('total_sent', 10).order('created_at', { ascending: false }).limit(20),
-      supabase.from('contacts').select('tier').in('newsletter_status', ['active', 'confirmed']),
-      supabase.from('contacts').select('first_source').in('newsletter_status', ['active', 'confirmed']),
+      supabase.rpc('get_newsletter_tier_counts'),
+      supabase.rpc('get_newsletter_source_counts'),
     ])
 
-    // Group by tier
-    const tierCounts = {}
-    if (byTier.data) {
-      byTier.data.forEach((c) => {
-        const t = c.tier || 'Unset'
-        tierCounts[t] = (tierCounts[t] || 0) + 1
-      })
-    }
-
-    // Group by source
-    const sourceCounts = {}
-    if (bySource.data) {
-      bySource.data.forEach((c) => {
-        const s = c.first_source || 'unknown'
-        sourceCounts[s] = (sourceCounts[s] || 0) + 1
-      })
-    }
+    const tierRows = byTier.data || []
+    const sourceRows = bySource.data || []
 
     // Sort source by count desc
-    const sortedSources = Object.entries(sourceCounts)
-      .sort((a, b) => b[1] - a[1])
-      .map(([source, count]) => ({ source, count }))
+    const sortedSources = sourceRows
+      .map(r => ({ source: r.source, count: Number(r.count) }))
+      .sort((a, b) => b.count - a.count)
 
     return NextResponse.json({
       subscribers: {
@@ -71,11 +56,13 @@ export async function GET(request) {
         newThisMonth: newMonth.count || 0,
       },
       sends: sends.data || [],
-      byTier: Object.entries(tierCounts).sort((a, b) => {
-        if (a[0] === 'Unset') return 1
-        if (b[0] === 'Unset') return -1
-        return a[0].localeCompare(b[0])
-      }).map(([tier, count]) => ({ tier, count })),
+      byTier: tierRows
+        .map(r => ({ tier: r.tier, count: Number(r.count) }))
+        .sort((a, b) => {
+          if (a.tier === 'Unset') return 1
+          if (b.tier === 'Unset') return -1
+          return a.tier.localeCompare(b.tier)
+        }),
       bySource: sortedSources,
     })
   } catch (err) {

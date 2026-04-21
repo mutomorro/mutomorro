@@ -23,11 +23,9 @@ export async function GET(request, { params }) {
         .eq('id', id)
         .single(),
 
-      // Recipient status breakdown
-      supabase
-        .from('newsletter_recipients')
-        .select('status')
-        .eq('send_id', id),
+      // Recipient status breakdown via server-side GROUP BY
+      // (large sends exceed the PostgREST 1000-row cap otherwise).
+      supabase.rpc('get_send_status_counts', { p_send_id: id }),
 
       // Engaged recipients with contact info
       supabase
@@ -41,13 +39,12 @@ export async function GET(request, { params }) {
 
     if (sendResult.error) throw sendResult.error
 
-    // Group status breakdown
+    // Status breakdown (returned by RPC as rows of {status, count})
     const statusCounts = {}
     if (statusBreakdown.data) {
-      statusBreakdown.data.forEach((r) => {
-        const s = r.status || 'unknown'
-        statusCounts[s] = (statusCounts[s] || 0) + 1
-      })
+      for (const row of statusBreakdown.data) {
+        statusCounts[row.status] = Number(row.count)
+      }
     }
 
     // Enrich engaged recipients with contact names

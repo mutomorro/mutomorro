@@ -10,6 +10,7 @@
 import { createClient } from '@supabase/supabase-js'
 import { Resend } from 'resend'
 import { buildConfirmationEmail } from '../../../../components/emails/confirmation-email'
+import { fetchAllPaginated } from '../../../../lib/supabase-paginate.js'
 
 export const maxDuration = 60
 
@@ -29,20 +30,23 @@ export async function GET(request) {
     // Find contacts needing a reminder: pending > 7 days, not yet reminded
     const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
 
-    const { data: contacts, error: queryError } = await supabase
-      .from('contacts')
-      .select('id, first_name, signup_email, confirmation_token')
-      .eq('newsletter_status', 'pending_confirmation')
-      .lt('confirmation_token_created_at', sevenDaysAgo)
-      .eq('confirmation_reminder_sent', false)
-      .not('confirmation_token', 'is', null)
-
-    if (queryError) {
+    let contacts
+    try {
+      contacts = await fetchAllPaginated((from, to) => supabase
+        .from('contacts')
+        .select('id, first_name, signup_email, confirmation_token')
+        .eq('newsletter_status', 'pending_confirmation')
+        .lt('confirmation_token_created_at', sevenDaysAgo)
+        .eq('confirmation_reminder_sent', false)
+        .not('confirmation_token', 'is', null)
+        .range(from, to)
+      )
+    } catch (queryError) {
       console.error('Reminder query error:', queryError)
       return Response.json({ error: 'Query failed' }, { status: 500 })
     }
 
-    if (!contacts || contacts.length === 0) {
+    if (contacts.length === 0) {
       return Response.json({ reminded: 0 })
     }
 

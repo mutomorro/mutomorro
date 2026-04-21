@@ -122,19 +122,19 @@ export async function GET(request) {
 
       let domainMatches = []
       if (corpDomains.length > 0) {
-        // Check for domain matches in batches
+        // Filter server-side via an OR of ILIKE patterns. This avoids pulling
+        // all ~5,200 contacts client-side (which the PostgREST 1000-row cap
+        // previously silently truncated) and pushes the filter to Postgres.
+        const orFilter = corpDomains
+          .map((d) => `signup_email.ilike.%@${d.toLowerCase()}`)
+          .join(',')
         const { data: domainContacts } = await supabase
           .from('contacts')
           .select('id, first_name, last_name, signup_email, organisation_name, sources, downloaded_items, first_source')
-          .not('signup_email', 'is', null)
+          .or(orFilter)
+          .range(0, 9999)
 
-        if (domainContacts) {
-          domainMatches = domainContacts.filter((c) => {
-            if (!c.signup_email) return false
-            const contactDomain = c.signup_email.split('@')[1]?.toLowerCase()
-            return corpDomains.includes(contactDomain)
-          })
-        }
+        domainMatches = domainContacts || []
       }
 
       // Combine and deduplicate

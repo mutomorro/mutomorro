@@ -5,6 +5,7 @@ import { render } from '@react-email/components'
 import { createElement } from 'react'
 import NewsletterTemplate from '../../../../components/emails/newsletter-template.jsx'
 import { verifyEmail } from '../../../../components/email-verification.js'
+import { fetchAllPaginated } from '../../../../lib/supabase-paginate.js'
 
 function generateUnsubscribeUrl(email) {
   const token = crypto
@@ -221,24 +222,21 @@ async function handleCreate(body, resend, supabase) {
 
   const sendId = send.id
 
-  // Query active contacts
-  let contactsQuery = supabase
-    .from('contacts')
-    .select('id, signup_email, first_name, zb_status, zb_verified_at')
-    .in('newsletter_status', ['active', 'confirmed'])
-    .order('created_at', { ascending: true })
-
-  if (tierFilter) {
-    contactsQuery = contactsQuery.eq('tier', tierFilter)
-  }
-
-  if (tagFilter) {
-    contactsQuery = contactsQuery.contains('tags', [tagFilter])
-  }
-
-  const { data: allContacts, error: contactsError } = await contactsQuery
-
-  if (contactsError) {
+  // Query active contacts - paginated to clear the PostgREST 1000-row cap.
+  let allContacts
+  try {
+    allContacts = await fetchAllPaginated((from, to) => {
+      let q = supabase
+        .from('contacts')
+        .select('id, signup_email, first_name, zb_status, zb_verified_at')
+        .in('newsletter_status', ['active', 'confirmed'])
+        .order('created_at', { ascending: true })
+        .range(from, to)
+      if (tierFilter) q = q.eq('tier', tierFilter)
+      if (tagFilter) q = q.contains('tags', [tagFilter])
+      return q
+    })
+  } catch (contactsError) {
     console.error('Failed to query contacts:', contactsError)
     return Response.json({ error: 'Failed to query contacts' }, { status: 500 })
   }
@@ -375,24 +373,21 @@ async function handleResume(body, resend, supabase) {
   const contentJson = send.content_json
   const { subject, title = '', previewText = '', date = '', leadText = '', sections, signoff = 'Until next month,', tierFilter, tagFilter } = contentJson
 
-  // Query active contacts
-  let contactsQuery = supabase
-    .from('contacts')
-    .select('id, signup_email, first_name, zb_status, zb_verified_at')
-    .in('newsletter_status', ['active', 'confirmed'])
-    .order('created_at', { ascending: true })
-
-  if (tierFilter) {
-    contactsQuery = contactsQuery.eq('tier', tierFilter)
-  }
-
-  if (tagFilter) {
-    contactsQuery = contactsQuery.contains('tags', [tagFilter])
-  }
-
-  const { data: allContacts, error: contactsError } = await contactsQuery
-
-  if (contactsError) {
+  // Query active contacts - paginated to clear the PostgREST 1000-row cap.
+  let allContacts
+  try {
+    allContacts = await fetchAllPaginated((from, to) => {
+      let q = supabase
+        .from('contacts')
+        .select('id, signup_email, first_name, zb_status, zb_verified_at')
+        .in('newsletter_status', ['active', 'confirmed'])
+        .order('created_at', { ascending: true })
+        .range(from, to)
+      if (tierFilter) q = q.eq('tier', tierFilter)
+      if (tagFilter) q = q.contains('tags', [tagFilter])
+      return q
+    })
+  } catch (contactsError) {
     return Response.json({ error: 'Failed to query contacts' }, { status: 500 })
   }
 
@@ -400,13 +395,15 @@ async function handleResume(body, resend, supabase) {
   const domainExclusionsEnabled = await getDomainExclusionsEnabled(supabase)
   const { filtered: eligibleContacts, excludedCount: warmupExcluded } = filterWarmupDomains(allContacts, domainExclusionsEnabled)
 
-  // Get already-sent contact IDs
-  const { data: alreadySent } = await supabase
+  // Get already-sent contact IDs for this send - paginated.
+  const alreadySent = await fetchAllPaginated((from, to) => supabase
     .from('newsletter_recipients')
     .select('contact_id')
     .eq('send_id', sendId)
+    .range(from, to)
+  )
 
-  const sentContactIds = new Set((alreadySent || []).map(r => r.contact_id))
+  const sentContactIds = new Set(alreadySent.map(r => r.contact_id))
   const remainingContacts = eligibleContacts.filter(c => !sentContactIds.has(c.id))
 
   // Take next batch
@@ -510,13 +507,15 @@ async function sendBatch({ batch, sendId, subject, title, previewText, date, lea
     status: 'queued',
   }))
 
-  // Check for existing pending records from previous attempts
+  // Check for existing pending records from previous attempts.
+  // Bounded by contactIds.length (<=100), but explicit range keeps intent clear.
   const contactIds = batch.map(c => c.id)
   const { data: existingRecipients } = await supabase
     .from('newsletter_recipients')
     .select('id, contact_id, email')
     .eq('send_id', sendId)
     .in('contact_id', contactIds)
+    .range(0, contactIds.length)
 
   let insertedRecipients = existingRecipients || []
 

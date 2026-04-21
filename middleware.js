@@ -42,7 +42,7 @@ export async function middleware(request) {
 
 async function handleAdminAuth(request, pathname) {
   // Allow the login page without a session
-  if (pathname === '/admin/login') {
+  if (pathname === '/admin/login' || pathname === '/admin/login/') {
     const next = NextResponse.next()
     next.headers.set('x-admin-route', '1')
     return next

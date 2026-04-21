@@ -17,12 +17,14 @@ import { createElement } from 'react'
 import NewsletterTemplate from '../../../../components/emails/newsletter-template.jsx'
 import { verifyEmail } from '../../../../components/email-verification.js'
 import { buildSummaryEmail } from '../../../../components/emails/newsletter-summary.js'
+import { fetchAllPaginated } from '../../../../lib/supabase-paginate.js'
 
 export const maxDuration = 800
 
 // TODO: Future - read current issue from newsletter_config or newsletter_sends table.
 // For now, hardcoded to Issue 1: "The space between the lines"
 const ISSUE_1_CONTENT = {
+  issueKey: 'warmup-v1',
   subject: 'The space between the lines',
   title: 'Exploring the space between the lines',
   previewText: "We've been fascinated by a single idea for years, because we see it everywhere",
@@ -203,34 +205,40 @@ export async function GET(request) {
     // 4. Select recipients
     const batchLimit = Math.min(config.batch_size, config.daily_cap)
 
-    const { data: allContacts, error: contactsError } = await supabase
-      .from('contacts')
-      .select('id, signup_email, first_name, zb_status, zb_verified_at')
-      .in('newsletter_status', ['active', 'confirmed'])
-      .order('tier', { ascending: true })
-      .order('created_at', { ascending: true })
-
-    if (contactsError) {
+    let allContacts
+    try {
+      allContacts = await fetchAllPaginated((from, to) => supabase
+        .from('contacts')
+        .select('id, signup_email, first_name, zb_status, zb_verified_at')
+        .in('newsletter_status', ['active', 'confirmed'])
+        .order('tier', { ascending: true, nullsFirst: false })
+        .order('created_at', { ascending: true })
+        .range(from, to)
+      )
+    } catch (contactsError) {
       console.error('Newsletter cron: failed to query contacts', contactsError)
       return Response.json({ error: 'Failed to query contacts' }, { status: 500 })
     }
 
-    // Get all contact IDs that have already received this newsletter (any send with the same subject)
+    // Get all contact IDs that have already received this issue, keyed on
+    // newsletter_sends.issue_key (stable identifier, resistant to subject drift).
     const { data: matchingSends } = await supabase
       .from('newsletter_sends')
       .select('id')
-      .eq('subject', ISSUE_1_CONTENT.subject)
+      .eq('issue_key', ISSUE_1_CONTENT.issueKey)
+      .range(0, 9999)
 
     const matchingSendIds = (matchingSends || []).map(s => s.id)
 
     let alreadySentIds = new Set()
     if (matchingSendIds.length > 0) {
-      const { data: alreadySentRecipients } = await supabase
+      const alreadySentRecipients = await fetchAllPaginated((from, to) => supabase
         .from('newsletter_recipients')
         .select('contact_id')
         .in('send_id', matchingSendIds)
-
-      alreadySentIds = new Set((alreadySentRecipients || []).map(r => r.contact_id))
+        .range(from, to)
+      )
+      alreadySentIds = new Set(alreadySentRecipients.map(r => r.contact_id))
     }
 
     // Filter: not already sent, not excluded domain, not blocked ZB status
@@ -329,8 +337,47 @@ export async function GET(request) {
       return Response.json({ sent: 0, zbExcluded: zbExcluded.length })
     }
 
+    // Belt-and-braces dedup assertion: independently ask the database whether
+    // any selected recipient has already received this issue. If yes, the
+    // selection query is broken - abort and pause the cron rather than send.
+    if (matchingSendIds.length > 0) {
+      const verifiedIds = verified.map(c => c.id)
+      const { data: overlap } = await supabase
+        .from('newsletter_recipients')
+        .select('contact_id')
+        .in('contact_id', verifiedIds)
+        .in('send_id', matchingSendIds)
+        .range(0, 9999)
+
+      if (overlap && overlap.length > 0) {
+        const overlapCount = new Set(overlap.map(r => r.contact_id)).size
+        const reason = `Dedup assertion failed: ${overlapCount} selected recipient(s) already received issue '${ISSUE_1_CONTENT.issueKey}'. Selection query may be broken - cron paused.`
+        console.error(`Newsletter cron: ${reason}`)
+
+        await supabase
+          .from('newsletter_config')
+          .update({
+            enabled: false,
+            paused_reason: reason,
+            paused_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          })
+          .eq('id', config.id)
+
+        await sendSummary(resend, config, {
+          type: 'alert',
+          alertBounceRate: 'N/A',
+          alertThreshold: 'N/A',
+          date: formatDate(new Date()),
+          alertMessage: reason,
+        })
+
+        return Response.json({ paused: true, reason })
+      }
+    }
+
     // 6. Send
-    const { subject, title, previewText, date, leadText, sections, signoff } = ISSUE_1_CONTENT
+    const { subject, title, previewText, date, leadText, sections, signoff, issueKey } = ISSUE_1_CONTENT
 
     // Render view-in-browser HTML
     const viewInBrowserHtml = await render(
@@ -346,6 +393,7 @@ export async function GET(request) {
       .from('newsletter_sends')
       .insert({
         subject,
+        issue_key: issueKey,
         preview_text: previewText,
         content_json: ISSUE_1_CONTENT,
         html_body: viewInBrowserHtml,
@@ -465,15 +513,17 @@ export async function GET(request) {
       .update({ last_send_date: today, last_send_count: batchSent, updated_at: new Date().toISOString() })
       .eq('id', config.id)
 
-    // Calculate remaining
+    // Calculate remaining - all values now paginated, so counts are accurate.
     const totalEligible = allContacts.filter(c => !alreadySentIds.has(c.id) && !BLOCKED_STATUSES.has(c.zb_status)).length
     const remainingAfterSend = totalEligible - batchSent - zbExcluded.length - domainExcludedCount
 
-    // Count total unique recipients across all sends
-    const { count: totalUniqueRecipients } = await supabase
-      .from('newsletter_recipients')
-      .select('*', { count: 'exact', head: true })
-      .eq('status', 'sent')
+    // Coverage stats: unique contacts reached for this issue, and the
+    // first-time vs repeat breakdown (repeat should always be zero if dedup works).
+    const newRecipientIds = verified.map(c => c.id)
+    const repeatRecipients = newRecipientIds.filter(id => alreadySentIds.has(id)).length
+    const firstTimeRecipients = verified.length - repeatRecipients
+    const uniqueReachedForIssue = alreadySentIds.size + firstTimeRecipients
+    const totalActive = allContacts.length
 
     // 7. Send summary
     await sendSummary(resend, config, {
@@ -484,8 +534,12 @@ export async function GET(request) {
       zbExcluded: zbExcluded.length,
       sent: batchSent,
       domainExcluded: domainExcludedCount,
+      firstTimeRecipients,
+      repeatRecipients,
       ...yesterdayStats,
-      totalSent: totalUniqueRecipients || 0,
+      uniqueReached: uniqueReachedForIssue,
+      totalActive,
+      totalSent: uniqueReachedForIssue,
       remaining: remainingAfterSend,
       estimatedCompletion: estimateCompletion(remainingAfterSend, config.batch_size, config.skip_weekends),
     })
@@ -513,7 +567,9 @@ async function sendSummary(resend, config, params) {
     let subjectLine
     switch (params.type) {
       case 'alert':
-        subjectLine = `ALERT: Newsletter paused - bounce rate ${params.alertBounceRate}% exceeded ${params.alertThreshold}% threshold`
+        subjectLine = params.alertMessage
+          ? `ALERT: Newsletter paused - ${params.alertMessage}`
+          : `ALERT: Newsletter paused - bounce rate ${params.alertBounceRate}% exceeded ${params.alertThreshold}% threshold`
         break
       case 'exhausted':
         subjectLine = 'Newsletter: warm-up complete - all contacts sent'

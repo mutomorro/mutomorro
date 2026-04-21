@@ -5,6 +5,11 @@
 
 const fontFamily = "'Source Sans 3', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif"
 
+function pct(num, denom) {
+  if (!denom || denom === 0) return '-'
+  return ((num / denom) * 100).toFixed(1) + '%'
+}
+
 function row(label, value, highlight) {
   return `<tr>
     <td style="padding:4px 0;font-family:${fontFamily};font-size:15px;font-weight:300;color:rgba(0,0,0,0.5);">${label}</td>
@@ -26,6 +31,8 @@ export function buildSummaryEmail({
   zbExcluded,
   sent,
   domainExcluded,
+  firstTimeRecipients,
+  repeatRecipients,
   // Yesterday's results
   yesterdayOpened,
   yesterdayOpenRate,
@@ -37,9 +44,13 @@ export function buildSummaryEmail({
   totalSent,
   remaining,
   estimatedCompletion,
+  // Coverage
+  uniqueReached,
+  totalActive,
   // Alert details
   alertBounceRate,
   alertThreshold,
+  alertMessage,
   // Config snapshot
   config,
 }) {
@@ -48,10 +59,13 @@ export function buildSummaryEmail({
   let bodyContent = ''
 
   if (type === 'alert') {
+    const reasonLine = alertMessage
+      ? alertMessage
+      : `Yesterday's bounce rate was ${alertBounceRate}%, exceeding the ${alertThreshold}% threshold.`
     bodyContent = `
       <tr><td colspan="2" style="padding:20px;background:rgba(255,66,121,0.08);border-left:3px solid #FF4279;font-family:${fontFamily};font-size:16px;font-weight:400;color:#221C2B;line-height:1.6;">
         Newsletter sends have been <strong style="font-weight:400;color:#FF4279;">automatically paused</strong>.<br />
-        Yesterday's bounce rate was ${alertBounceRate}%, exceeding the ${alertThreshold}% threshold.<br /><br />
+        ${reasonLine}<br /><br />
         <a href="${adminUrl}" style="color:#9B51E0;font-weight:400;">Review and resume in the Command Centre</a>
       </td></tr>
     `
@@ -71,11 +85,17 @@ export function buildSummaryEmail({
     `
   } else {
     // Normal send
+    const repeatHighlight = (repeatRecipients && repeatRecipients > 0) ? '#FF4279' : null
+    const coveragePct = totalActive ? pct(uniqueReached || 0, totalActive) : null
+    const untouched = totalActive ? Math.max(0, totalActive - (uniqueReached || 0)) : null
+
     bodyContent = `
       ${sectionHeading("Today's send")}
       ${row('Batch size', batchSize)}
       ${row('Verified', `${verified} (${zbExcluded} excluded by ZeroBounce)`)}
       ${row('Sent', sent, '#221C2B')}
+      ${firstTimeRecipients !== undefined ? row('First-time recipients', firstTimeRecipients) : ''}
+      ${repeatRecipients !== undefined ? row('Repeat recipients', repeatRecipients, repeatHighlight) : ''}
       ${domainExcluded > 0 ? row('Domain-excluded', domainExcluded) : ''}
 
       ${yesterdayBounceRate !== undefined ? `
@@ -85,9 +105,9 @@ export function buildSummaryEmail({
         ${row('Bounced', `${yesterdayBounced || 0} (${yesterdayBounceRate || '-'})`, yesterdayBounced > 0 ? '#FF4279' : null)}
       ` : ''}
 
-      ${sectionHeading('Running totals')}
-      ${row('Total unique recipients', totalSent || 0)}
-      ${row('Remaining in pool', remaining || 0)}
+      ${sectionHeading('Coverage')}
+      ${totalActive ? row('Unique recipients reached', `${(uniqueReached || 0).toLocaleString()} of ${totalActive.toLocaleString()} active (${coveragePct})`) : row('Unique recipients reached', (uniqueReached || totalSent || 0).toLocaleString())}
+      ${untouched !== null ? row('Remaining untouched', untouched.toLocaleString()) : ''}
       ${estimatedCompletion ? row('Estimated completion', estimatedCompletion) : ''}
     `
   }

@@ -53,6 +53,7 @@ export default function NewsletterPage() {
   const [detailLoading, setDetailLoading] = useState(false)
   const [config, setConfig] = useState(null)
   const [pool, setPool] = useState(null)
+  const [issues, setIssues] = useState([])
   const [configLoading, setConfigLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [sending, setSending] = useState(false)
@@ -67,7 +68,7 @@ export default function NewsletterPage() {
 
     fetch('/api/admin/newsletter-config')
       .then((r) => r.ok ? r.json() : Promise.reject())
-      .then((d) => { setConfig(d.config); setPool(d.pool) })
+      .then((d) => { setConfig(d.config); setPool(d.pool); setIssues(d.issues || []) })
       .catch((e) => console.error(e))
       .finally(() => setConfigLoading(false))
   }, [])
@@ -125,7 +126,7 @@ export default function NewsletterPage() {
       } else {
         setSendResult({ type: 'success', message: `Sent ${d.sent} emails. ${d.remaining ?? '?'} remaining.` })
         // Refresh config and data
-        fetch('/api/admin/newsletter-config').then(r => r.ok ? r.json() : null).then(d => { if (d) { setConfig(d.config); setPool(d.pool) } })
+        fetch('/api/admin/newsletter-config').then(r => r.ok ? r.json() : null).then(d => { if (d) { setConfig(d.config); setPool(d.pool); setIssues(d.issues || []) } })
         fetch('/api/admin/newsletter').then(r => r.ok ? r.json() : null).then(d => { if (d) setData(d) })
       }
     } catch (e) {
@@ -273,6 +274,57 @@ export default function NewsletterPage() {
         <Card label="New this month" value={loading ? null : subs.newThisMonth} />
         <Card label="Unsubscribed" value={loading ? null : subs.unsubscribed} />
       </div>
+
+      {/* Coverage + dedup health */}
+      {issues.length > 0 && (
+        <div style={cardStyle}>
+          <h2 style={sectionHeading}>Coverage</h2>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            {issues.map((issue) => {
+              const activeTotal = pool?.activeContacts || 0
+              const coveragePct = activeTotal > 0 ? ((issue.uniqueRecipients / activeTotal) * 100).toFixed(1) : null
+              const healthy = issue.dedupOk
+              return (
+                <div key={issue.issueKey} style={{ padding: '14px 16px', background: 'rgba(255,255,255,0.02)', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.04)' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: '12px', flexWrap: 'wrap' }}>
+                    <div>
+                      <div style={{ fontSize: '15px', color: 'rgba(255,255,255,0.9)', fontWeight: 400 }}>{issue.subject}</div>
+                      <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: '2px' }}>{issue.issueKey}</div>
+                    </div>
+                    <div style={{
+                      fontSize: '12px', fontWeight: 400, padding: '4px 10px', borderRadius: '4px',
+                      background: healthy ? 'rgba(45,212,191,0.12)' : 'rgba(255,66,121,0.12)',
+                      color: healthy ? '#2DD4BF' : '#FF4279',
+                      border: `1px solid ${healthy ? 'rgba(45,212,191,0.25)' : 'rgba(255,66,121,0.25)'}`,
+                    }}>
+                      {healthy
+                        ? 'Repeat send protection: OK'
+                        : `Repeat send protection: FAILED - ${issue.duplicatedContacts} contact${issue.duplicatedContacts === 1 ? '' : 's'} received this issue multiple times`}
+                    </div>
+                  </div>
+                  <div style={{ marginTop: '12px', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '12px', fontSize: '13px', color: 'rgba(255,255,255,0.55)' }}>
+                    <div>
+                      <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '2px' }}>Unique reached</div>
+                      <div style={{ fontSize: '16px', color: 'rgba(255,255,255,0.9)', fontWeight: 400 }}>
+                        {issue.uniqueRecipients.toLocaleString()}
+                        {coveragePct !== null && <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)', marginLeft: '6px' }}>of {activeTotal.toLocaleString()} active ({coveragePct}%)</span>}
+                      </div>
+                    </div>
+                    <div>
+                      <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '2px' }}>Total sends</div>
+                      <div style={{ fontSize: '16px', color: 'rgba(255,255,255,0.9)', fontWeight: 400 }}>{issue.totalSent.toLocaleString()}</div>
+                    </div>
+                    <div>
+                      <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '2px' }}>Duplicated</div>
+                      <div style={{ fontSize: '16px', color: issue.duplicatedContacts > 0 ? '#FF4279' : 'rgba(255,255,255,0.9)', fontWeight: 400 }}>{issue.duplicatedContacts.toLocaleString()}</div>
+                    </div>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      )}
 
       {/* Send history */}
       <div style={cardStyle}>

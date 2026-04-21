@@ -9,7 +9,10 @@ async function sha256(message) {
 }
 
 export async function middleware(request) {
-  const { pathname } = request.nextUrl
+  // Normalise trailing slash once so all downstream comparisons work
+  // for both /path and /path/ (next.config trailingSlash: true means
+  // real requests arrive with the slash, but redirects can race it off).
+  const pathname = (request.nextUrl.pathname || '/').replace(/\/+$/, '') || '/'
 
   // Admin routes: check auth and set header
   if (pathname.startsWith('/admin')) {
@@ -41,8 +44,8 @@ export async function middleware(request) {
 }
 
 async function handleAdminAuth(request, pathname) {
-  // Allow the login page without a session
-  if (pathname === '/admin/login' || pathname === '/admin/login/') {
+  // Allow the login page without a session (pathname is pre-normalised)
+  if (pathname === '/admin/login') {
     const next = NextResponse.next()
     next.headers.set('x-admin-route', '1')
     return next

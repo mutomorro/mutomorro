@@ -16,7 +16,9 @@ const navItems = [
 ]
 
 export default function AdminShell({ children }) {
-  const pathname = usePathname()
+  const rawPathname = usePathname()
+  // Normalise trailing slash so comparisons work under trailingSlash: true
+  const pathname = (rawPathname || '/').replace(/\/+$/, '') || '/'
   const router = useRouter()
   const [mobileOpen, setMobileOpen] = useState(false)
 

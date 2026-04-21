@@ -6,7 +6,9 @@ import Link from 'next/link'
 import { DIMENSION_LETTERS } from './constants'
 
 export default function EmergentSidebar({ dimensions, articles }) {
-  const pathname = usePathname()
+  const rawPathname = usePathname()
+  // Normalise trailing slash so comparisons work under trailingSlash: true
+  const pathname = (rawPathname || '/').replace(/\/+$/, '') || '/'
   const router = useRouter()
 
   // Track which dimension groups are expanded

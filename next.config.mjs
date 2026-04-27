@@ -683,6 +683,53 @@ const nextConfig = {
       // Project feed URLs (RSS remnants from WordPress)
       { source: '/project/:slug/feed', destination: '/projects/:slug/', permanent: true },
 
+
+      // =========================================================
+      // 404 cleanup - 26 April 2026
+      // =========================================================
+
+      // Old course URLs
+      { source: '/courses/tools-for-change', destination: '/courses/', permanent: true },
+      { source: '/courses/tools-for-change/', destination: '/courses/', permanent: true },
+      { source: '/courses/continuous-improvement-for-teams', destination: '/courses/', permanent: true },
+      { source: '/courses/continuous-improvement-for-teams/', destination: '/courses/', permanent: true },
+
+      // Old project URLs at root level (missing /projects/ prefix)
+      { source: '/customer-focused-culture-change-in-housing', destination: '/projects/', permanent: true },
+      { source: '/customer-focused-culture-change-in-housing/', destination: '/projects/', permanent: true },
+      { source: '/improving-culture-and-service-in-housing', destination: '/projects/', permanent: true },
+      { source: '/improving-culture-and-service-in-housing/', destination: '/projects/', permanent: true },
+
+      // Old WordPress pages
+      { source: '/pre-built-templates', destination: '/tools/', permanent: true },
+      { source: '/pre-built-templates/', destination: '/tools/', permanent: true },
+      { source: '/terms/', destination: '/privacy/', permanent: true },
+      { source: '/privacy-policy', destination: '/privacy/', permanent: true },
+      { source: '/privacy-policy/', destination: '/privacy/', permanent: true },
+      { source: '/stages-of-change', destination: '/tools/change-curve/', permanent: true },
+      { source: '/stages-of-change/', destination: '/tools/change-curve/', permanent: true },
+      { source: '/case-studies', destination: '/projects/', permanent: true },
+      { source: '/case-studies/', destination: '/projects/', permanent: true },
+
+      // Old service structure URLs
+      { source: '/services/tools-playbooks', destination: '/tools/', permanent: true },
+      { source: '/services/tools-playbooks/', destination: '/tools/', permanent: true },
+      { source: '/services/innovation-ideation', destination: '/services/', permanent: true },
+      { source: '/services/innovation-ideation/', destination: '/services/', permanent: true },
+      { source: '/customer-experience/', destination: '/services/customer-experience-consultancy/', permanent: true },
+
+      // Old service-areas deep paths
+      { source: '/service-areas/culture-change/target-culture', destination: '/services/culture-change-consultancy/', permanent: true },
+      { source: '/service-areas/culture-change/target-culture/', destination: '/services/culture-change-consultancy/', permanent: true },
+      { source: '/service-areas/change-management/change-management', destination: '/services/change-management-consultancy/', permanent: true },
+      { source: '/service-areas/change-management/change-management/', destination: '/services/change-management-consultancy/', permanent: true },
+      { source: '/areas/change-management-consultancy/change-management', destination: '/services/change-management-consultancy/', permanent: true },
+      { source: '/areas/change-management-consultancy/change-management/', destination: '/services/change-management-consultancy/', permanent: true },
+
+      // Common misspelling / shorthand
+      { source: '/kotter-8-step-change-model', destination: '/tools/kotters-8-step-change-model/', permanent: true },
+      { source: '/kotter-8-step-change-model/', destination: '/tools/kotters-8-step-change-model/', permanent: true },
+
     ]
   },
   async rewrites() {

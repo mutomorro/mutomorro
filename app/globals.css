@@ -3664,6 +3664,148 @@ a:hover {
   }
 }
 
+/* --- States of Vitality: CTA cluster, badge, modal (v2) --- */
+
+.sov-cta-cluster {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  align-items: center;
+}
+
+.sov-cta-cluster--center {
+  justify-content: center;
+}
+
+.sov-product-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.7);
+  background: rgba(255,255,255,0.04);
+  text-decoration: none;
+}
+
+.sov-product-badge--light {
+  border-color: rgba(0,0,0,0.12);
+  color: rgba(0,0,0,0.55);
+  background: rgba(0,0,0,0.02);
+}
+
+.sov-product-badge__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--accent);
+  display: inline-block;
+}
+
+.sov-product-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 15px;
+  border-bottom: 1px solid rgba(255, 66, 121, 0.4);
+  padding-bottom: 1px;
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.sov-product-link:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.sov-product-link--dark {
+  color: rgba(255,255,255,0.85);
+  border-bottom-color: rgba(255,255,255,0.4);
+}
+
+.sov-product-link--dark:hover {
+  color: white;
+  border-bottom-color: white;
+}
+
+/* Modal */
+.sov-modal__backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(20, 18, 25, 0.6);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  animation: sov-modal-fade-in 0.18s ease-out;
+}
+
+.sov-modal__dialog {
+  position: relative;
+  background: var(--white, #ffffff);
+  width: 100%;
+  max-width: 520px;
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
+  border-radius: 4px;
+  box-shadow: 0 30px 80px rgba(0,0,0,0.3);
+  outline: none;
+  animation: sov-modal-rise 0.22s ease-out;
+}
+
+.sov-modal__close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: rgba(0,0,0,0.5);
+  border-radius: 4px;
+  transition: background 0.15s ease, color 0.15s ease;
+  z-index: 1;
+}
+
+.sov-modal__close:hover {
+  background: rgba(0,0,0,0.05);
+  color: rgba(0,0,0,0.85);
+}
+
+.sov-modal__body {
+  padding: 40px 36px 36px;
+}
+
+@keyframes sov-modal-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes sov-modal-rise {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 600px) {
+  .sov-modal__backdrop { padding: 0; align-items: flex-end; }
+  .sov-modal__dialog { max-height: 92vh; border-radius: 12px 12px 0 0; }
+  .sov-modal__body { padding: 32px 24px 24px; }
+}
+
 /* ============================================
    COOKIE BANNER
    ============================================ */

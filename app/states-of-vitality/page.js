@@ -1,9 +1,9 @@
 import Link from 'next/link'
-import CTA from '../../components/CTA'
 import LogoStrip from '../../components/LogoStrip'
 import UseCaseCards from '../../components/states-of-vitality/UseCaseCards'
 import HeroReveal from '../../components/states-of-vitality/HeroReveal'
 import HeroScreenshotReveal from '../../components/states-of-vitality/HeroScreenshotReveal'
+import SovCtaButtons from '../../components/states-of-vitality/SovCtaButtons'
 
 // ============================================
 // SEO METADATA
@@ -24,32 +24,39 @@ export const metadata = {
 // ============================================
 
 const DIMENSIONS = [
-  { name: 'Embedded Strategy', colour: '#FF707C', description: 'How deeply strategy is embedded in daily work' },
-  { name: 'Momentum through Work', colour: '#FFAC51', description: 'How smoothly work moves and decisions get made' },
-  { name: 'Evolving Service', colour: '#FFC23B', description: 'How naturally improvement and evolution happen' },
-  { name: 'Resonant Purpose', colour: '#A7D957', description: 'How effectively purpose aligns your organisation' },
-  { name: 'Generative Capacity', colour: '#3AD377', description: 'How effectively capability is built and shared' },
-  { name: 'Enacted Culture', colour: '#00C3D8', description: 'How well your environment enables great work' },
-  { name: 'Narrative Connections', colour: '#5A70C2', description: 'How well knowledge flows to where it\'s needed' },
-  { name: 'Tuned to Change', colour: '#755E7F', description: 'How confidently you navigate transitions' },
+  { name: 'Strategy', colour: '#FF707C', description: 'How clear our direction is' },
+  { name: 'Flow', colour: '#FFAC51', description: 'How easily we get work done' },
+  { name: 'Service', colour: '#FFC23B', description: 'How we create and deliver value' },
+  { name: 'Purpose', colour: '#A7D957', description: 'What drives us and guides our work' },
+  { name: 'Development', colour: '#3AD377', description: 'How we grow people and build capability' },
+  { name: 'Culture', colour: '#00C3D8', description: 'How it feels to work here' },
+  { name: 'Connection', colour: '#5A70C2', description: 'How stories and meaning flow' },
+  { name: 'Change', colour: '#755E7F', description: 'How we adapt and evolve' },
 ]
-
 
 const STAGES = [
   { number: '01', title: 'Setup and launch', description: 'We configure the survey for your structure and ensure questions fit different levels.', timeline: 'Week 1' },
-  { number: '02', title: 'Organisation-wide survey', description: 'Everyone completes the assessment - designed to be finished in one sitting.', timeline: 'Weeks 2-4' },
-  { number: '03', title: 'Analysis and reporting', description: 'We analyse responses across all dimensions - identifying patterns and opportunities.', timeline: 'Week 5' },
-  { number: '04', title: 'Workshop and planning', description: 'Walk through findings together and agree where to focus next.', timeline: 'Week 6' },
+  { number: '02', title: 'Organisation-wide survey', description: 'Everyone completes the assessment - designed to be finished in one sitting.', timeline: 'Weeks 2-3' },
+  { number: '03', title: 'Analysis and reporting', description: 'Results land in your interactive dashboard - patterns, perception gaps and freeform responses ready to explore.', timeline: 'Week 4' },
+  { number: '04', title: 'Workshop and planning', description: 'Walk through findings together and agree where to focus next. Optional consultancy support.', timeline: 'Week 5' },
 ]
 
 const STEP_COLOURS = ['#80388F', '#9B51E0', '#FF4279', '#E08F00']
 
-const DELIVERABLES = [
-  { title: 'Comprehensive report', description: 'A detailed analysis across all eight dimensions - scores, patterns, perception gaps and plain-language interpretation.' },
-  { title: 'Interactive dashboard', description: 'Explore results by dimension, department, or level. Filter, compare, and export. A tool your leadership team will actually use.' },
-  { title: 'Facilitated workshop', description: 'A working session to explore findings, build shared understanding, and agree priorities.' },
-  { title: 'Development plan', description: 'Prioritised recommendations - where effort will create the greatest impact.' },
+const INCLUDED_DELIVERABLES = [
+  { title: 'Configured survey', description: 'Tailored to your organisation structure - role levels, departments, locations and length of service.' },
+  { title: 'Interactive results dashboard', description: 'Secure access for your team. Explore results by dimension, demographic group, or single question. A tool your leadership will actually use.' },
+  { title: 'Freeform response capture', description: 'Hear what people say in their own words, alongside the numbers. Word-level sentiment and themes surface automatically.' },
+  { title: 'Demographic analysis', description: 'See how experience differs across role level, department, length of service and location - patterns aggregate scores hide.' },
 ]
+
+const OPTIONAL_DELIVERABLES = [
+  { title: 'In-depth written report', description: 'A detailed analysis across all eight dimensions with plain-language interpretation and prioritised recommendations.' },
+  { title: 'Facilitated leadership workshop', description: 'A working session to explore findings, build shared understanding, and agree priorities.' },
+  { title: 'Development and action plan', description: 'Where effort will create the greatest impact - sequenced, sized and ready to commission.' },
+]
+
+const PRODUCT_SITE_URL = 'https://statesofvitality.com'
 
 // ============================================
 // SCREENSHOT COMPONENTS
@@ -85,13 +92,20 @@ function ScreenshotLight({ src, alt, style = {} }) {
   )
 }
 
+function ProductBadge({ variant = 'dark' }) {
+  return (
+    <span className={`sov-product-badge ${variant === 'light' ? 'sov-product-badge--light' : ''}`}>
+      <span className="sov-product-badge__dot" />
+      A product by Mutomorro
+    </span>
+  )
+}
+
 // ============================================
 // PAGE COMPONENT
 // ============================================
 
 export default function StatesOfVitalityPage() {
-  const contactHref = '/contact?service=States%20of%20Vitality%20Assessment'
-
   return (
     <main className="sov-page">
 
@@ -107,6 +121,9 @@ export default function StatesOfVitalityPage() {
         }}>
           {/* Text - mount animation, no scroll trigger */}
           <HeroReveal>
+            <div style={{ marginBottom: '20px' }}>
+              <ProductBadge variant="dark" />
+            </div>
             <span className="kicker" style={{ marginBottom: '16px' }}>States of Vitality Assessment</span>
             <h1 className="heading-display heading-gradient" style={{ margin: '0 0 32px', maxWidth: '900px' }}>
               See your whole organisation clearly
@@ -115,15 +132,27 @@ export default function StatesOfVitalityPage() {
               Our organisational assessment gives you the full picture - deep, connected insight across the key areas of organisational health. See where you're thriving, where energy is getting stuck, and where a small shift will make the biggest difference.
             </p>
             <div style={{ marginTop: '40px' }}>
-              <Link href={contactHref} className="btn-primary btn-primary--dark btn-primary--lg sov-cta-btn">
-                Enquire about an assessment
-              </Link>
+              <SovCtaButtons variant="dark" align="left" />
             </div>
+            <p style={{ margin: '24px 0 0', fontSize: '15px', color: 'rgba(255,255,255,0.55)' }}>
+              Explore the full product at{' '}
+              <a
+                href={PRODUCT_SITE_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="sov-product-link sov-product-link--dark"
+              >
+                statesofvitality.com →
+              </a>
+            </p>
           </HeroReveal>
 
           {/* Dashboard screenshot - mount animation with 200ms delay */}
           <HeroScreenshotReveal>
-            <ScreenshotDark src="/images/dashboard/dashboard-overview.png" alt="States of Vitality dashboard overview showing radar chart, overall vitality score, dimension rankings and word cloud" />
+            <ScreenshotDark
+              src="/images/dashboard/sov-real/sov-landscape.png"
+              alt="States of Vitality landscape chart - a streamgraph showing all eight dimensions of organisational health side by side"
+            />
           </HeroScreenshotReveal>
         </div>
       </section>
@@ -167,9 +196,7 @@ export default function StatesOfVitalityPage() {
                 The real insight isn't in individual scores. It's in how things connect: how purpose shapes culture, how strategy enables operations, how change flows (or doesn't) through your organisation.
               </p>
             </div>
-            <Link href={contactHref} className="btn-primary sov-cta-btn">
-              Enquire about an assessment
-            </Link>
+            <SovCtaButtons variant="light" align="left" />
           </div>
 
           {/* Before/after contrast visual - fade up with slight delay */}
@@ -319,8 +346,8 @@ export default function StatesOfVitalityPage() {
             {/* Dashboard screenshot - flat float-in */}
             <div className="scroll-screenshot-flat delay-2">
               <ScreenshotLight
-                src="/images/dashboard/dashboard-profile.png"
-                alt="Vitality Profile showing all eight dimensions scored and ranked as horizontal bars"
+                src="/images/dashboard/sov-real/sov-eight-areas.png"
+                alt="Scores across all eight areas - each dimension grouped by frequency language from Rarely true through to Almost always true"
               />
             </div>
           </div>
@@ -330,12 +357,11 @@ export default function StatesOfVitalityPage() {
             fontSize: '16px',
             fontWeight: '300',
             lineHeight: '1.7',
-            color: 'rgba(0,0,0,0.5)',
-            maxWidth: '680px',
+            color: 'rgba(0,0,0,0.55)',
+            maxWidth: '720px',
             margin: '0 auto',
-            fontStyle: 'italic',
           }}>
-            Each dimension is assessed across five states of vitality - from Emerging through to Pioneering. This shows you not just where you are, but the natural pathway toward where you want to be.
+            Every question uses the same simple scale: how true is this statement in your experience? Responses run from <strong style={{ color: 'rgba(0,0,0,0.75)', fontWeight: 500 }}>Rarely true (1)</strong> to <strong style={{ color: 'rgba(0,0,0,0.75)', fontWeight: 500 }}>Almost always true (5)</strong>.
           </p>
         </div>
       </section>
@@ -460,24 +486,25 @@ export default function StatesOfVitalityPage() {
               color: 'rgba(255,255,255,0.6)',
               margin: '0 0 16px',
             }}>
-              The same dimension. Three different experiences.
+              The same dimension. Different experiences depending on where you sit.
             </p>
             <p style={{
               fontSize: '18px',
               fontWeight: '300',
               lineHeight: '1.75',
               color: 'rgba(255,255,255,0.6)',
-              margin: 0,
+              margin: '0 0 32px',
             }}>
-              When we measure across levels, patterns emerge that aggregate scores hide. Leadership might see confidence in navigating change. The front line might experience uncertainty. The gap between them tells you something important.
+              When we measure across role levels, departments, locations and length of service, patterns emerge that aggregate scores hide. Leadership might see confidence in a given area. The front line might experience uncertainty. The gap between them tells you something important.
             </p>
+            <SovCtaButtons variant="dark" align="left" />
           </div>
 
           {/* Dashboard screenshot - perspective float-in */}
           <div className="scroll-screenshot delay-2">
             <ScreenshotDark
-              src="/images/dashboard/dashboard-by-level.png"
-              alt="By Level view comparing senior, middle and front-line perception gaps across all eight dimensions"
+              src="/images/dashboard/sov-real/sov-by-level.png"
+              alt="By Role Level view comparing how senior, middle and front-line groups experience each dimension side by side"
             />
           </div>
         </div>
@@ -622,10 +649,10 @@ export default function StatesOfVitalityPage() {
               Total process time
             </p>
             <p style={{ fontSize: '18px', fontWeight: '600', color: 'var(--dark)', margin: '0 0 4px' }}>
-              Approximately 6 weeks
+              Approximately 4-5 weeks
             </p>
             <p style={{ fontSize: '14px', fontWeight: '400', color: 'rgba(0,0,0,0.4)', margin: 0 }}>
-              From launch to actionable development plan
+              From launch to results in your dashboard
             </p>
           </div>
         </div>
@@ -637,22 +664,38 @@ export default function StatesOfVitalityPage() {
       <section id="what-you-receive" className="section--full sov-section" style={{ background: 'var(--warm)' }}>
         <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
           {/* H2 - fade up */}
-          <h2 className="heading-h2 heading-gradient scroll-in" style={{ margin: '0 0 48px', textAlign: 'center' }}>
-            What you receive
-          </h2>
+          <div className="scroll-in" style={{ textAlign: 'center', maxWidth: '720px', margin: '0 auto 48px' }}>
+            <h2 className="heading-h2 heading-gradient" style={{ margin: '0 0 16px' }}>
+              What you receive
+            </h2>
+            <p style={{ fontSize: '17px', fontWeight: 300, lineHeight: 1.7, color: 'rgba(0,0,0,0.55)', margin: 0 }}>
+              Every assessment includes a configured survey, an interactive dashboard for your team, freeform response capture and demographic analysis. Consultancy support is available as an optional add-on.
+            </p>
+          </div>
 
-          {/* Deliverable cards - staggered */}
-          <div className="sov-deliverables" style={{ marginBottom: '60px' }}>
-            {DELIVERABLES.map((del, i) => (
+          {/* Included deliverables */}
+          <h3 className="scroll-in" style={{
+            fontSize: '13px',
+            fontWeight: 600,
+            letterSpacing: '0.1em',
+            textTransform: 'uppercase',
+            color: 'rgba(0,0,0,0.5)',
+            margin: '0 0 20px',
+            textAlign: 'center',
+          }}>
+            What every assessment includes
+          </h3>
+          <div className="sov-deliverables" style={{ marginBottom: '56px' }}>
+            {INCLUDED_DELIVERABLES.map((del, i) => (
               <div key={i} className="scroll-in" style={{
                 background: 'var(--white)',
                 border: '1px solid rgba(0,0,0,0.08)',
                 padding: '28px 24px',
                 transitionDelay: `${i * 100}ms`,
               }}>
-                <h3 style={{ fontSize: '18px', fontWeight: '400', margin: '0 0 10px', color: 'var(--dark)' }}>
+                <h4 style={{ fontSize: '18px', fontWeight: '400', margin: '0 0 10px', color: 'var(--dark)' }}>
                   {del.title}
-                </h3>
+                </h4>
                 <p style={{ fontSize: '15px', fontWeight: '300', lineHeight: '1.7', color: 'rgba(0,0,0,0.55)', margin: 0 }}>
                   {del.description}
                 </p>
@@ -660,44 +703,113 @@ export default function StatesOfVitalityPage() {
             ))}
           </div>
 
-          {/* Dashboard showcase - staggered screenshot float-in */}
-          <div className="sov-composed">
-            <div className="sov-composed__centre scroll-screenshot-flat">
-              <ScreenshotLight
-                src="/images/dashboard/dashboard-strengths.png"
-                alt="Strengths and Growth Areas showing top three strengths and top three areas for development"
-              />
-            </div>
-            <div className="sov-composed__left scroll-screenshot-flat" style={{ transitionDelay: '150ms' }}>
-              <ScreenshotLight
-                src="/images/dashboard/dashboard-deep-dive.png"
-                alt="Dimension deep dive showing score circle, response breakdown, insight summary and recommended actions"
-                style={{ boxShadow: '0 12px 50px rgba(0,0,0,0.12)' }}
-              />
-            </div>
-            <div className="sov-composed__right scroll-screenshot-flat" style={{ transitionDelay: '300ms' }}>
-              <ScreenshotLight
-                src="/images/dashboard/dashboard-trends.png"
-                alt="Trends over time showing before and after comparison with progress indicators"
-                style={{ boxShadow: '0 12px 50px rgba(0,0,0,0.12)' }}
-              />
-            </div>
+          {/* Real dashboard screenshots: dimension detail + question detail */}
+          <div className="scroll-in" style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+            gap: '24px',
+            marginBottom: '64px',
+            alignItems: 'start',
+          }}>
+            <ScreenshotLight
+              src="/images/dashboard/sov-real/sov-dimension-detail.png"
+              alt="A single dimension page showing the dimension score, response distribution and the questions inside it"
+            />
+            <ScreenshotLight
+              src="/images/dashboard/sov-real/sov-question-detail.png"
+              alt="Drill down into a single question - see how different demographic groups responded"
+              style={{ boxShadow: '0 12px 50px rgba(0,0,0,0.10)' }}
+            />
+          </div>
+
+          <div className="scroll-in" style={{
+            textAlign: 'center',
+            margin: '0 0 48px',
+          }}>
+            <p style={{ fontSize: '15px', fontWeight: 300, color: 'rgba(0,0,0,0.55)', margin: 0 }}>
+              See the full product at{' '}
+              <a
+                href={PRODUCT_SITE_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="sov-product-link"
+              >
+                statesofvitality.com →
+              </a>
+            </p>
+          </div>
+
+          {/* Optional consultancy add-ons */}
+          <h3 className="scroll-in" style={{
+            fontSize: '13px',
+            fontWeight: 600,
+            letterSpacing: '0.1em',
+            textTransform: 'uppercase',
+            color: 'rgba(0,0,0,0.5)',
+            margin: '0 0 20px',
+            textAlign: 'center',
+          }}>
+            Optional consultancy add-ons
+          </h3>
+          <div className="sov-deliverables">
+            {OPTIONAL_DELIVERABLES.map((del, i) => (
+              <div key={i} className="scroll-in" style={{
+                background: 'transparent',
+                border: '1px dashed rgba(0,0,0,0.18)',
+                padding: '28px 24px',
+                transitionDelay: `${i * 100}ms`,
+              }}>
+                <h4 style={{ fontSize: '18px', fontWeight: '400', margin: '0 0 10px', color: 'var(--dark)' }}>
+                  {del.title}
+                </h4>
+                <p style={{ fontSize: '15px', fontWeight: '300', lineHeight: '1.7', color: 'rgba(0,0,0,0.55)', margin: 0 }}>
+                  {del.description}
+                </p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
       {/* ==========================================
-          SECTION 10: READY TO TALK (dark) - fade up
+          SECTION 10: READY TO TALK (dark)
           ========================================== */}
-      <div className="scroll-in">
-        <CTA
-          label="Let's talk"
-          heading="Ready to see your organisation clearly?"
-          body="Get in touch to discuss whether the States of Vitality assessment is right for your organisation. We'll talk through your situation, answer any questions, and explain how it would work for you."
-          buttonText="Start a conversation"
-          buttonLink={contactHref}
-        />
-      </div>
+      <section className="section--full dark-bg sov-section" style={{
+        background: 'radial-gradient(ellipse at 50% 120%, rgba(60,30,70,0.9) 0%, #221C2B 70%)',
+        textAlign: 'center',
+      }}>
+        <div className="scroll-in" style={{ maxWidth: '620px', margin: '0 auto' }}>
+          <div style={{ marginBottom: '20px' }}>
+            <ProductBadge variant="dark" />
+          </div>
+          <span className="kicker" style={{ marginBottom: '20px' }}>Let&apos;s talk</span>
+          <h2 className="heading-h2 heading-gradient" style={{ margin: '0 0 1.5rem' }}>
+            Ready to see your organisation clearly?
+          </h2>
+          <p style={{
+            fontSize: '18px',
+            lineHeight: '1.7',
+            color: 'rgba(255,255,255,0.6)',
+            fontWeight: '300',
+            margin: '0 0 2.5rem',
+          }}>
+            Download the overview, or send us a few details and we&apos;ll come back with a tailored quote.
+          </p>
+          <SovCtaButtons variant="dark" align="center" />
+          <p style={{ margin: '24px 0 0', fontSize: '14px', color: 'rgba(255,255,255,0.45)' }}>
+            More on the product at{' '}
+            <a
+              href={PRODUCT_SITE_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="sov-product-link sov-product-link--dark"
+              style={{ fontSize: '14px' }}
+            >
+              statesofvitality.com →
+            </a>
+          </p>
+        </div>
+      </section>
 
     </main>
   )

@@ -1,9 +1,13 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 
 export default function SovGatedModal({ open, onClose, title, children }) {
   const dialogRef = useRef(null)
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => { setMounted(true) }, [])
 
   useEffect(() => {
     if (!open) return
@@ -13,7 +17,6 @@ export default function SovGatedModal({ open, onClose, title, children }) {
     document.addEventListener('keydown', onKey)
     const prevOverflow = document.body.style.overflow
     document.body.style.overflow = 'hidden'
-    // Focus the dialog for keyboard users
     requestAnimationFrame(() => {
       dialogRef.current?.focus()
     })
@@ -23,9 +26,12 @@ export default function SovGatedModal({ open, onClose, title, children }) {
     }
   }, [open, onClose])
 
-  if (!open) return null
+  if (!open || !mounted) return null
 
-  return (
+  // Portal to <body> so the fixed-position backdrop escapes any ancestor
+  // stacking context (e.g. .scroll-in keeps transform: translateY(0) which
+  // creates a containing block for fixed descendants).
+  return createPortal(
     <div
       className="sov-modal__backdrop"
       onClick={onClose}
@@ -54,6 +60,7 @@ export default function SovGatedModal({ open, onClose, title, children }) {
           {children}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   )
 }

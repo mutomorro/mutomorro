@@ -1,4 +1,5 @@
 import { client, getTool } from '../../../sanity/client'
+import { notFound } from 'next/navigation'
 import Image from 'next/image'
 import { PortableText } from '@portabletext/react'
 import CTA from '../../../components/CTA'
@@ -38,6 +39,8 @@ export async function generateMetadata({ params }) {
 export default async function ToolPage({ params }) {
   const { slug } = await params
   const tool = await getTool(slug)
+
+  if (!tool) notFound()
 
   const pdfUrl = tool.toolkitFileUrl || null
   const heroImageUrl = tool.heroImage ? urlFor(tool.heroImage).width(900).url() : null

@@ -760,6 +760,32 @@ const nextConfig = {
       { source: '/training-courses', destination: '/courses/', permanent: true },
       { source: '/training-courses/:slug', destination: '/courses/', permanent: true },
 
+
+      // =========================================================
+      // April 2026 triage
+      // =========================================================
+
+      // Broken tool slug variant (confirmed 404 hit)
+      { source: '/tools/google-project-oxygen', destination: '/tools/project-oxygen', permanent: true },
+      { source: '/tools/google-project-oxygen/', destination: '/tools/project-oxygen', permanent: true },
+
+      // Proactive redirect for plausible Mendelow variant
+      { source: '/tools/mendelows-stakeholder-matrix', destination: '/tools/mendelow-power-interest-matrix', permanent: true },
+      { source: '/tools/mendelows-stakeholder-matrix/', destination: '/tools/mendelow-power-interest-matrix', permanent: true },
+
+      // Old WordPress embed URL hitting from Google
+      { source: '/tools/adkar-model/embed', destination: '/tools/adkar-model', permanent: true },
+
+      // Old WordPress navigation paths
+      { source: '/service-areas', destination: '/services', permanent: true },
+      { source: '/service-areas/', destination: '/services', permanent: true },
+
+      // Old about page variants
+      { source: '/story', destination: '/about', permanent: true },
+      { source: '/story/', destination: '/about', permanent: true },
+      { source: '/author/james', destination: '/about', permanent: true },
+      { source: '/author/james/', destination: '/about', permanent: true },
+
     ]
   },
   async rewrites() {

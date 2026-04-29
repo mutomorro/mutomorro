@@ -743,6 +743,23 @@ const nextConfig = {
       // Old paginated tools listing
       { source: '/tools/page/:num', destination: '/tools/', permanent: true },
 
+
+      // =========================================================
+      // 404 cleanup - 29 April 2026 (GSC audit)
+      // =========================================================
+
+      // Old WordPress pages with no current equivalent
+      { source: '/cookie-policy', destination: '/privacy/', permanent: true },
+      { source: '/shop', destination: '/tools/', permanent: true },
+      { source: '/tickets-order', destination: '/contact/', permanent: true },
+      { source: '/nav-test', destination: '/', permanent: true },
+      { source: '/16534-2', destination: '/', permanent: true },
+      { source: '/signs-of-vitality-snapshot', destination: '/states-of-vitality/', permanent: true },
+
+      // Old training-courses section
+      { source: '/training-courses', destination: '/courses/', permanent: true },
+      { source: '/training-courses/:slug', destination: '/courses/', permanent: true },
+
     ]
   },
   async rewrites() {

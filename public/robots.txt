@@ -5,3 +5,6 @@ Sitemap: https://mutomorro.com/sitemap.xml
 
 # Block Sanity Studio
 Disallow: /studio
+
+# Block Next.js static assets (JS/CSS chunks)
+Disallow: /_next/static/

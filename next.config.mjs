@@ -86,7 +86,6 @@ const nextConfig = {
       { source: '/application', destination: '/services/', permanent: true },
       { source: '/services-old', destination: '/services/', permanent: true },
       { source: '/customer-experience', destination: '/services/customer-experience-consultancy/', permanent: true },
-      { source: '/terms', destination: '/privacy/', permanent: true },
       { source: '/checkout', destination: '/contact/', permanent: true },
       { source: '/checkout-2', destination: '/contact/', permanent: true },
       { source: '/enquiry', destination: '/contact/', permanent: true },
@@ -691,19 +690,18 @@ const nextConfig = {
       // Old course URLs
       { source: '/courses/tools-for-change', destination: '/courses/', permanent: true },
       { source: '/courses/tools-for-change/', destination: '/courses/', permanent: true },
-      { source: '/courses/continuous-improvement-for-teams', destination: '/courses/', permanent: true },
-      { source: '/courses/continuous-improvement-for-teams/', destination: '/courses/', permanent: true },
+      { source: '/courses/continuous-improvement-for-teams', destination: '/courses/continuous-improvement-training/', permanent: true },
+      { source: '/courses/continuous-improvement-for-teams/', destination: '/courses/continuous-improvement-training/', permanent: true },
 
       // Old project URLs at root level (missing /projects/ prefix)
-      { source: '/customer-focused-culture-change-in-housing', destination: '/projects/', permanent: true },
-      { source: '/customer-focused-culture-change-in-housing/', destination: '/projects/', permanent: true },
-      { source: '/improving-culture-and-service-in-housing', destination: '/projects/', permanent: true },
-      { source: '/improving-culture-and-service-in-housing/', destination: '/projects/', permanent: true },
+      { source: '/customer-focused-culture-change-in-housing', destination: '/projects/housing-association-merger-integration/', permanent: true },
+      { source: '/customer-focused-culture-change-in-housing/', destination: '/projects/housing-association-merger-integration/', permanent: true },
+      { source: '/improving-culture-and-service-in-housing', destination: '/sectors/housing/', permanent: true },
+      { source: '/improving-culture-and-service-in-housing/', destination: '/sectors/housing/', permanent: true },
 
       // Old WordPress pages
       { source: '/pre-built-templates', destination: '/tools/', permanent: true },
       { source: '/pre-built-templates/', destination: '/tools/', permanent: true },
-      { source: '/terms/', destination: '/privacy/', permanent: true },
       { source: '/privacy-policy', destination: '/privacy/', permanent: true },
       { source: '/privacy-policy/', destination: '/privacy/', permanent: true },
       { source: '/stages-of-change', destination: '/tools/change-curve/', permanent: true },
@@ -729,6 +727,21 @@ const nextConfig = {
       // Common misspelling / shorthand
       { source: '/kotter-8-step-change-model', destination: '/tools/kotters-8-step-change-model/', permanent: true },
       { source: '/kotter-8-step-change-model/', destination: '/tools/kotters-8-step-change-model/', permanent: true },
+
+
+      // =========================================================
+      // APRIL 2026 - 404 TRIAGE
+      // =========================================================
+
+      // service-areas gaps (culture-change and change-management sub-paths not caught by existing :slug pattern)
+      { source: '/service-areas/culture-change/:path*', destination: '/services/culture-change-consultancy/', permanent: true },
+      { source: '/service-areas/change-management/:path*', destination: '/services/change-management-consultancy/', permanent: true },
+
+      // Old /areas/ prefix (different from /service-areas/)
+      { source: '/areas/:path*', destination: '/services/', permanent: true },
+
+      // Old paginated tools listing
+      { source: '/tools/page/:num', destination: '/tools/', permanent: true },
 
     ]
   },

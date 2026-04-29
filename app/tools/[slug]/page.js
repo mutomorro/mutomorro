@@ -219,6 +219,38 @@ export default async function ToolPage({ params }) {
         </div>
       </section>
 
+      {/* Practitioner Insight */}
+      {tool.practitionerInsight && (
+        <section className="section--full section-padding" style={{ background: '#FFFFFF' }}>
+          <div className="section__inner" style={{ maxWidth: '800px' }}>
+            <div style={{
+              borderLeft: '3px solid #9B51E0',
+              paddingLeft: '24px',
+            }}>
+              <span className="kicker" style={{ marginBottom: '12px', display: 'block' }}>From the practitioner</span>
+              <p style={{ fontSize: '14px', fontWeight: 400, color: '#221C2B', marginBottom: '16px', lineHeight: '1.6' }}>
+                <strong>James Freeman-Gray</strong> is the founder of Mutomorro. He&apos;s an organisational development practitioner who has spent over a decade working with leaders across public, private, and nonprofit sectors - helping organisations navigate change, strengthen culture, and design better ways of working.
+              </p>
+              <p className="body-text" style={{ marginBottom: '16px', lineHeight: '1.7' }}>
+                {tool.practitionerInsight}
+              </p>
+              {tool.insightServiceSlug && (
+                <p style={{ fontSize: '14px', marginTop: '8px', marginBottom: '0' }}>
+                  <a href={`/services/${tool.insightServiceSlug}/`} className="inline-link">
+                    See how we work with this →
+                  </a>
+                </p>
+              )}
+              {tool.lastReviewed && (
+                <p style={{ fontSize: '13px', color: 'rgba(0,0,0,0.45)', marginTop: '16px', marginBottom: '0' }}>
+                  Last reviewed: {new Date(tool.lastReviewed).toLocaleDateString('en-GB', { month: 'long', year: 'numeric' })}
+                </p>
+              )}
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* Download form */}
       {pdfUrl && (
         <section

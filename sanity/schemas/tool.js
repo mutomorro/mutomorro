@@ -8,6 +8,7 @@ export default {
     { name: 'content', title: 'Content' },
     { name: 'toolkit', title: 'Toolkit' },
     { name: 'seo', title: 'SEO' },
+    { name: 'practitioner', title: 'Practitioner' },
   ],
   fields: [
     // ── Core ──
@@ -196,6 +197,30 @@ export default {
       group: 'seo',
       description:
         'Primary keyword from RankMath - carried over for reference.',
+    },
+
+    // ── Practitioner ──
+    {
+      name: 'practitionerInsight',
+      title: 'Practitioner Insight',
+      type: 'text',
+      rows: 4,
+      group: 'practitioner',
+      description: 'A short first-person note about how this tool has been used in practice. 2-4 sentences. Displays in the practitioner box on the page.',
+    },
+    {
+      name: 'insightServiceSlug',
+      title: 'Related Service Slug',
+      type: 'string',
+      group: 'practitioner',
+      description: 'The slug of the most relevant service page (e.g. "change-management-consultancy"). Used to generate a link in the practitioner box.',
+    },
+    {
+      name: 'lastReviewed',
+      title: 'Last Reviewed',
+      type: 'date',
+      group: 'practitioner',
+      description: 'The date this tool page was last reviewed for accuracy. Displays as "Last reviewed: [date]" on the page.',
     },
   ],
   preview: {

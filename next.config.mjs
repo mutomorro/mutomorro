@@ -336,18 +336,18 @@ const nextConfig = {
       { source: '/articles/the-change-readiness-imperative', destination: '/articles/change-fatigue-in-the-workplace/', permanent: true },
       { source: '/articles/building-greater-organisational-resilience', destination: '/articles/building-organisational-resilience/', permanent: true },
       { source: '/articles/writing-a-meaningful-mission-statement', destination: '/articles/how-to-write-a-mission-statement/', permanent: true },
-      { source: '/articles/developing-a-need-for-change', destination: '/articles/need-for-change/', permanent: true },
+      { source: '/articles/developing-a-need-for-change', destination: '/articles/building-the-case-for-change/', permanent: true },
       { source: '/articles/developing-organisational-culture-the-basics', destination: '/articles/developing-organisational-culture/', permanent: true },
-      { source: '/articles/adaptive-leadership', destination: '/articles/guide-to-adaptive-leadership/', permanent: true },
+      { source: '/articles/adaptive-leadership', destination: '/articles/adaptive-leadership-guide/', permanent: true },
       { source: '/articles/nonprofit-mission-statement-guide', destination: '/articles/how-to-write-a-mission-statement/', permanent: true },
-      { source: '/articles/emotional-intelligence-in-leadership-guide', destination: '/articles/emotional-intelligence-in-leadership/', permanent: true },
+      { source: '/articles/emotional-intelligence-in-leadership-guide', destination: '/articles/emotional-intelligence-for-leaders/', permanent: true },
       { source: '/articles/nonprofit-resilience-guide', destination: '/articles/building-organisational-resilience/', permanent: true },
-      { source: '/articles/impact-measurement-framework-guide', destination: '/articles/build-impact-measurement-framework/', permanent: true },
-      { source: '/articles/designing-adaptive-organisational-architectures', destination: '/articles/adaptive-organisational-architectures/', permanent: true },
-      { source: '/articles/building-psychological-safety-a-guide-for-organisations', destination: '/articles/psychological-safety-guide/', permanent: true },
+      { source: '/articles/impact-measurement-framework-guide', destination: '/articles/impact-measurement-framework/', permanent: true },
+      { source: '/articles/designing-adaptive-organisational-architectures', destination: '/articles/adaptive-organisational-design/', permanent: true },
+      { source: '/articles/building-psychological-safety-a-guide-for-organisations', destination: '/articles/psychological-safety-in-organisations/', permanent: true },
       { source: '/articles/organisational-culture-models', destination: '/articles/developing-organisational-culture/', permanent: true },
       { source: '/articles/organisational-culture-guide', destination: '/articles/developing-organisational-culture/', permanent: true },
-      { source: '/articles/defining-the-need-for-change', destination: '/articles/need-for-change/', permanent: true },
+      { source: '/articles/defining-the-need-for-change', destination: '/articles/building-the-case-for-change/', permanent: true },
       { source: '/articles/a-guide-to-change-readiness', destination: '/articles/change-readiness-assessment/', permanent: true },
       { source: '/articles/addressing-change-fatigue', destination: '/articles/change-fatigue-in-the-workplace/', permanent: true },
       { source: '/articles/change-management-to-change-leadership', destination: '/articles/change-management-vs-change-leadership/', permanent: true },
@@ -592,7 +592,7 @@ const nextConfig = {
 
       // Old capability page - specific path before catch-all
       { source: '/developing-leaders/leadership-development-programme', destination: '/develop/deeper-ground/', permanent: true },
-      { source: '/developing-leaders/:path*', destination: '/develop/leadership-programme/', permanent: true },
+      { source: '/developing-leaders/:path*', destination: '/develop/', permanent: true },
 
       // Old coaching service URL (crawler traffic)
       { source: '/purpose-led-leadership-coaching', destination: '/develop/executive-coaching/', permanent: true },
@@ -768,6 +768,9 @@ const nextConfig = {
       // Broken tool slug variant (confirmed 404 hit)
       { source: '/tools/google-project-oxygen', destination: '/tools/project-oxygen', permanent: true },
       { source: '/tools/google-project-oxygen/', destination: '/tools/project-oxygen', permanent: true },
+
+      // Trailing-period Kotter URL from SharePoint referrer (confirmed 404 hit, 30 Apr 2026)
+      { source: '/tools/kotters-8-step-change-model.', destination: '/tools/kotters-8-step-change-model/', permanent: true },
 
       // Proactive redirect for plausible Mendelow variant
       { source: '/tools/mendelows-stakeholder-matrix', destination: '/tools/mendelow-power-interest-matrix', permanent: true },

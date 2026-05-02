@@ -5,6 +5,7 @@ import { notFound } from 'next/navigation'
 import { getSectorLandingPage, getAllSectorLandingPages } from '../../../sanity/client'
 import CTA from '../../../components/CTA'
 import BackgroundPattern from '@/components/animations/BackgroundPattern'
+import PageCallouts from '../../../components/PageCallouts'
 
 export const revalidate = 3600
 
@@ -267,6 +268,11 @@ export default async function SectorLandingPage({ params }) {
           </div>
         </section>
       )}
+
+      {/* ==========================================
+          PAGE CALLOUTS (content-managed)
+          ========================================== */}
+      <PageCallouts pageType="sectors" pageId={page._id} />
 
       {/* ==========================================
           SECTION 7 - BRIDGE TEXT + CTA

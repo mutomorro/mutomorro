@@ -7,6 +7,7 @@ import CTA from '../../../components/CTA'
 import { PortableText } from '@portabletext/react'
 import { urlFor } from '../../../sanity/image'
 import Lightbox from '../../../components/Lightbox'
+import PageCallouts from '../../../components/PageCallouts'
 
 export const revalidate = 3600
 
@@ -241,6 +242,8 @@ export default async function CaseStudy({ params }) {
           )}
         </div>
       </section>
+
+      <PageCallouts pageType="caseStudies" pageId={project._id} />
 
       <CTA />
 

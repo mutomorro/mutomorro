@@ -4,6 +4,7 @@ import { PortableText } from '@portabletext/react'
 import { notFound } from 'next/navigation'
 import CTA from '../../../components/CTA'
 import NetworkIllustration from '../../../components/NetworkIllustration'
+import PageCallouts from '../../../components/PageCallouts'
 
 export const revalidate = 3600
 
@@ -384,6 +385,11 @@ export default async function CapabilityServicePage({ params }) {
         buttonLabel="Let's talk"
         serviceTitle={service.title}
       />
+
+      {/* ==========================================
+          PAGE CALLOUTS (content-managed)
+          ========================================== */}
+      <PageCallouts pageType="develop" pageId={service._id} />
 
       {/* ==========================================
           CTA (dark)

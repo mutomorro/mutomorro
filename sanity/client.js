@@ -586,3 +586,28 @@ export async function getAllSectorLandingPages() {
     }
   `, {}, fetchOpts)
 }
+
+// ============================================
+// PAGE CALLOUTS
+// ============================================
+
+// Fetch active callouts targeted at the given page (by type and/or specific id).
+// pageType is one of: services, caseStudies, tools, articles, courses, develop, sectors
+export async function getPageCallouts(pageType, pageId) {
+  if (!pageType || !pageId) return []
+  return client.fetch(`
+    *[_type == "pageCallout" && isActive == true && (
+      $pageType in showOnPageTypes ||
+      $pageId in includePages[]._ref
+    ) && !($pageId in excludePages[]._ref)] | order(displayOrder asc) {
+      _id,
+      heading,
+      body,
+      image { asset->, hotspot, crop, alt },
+      linkUrl,
+      linkLabel,
+      accentColor,
+      displayOrder
+    }
+  `, { pageType, pageId }, fetchOpts)
+}

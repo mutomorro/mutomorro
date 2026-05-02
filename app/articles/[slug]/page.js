@@ -8,6 +8,7 @@ import CTA from '../../../components/CTA'
 import { urlFor } from '../../../sanity/image'
 import NewsletterSignup from '../../../components/NewsletterSignup'
 import BackgroundPattern from '../../../components/animations/BackgroundPattern'
+import PageCallouts from '../../../components/PageCallouts'
 
 export const revalidate = 3600
 
@@ -222,6 +223,8 @@ export default async function ArticlePage({ params }) {
           )}
         </div>
       </section>
+
+      <PageCallouts pageType="articles" pageId={article._id} />
 
       <CTA />
 

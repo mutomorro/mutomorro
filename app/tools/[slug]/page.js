@@ -8,6 +8,7 @@ import ToolFloatingBar from '../../../components/ToolFloatingBar'
 import Link from 'next/link'
 import { urlFor } from '../../../sanity/image'
 import RelatedContent from '../../../components/RelatedContent'
+import PageCallouts from '../../../components/PageCallouts'
 
 export const revalidate = 3600
 
@@ -221,6 +222,8 @@ export default async function ToolPage({ params }) {
           />
         </div>
       </section>
+
+      <PageCallouts pageType="tools" pageId={tool._id} />
 
       {/* Practitioner Insight */}
       {tool.practitionerInsight && (

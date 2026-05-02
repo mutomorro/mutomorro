@@ -8,6 +8,7 @@ import CTA from '../../../components/CTA'
 import { urlFor } from '../../../sanity/image'
 import BackgroundPattern from '../../../components/animations/BackgroundPattern'
 import RelatedContent from '../../../components/RelatedContent'
+import PageCallouts from '../../../components/PageCallouts'
 
 export const revalidate = 3600
 
@@ -173,6 +174,8 @@ export default async function CoursePage({ params }) {
           />
         </div>
       </section>
+
+      <PageCallouts pageType="courses" pageId={course._id} />
 
       <CTA
         label="Interested in this course?"

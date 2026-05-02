@@ -12,6 +12,7 @@ import RecognitionRow from '../../../components/RecognitionRow'
 import LogoStrip from '../../../components/LogoStrip'
 import BackgroundPattern from '@/components/animations/BackgroundPattern'
 import Lightbox from '../../../components/Lightbox'
+import PageCallouts from '../../../components/PageCallouts'
 
 export const revalidate = 3600
 
@@ -786,6 +787,11 @@ export default async function ServicePage({ params }) {
       </section>
 
 
+
+      {/* ==========================================
+          PAGE CALLOUTS (content-managed)
+          ========================================== */}
+      <PageCallouts pageType="services" pageId={service._id} />
 
       {/* ==========================================
           RELATED DIMENSIONS

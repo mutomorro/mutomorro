@@ -2180,6 +2180,44 @@ a:hover {
 }
 
 /* ================================================
+   PAGE CALLOUT (reusable promo band, content-managed)
+   ================================================ */
+
+.page-callout__grid {
+  display: block;
+}
+
+.page-callout__grid--with-image {
+  display: grid;
+  grid-template-columns: 1fr 480px;
+  gap: 48px;
+  align-items: center;
+}
+
+.page-callout__image {
+  display: block;
+}
+
+.page-callout__heading {
+  /* Heading sized like a card heading (one step below H2) */
+}
+
+.page-callout__body p:last-child {
+  margin-bottom: 0;
+}
+
+@media (max-width: 900px) {
+  .page-callout__grid--with-image {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+  /* Image stacks above text on mobile */
+  .page-callout__image {
+    order: -1;
+  }
+}
+
+/* ================================================
    TOOL FORM GRID (two-column: image + form)
    ================================================ */
 

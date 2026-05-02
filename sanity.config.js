@@ -13,6 +13,7 @@ import capabilityService from './sanity/schemas/capabilityService'
 import serviceSubPage from './sanity/schemas/serviceSubPage'
 import resource from './sanity/schemas/resource'
 import sectorLandingPage from './sanity/schemas/sectorLandingPage'
+import pageCallout from './sanity/schemas/pageCallout'
 
 export default defineConfig({
   name: 'mutomorro',
@@ -22,6 +23,6 @@ export default defineConfig({
   dataset: 'production',
   plugins: [structureTool(), media()],
   schema: {
-    types: [project, tool, dimension, dimensionArticle, article, course, service, serviceSubPage, frameworkOverview, capabilityService, resource, sectorLandingPage],
+    types: [project, tool, dimension, dimensionArticle, article, course, service, serviceSubPage, frameworkOverview, capabilityService, resource, sectorLandingPage, pageCallout],
   },
 })

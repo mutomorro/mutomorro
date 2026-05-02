@@ -14,6 +14,7 @@ export const metadata = {
     title: 'Mutomorro - We help leaders redesign how their organisations work',
     description: 'Organisational design, development and strategic change. We work across purpose, strategy, structure, culture, and capability to help organisations work better.',
     type: 'website',
+    images: [{ url: '/og-default.png', width: 1200, height: 630 }],
   },
 }
 import LogoStrip from '../components/LogoStrip'

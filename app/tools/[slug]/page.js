@@ -9,6 +9,7 @@ import Link from 'next/link'
 import { urlFor } from '../../../sanity/image'
 import RelatedContent from '../../../components/RelatedContent'
 import PageCallouts from '../../../components/PageCallouts'
+import CalloutTeaser from '../../../components/CalloutTeaser'
 
 export const revalidate = 3600
 
@@ -22,6 +23,7 @@ export async function generateMetadata({ params }) {
   const tool = await client.fetch(
     `*[_type == "tool" && slug.current == $slug][0]{
       title, seoTitle, seoDescription, shortSummary,
+      _createdAt, _updatedAt,
       "heroImageUrl": heroImage.asset->url
     }`,
     { slug }
@@ -38,7 +40,10 @@ export async function generateMetadata({ params }) {
     openGraph: {
       title,
       description,
+      url: `https://mutomorro.com/tools/${slug}`,
       type: 'article',
+      publishedTime: tool._createdAt,
+      modifiedTime: tool._updatedAt,
       images: [{
         url: tool.heroImageUrl || '/og-default.png',
         width: 1200,
@@ -176,6 +181,8 @@ export default async function ToolPage({ params }) {
           )}
         </div>
       </section>
+
+      <CalloutTeaser pageType="tools" pageId={tool._id} />
 
       {/* Body */}
       <section className="section--full section-padding" style={{ background: 'var(--white)' }}>

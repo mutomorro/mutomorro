@@ -38,6 +38,7 @@ export async function generateMetadata({ params }) {
     openGraph: {
       title,
       description,
+      url: `https://mutomorro.com/courses/${slug}`,
       type: 'article',
       ...(course.heroImageUrl && {
         images: [{ url: course.heroImageUrl, width: 1200, height: 630 }],

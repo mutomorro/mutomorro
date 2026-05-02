@@ -352,6 +352,7 @@ const nextConfig = {
       { source: '/articles/addressing-change-fatigue', destination: '/articles/change-fatigue-in-the-workplace', permanent: true },
       { source: '/articles/change-management-to-change-leadership', destination: '/articles/change-management-vs-change-leadership', permanent: true },
       { source: '/articles/writing-a-mission-statement', destination: '/articles/how-to-write-a-mission-statement', permanent: true },
+      { source: '/articles/governance-the-enables-innovation', destination: '/articles/governance-that-enables-innovation', permanent: true },
 
 
       // =========================================================

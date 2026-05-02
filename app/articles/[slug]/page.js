@@ -9,6 +9,7 @@ import { urlFor } from '../../../sanity/image'
 import NewsletterSignup from '../../../components/NewsletterSignup'
 import BackgroundPattern from '../../../components/animations/BackgroundPattern'
 import PageCallouts from '../../../components/PageCallouts'
+import CalloutTeaser from '../../../components/CalloutTeaser'
 
 export const revalidate = 3600
 
@@ -22,6 +23,7 @@ export async function generateMetadata({ params }) {
   const article = await client.fetch(
     `*[_type == "article" && slug.current == $slug][0]{
       title, subtitle, seoTitle, seoDescription, shortSummary,
+      _createdAt, _updatedAt,
       "heroImageUrl": heroImage.asset->url
     }`,
     { slug }
@@ -38,7 +40,10 @@ export async function generateMetadata({ params }) {
     openGraph: {
       title,
       description,
+      url: `https://mutomorro.com/articles/${slug}`,
       type: 'article',
+      publishedTime: article._createdAt,
+      modifiedTime: article._updatedAt,
       ...(article.heroImageUrl && {
         images: [{ url: article.heroImageUrl, width: 1200, height: 630 }],
       }),
@@ -156,6 +161,8 @@ export default async function ArticlePage({ params }) {
           </div>
         </section>
       </BackgroundPattern>
+
+      <CalloutTeaser pageType="articles" pageId={article._id} />
 
       {/* Body */}
       <section className="section--full section-padding" style={{ background: 'var(--white)' }}>

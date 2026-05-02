@@ -2183,6 +2183,45 @@ a:hover {
    PAGE CALLOUT (reusable promo band, content-managed)
    ================================================ */
 
+.page-callout {
+  scroll-margin-top: 24px;
+}
+
+.callout-teaser {
+  padding: 16px 20px;
+}
+
+.callout-teaser__inner {
+  max-width: 1350px;
+  margin: 0 auto;
+}
+
+.callout-teaser__text {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: var(--dark, #221C2B);
+}
+
+.callout-teaser__link {
+  text-decoration: none;
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 100% 1px;
+  transition: background-size 0.2s;
+  white-space: nowrap;
+}
+
+.callout-teaser__link:hover {
+  background-size: 100% 1.5px;
+}
+
+@media (min-width: 768px) {
+  .callout-teaser {
+    padding: 16px 48px;
+  }
+}
+
 .page-callout__grid {
   display: block;
 }

@@ -71,7 +71,7 @@ export default async function ToolPage({ params }) {
       name: 'Mutomorro',
       url: 'https://mutomorro.com',
     },
-    url: `https://mutomorro.com/tools/${tool.slug.current}/`,
+    url: `https://mutomorro.com/tools/${tool.slug.current}`,
     ...(heroImageUrl && { image: heroImageUrl }),
   }
 
@@ -83,19 +83,19 @@ export default async function ToolPage({ params }) {
         '@type': 'ListItem',
         position: 1,
         name: 'Tools',
-        item: 'https://mutomorro.com/tools/',
+        item: 'https://mutomorro.com/tools',
       },
       ...(tool.category ? [{
         '@type': 'ListItem',
         position: 2,
         name: tool.category,
-        item: 'https://mutomorro.com/tools/',
+        item: 'https://mutomorro.com/tools',
       }] : []),
       {
         '@type': 'ListItem',
         position: tool.category ? 3 : 2,
         name: tool.title,
-        item: `https://mutomorro.com/tools/${tool.slug.current}/`,
+        item: `https://mutomorro.com/tools/${tool.slug.current}`,
       },
     ],
   }
@@ -253,7 +253,7 @@ export default async function ToolPage({ params }) {
               </p>
               {tool.insightServiceSlug && (
                 <p style={{ fontSize: '14px', marginTop: '8px', marginBottom: '0' }}>
-                  <a href={`/services/${tool.insightServiceSlug}/`} className="inline-link">
+                  <a href={`/services/${tool.insightServiceSlug}`} className="inline-link">
                     See how we work with this →
                   </a>
                 </p>

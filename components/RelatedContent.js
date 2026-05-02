@@ -4,7 +4,7 @@ import { urlFor } from '../sanity/image'
 
 function ContentCard({ item, basePath, actionLabel }) {
   return (
-    <Link href={`/${basePath}/${item.slug.current}/`} className="card-a">
+    <Link href={`/${basePath}/${item.slug.current}`} className="card-a">
       <div className="card-a__corner" />
 
       {item.heroImage && (

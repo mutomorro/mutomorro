@@ -11,10 +11,16 @@ export async function GET(request) {
   const rid = searchParams.get('rid')
   const url = searchParams.get('url')
 
-  // If there's a URL, this is a click - validate it first
+  // If there's a URL, this is a click - validate it first.
+  // Strict hostname check: prevents open redirect via "https://mutomorro.com.attacker.tld/...".
   if (url) {
-    // Only allow redirects to mutomorro.com (prevent open redirect)
-    if (!url.startsWith('https://mutomorro.com')) {
+    let parsed
+    try {
+      parsed = new URL(url)
+    } catch {
+      return Response.redirect('https://mutomorro.com', 302)
+    }
+    if (parsed.hostname !== 'mutomorro.com' || (parsed.protocol !== 'https:' && parsed.protocol !== 'http:')) {
       return Response.redirect('https://mutomorro.com', 302)
     }
   }

@@ -16,12 +16,25 @@ import {
 
 const fontFamily = "'Source Sans 3', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif"
 
+function isMutomorroUrl(url) {
+  if (typeof url !== 'string') return false
+  try {
+    return new URL(url).hostname === 'mutomorro.com'
+  } catch {
+    return false
+  }
+}
+
 function wrapLinks(html, recipientId) {
   if (!recipientId || !html) return html
-  // Wrap href="https://mutomorro.com..." links with tracking redirect
+  // Wrap mutomorro.com hrefs with the tracking redirect. Hostname is checked
+  // strictly so "https://mutomorro.com.attacker.tld" does NOT get wrapped.
   return html.replace(
-    /href="(https:\/\/mutomorro\.com[^"]*)"/g,
-    (match, url) => `href="https://mutomorro.com/api/newsletter/track?rid=${recipientId}&url=${encodeURIComponent(url)}"`
+    /href="(https?:\/\/[^"]*)"/g,
+    (match, url) => {
+      if (!isMutomorroUrl(url)) return match
+      return `href="https://mutomorro.com/api/newsletter/track?rid=${recipientId}&url=${encodeURIComponent(url)}"`
+    }
   )
 }
 
@@ -158,7 +171,7 @@ function RenderSection({ section, index, recipientId }) {
             </Text>
           )}
           <a
-            href={recipientId && section.buttonUrl?.startsWith('https://mutomorro.com')
+            href={recipientId && isMutomorroUrl(section.buttonUrl)
               ? `https://mutomorro.com/api/newsletter/track?rid=${recipientId}&url=${encodeURIComponent(section.buttonUrl)}`
               : section.buttonUrl}
             style={{

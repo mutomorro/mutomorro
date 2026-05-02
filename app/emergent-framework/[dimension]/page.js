@@ -69,7 +69,7 @@ export default async function DimensionPage({ params }) {
   }
 
   return (
-    <main style={{ '--active-dim': dimColour }}>
+    <main className="page-emergent" style={{ '--active-dim': dimColour }}>
 
       {/* Hero - light background with coloured left stripe */}
       <div className="ew-dim-hero">

@@ -126,7 +126,7 @@ export default async function CaseStudy({ params }) {
   }
 
   return (
-    <main>
+    <main className="page-project">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

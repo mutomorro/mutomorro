@@ -50,7 +50,7 @@ export default async function DimensionArticlePage({ params }) {
   const nextArticle = currentIndex < allArticles.length - 1 ? allArticles[currentIndex + 1] : null
 
   return (
-    <main style={{ '--active-dim': dimColour }}>
+    <main className="page-emergent" style={{ '--active-dim': dimColour }}>
 
       {/* Hero - light background with coloured left stripe */}
       <div className="ew-dim-hero">

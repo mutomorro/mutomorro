@@ -58,7 +58,7 @@ export default async function SectorLandingPage({ params }) {
   if (!page) notFound()
 
   return (
-    <>
+    <div className="page-sector">
       {/* ==========================================
           SECTION 1 - HERO (dark)
           ========================================== */}
@@ -309,6 +309,6 @@ export default async function SectorLandingPage({ params }) {
         {...(page.ctaButtonLabel && { buttonText: page.ctaButtonLabel })}
         {...(page.ctaButtonUrl && { buttonLink: page.ctaButtonUrl })}
       />
-    </>
+    </div>
   )
 }

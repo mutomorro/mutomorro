@@ -54,7 +54,7 @@ export default async function ResourcePage({ params }) {
   const hasRelated = resource.relatedServices?.length || resource.relatedTools?.length || resource.relatedArticles?.length
 
   return (
-    <main>
+    <main className="page-resource">
       {/* Dark header with title, preview image, and form */}
       <section className="section--full dark-bg section-padding">
         <div style={{ maxWidth: '1350px', margin: '0 auto' }}>

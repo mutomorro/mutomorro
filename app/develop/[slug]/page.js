@@ -89,7 +89,7 @@ export default async function CapabilityServicePage({ params }) {
   if (service.takeawayItems?.length > 0) navItems.push('What you take away')
 
   return (
-    <main>
+    <main className="page-develop">
 
       {/* ==========================================
           HERO (dark)

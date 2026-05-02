@@ -2376,17 +2376,35 @@ a:hover {
   background: linear-gradient(90deg, #9B51E0, #FF4279);
 }
 
-/* --- Articles: Diamond Markers --- */
-.page-article .portable-text ul {
+/* --- Editorial pages: Diamond Markers ---
+   Articles, projects (case studies), sectors, develop, resources,
+   emergent-framework dimension/article. Tailwind preflight strips
+   list-style from <ul>, so each editorial page wrapper opts in here. */
+.page-article .portable-text ul,
+.page-project .portable-text ul,
+.page-sector .portable-text ul,
+.page-develop .portable-text ul,
+.page-resource .portable-text ul,
+.page-emergent .portable-text ul {
   list-style: none;
   padding-left: 0;
 }
-.page-article .portable-text ul li {
+.page-article .portable-text ul li,
+.page-project .portable-text ul li,
+.page-sector .portable-text ul li,
+.page-develop .portable-text ul li,
+.page-resource .portable-text ul li,
+.page-emergent .portable-text ul li {
   padding-left: 28px;
   position: relative;
   margin-bottom: 14px;
 }
-.page-article .portable-text ul li::before {
+.page-article .portable-text ul li::before,
+.page-project .portable-text ul li::before,
+.page-sector .portable-text ul li::before,
+.page-develop .portable-text ul li::before,
+.page-resource .portable-text ul li::before,
+.page-emergent .portable-text ul li::before {
   content: '';
   position: absolute;
   left: 4px;
@@ -2397,9 +2415,33 @@ a:hover {
   transform: rotate(45deg);
 }
 
-/* Articles on dark backgrounds */
-.page-article .dark-bg .portable-text ul li::before {
+/* Editorial pages on dark backgrounds */
+.page-article .dark-bg .portable-text ul li::before,
+.page-project .dark-bg .portable-text ul li::before,
+.page-sector .dark-bg .portable-text ul li::before,
+.page-develop .dark-bg .portable-text ul li::before,
+.page-resource .dark-bg .portable-text ul li::before,
+.page-emergent .dark-bg .portable-text ul li::before {
   background: #FFA200;
+}
+
+/* Editorial pages: ordered lists keep numeric markers */
+.page-article .portable-text ol,
+.page-project .portable-text ol,
+.page-sector .portable-text ol,
+.page-develop .portable-text ol,
+.page-resource .portable-text ol,
+.page-emergent .portable-text ol {
+  padding-left: 1.5rem;
+  margin: 0 0 1.25rem 0;
+}
+.page-article .portable-text ol li,
+.page-project .portable-text ol li,
+.page-sector .portable-text ol li,
+.page-develop .portable-text ol li,
+.page-resource .portable-text ol li,
+.page-emergent .portable-text ol li {
+  margin-bottom: 0.5rem;
 }
 
 /* --- Service Sub-Pages: Gradient Dash --- */

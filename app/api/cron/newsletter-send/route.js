@@ -21,26 +21,15 @@ import { fetchAllPaginated } from '../../../../lib/supabase-paginate.js'
 
 export const maxDuration = 800
 
-// TODO: Future - read current issue from newsletter_config or newsletter_sends table.
-// For now, hardcoded to Issue 1: "The space between the lines"
-const ISSUE_1_CONTENT = {
-  issueKey: 'warmup-v1',
-  subject: 'The space between the lines',
-  title: 'Exploring the space between the lines',
-  previewText: "We've been fascinated by a single idea for years, because we see it everywhere",
-  date: 'March 2026',
-  leadText: '',
-  signoff: '',
-  sections: [
-    { type: 'paragraph', text: 'We\'ve been fascinated by a single idea for years, because we see it everywhere. So much so, we\'ve chosen to <a href="https://mutomorro.com">build everything we do at Mutomorro around it</a> - it\'s that the things that matter most in an organisation are happening in the space between what you can see.' },
-    { type: 'paragraph', text: 'That sounds like a philosophy. But it keeps playing out in practice.' },
-    { type: 'paragraph', text: 'Leaders come to us with a problem in one place - a strategy that won\'t land, a team that\'s stuck, a culture that doesn\'t match the intent. And almost every time, the most useful answer turns out to be somewhere else entirely. Not in what looks broken, but in the connections around it.' },
-    { type: 'paragraph', text: 'When a strategy doesn\'t land, the answer is rarely in the strategy. It\'s in the relationship between the strategy and how decisions actually get made. When culture feels off, it\'s not usually the values - it\'s what the structure rewards. When a change programme stalls, it\'s often the conditions people are operating in, not the people.' },
-    { type: 'paragraph', text: 'Once you start seeing these connections, you can\'t unsee them. A team that looks like it has a performance problem starts to look like a team surrounded by contradictory signals. An initiative that keeps stalling stops looking like poor execution and starts looking like a system resisting something it wasn\'t designed for.' },
-    { type: 'paragraph', text: 'The leaders we work with are seeing this too - already noticing the patterns, already sensing that the real story is somewhere between the things they can measure. Often what\'s missing isn\'t the insight. It\'s the language and the room to act on what they already know.' },
-    { type: 'paragraph', text: 'That shared fascination is what <a href="https://mutomorro.com">mutomorro.com</a> is now built around. Have a look - we\'d love to know what you think.' },
-  ],
-}
+// Newsletter content is loaded dynamically from `newsletter_sends.content_json`,
+// keyed on `newsletter_config.current_issue_key`. To re-enable the cron:
+//   1. Ensure newsletter_config has a `current_issue_key` column (text).
+//   2. Create or pick a complete newsletter_sends row whose issue_key matches.
+//      Its content_json (subject, sections, etc.) is the source of truth.
+//   3. Set newsletter_config.current_issue_key to that key.
+//   4. Set newsletter_config.enabled = true.
+// If current_issue_key is missing or no matching send row exists, the cron
+// pauses itself rather than guessing at content.
 
 const BLOCKED_STATUSES = new Set(['invalid', 'spamtrap', 'abuse', 'do_not_mail'])
 const STALE_DAYS = 30
@@ -61,6 +50,66 @@ function generateUnsubscribeUrl(email) {
     .update(email)
     .digest('hex')
   return `https://mutomorro.com/api/unsubscribe?email=${encodeURIComponent(email)}&token=${token}`
+}
+
+// Resolve which issue this cron run should send and load its content from
+// `newsletter_sends.content_json`. The current issue key is read from
+// `newsletter_config.current_issue_key`. Returns either:
+//   { ok: true,  content: {issueKey, subject, title, previewText, date, leadText, signoff, sections} }
+//   { ok: false, reason: string }
+async function loadIssueContent(supabase, config) {
+  const issueKey = config.current_issue_key
+  if (!issueKey) {
+    return {
+      ok: false,
+      reason:
+        'newsletter_config.current_issue_key is not set. The cron has no content to send. ' +
+        'Set current_issue_key to an existing newsletter_sends.issue_key (status=complete) before re-enabling.',
+    }
+  }
+
+  const { data: source, error } = await supabase
+    .from('newsletter_sends')
+    .select('content_json, issue_key')
+    .eq('issue_key', issueKey)
+    .eq('status', 'complete')
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .maybeSingle()
+
+  if (error) {
+    return { ok: false, reason: `Failed to load issue content: ${error.message}` }
+  }
+  if (!source?.content_json) {
+    return {
+      ok: false,
+      reason: `No complete newsletter_sends row found for issue_key='${issueKey}'. Create the source send row before re-enabling.`,
+    }
+  }
+
+  const cj = source.content_json
+  const required = ['subject', 'sections']
+  const missing = required.filter(k => cj[k] === undefined || cj[k] === null || (k === 'sections' && (!Array.isArray(cj.sections) || cj.sections.length === 0)))
+  if (missing.length > 0) {
+    return {
+      ok: false,
+      reason: `newsletter_sends.content_json for issue_key='${issueKey}' is missing required fields: ${missing.join(', ')}`,
+    }
+  }
+
+  return {
+    ok: true,
+    content: {
+      issueKey,
+      subject: cj.subject,
+      title: cj.title || '',
+      previewText: cj.previewText || '',
+      date: cj.date || '',
+      leadText: cj.leadText || '',
+      signoff: cj.signoff || '',
+      sections: cj.sections,
+    },
+  }
 }
 
 function isExcludedDomain(email) {
@@ -138,6 +187,30 @@ export async function GET(request) {
       await sendSummary(resend, config, { type: 'skipped', skipReason: 'Already sent today', date: formatDate(new Date()) })
       return Response.json({ skipped: true, reason: 'Already sent today' })
     }
+
+    // 2b. Load issue content from the database (no hardcoded body).
+    const issueContent = await loadIssueContent(supabase, config)
+    if (!issueContent.ok) {
+      console.error(`Newsletter cron: ${issueContent.reason}`)
+      await supabase
+        .from('newsletter_config')
+        .update({
+          enabled: false,
+          paused_reason: issueContent.reason,
+          paused_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', config.id)
+      await sendSummary(resend, config, {
+        type: 'alert',
+        alertBounceRate: 'N/A',
+        alertThreshold: 'N/A',
+        date: formatDate(new Date()),
+        alertMessage: issueContent.reason,
+      })
+      return Response.json({ paused: true, reason: issueContent.reason })
+    }
+    const ISSUE_CONTENT = issueContent.content
 
     // 3. Circuit breaker - check aggregate bounce rate across the most recent send date
     // Uses all batches from the last day that had sends, not just the single most recent batch.
@@ -225,7 +298,7 @@ export async function GET(request) {
     const { data: matchingSends } = await supabase
       .from('newsletter_sends')
       .select('id')
-      .eq('issue_key', ISSUE_1_CONTENT.issueKey)
+      .eq('issue_key', ISSUE_CONTENT.issueKey)
       .range(0, 9999)
 
     const matchingSendIds = (matchingSends || []).map(s => s.id)
@@ -351,7 +424,7 @@ export async function GET(request) {
 
       if (overlap && overlap.length > 0) {
         const overlapCount = new Set(overlap.map(r => r.contact_id)).size
-        const reason = `Dedup assertion failed: ${overlapCount} selected recipient(s) already received issue '${ISSUE_1_CONTENT.issueKey}'. Selection query may be broken - cron paused.`
+        const reason = `Dedup assertion failed: ${overlapCount} selected recipient(s) already received issue '${ISSUE_CONTENT.issueKey}'. Selection query may be broken - cron paused.`
         console.error(`Newsletter cron: ${reason}`)
 
         await supabase
@@ -377,7 +450,7 @@ export async function GET(request) {
     }
 
     // 6. Send
-    const { subject, title, previewText, date, leadText, sections, signoff, issueKey } = ISSUE_1_CONTENT
+    const { subject, title, previewText, date, leadText, sections, signoff, issueKey } = ISSUE_CONTENT
 
     // Render view-in-browser HTML
     const viewInBrowserHtml = await render(
@@ -395,7 +468,7 @@ export async function GET(request) {
         subject,
         issue_key: issueKey,
         preview_text: previewText,
-        content_json: ISSUE_1_CONTENT,
+        content_json: ISSUE_CONTENT,
         html_body: viewInBrowserHtml,
         status: 'sending',
         total_recipients: verified.length,

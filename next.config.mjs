@@ -599,7 +599,6 @@ const nextConfig = {
 
       // Old systems thinking page
       { source: '/systems-thinking', destination: '/emergent-framework', permanent: true },
-      { source: '/systems-thinking/', destination: '/emergent-framework', permanent: true },
 
 
       // -------------------------------------------
@@ -659,13 +658,10 @@ const nextConfig = {
 
       // Old service-areas deep paths (WordPress structure)
       { source: '/service-areas/culture-change/organisational-culture-discovery', destination: '/services/culture-change-consultancy', permanent: true },
-      { source: '/service-areas/culture-change/organisational-culture-discovery/', destination: '/services/culture-change-consultancy', permanent: true },
       { source: '/service-areas/culture-change/culture-change-programmes', destination: '/services/culture-change-consultancy/culture-change-programmes', permanent: true },
-      { source: '/service-areas/culture-change/culture-change-programmes/', destination: '/services/culture-change-consultancy/culture-change-programmes', permanent: true },
 
       // Old section paths
       { source: '/continuous-improvement-consultancy', destination: '/services/operational-effectiveness-consultancy', permanent: true },
-      { source: '/continuous-improvement-consultancy/', destination: '/services/operational-effectiveness-consultancy', permanent: true },
       { source: '/build-capacity', destination: '/services/organisational-capacity-building', permanent: true },
       { source: '/develop/leadership-programme', destination: '/develop', permanent: true },
       { source: '/ideation/transformation-story-lab', destination: '/services', permanent: true },
@@ -689,44 +685,29 @@ const nextConfig = {
 
       // Old course URLs
       { source: '/courses/tools-for-change', destination: '/courses', permanent: true },
-      { source: '/courses/tools-for-change/', destination: '/courses', permanent: true },
       { source: '/courses/continuous-improvement-for-teams', destination: '/courses/continuous-improvement-training', permanent: true },
-      { source: '/courses/continuous-improvement-for-teams/', destination: '/courses/continuous-improvement-training', permanent: true },
 
       // Old project URLs at root level (missing /projects/ prefix)
       { source: '/customer-focused-culture-change-in-housing', destination: '/projects/housing-association-merger-integration', permanent: true },
-      { source: '/customer-focused-culture-change-in-housing/', destination: '/projects/housing-association-merger-integration', permanent: true },
       { source: '/improving-culture-and-service-in-housing', destination: '/sectors/housing', permanent: true },
-      { source: '/improving-culture-and-service-in-housing/', destination: '/sectors/housing', permanent: true },
 
       // Old WordPress pages
       { source: '/pre-built-templates', destination: '/tools', permanent: true },
-      { source: '/pre-built-templates/', destination: '/tools', permanent: true },
       { source: '/privacy-policy', destination: '/privacy', permanent: true },
-      { source: '/privacy-policy/', destination: '/privacy', permanent: true },
       { source: '/stages-of-change', destination: '/tools/change-curve', permanent: true },
-      { source: '/stages-of-change/', destination: '/tools/change-curve', permanent: true },
       { source: '/case-studies', destination: '/projects', permanent: true },
-      { source: '/case-studies/', destination: '/projects', permanent: true },
 
       // Old service structure URLs
       { source: '/services/tools-playbooks', destination: '/tools', permanent: true },
-      { source: '/services/tools-playbooks/', destination: '/tools', permanent: true },
       { source: '/services/innovation-ideation', destination: '/services', permanent: true },
-      { source: '/services/innovation-ideation/', destination: '/services', permanent: true },
-      { source: '/customer-experience/', destination: '/services/customer-experience-consultancy', permanent: true },
 
       // Old service-areas deep paths
       { source: '/service-areas/culture-change/target-culture', destination: '/services/culture-change-consultancy', permanent: true },
-      { source: '/service-areas/culture-change/target-culture/', destination: '/services/culture-change-consultancy', permanent: true },
       { source: '/service-areas/change-management/change-management', destination: '/services/change-management-consultancy', permanent: true },
-      { source: '/service-areas/change-management/change-management/', destination: '/services/change-management-consultancy', permanent: true },
       { source: '/areas/change-management-consultancy/change-management', destination: '/services/change-management-consultancy', permanent: true },
-      { source: '/areas/change-management-consultancy/change-management/', destination: '/services/change-management-consultancy', permanent: true },
 
       // Common misspelling / shorthand
       { source: '/kotter-8-step-change-model', destination: '/tools/kotters-8-step-change-model', permanent: true },
-      { source: '/kotter-8-step-change-model/', destination: '/tools/kotters-8-step-change-model', permanent: true },
 
 
       // =========================================================
@@ -767,27 +748,22 @@ const nextConfig = {
 
       // Broken tool slug variant (confirmed 404 hit)
       { source: '/tools/google-project-oxygen', destination: '/tools/project-oxygen', permanent: true },
-      { source: '/tools/google-project-oxygen/', destination: '/tools/project-oxygen', permanent: true },
 
       // Trailing-period Kotter URL from SharePoint referrer (confirmed 404 hit, 30 Apr 2026)
       { source: '/tools/kotters-8-step-change-model.', destination: '/tools/kotters-8-step-change-model', permanent: true },
 
       // Proactive redirect for plausible Mendelow variant
       { source: '/tools/mendelows-stakeholder-matrix', destination: '/tools/mendelow-power-interest-matrix', permanent: true },
-      { source: '/tools/mendelows-stakeholder-matrix/', destination: '/tools/mendelow-power-interest-matrix', permanent: true },
 
       // Old WordPress embed URL hitting from Google
       { source: '/tools/adkar-model/embed', destination: '/tools/adkar-model', permanent: true },
 
       // Old WordPress navigation paths
       { source: '/service-areas', destination: '/services', permanent: true },
-      { source: '/service-areas/', destination: '/services', permanent: true },
 
       // Old about page variants
       { source: '/story', destination: '/about', permanent: true },
-      { source: '/story/', destination: '/about', permanent: true },
       { source: '/author/james', destination: '/about', permanent: true },
-      { source: '/author/james/', destination: '/about', permanent: true },
 
 
       // =========================================================

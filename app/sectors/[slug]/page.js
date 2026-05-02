@@ -37,6 +37,11 @@ export async function generateMetadata({ params }) {
       title,
       description,
       type: 'website',
+      images: [{
+        url: page.seoImageUrl || '/og-default.png',
+        width: 1200,
+        height: 630,
+      }],
     },
   }
 }

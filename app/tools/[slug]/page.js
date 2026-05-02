@@ -19,7 +19,13 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }) {
   const { slug } = await params
-  const tool = await getTool(slug)
+  const tool = await client.fetch(
+    `*[_type == "tool" && slug.current == $slug][0]{
+      title, seoTitle, seoDescription, shortSummary,
+      "heroImageUrl": heroImage.asset->url
+    }`,
+    { slug }
+  )
   if (!tool) return {}
 
   const rawTitle = tool.seoTitle || tool.title
@@ -33,6 +39,11 @@ export async function generateMetadata({ params }) {
       title,
       description,
       type: 'article',
+      images: [{
+        url: tool.heroImageUrl || '/og-default.png',
+        width: 1200,
+        height: 630,
+      }],
     },
   }
 }

@@ -50,7 +50,13 @@ function MidPageCta({ text, buttonLabel, serviceTitle }) {
 
 export async function generateMetadata({ params }) {
   const { slug } = await params
-  const service = await getService(slug)
+  const service = await client.fetch(
+    `*[_type == "service" && slug.current == $slug][0]{
+      title, heroHeading, seoTitle, seoDescription, heroTagline,
+      "ogImageUrl": propositionImage.asset->url
+    }`,
+    { slug }
+  )
   if (!service) return {}
 
   const rawTitle = service.seoTitle || service.heroHeading
@@ -64,6 +70,11 @@ export async function generateMetadata({ params }) {
       title,
       description,
       type: 'article',
+      images: [{
+        url: service.ogImageUrl || '/og-default.png',
+        width: 1200,
+        height: 630,
+      }],
     },
   }
 }

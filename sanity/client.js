@@ -542,6 +542,7 @@ export async function getSectorLandingPage(slug) {
   return client.fetch(`
     *[_type == "sectorLandingPage" && slug.current == $slug][0] {
       ...,
+      "seoImageUrl": seoImage.asset->url,
       featuredServices[] {
         sectorAngle,
         serviceRef-> {

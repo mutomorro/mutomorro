@@ -135,6 +135,15 @@ export default {
       group: 'core',
     },
     {
+      name: 'theme',
+      title: 'Theme',
+      type: 'reference',
+      group: 'core',
+      to: [{ type: 'theme' }],
+      description: 'Primary theme - which service area does this case study relate to?',
+      validation: (rule) => rule.required(),
+    },
+    {
       name: 'relatedServices',
       title: 'Related services',
       type: 'array',

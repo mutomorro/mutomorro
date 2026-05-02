@@ -55,6 +55,15 @@ export default {
 
     // ── Taxonomy ──
     {
+      name: 'theme',
+      title: 'Theme',
+      type: 'reference',
+      group: 'taxonomy',
+      to: [{ type: 'theme' }],
+      description: 'Primary theme - which service area does this tool relate to?',
+      validation: (rule) => rule.required(),
+    },
+    {
       name: 'serviceCategories',
       title: 'Service Categories',
       type: 'array',

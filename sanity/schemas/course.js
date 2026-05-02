@@ -19,6 +19,14 @@ export default defineType({
       validation: Rule => Rule.required(),
     }),
     defineField({
+      name: 'theme',
+      title: 'Theme',
+      type: 'reference',
+      to: [{ type: 'theme' }],
+      description: 'Primary theme - which service area does this course relate to?',
+      validation: (rule) => rule.required(),
+    }),
+    defineField({
       name: 'category',
       title: 'Category',
       type: 'string',

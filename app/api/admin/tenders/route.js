@@ -19,6 +19,7 @@ export async function GET(request) {
   const sector = searchParams.get('sector') || ''
   const source = searchParams.get('source') || ''
   const noticeType = searchParams.get('notice_type') || ''
+  const aiScored = searchParams.get('ai_scored') || ''
   const search = searchParams.get('search') || ''
   const sort = searchParams.get('sort') || 'score'
   const page = parseInt(searchParams.get('page') || '1', 10)
@@ -39,9 +40,14 @@ export async function GET(request) {
       }
     }
     if (status === 'active') {
-      query = query.not('status', 'in', '(cancelled,dismissed,passed)')
+      query = query.in('status', ['new', 'reviewing', 'bidding', 'submitted'])
     } else if (status) {
       query = query.eq('status', status)
+    }
+    if (aiScored === 'scored') {
+      query = query.not('ai_score', 'is', null)
+    } else if (aiScored === 'unscored') {
+      query = query.is('ai_score', null)
     }
     if (sector) query = query.ilike('sector', `%${sector}%`)
     if (source) query = query.eq('source', source)

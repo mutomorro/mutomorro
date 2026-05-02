@@ -58,6 +58,7 @@ export default function AdminTenders() {
   const [sector, setSector] = useState('')
   const [source, setSource] = useState('')
   const [noticeType, setNoticeType] = useState('')
+  const [aiScored, setAiScored] = useState('scored')
   const [sort, setSort] = useState('score')
   const [search, setSearch] = useState('')
   const [selectedId, setSelectedId] = useState(null)
@@ -74,6 +75,7 @@ export default function AdminTenders() {
     if (sector) params.set('sector', sector)
     if (source) params.set('source', source)
     if (noticeType) params.set('notice_type', noticeType)
+    if (aiScored) params.set('ai_scored', aiScored)
     if (search) params.set('search', search)
 
     try {
@@ -85,12 +87,12 @@ export default function AdminTenders() {
     } finally {
       setLoading(false)
     }
-  }, [page, temperature, status, rating, sector, source, noticeType, sort, search])
+  }, [page, temperature, status, rating, sector, source, noticeType, aiScored, sort, search])
 
   useEffect(() => { fetchTenders() }, [fetchTenders])
 
   // Reset page when filters change
-  useEffect(() => { setPage(1) }, [temperature, status, rating, sector, source, noticeType, sort, search])
+  useEffect(() => { setPage(1) }, [temperature, status, rating, sector, source, noticeType, aiScored, sort, search])
 
   async function loadDetail(id) {
     if (selectedId === id) { setSelectedId(null); return }
@@ -159,6 +161,8 @@ export default function AdminTenders() {
           options={[['', 'All'], ['unrated', 'Unrated'], ['yes', 'Yes'], ['maybe', 'Maybe'], ['no', 'No']]} />
         <FilterSelect label="Source" value={source} onChange={v => setSource(v)}
           options={[['', 'All'], ['contracts-finder', 'Contracts Finder'], ['find-a-tender', 'Find a Tender'], ['pcs', 'PCS'], ['google-alerts', 'Google Alerts'], ['watchlist', 'Watchlist']]} />
+        <FilterSelect label="AI" value={aiScored} onChange={v => setAiScored(v)}
+          options={[['scored', 'Scored only'], ['', 'All'], ['unscored', 'Unscored only']]} />
         <FilterSelect label="Sort" value={sort} onChange={v => setSort(v)}
           options={[['score', 'Highest score'], ['newest', 'Newest'], ['deadline', 'Deadline soonest'], ['rated', 'Recently rated']]} />
         <input

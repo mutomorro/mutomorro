@@ -65,6 +65,7 @@ export async function generateMetadata({ params }) {
       title,
       description,
       type: 'article',
+      images: [{ url: '/og-default.png', width: 1200, height: 630 }],
     },
   }
 }

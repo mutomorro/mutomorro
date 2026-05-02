@@ -35,6 +35,7 @@ function Callout({ callout }) {
 
   return (
     <section
+      id={`callout-${callout._id}`}
       className="section--full section-padding page-callout"
       style={{ background: 'var(--warm)' }}
       aria-label={heading || 'Callout'}

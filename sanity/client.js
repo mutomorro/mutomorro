@@ -608,7 +608,9 @@ export async function getPageCallouts(pageType, pageId) {
       linkUrl,
       linkLabel,
       accentColor,
-      displayOrder
+      displayOrder,
+      showTeaser,
+      teaserText
     }
   `, { pageType, pageId }, fetchOpts)
 }

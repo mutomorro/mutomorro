@@ -8,6 +8,7 @@ import { PortableText } from '@portabletext/react'
 import { urlFor } from '../../../sanity/image'
 import Lightbox from '../../../components/Lightbox'
 import PageCallouts from '../../../components/PageCallouts'
+import CalloutTeaser from '../../../components/CalloutTeaser'
 
 export const revalidate = 3600
 
@@ -186,6 +187,8 @@ export default async function CaseStudy({ params }) {
           )}
         </div>
       </section>
+
+      <CalloutTeaser pageType="caseStudies" pageId={project._id} />
 
       {/* Content sections */}
       <section className="section--full section-padding" style={{ background: 'var(--white)' }}>

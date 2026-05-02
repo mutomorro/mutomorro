@@ -207,6 +207,31 @@ export default defineType({
       group: 'settings',
       initialValue: true,
     }),
+
+    defineField({
+      name: 'showTeaser',
+      title: 'Show teaser',
+      type: 'boolean',
+      description: 'When on, a compact teaser banner is rendered near the top of targeted case study, tool, and article pages. The full callout still renders at the bottom as normal.',
+      group: 'settings',
+      initialValue: false,
+    }),
+
+    defineField({
+      name: 'teaserText',
+      title: 'Teaser text',
+      type: 'string',
+      description: 'The one-line text shown in the teaser. Keep it short - one sentence max. Only used when Show teaser is on.',
+      group: 'settings',
+      validation: (rule) =>
+        rule.custom((value, context) => {
+          const parent = context.parent || {}
+          if (parent.showTeaser && !(value && value.trim())) {
+            return "Teaser is enabled but has no text - it won't render without teaser text."
+          }
+          return true
+        }).warning(),
+    }),
   ],
 
   preview: {

@@ -9,6 +9,7 @@ import Link from 'next/link'
 import { urlFor } from '../../../sanity/image'
 import RelatedContent from '../../../components/RelatedContent'
 import PageCallouts from '../../../components/PageCallouts'
+import CalloutTeaser from '../../../components/CalloutTeaser'
 
 export const revalidate = 3600
 
@@ -176,6 +177,8 @@ export default async function ToolPage({ params }) {
           )}
         </div>
       </section>
+
+      <CalloutTeaser pageType="tools" pageId={tool._id} />
 
       {/* Body */}
       <section className="section--full section-padding" style={{ background: 'var(--white)' }}>

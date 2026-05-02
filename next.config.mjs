@@ -224,24 +224,25 @@ const nextConfig = {
       { source: '/dimensions/organisational-knowledge-consultancy', destination: '/emergent-framework/narrative-connections', permanent: true },
       { source: '/dimensions/organisational-knowledge-consultancy/:path*', destination: '/emergent-framework/narrative-connections', permanent: true },
 
-      // Old change-focus taxonomy
-      { source: '/change-focus/culture', destination: '/emergent-framework/enacted-culture', permanent: true },
-      { source: '/change-focus/culture/:path*', destination: '/emergent-framework/enacted-culture', permanent: true },
-      { source: '/change-focus/team', destination: '/emergent-framework/generative-capacity', permanent: true },
-      { source: '/change-focus/team/:path*', destination: '/emergent-framework/generative-capacity', permanent: true },
-      { source: '/change-focus/organisation', destination: '/emergent-framework/momentum-through-work', permanent: true },
-      { source: '/change-focus/organisation/:path*', destination: '/emergent-framework/momentum-through-work', permanent: true },
-      { source: '/change-focus/management', destination: '/emergent-framework/tuned-to-change', permanent: true },
-      { source: '/change-focus/management/:path*', destination: '/emergent-framework/tuned-to-change', permanent: true },
+      // Old change-focus taxonomy → topic hubs (retargeted 2 May 2026)
+      // Direct mappings — break chains that previously routed via /emergent-framework
+      { source: '/change-focus/culture', destination: '/topics/culture-change', permanent: true },
+      { source: '/change-focus/culture/:path*', destination: '/topics/culture-change', permanent: true },
+      { source: '/change-focus/team', destination: '/topics/teams', permanent: true },
+      { source: '/change-focus/team/:path*', destination: '/topics/teams', permanent: true },
+      { source: '/change-focus/organisation', destination: '/topics/operational-effectiveness', permanent: true },
+      { source: '/change-focus/organisation/:path*', destination: '/topics/operational-effectiveness', permanent: true },
+      { source: '/change-focus/management', destination: '/topics/change-management', permanent: true },
+      { source: '/change-focus/management/:path*', destination: '/topics/change-management', permanent: true },
       { source: '/change-focus/individuals', destination: '/services', permanent: true },
       { source: '/change-focus/individuals/:path*', destination: '/services', permanent: true },
       { source: '/change-focus/problem-solving', destination: '/services/operational-effectiveness-consultancy', permanent: true },
       { source: '/change-focus/system-thinking', destination: '/services/organisational-development-consultancy', permanent: true },
       { source: '/change-focus/systems-thinking', destination: '/services/organisational-development-consultancy', permanent: true },
       { source: '/change-focus/process-improvement', destination: '/services/operational-effectiveness-consultancy', permanent: true },
-      // Pagination catch-all (must precede :slug catch-all)
+      // Pagination catch-all (must precede :path* catch-all)
       { source: '/change-focus/:slug/page/:num', destination: '/articles', permanent: true },
-      { source: '/change-focus/:slug', destination: '/services', permanent: true },
+      { source: '/change-focus/:path*', destination: '/topics', permanent: true },
 
 
       // =========================================================
@@ -547,8 +548,15 @@ const nextConfig = {
       // Old taxonomies (catch-alls)
       { source: '/tool-use/:slug', destination: '/tools', permanent: true },
       { source: '/use/:slug', destination: '/tools', permanent: true },
+      // Old topic taxonomy → topic hubs (retargeted 2 May 2026)
+      // Specific slugs first, then pagination, then catch-all
+      { source: '/topic/teamwork/:path*', destination: '/topics/teams', permanent: true },
+      { source: '/topic/problem-solving/:path*', destination: '/topics/change-management', permanent: true },
+      { source: '/topic/lean/:path*', destination: '/topics/operational-effectiveness', permanent: true },
+      { source: '/topic/people-welfare/:path*', destination: '/topics/employee-experience', permanent: true },
+      { source: '/topic/focus/:path*', destination: '/topics', permanent: true },
       { source: '/topic/:slug/page/:num', destination: '/articles', permanent: true },
-      { source: '/topic/:slug', destination: '/articles', permanent: true },
+      { source: '/topic/:path*', destination: '/topics', permanent: true },
       { source: '/sector/:slug', destination: '/projects', permanent: true },
       { source: '/event/:slug', destination: '/courses', permanent: true },
       { source: '/event-type/:slug', destination: '/courses', permanent: true },
@@ -582,14 +590,23 @@ const nextConfig = {
       // 404 LOG CLEANUP - 23 March 2026
       // =========================================================
 
-      // Old taxonomy pagination (operational-effectiveness had paginated pages)
-      { source: '/key-themes/operational-effectiveness/:path*', destination: '/services/operational-effectiveness-consultancy', permanent: true },
+      // Old key-themes taxonomy → topic hubs (retargeted 2 May 2026)
+      // Specific theme slugs first, then pagination, then catch-all
+      { source: '/key-themes/change-fluency/:path*', destination: '/topics/change-management', permanent: true },
+      { source: '/key-themes/cultural-vitality/:path*', destination: '/topics/culture-change', permanent: true },
+      { source: '/key-themes/operational-flow/:path*', destination: '/topics/operational-effectiveness', permanent: true },
+      { source: '/key-themes/collective-capacity/:path*', destination: '/topics/teams', permanent: true },
+      { source: '/key-themes/unifying-purpose/:path*', destination: '/topics/organisational-purpose', permanent: true },
+      { source: '/key-themes/living-strategy/:path*', destination: '/topics/strategic-alignment', permanent: true },
+      { source: '/key-themes/service-innovation/:path*', destination: '/topics/service-design', permanent: true },
+      { source: '/key-themes/narrative-connections/:path*', destination: '/topics', permanent: true },
+      { source: '/key-themes/operational-effectiveness/:path*', destination: '/topics/operational-effectiveness', permanent: true },
 
       // Pagination catch-all (must precede :path* catch-all)
       { source: '/key-themes/:slug/page/:num', destination: '/articles', permanent: true },
 
       // Catch-all for any other key-themes paths that slip through
-      { source: '/key-themes/:path*', destination: '/emergent-framework', permanent: true },
+      { source: '/key-themes/:path*', destination: '/topics', permanent: true },
 
       // Old capability page - specific path before catch-all
       { source: '/developing-leaders/leadership-development-programme', destination: '/develop/deeper-ground', permanent: true },

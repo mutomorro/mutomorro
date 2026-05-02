@@ -121,11 +121,28 @@ export default async function ArticlePage({ params }) {
               {/* Breadcrumb */}
               <div className="breadcrumb">
                 <Link href="/articles" className="breadcrumb__link">Thinking</Link>
-                <span className="breadcrumb__sep">/</span>
-                <span className="breadcrumb__current">{article.category}</span>
+                {article.theme?.title ? (
+                  <>
+                    <span className="breadcrumb__sep">/</span>
+                    <Link href={`/topics/${article.theme.slug}`} className="breadcrumb__link">
+                      {article.theme.title}
+                    </Link>
+                  </>
+                ) : article.category ? (
+                  <>
+                    <span className="breadcrumb__sep">/</span>
+                    <span className="breadcrumb__current">{article.category}</span>
+                  </>
+                ) : null}
               </div>
 
-              <span className="kicker" style={{ marginBottom: '16px' }}>{article.category}</span>
+              {article.theme?.title ? (
+                <Link href={`/topics/${article.theme.slug}`} className="kicker kicker--link" style={{ marginBottom: '16px' }}>
+                  {article.theme.title}
+                </Link>
+              ) : article.category ? (
+                <span className="kicker" style={{ marginBottom: '16px' }}>{article.category}</span>
+              ) : null}
               <h1 className="heading-h1" style={{
                 color: '#ffffff',
                 margin: '0 0 32px',

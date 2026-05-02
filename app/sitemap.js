@@ -18,6 +18,7 @@ export default async function sitemap() {
     { url: `${BASE_URL}/articles`, changeFrequency: 'weekly', priority: 0.7 },
     { url: `${BASE_URL}/courses`, changeFrequency: 'monthly', priority: 0.7 },
     { url: `${BASE_URL}/projects`, changeFrequency: 'monthly', priority: 0.7 },
+    { url: `${BASE_URL}/topics`, changeFrequency: 'weekly', priority: 0.8 },
     { url: `${BASE_URL}/privacy`, changeFrequency: 'yearly', priority: 0.3 },
   ]
 
@@ -25,7 +26,7 @@ export default async function sitemap() {
   // Image URLs (hero + inline body images) are included so they surface
   // as <image:image> tags in the sitemap, speeding up Google's transition
   // away from the old wp-content image URLs.
-  const [services, tools, articles, projects, courses, capabilities, dimensions, dimensionArticles] = await Promise.all([
+  const [services, tools, articles, projects, courses, capabilities, dimensions, dimensionArticles, themes] = await Promise.all([
     client.fetch(`*[_type == "service" && !(_id in path("drafts.**"))]{
       "slug": slug.current,
       _updatedAt,
@@ -72,6 +73,10 @@ export default async function sitemap() {
       "dimensionSlug": dimension->slug.current,
       _updatedAt,
       "bodyImages": body[_type == "image"].asset->url
+    }`),
+    client.fetch(`*[_type == "theme" && !(_id in path("drafts.**")) && slug.current != "scaling-operations"]{
+      "slug": slug.current,
+      _updatedAt
     }`),
   ])
 
@@ -142,6 +147,12 @@ export default async function sitemap() {
       changeFrequency: 'monthly',
       priority: 0.5,
       images: collectImages(da.bodyImages),
+    })),
+    ...themes.map(t => ({
+      url: `${BASE_URL}/topics/${t.slug}`,
+      lastModified: t._updatedAt,
+      changeFrequency: 'weekly',
+      priority: 0.7,
     })),
   ]
 

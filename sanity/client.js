@@ -29,7 +29,10 @@ export async function getAllProjects() {
 
 export async function getProject(slug) {
   return await client.fetch(
-    `*[_type == "project" && slug.current == $slug][0]`,
+    `*[_type == "project" && slug.current == $slug][0] {
+      ...,
+      "theme": theme->{title, "slug": slug.current}
+    }`,
     { slug },
     fetchOpts
   )
@@ -56,6 +59,7 @@ export async function getTool(slug) {
     `*[_type == "tool" && slug.current == $slug][0] {
       ...,
       "toolkitFileUrl": toolkitFile.asset->url,
+      "theme": theme->{title, "slug": slug.current},
       relatedArticles[]->{ _id, title, slug, shortSummary, heroImage, category },
       relatedTools[]->{ _id, title, slug, shortSummary, heroImage, category }
     }`,
@@ -168,6 +172,7 @@ export async function getArticle(slug) {
   return await client.fetch(
     `*[_type == "article" && slug.current == $slug][0] {
       ...,
+      "theme": theme->{title, "slug": slug.current},
       relatedDimensions[]-> {
         _id,
         title,
@@ -203,6 +208,7 @@ export async function getCourse(slug) {
   return await client.fetch(
     `*[_type == "course" && slug.current == $slug][0] {
       ...,
+      "theme": theme->{title, "slug": slug.current},
       relatedDimensions[]-> {
         _id,
         title,
@@ -586,6 +592,85 @@ export async function getAllSectorLandingPages() {
       heroSubheading
     }
   `, {}, fetchOpts)
+}
+
+// ============================================
+// THEMES / TOPIC HUBS
+// ============================================
+
+export async function getAllThemesForIndex() {
+  return client.fetch(`
+    *[_type == "theme" && slug.current != "scaling-operations"] | order(title asc){
+      _id,
+      title,
+      "slug": slug.current,
+      anchorType,
+      "toolCount": count(*[_type == "tool" && theme._ref == ^._id]),
+      "articleCount": count(*[_type == "article" && theme._ref == ^._id]),
+      "courseCount": count(*[_type == "course" && theme._ref == ^._id]),
+      "caseStudyCount": count(*[_type == "project" && theme._ref == ^._id])
+    }
+  `, {}, fetchOpts)
+}
+
+export async function getThemeHub(slug) {
+  return client.fetch(`
+    *[_type == "theme" && slug.current == $slug][0]{
+      _id,
+      title,
+      "slug": slug.current,
+      description,
+      toolsIntro,
+      articlesIntro,
+      coursesIntro,
+      caseStudiesIntro,
+      anchorType,
+      anchorUrl,
+      seoTitle,
+      seoDescription,
+      relatedThemes[]->{
+        _id,
+        title,
+        "slug": slug.current
+      },
+      "tools": *[_type == "tool" && theme._ref == ^._id] | order(_createdAt desc){
+        _id,
+        title,
+        "slug": slug.current,
+        shortSummary,
+        heroImage
+      },
+      "articles": *[_type == "article" && theme._ref == ^._id] | order(_createdAt desc){
+        _id,
+        title,
+        "slug": slug.current,
+        shortSummary,
+        heroImage
+      },
+      "courses": *[_type == "course" && theme._ref == ^._id] | order(_createdAt desc){
+        _id,
+        title,
+        "slug": slug.current,
+        shortSummary,
+        heroImage
+      },
+      "caseStudies": *[_type == "project" && theme._ref == ^._id] | order(_createdAt desc){
+        _id,
+        title,
+        "slug": slug.current,
+        shortSummary,
+        heroImage
+      }
+    }
+  `, { slug }, fetchOpts)
+}
+
+export async function getAllThemeSlugs() {
+  return client.fetch(
+    `*[_type == "theme" && slug.current != "scaling-operations"]{ "slug": slug.current }`,
+    {},
+    fetchOpts
+  )
 }
 
 // ============================================

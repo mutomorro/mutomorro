@@ -124,17 +124,28 @@ export default async function ToolPage({ params }) {
             {/* Breadcrumb */}
             <div className="breadcrumb">
               <Link href="/tools" className="breadcrumb__link">Tools</Link>
-              {tool.category && (
+              {tool.theme?.title ? (
+                <>
+                  <span className="breadcrumb__sep">/</span>
+                  <Link href={`/topics/${tool.theme.slug}`} className="breadcrumb__link">
+                    {tool.theme.title}
+                  </Link>
+                </>
+              ) : tool.category ? (
                 <>
                   <span className="breadcrumb__sep">/</span>
                   <span className="breadcrumb__current">{tool.category}</span>
                 </>
-              )}
+              ) : null}
             </div>
 
-            {tool.category && (
+            {tool.theme?.title ? (
+              <Link href={`/topics/${tool.theme.slug}`} className="kicker kicker--link" style={{ marginBottom: '16px' }}>
+                {tool.theme.title}
+              </Link>
+            ) : tool.category ? (
               <span className="kicker" style={{ marginBottom: '16px' }}>{tool.category}</span>
-            )}
+            ) : null}
             <h1 className="heading-h1 heading-gradient" style={{
               margin: '0 0 32px',
             }}>

@@ -151,9 +151,13 @@ export default async function CaseStudy({ params }) {
               )}
             </div>
 
-            {project.clientSector && (
+            {project.theme?.title ? (
+              <Link href={`/topics/${project.theme.slug}`} className="kicker kicker--link" style={{ marginBottom: '16px' }}>
+                {project.theme.title}
+              </Link>
+            ) : project.clientSector ? (
               <span className="kicker" style={{ marginBottom: '16px' }}>{project.clientSector}</span>
-            )}
+            ) : null}
             <h1 className="heading-h1" style={{
               color: '#ffffff',
               margin: '0 0 32px',

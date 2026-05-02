@@ -62,17 +62,28 @@ export default async function CoursePage({ params }) {
             {/* Breadcrumb */}
             <div className="breadcrumb">
               <Link href="/courses" className="breadcrumb__link">Courses</Link>
-              {course.category && (
+              {course.theme?.title ? (
+                <>
+                  <span className="breadcrumb__sep">/</span>
+                  <Link href={`/topics/${course.theme.slug}`} className="breadcrumb__link">
+                    {course.theme.title}
+                  </Link>
+                </>
+              ) : course.category ? (
                 <>
                   <span className="breadcrumb__sep">/</span>
                   <span className="breadcrumb__current">{course.category}</span>
                 </>
-              )}
+              ) : null}
             </div>
 
-            {course.category && (
+            {course.theme?.title ? (
+              <Link href={`/topics/${course.theme.slug}`} className="kicker kicker--link" style={{ marginBottom: '16px' }}>
+                {course.theme.title}
+              </Link>
+            ) : course.category ? (
               <span className="kicker" style={{ marginBottom: '16px' }}>{course.category}</span>
-            )}
+            ) : null}
             <h1 className="heading-h1" style={{
               color: '#ffffff',
               margin: '0 0 32px',

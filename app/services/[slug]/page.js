@@ -69,6 +69,7 @@ export async function generateMetadata({ params }) {
     openGraph: {
       title,
       description,
+      url: `https://mutomorro.com/services/${slug}`,
       type: 'article',
       images: [{
         url: service.ogImageUrl || '/og-default.png',

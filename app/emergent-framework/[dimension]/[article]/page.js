@@ -28,6 +28,7 @@ export async function generateMetadata({ params }) {
     openGraph: {
       title,
       description,
+      url: `https://mutomorro.com/emergent-framework/${dimensionSlug}/${articleSlug}`,
       type: 'article',
       images: [{ url: '/og-default.png', width: 1200, height: 630 }],
     },

@@ -599,7 +599,7 @@ export async function getPageCallouts(pageType, pageId) {
     *[_type == "pageCallout" && isActive == true && (
       $pageType in showOnPageTypes ||
       $pageId in includePages[]._ref
-    ) && !($pageId in excludePages[]._ref)] | order(displayOrder asc) {
+    ) && !(defined(excludePages) && $pageId in excludePages[]._ref)] | order(displayOrder asc) {
       _id,
       heading,
       body,

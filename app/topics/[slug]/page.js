@@ -32,13 +32,17 @@ export async function generateMetadata({ params }) {
     title,
     description,
     alternates: {
-      canonical: `https://mutomorro.com/topics/${theme.slug}/`,
+      canonical: `https://mutomorro.com/topics/${theme.slug}`,
     },
     openGraph: {
       title,
       description,
-      url: `https://mutomorro.com/topics/${theme.slug}/`,
+      url: `https://mutomorro.com/topics/${theme.slug}`,
       type: 'website',
+      images: [{ url: '/og-default.png', width: 1200, height: 630 }],
+    },
+    twitter: {
+      images: ['/og-default.png'],
     },
   }
 }

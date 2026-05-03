@@ -10,9 +10,13 @@ export const metadata = {
     absolute: 'Mutomorro - We help leaders redesign how their organisations work',
   },
   description: 'Organisational design, development and strategic change. We work across purpose, strategy, structure, culture, and capability to help organisations work better.',
+  alternates: {
+    canonical: 'https://mutomorro.com',
+  },
   openGraph: {
     title: 'Mutomorro - We help leaders redesign how their organisations work',
     description: 'Organisational design, development and strategic change. We work across purpose, strategy, structure, culture, and capability to help organisations work better.',
+    url: 'https://mutomorro.com',
     type: 'website',
     images: [{ url: '/og-default.png', width: 1200, height: 630 }],
   },

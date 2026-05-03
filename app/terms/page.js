@@ -1,6 +1,13 @@
 export const metadata = {
   title: 'Terms of use - Mutomorro',
   description: 'Terms of use for the Mutomorro website. Plain language, no legal waffle.',
+  openGraph: {
+    url: 'https://mutomorro.com/terms',
+    images: [{ url: '/og-default.png', width: 1200, height: 630 }],
+  },
+  twitter: {
+    images: [{ url: '/og-default.png', width: 1200, height: 630 }],
+  },
 }
 
 export default function TermsPage() {

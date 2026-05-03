@@ -7,6 +7,13 @@ import BackgroundPattern from '@/components/animations/BackgroundPattern'
 export const metadata = {
   title: 'About Mutomorro',
   description: 'Over 20 years helping organisations across every sector redesign how they work. From teams of 12 to workforces of 80,000.',
+  openGraph: {
+    url: 'https://mutomorro.com/about',
+    images: [{ url: '/og-default.png', width: 1200, height: 630 }],
+  },
+  twitter: {
+    images: [{ url: '/og-default.png', width: 1200, height: 630 }],
+  },
 }
 
 export default function About() {

@@ -5,6 +5,13 @@ import { PortableText } from '@portabletext/react'
 export const metadata = {
   title: 'The EMERGENT Framework - eight dimensions of organisational health',
   description: 'A model for understanding what makes organisations thrive. Eight interconnected dimensions covering strategy, culture, purpose, capacity, and more.',
+  openGraph: {
+    url: 'https://mutomorro.com/emergent-framework',
+    images: [{ url: '/og-default.png', width: 1200, height: 630 }],
+  },
+  twitter: {
+    images: [{ url: '/og-default.png', width: 1200, height: 630 }],
+  },
 }
 
 export default async function EmergentFramework() {

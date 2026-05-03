@@ -15,7 +15,12 @@ export const metadata = {
   openGraph: {
     title: 'States of Vitality - organisational health diagnostic',
     description: 'A diagnostic tool that measures organisational health across eight dimensions. See where your organisation thrives and where it needs attention.',
+    url: 'https://mutomorro.com/states-of-vitality',
     type: 'website',
+    images: [{ url: '/og-default.png', width: 1200, height: 630 }],
+  },
+  twitter: {
+    images: [{ url: '/og-default.png', width: 1200, height: 630 }],
   },
 }
 

@@ -7,6 +7,13 @@ export const revalidate = 3600
 export const metadata = {
   title: 'Courses - organisational development training',
   description: 'Collaborative learning sessions on change management, culture, leadership, systems thinking, service design, and more. Designed for teams and leaders.',
+  openGraph: {
+    url: 'https://mutomorro.com/courses',
+    images: [{ url: '/og-default.png', width: 1200, height: 630 }],
+  },
+  twitter: {
+    images: [{ url: '/og-default.png', width: 1200, height: 630 }],
+  },
 }
 
 export default async function Courses() {

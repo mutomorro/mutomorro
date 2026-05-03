@@ -90,8 +90,11 @@ export default async function ArticlePage({ params }) {
       ...(article.category ? [{
         '@type': 'ListItem',
         position: 2,
-        name: article.category,
-        item: 'https://mutomorro.com/articles',
+        name: article.category
+          .split('-')
+          .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+          .join(' '),
+        item: `https://mutomorro.com/topics/${article.category}`,
       }] : []),
       {
         '@type': 'ListItem',

@@ -3,6 +3,13 @@ import ContactForm from '../../components/ContactForm'
 export const metadata = {
   title: 'Get in touch',
   description: 'Start a conversation about what you are working on. We will listen, share how we see it, and explore whether we can help.',
+  openGraph: {
+    url: 'https://mutomorro.com/contact',
+    images: [{ url: '/og-default.png', width: 1200, height: 630 }],
+  },
+  twitter: {
+    images: [{ url: '/og-default.png', width: 1200, height: 630 }],
+  },
 }
 
 export default async function ContactPage({ searchParams }) {

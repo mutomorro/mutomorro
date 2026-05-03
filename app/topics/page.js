@@ -9,14 +9,18 @@ export const metadata = {
   description:
     "Explore Mutomorro's collection of tools, articles, courses and case studies, organised by subject.",
   alternates: {
-    canonical: 'https://mutomorro.com/topics/',
+    canonical: 'https://mutomorro.com/topics',
   },
   openGraph: {
     title: 'Topics - Resources and Thinking | Mutomorro',
     description:
       "Explore Mutomorro's collection of tools, articles, courses and case studies, organised by subject.",
-    url: 'https://mutomorro.com/topics/',
+    url: 'https://mutomorro.com/topics',
     type: 'website',
+    images: [{ url: '/og-default.png', width: 1200, height: 630 }],
+  },
+  twitter: {
+    images: [{ url: '/og-default.png', width: 1200, height: 630 }],
   },
 }
 

@@ -3,6 +3,13 @@ import ResetConsentButton from './ResetConsentButton'
 export const metadata = {
   title: 'Privacy and cookies',
   description: 'How Mutomorro uses cookies and handles your data. Plain language, no legal waffle.',
+  openGraph: {
+    url: 'https://mutomorro.com/privacy',
+    images: [{ url: '/og-default.png', width: 1200, height: 630 }],
+  },
+  twitter: {
+    images: [{ url: '/og-default.png', width: 1200, height: 630 }],
+  },
 }
 
 export default function PrivacyPage() {

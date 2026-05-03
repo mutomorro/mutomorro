@@ -8,6 +8,13 @@ export const revalidate = 3600
 export const metadata = {
   title: 'Case studies - organisational development projects',
   description: 'Real examples of culture change, post-merger integration, service design, and organisational restructuring across housing, charity, public sector, and financial services.',
+  openGraph: {
+    url: 'https://mutomorro.com/projects',
+    images: [{ url: '/og-default.png', width: 1200, height: 630 }],
+  },
+  twitter: {
+    images: [{ url: '/og-default.png', width: 1200, height: 630 }],
+  },
 }
 
 export default async function Projects() {

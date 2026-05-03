@@ -7,6 +7,13 @@ export const revalidate = 3600
 export const metadata = {
   title: 'Services - organisational development consultancy',
   description: 'Fourteen services across purpose and direction, structure and operations, people and capability, and service and experience. Each one designed to help your organisation work better.',
+  openGraph: {
+    url: 'https://mutomorro.com/services',
+    images: [{ url: '/og-default.png', width: 1200, height: 630 }],
+  },
+  twitter: {
+    images: [{ url: '/og-default.png', width: 1200, height: 630 }],
+  },
 }
 
 const categories = [

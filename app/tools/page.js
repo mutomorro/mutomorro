@@ -7,6 +7,13 @@ export const revalidate = 3600
 export const metadata = {
   title: 'Tools and templates for organisational development',
   description: 'Free downloadable tools, templates, and frameworks. Practical resources for leaders working on culture, change, strategy, and organisational design.',
+  openGraph: {
+    url: 'https://mutomorro.com/tools',
+    images: [{ url: '/og-default.png', width: 1200, height: 630 }],
+  },
+  twitter: {
+    images: [{ url: '/og-default.png', width: 1200, height: 630 }],
+  },
 }
 
 export default async function Tools() {

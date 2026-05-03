@@ -7,6 +7,13 @@ export const revalidate = 3600
 export const metadata = {
   title: 'Articles - thinking on organisational development',
   description: 'Perspectives on culture change, organisational design, change management, service design, and the systems that shape how organisations work.',
+  openGraph: {
+    url: 'https://mutomorro.com/articles',
+    images: [{ url: '/og-default.png', width: 1200, height: 630 }],
+  },
+  twitter: {
+    images: [{ url: '/og-default.png', width: 1200, height: 630 }],
+  },
 }
 
 export default async function Articles() {

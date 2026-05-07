@@ -32,13 +32,13 @@ export async function GET(request) {
       queryPostHog(trendsQuery({ math: 'total', dateRange: '-30d', interval: 'day' })),
 
       // 3. Top pages (all), last 30 days
-      queryPostHog(trendsQuery({ dateRange: '-30d', breakdownProperty: '$pathname', breakdownLimit: 20 })),
+      queryPostHog(trendsQuery({ dateRange: '-30d', breakdownProperty: '$pathname', breakdownLimit: 25 })),
 
       // 4. Top pages (exploration only - exclude /tools/)
       queryPostHog(trendsQuery({
         dateRange: '-30d',
         breakdownProperty: '$pathname',
-        breakdownLimit: 15,
+        breakdownLimit: 25,
         properties: [{ key: '$pathname', operator: 'not_icontains', type: 'event', value: '/tools/' }],
       })),
 
@@ -46,7 +46,7 @@ export async function GET(request) {
       queryPostHog(trendsQuery({
         dateRange: '-30d',
         breakdownProperty: '$pathname',
-        breakdownLimit: 15,
+        breakdownLimit: 25,
         properties: [{ key: '$pathname', operator: 'icontains', type: 'event', value: '/tools/' }],
       })),
 
@@ -59,7 +59,7 @@ export async function GET(request) {
       })),
 
       // 7. Countries
-      queryPostHog(trendsQuery({ dateRange: '-30d', breakdownProperty: '$geoip_country_name', breakdownLimit: 20 })),
+      queryPostHog(trendsQuery({ dateRange: '-30d', breakdownProperty: '$geoip_country_name', breakdownLimit: 30 })),
 
       // 8. Devices
       queryPostHog(trendsQuery({ dateRange: '-30d', breakdownProperty: '$device_type' })),

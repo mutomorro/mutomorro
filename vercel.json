@@ -21,10 +21,6 @@
       "schedule": "0 7 * * *"
     },
     {
-      "path": "/api/cron/newsletter-send",
-      "schedule": "30 8 * * *"
-    },
-    {
       "path": "/api/cron/tender-finder-cleanup",
       "schedule": "0 4 * * 0"
     }

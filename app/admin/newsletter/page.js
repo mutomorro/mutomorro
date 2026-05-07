@@ -1,63 +1,37 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
+import { useAdminTheme } from '../../../lib/admin-theme-context'
 
 function pct(num, denom) {
-  if (!denom || denom === 0) return '-'
-  return ((num / denom) * 100).toFixed(1) + '%'
+  if (!denom || denom === 0) return null
+  return (num / denom) * 100
 }
 
-function relativeDate(dateStr) {
-  if (!dateStr) return '-'
+function fmtPct(num, denom) {
+  const v = pct(num, denom)
+  if (v === null) return '—'
+  return v.toFixed(1) + '%'
+}
+
+function shortDate(dateStr) {
+  if (!dateStr) return '—'
   const d = new Date(dateStr)
-  return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) +
+  return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })
+}
+
+function fullDate(dateStr) {
+  if (!dateStr) return '—'
+  const d = new Date(dateStr)
+  return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }) +
     ' at ' + d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })
 }
 
-function relativeTime(dateStr) {
-  if (!dateStr) return '-'
-  const now = new Date()
-  const date = new Date(dateStr)
-  const diffDays = Math.floor((now - date) / 86400000)
-  if (diffDays === 0) return 'Today'
-  if (diffDays === 1) return 'Yesterday'
-  if (diffDays < 7) return `${diffDays}d ago`
-  return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })
-}
-
-const statusBadge = {
-  sending: { bg: 'rgba(245,158,11,0.15)', color: '#F59E0B' },
-  complete: { bg: 'rgba(45,212,191,0.15)', color: '#2DD4BF' },
-  draft: { bg: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.4)' },
-}
-
-function estimateCompletion(remaining, batchSize, skipWeekends) {
-  if (!remaining || remaining <= 0) return null
-  const daysNeeded = Math.ceil(remaining / batchSize)
-  const d = new Date()
-  let added = 0
-  while (added < daysNeeded) {
-    d.setDate(d.getDate() + 1)
-    const day = d.getDay()
-    if (skipWeekends && (day === 0 || day === 6)) continue
-    added++
-  }
-  return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
-}
-
 export default function NewsletterPage() {
+  const { theme } = useAdminTheme()
   const [data, setData] = useState(null)
   const [loading, setLoading] = useState(true)
-  const [selectedSendId, setSelectedSendId] = useState(null)
-  const [sendDetail, setSendDetail] = useState(null)
-  const [detailLoading, setDetailLoading] = useState(false)
-  const [config, setConfig] = useState(null)
-  const [pool, setPool] = useState(null)
-  const [issues, setIssues] = useState([])
-  const [configLoading, setConfigLoading] = useState(true)
-  const [saving, setSaving] = useState(false)
-  const [sending, setSending] = useState(false)
-  const [sendResult, setSendResult] = useState(null)
+  const [expanded, setExpanded] = useState({})
 
   useEffect(() => {
     fetch('/api/admin/newsletter')
@@ -65,629 +39,454 @@ export default function NewsletterPage() {
       .then(setData)
       .catch((e) => console.error(e))
       .finally(() => setLoading(false))
-
-    fetch('/api/admin/newsletter-config')
-      .then((r) => r.ok ? r.json() : Promise.reject())
-      .then((d) => { setConfig(d.config); setPool(d.pool); setIssues(d.issues || []) })
-      .catch((e) => console.error(e))
-      .finally(() => setConfigLoading(false))
   }, [])
 
-  async function loadSendDetail(id) {
-    if (selectedSendId === id) {
-      setSelectedSendId(null)
-      setSendDetail(null)
-      return
-    }
-    setSelectedSendId(id)
-    setDetailLoading(true)
-    try {
-      const res = await fetch(`/api/admin/newsletter/${id}`)
-      if (res.ok) setSendDetail(await res.json())
-    } catch (e) {
-      console.error(e)
-    } finally {
-      setDetailLoading(false)
-    }
-  }
-
-  async function updateConfig(updates) {
-    setSaving(true)
-    try {
-      const res = await fetch('/api/admin/newsletter-config', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updates),
-      })
-      if (res.ok) {
-        const d = await res.json()
-        setConfig(d.config)
-      }
-    } catch (e) {
-      console.error(e)
-    } finally {
-      setSaving(false)
-    }
-  }
-
-  async function triggerSend() {
-    if (!confirm('Send a batch now? This will use current settings.')) return
-    setSending(true)
-    setSendResult(null)
-    try {
-      const res = await fetch('/api/newsletter-send/run', { method: 'POST' })
-      const d = await res.json()
-      if (d.error) {
-        setSendResult({ type: 'error', message: d.error })
-      } else if (d.skipped) {
-        setSendResult({ type: 'skipped', message: d.reason })
-      } else if (d.paused) {
-        setSendResult({ type: 'error', message: d.reason })
-      } else {
-        setSendResult({ type: 'success', message: `Sent ${d.sent} emails. ${d.remaining ?? '?'} remaining.` })
-        // Refresh config and data
-        fetch('/api/admin/newsletter-config').then(r => r.ok ? r.json() : null).then(d => { if (d) { setConfig(d.config); setPool(d.pool); setIssues(d.issues || []) } })
-        fetch('/api/admin/newsletter').then(r => r.ok ? r.json() : null).then(d => { if (d) setData(d) })
-      }
-    } catch (e) {
-      setSendResult({ type: 'error', message: 'Request failed' })
-    } finally {
-      setSending(false)
-    }
-  }
-
   const subs = data?.subscribers || {}
-
-  // Status indicator
-  const statusDot = config
-    ? config.paused_reason
-      ? { color: '#FF4279', label: `PAUSED: ${config.paused_reason}` }
-      : config.enabled
-        ? { color: '#2DD4BF', label: 'Running - next send tomorrow at 9:30am' }
-        : { color: 'rgba(255,255,255,0.3)', label: 'Disabled' }
-    : null
+  const lastSend = data?.lastSend || null
+  const sends = data?.sends || []
+  const unknownSources = useMemo(() => {
+    if (!data?.bySource) return 0
+    const u = data.bySource.find(s => s.source === 'unknown' || s.source == null || s.source === '')
+    return u ? u.count : 0
+  }, [data])
 
   return (
     <div>
-      <h1 style={{ fontSize: '28px', fontWeight: 400, color: '#fff', letterSpacing: '-0.02em', marginBottom: '24px' }}>
-        Newsletter
-      </h1>
+      {/* Header + primary action */}
+      <div style={{
+        display: 'flex',
+        alignItems: 'baseline',
+        justifyContent: 'space-between',
+        marginBottom: '32px',
+        flexWrap: 'wrap',
+        gap: '12px',
+      }}>
+        <h1 style={{
+          fontSize: '28px',
+          fontWeight: 400,
+          color: theme.textPrimary,
+          letterSpacing: '-0.02em',
+          margin: 0,
+        }}>
+          Newsletter
+        </h1>
+        <a
+          href="/admin/newsletter/send"
+          style={{
+            padding: '12px 22px',
+            borderRadius: '6px',
+            background: theme.accent,
+            color: '#fff',
+            fontSize: '14px',
+            fontWeight: 400,
+            textDecoration: 'none',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '8px',
+            boxShadow: '0 1px 2px rgba(0,0,0,0.1)',
+          }}
+        >
+          Send a newsletter →
+        </a>
+      </div>
 
-      {/* Automated send settings */}
-      <div style={{ ...cardStyle, marginBottom: '24px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
-          <h2 style={sectionHeading}>Automated sends</h2>
-          {saving && <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.3)' }}>Saving...</span>}
-        </div>
+      {/* Subscriber health cards */}
+      <div className="admin-metrics-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '24px' }}>
+        <Card theme={theme} label="Active subscribers" value={loading ? null : subs.active} />
+        <Card theme={theme} label="New this week" value={loading ? null : subs.newThisWeek} />
+        <Card theme={theme} label="New this month" value={loading ? null : subs.newThisMonth} />
+        <Card theme={theme} label="Unsubscribed" value={loading ? null : subs.unsubscribed} />
+      </div>
 
-        {configLoading ? (
-          <Skeleton height={120} />
-        ) : config ? (
-          <>
-            {/* Status indicator */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px', padding: '12px 16px', background: 'rgba(255,255,255,0.03)', borderRadius: '6px' }}>
-              <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: statusDot.color, flexShrink: 0 }} />
-              <span style={{ fontSize: '14px', fontWeight: 400, color: '#fff' }}>{statusDot.label}</span>
-              {config.paused_reason && (
-                <button
-                  onClick={() => updateConfig({ enabled: true })}
-                  style={{ marginLeft: 'auto', fontSize: '12px', fontWeight: 400, color: '#9B51E0', background: 'rgba(155,81,224,0.1)', border: 'none', padding: '4px 12px', borderRadius: '4px', cursor: 'pointer' }}
-                >
-                  Resume
-                </button>
-              )}
-            </div>
-
-            {/* Controls grid */}
-            <div className="admin-newsletter-controls" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '16px', marginBottom: '20px' }}>
-              {/* Enable/disable */}
-              <ToggleControl
-                label="Enable sends"
-                value={config.enabled}
-                onChange={(v) => updateConfig({ enabled: v })}
-              />
-              {/* Skip weekends */}
-              <ToggleControl
-                label="Skip weekends"
-                value={config.skip_weekends}
-                onChange={(v) => updateConfig({ skip_weekends: v })}
-              />
-              {/* Domain exclusions */}
-              <ToggleControl
-                label="Domain exclusions"
-                value={config.domain_exclusions_enabled}
-                onChange={(v) => updateConfig({ domain_exclusions_enabled: v })}
-              />
-            </div>
-
-            <div className="admin-newsletter-controls" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '16px', marginBottom: '20px' }}>
-              {/* Batch size */}
-              <NumberControl
-                label="Batch size"
-                value={config.batch_size}
-                step={50}
-                min={10}
-                max={500}
-                onChange={(v) => updateConfig({ batch_size: v })}
-              />
-              {/* Daily cap */}
-              <NumberControl
-                label="Daily cap"
-                value={config.daily_cap}
-                step={50}
-                min={10}
-                max={1000}
-                onChange={(v) => updateConfig({ daily_cap: v })}
-              />
-              {/* Bounce threshold */}
-              <NumberControl
-                label="Bounce threshold %"
-                value={config.bounce_rate_threshold}
-                step={0.5}
-                min={0.5}
-                max={10}
-                onChange={(v) => updateConfig({ bounce_rate_threshold: v })}
-              />
-            </div>
-
-            {/* Info display + Send now */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '24px', flexWrap: 'wrap', fontSize: '13px', color: 'rgba(255,255,255,0.4)', borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '16px' }}>
-              {config.last_send_date && (
-                <span>Last send: {new Date(config.last_send_date + 'T00:00:00').toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}, {config.last_send_count} contacts</span>
-              )}
-              {pool && <span>Remaining: {pool.remaining.toLocaleString()}</span>}
-              {pool && config.batch_size && pool.remaining > 0 && (
-                <span>Est. completion: {estimateCompletion(pool.remaining, config.batch_size, config.skip_weekends)}</span>
-              )}
-              <button
-                onClick={triggerSend}
-                disabled={sending}
-                style={{
-                  marginLeft: 'auto', fontSize: '12px', fontWeight: 400, padding: '6px 16px', borderRadius: '4px', border: 'none', cursor: sending ? 'not-allowed' : 'pointer',
-                  background: sending ? 'rgba(155,81,224,0.15)' : 'rgba(155,81,224,0.25)', color: sending ? 'rgba(155,81,224,0.5)' : '#9B51E0',
-                  transition: 'background 0.15s',
-                }}
-              >
-                {sending ? 'Sending...' : 'Send now'}
-              </button>
-            </div>
-            {sendResult && (
-              <div style={{
-                marginTop: '12px', padding: '10px 14px', borderRadius: '6px', fontSize: '13px',
-                background: sendResult.type === 'success' ? 'rgba(45,212,191,0.08)' : sendResult.type === 'skipped' ? 'rgba(245,158,11,0.08)' : 'rgba(255,66,121,0.08)',
-                color: sendResult.type === 'success' ? '#2DD4BF' : sendResult.type === 'skipped' ? '#F59E0B' : '#FF4279',
-                borderLeft: `3px solid ${sendResult.type === 'success' ? '#2DD4BF' : sendResult.type === 'skipped' ? '#F59E0B' : '#FF4279'}`,
-              }}>
-                {sendResult.message}
-              </div>
-            )}
-          </>
+      {/* Last send summary */}
+      <Section theme={theme} title="Last send" style={{ marginBottom: '24px' }}>
+        {loading ? (
+          <Skeleton theme={theme} height={100} />
+        ) : !lastSend ? (
+          <p style={emptyText(theme)}>No newsletters sent yet.</p>
         ) : (
-          <p style={emptyText}>Config not available</p>
+          <LastSendSummary theme={theme} send={lastSend} />
         )}
-      </div>
-
-      {/* Metric cards */}
-      <div className="admin-metrics-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '32px' }}>
-        <Card label="Active subscribers" value={loading ? null : subs.active} />
-        <Card label="New this week" value={loading ? null : subs.newThisWeek} />
-        <Card label="New this month" value={loading ? null : subs.newThisMonth} />
-        <Card label="Unsubscribed" value={loading ? null : subs.unsubscribed} />
-      </div>
-
-      {/* Coverage + dedup health */}
-      {issues.length > 0 && (
-        <div style={cardStyle}>
-          <h2 style={sectionHeading}>Coverage</h2>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            {issues.map((issue) => {
-              const activeTotal = pool?.activeContacts || 0
-              const coveragePct = activeTotal > 0 ? ((issue.uniqueRecipients / activeTotal) * 100).toFixed(1) : null
-              const healthy = issue.dedupOk
-              return (
-                <div key={issue.issueKey} style={{ padding: '14px 16px', background: 'rgba(255,255,255,0.02)', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.04)' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: '12px', flexWrap: 'wrap' }}>
-                    <div>
-                      <div style={{ fontSize: '15px', color: 'rgba(255,255,255,0.9)', fontWeight: 400 }}>{issue.subject}</div>
-                      <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: '2px' }}>{issue.issueKey}</div>
-                    </div>
-                    <div style={{
-                      fontSize: '12px', fontWeight: 400, padding: '4px 10px', borderRadius: '4px',
-                      background: healthy ? 'rgba(45,212,191,0.12)' : 'rgba(255,66,121,0.12)',
-                      color: healthy ? '#2DD4BF' : '#FF4279',
-                      border: `1px solid ${healthy ? 'rgba(45,212,191,0.25)' : 'rgba(255,66,121,0.25)'}`,
-                    }}>
-                      {healthy
-                        ? 'Repeat send protection: OK'
-                        : `Repeat send protection: FAILED - ${issue.duplicatedContacts} contact${issue.duplicatedContacts === 1 ? '' : 's'} received this issue multiple times`}
-                    </div>
-                  </div>
-                  <div style={{ marginTop: '12px', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '12px', fontSize: '13px', color: 'rgba(255,255,255,0.55)' }}>
-                    <div>
-                      <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '2px' }}>Unique reached</div>
-                      <div style={{ fontSize: '16px', color: 'rgba(255,255,255,0.9)', fontWeight: 400 }}>
-                        {issue.uniqueRecipients.toLocaleString()}
-                        {coveragePct !== null && <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)', marginLeft: '6px' }}>of {activeTotal.toLocaleString()} active ({coveragePct}%)</span>}
-                      </div>
-                    </div>
-                    <div>
-                      <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '2px' }}>Total sends</div>
-                      <div style={{ fontSize: '16px', color: 'rgba(255,255,255,0.9)', fontWeight: 400 }}>{issue.totalSent.toLocaleString()}</div>
-                    </div>
-                    <div>
-                      <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '2px' }}>Duplicated</div>
-                      <div style={{ fontSize: '16px', color: issue.duplicatedContacts > 0 ? '#FF4279' : 'rgba(255,255,255,0.9)', fontWeight: 400 }}>{issue.duplicatedContacts.toLocaleString()}</div>
-                    </div>
-                  </div>
-                </div>
-              )
-            })}
-          </div>
-        </div>
-      )}
+      </Section>
 
       {/* Send history */}
-      <div style={cardStyle}>
-        <h2 style={sectionHeading}>Send history</h2>
+      <Section theme={theme} title="Send history" style={{ marginBottom: '24px' }}>
         {loading ? (
-          <Skeleton height={200} />
-        ) : data?.sends?.length > 0 ? (
-          <div style={{ overflowX: 'auto' }}>
-          <div style={{ minWidth: '580px' }}>
-            {/* Header */}
-            <div style={{ display: 'grid', gridTemplateColumns: '2.5fr 0.7fr 0.7fr 0.7fr 0.7fr 0.7fr 0.6fr', gap: '8px', padding: '8px 0', borderBottom: '1px solid rgba(255,255,255,0.06)', fontSize: '11px', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-              <div>Subject</div>
-              <div>Date</div>
-              <div>Sent</div>
-              <div>Opened</div>
-              <div>Clicked</div>
-              <div>Bounced</div>
-              <div>Status</div>
-            </div>
-
-            {/* Rows - grouped by subject for multi-batch sends */}
-            {(() => {
-              // Group sends by subject
-              const grouped = []
-              const subjectMap = {}
-              data.sends.forEach((send) => {
-                const key = send.subject
-                if (!subjectMap[key]) {
-                  subjectMap[key] = { sends: [], index: grouped.length }
-                  grouped.push({ subject: key, sends: [] })
-                }
-                grouped[subjectMap[key].index].sends.push(send)
-              })
-
-              return grouped.map((group) => {
-                const hasSummary = group.sends.length > 1
-                const summaryRow = hasSummary ? {
-                  total_sent: group.sends.reduce((s, b) => s + (b.total_sent || 0), 0),
-                  total_opened: group.sends.reduce((s, b) => s + (b.total_opened || 0), 0),
-                  total_clicked: group.sends.reduce((s, b) => s + (b.total_clicked || 0), 0),
-                  total_bounced: group.sends.reduce((s, b) => s + (b.total_bounced || 0), 0),
-                  total_delivered: group.sends.reduce((s, b) => s + (b.total_delivered || 0), 0),
-                } : null
-
-                return (
-                  <div key={group.subject}>
-                    {/* Summary row for multi-batch */}
-                    {hasSummary && (
-                      <div style={{
-                        display: 'grid',
-                        gridTemplateColumns: '2.5fr 0.7fr 0.7fr 0.7fr 0.7fr 0.7fr 0.6fr',
-                        gap: '8px',
-                        padding: '12px 0',
-                        borderBottom: '1px solid rgba(255,255,255,0.06)',
-                        fontSize: '13px',
-                        color: 'rgba(255,255,255,0.8)',
-                        background: 'rgba(155,81,224,0.04)',
-                        alignItems: 'center',
-                      }}>
-                        <div style={{ color: '#fff', fontWeight: 400 }}>
-                          {group.subject}
-                          <span style={{ fontSize: '11px', marginLeft: '8px', color: 'rgba(255,255,255,0.35)' }}>
-                            {group.sends.length} batches combined
-                          </span>
-                        </div>
-                        <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)' }}>
-                          {relativeTime(group.sends[0].created_at)}
-                        </div>
-                        <div>{summaryRow.total_sent}</div>
-                        <div>
-                          {summaryRow.total_opened}
-                          <span style={{ fontSize: '11px', marginLeft: '4px', color: parseFloat(pct(summaryRow.total_opened, summaryRow.total_delivered)) > 25 ? '#2DD4BF' : 'rgba(255,255,255,0.3)' }}>
-                            {pct(summaryRow.total_opened, summaryRow.total_delivered)}
-                          </span>
-                        </div>
-                        <div>
-                          {summaryRow.total_clicked}
-                          <span style={{ fontSize: '11px', marginLeft: '4px', color: parseFloat(pct(summaryRow.total_clicked, summaryRow.total_delivered)) > 3 ? '#2DD4BF' : 'rgba(255,255,255,0.3)' }}>
-                            {pct(summaryRow.total_clicked, summaryRow.total_delivered)}
-                          </span>
-                        </div>
-                        <div style={{ color: summaryRow.total_bounced > 0 ? '#FF4279' : 'rgba(255,255,255,0.7)' }}>
-                          {summaryRow.total_bounced}
-                        </div>
-                        <div />
-                      </div>
-                    )}
-
-                    {/* Individual batch rows */}
-                    {group.sends.map((send) => {
-                      const openRate = pct(send.total_opened, send.total_delivered)
-                      const clickRate = pct(send.total_clicked, send.total_delivered)
-                      const bounceRate = pct(send.total_bounced, send.total_sent)
-                      const badge = statusBadge[send.status] || statusBadge.draft
-                      const isSelected = selectedSendId === send.id
-
-                      return (
-                        <div key={send.id}>
-                          <div
-                            onClick={() => loadSendDetail(send.id)}
-                            style={{
-                              display: 'grid',
-                              gridTemplateColumns: '2.5fr 0.7fr 0.7fr 0.7fr 0.7fr 0.7fr 0.6fr',
-                              gap: '8px',
-                              padding: hasSummary ? '10px 0 10px 16px' : '12px 0',
-                              borderBottom: '1px solid rgba(255,255,255,0.04)',
-                              fontSize: '13px',
-                              color: hasSummary ? 'rgba(255,255,255,0.55)' : 'rgba(255,255,255,0.7)',
-                              cursor: 'pointer',
-                              background: isSelected ? 'rgba(155,81,224,0.06)' : 'transparent',
-                              alignItems: 'center',
-                              transition: 'background 0.1s',
-                            }}
-                            onMouseEnter={(e) => { if (!isSelected) e.currentTarget.style.background = 'rgba(255,255,255,0.02)' }}
-                            onMouseLeave={(e) => { if (!isSelected) e.currentTarget.style.background = 'transparent' }}
-                          >
-                            <div style={{ color: hasSummary ? 'rgba(255,255,255,0.6)' : '#fff', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                              {hasSummary ? `Batch ${group.sends.indexOf(send) + 1}` : send.subject}
-                            </div>
-                            <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)' }}>
-                              {relativeTime(send.created_at)}
-                            </div>
-                            <div>{send.total_sent || 0}</div>
-                            <div>
-                              {send.total_opened || 0}
-                              <span style={{ fontSize: '11px', marginLeft: '4px', color: parseFloat(openRate) > 25 ? '#2DD4BF' : 'rgba(255,255,255,0.3)' }}>
-                                {openRate}
-                              </span>
-                            </div>
-                            <div>
-                              {send.total_clicked || 0}
-                              <span style={{ fontSize: '11px', marginLeft: '4px', color: parseFloat(clickRate) > 3 ? '#2DD4BF' : 'rgba(255,255,255,0.3)' }}>
-                                {clickRate}
-                              </span>
-                            </div>
-                            <div style={{ color: parseFloat(bounceRate) > 5 ? '#FF4279' : 'rgba(255,255,255,0.7)' }}>
-                              {send.total_bounced || 0}
-                            </div>
-                            <div>
-                              <span style={{ fontSize: '11px', padding: '2px 8px', borderRadius: '3px', background: badge.bg, color: badge.color }}>
-                                {send.status}
-                              </span>
-                            </div>
-                          </div>
-
-                          {/* Send detail panel */}
-                          {isSelected && (
-                            <SendDetailPanel detail={sendDetail} loading={detailLoading} />
-                          )}
-                        </div>
-                      )
-                    })}
-                  </div>
-                )
-              })
-            })()}
-          </div>
-          </div>
+          <Skeleton theme={theme} height={200} />
+        ) : sends.length === 0 ? (
+          <p style={emptyText(theme)}>No sends yet.</p>
         ) : (
-          <p style={emptyText}>No sends yet</p>
+          <SendHistory theme={theme} sends={sends} expanded={expanded} setExpanded={setExpanded} />
         )}
-      </div>
+      </Section>
 
-      {/* Breakdown panels */}
+      {/* Subscriber composition */}
       {!loading && (
-        <div className="admin-breakdown-cols" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', marginTop: '24px' }}>
-          {/* By tier */}
-          <div style={cardStyle}>
-            <h2 style={sectionHeading}>Subscribers by tier</h2>
+        <div className="admin-breakdown-cols" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
+          <Section theme={theme} title="Subscribers by tier">
             {data?.byTier?.length > 0 ? (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                 {data.byTier.map((t) => {
-                  const maxCount = Math.max(...data.byTier.map((x) => x.count))
+                  const maxCount = Math.max(...data.byTier.map(x => x.count))
                   const barWidth = (t.count / maxCount) * 100
                   return (
                     <div key={t.tier} style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                      <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.5)', width: '50px', flexShrink: 0 }}>{t.tier}</span>
-                      <div style={{ flex: 1, height: '20px', background: 'rgba(255,255,255,0.04)', borderRadius: '2px', overflow: 'hidden' }}>
-                        <div style={{ width: `${barWidth}%`, height: '100%', background: 'rgba(155,81,224,0.4)', borderRadius: '2px' }} />
+                      <span style={{ fontSize: '13px', color: theme.textSecondary, width: '50px', flexShrink: 0 }}>{t.tier}</span>
+                      <div style={{ flex: 1, height: '20px', background: theme.inputBg, borderRadius: '2px', overflow: 'hidden' }}>
+                        <div style={{ width: `${barWidth}%`, height: '100%', background: 'rgba(155,81,224,0.45)', borderRadius: '2px' }} />
                       </div>
-                      <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.45)', width: '50px', textAlign: 'right', flexShrink: 0 }}>{t.count.toLocaleString()}</span>
+                      <span style={{ fontSize: '13px', color: theme.textMuted, width: '50px', textAlign: 'right', flexShrink: 0 }}>
+                        {t.count.toLocaleString()}
+                      </span>
                     </div>
                   )
                 })}
               </div>
             ) : (
-              <p style={emptyText}>No tier data</p>
+              <p style={emptyText(theme)}>No tier data</p>
             )}
-          </div>
+          </Section>
 
-          {/* By source */}
-          <div style={cardStyle}>
-            <h2 style={sectionHeading}>Subscribers by source</h2>
+          <Section theme={theme} title="Subscribers by source">
             {data?.bySource?.length > 0 ? (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                {data.bySource.map((s) => (
-                  <div key={s.source} style={{ display: 'flex', justifyContent: 'space-between', padding: '7px 0', borderBottom: '1px solid rgba(255,255,255,0.04)', fontSize: '13px' }}>
-                    <span style={{ color: 'rgba(255,255,255,0.6)' }}>{s.source}</span>
-                    <span style={{ color: 'rgba(255,255,255,0.35)' }}>{s.count.toLocaleString()}</span>
-                  </div>
-                ))}
-              </div>
+              <>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                  {data.bySource.map((s) => (
+                    <div key={s.source || 'unknown'} style={{
+                      display: 'flex', justifyContent: 'space-between', padding: '7px 0',
+                      borderBottom: `1px solid ${theme.rowBorder}`,
+                      fontSize: '13px',
+                    }}>
+                      <span style={{ color: theme.textSecondary }}>{s.source || 'unknown'}</span>
+                      <span style={{ color: theme.textMuted }}>{s.count.toLocaleString()}</span>
+                    </div>
+                  ))}
+                </div>
+                {unknownSources > 100 && (
+                  <p style={{ fontSize: '12px', color: theme.textMuted, marginTop: '12px', fontStyle: 'italic' }}>
+                    {unknownSources.toLocaleString()} contacts with no source attribution
+                  </p>
+                )}
+              </>
             ) : (
-              <p style={emptyText}>No source data</p>
+              <p style={emptyText(theme)}>No source data</p>
             )}
-          </div>
+          </Section>
         </div>
       )}
 
       <style>{`
         @keyframes pulse { 0%, 100% { opacity: 0.4; } 50% { opacity: 0.8; } }
         @media (max-width: 768px) {
-          .admin-metrics-grid {
-            grid-template-columns: repeat(2, 1fr) !important;
-          }
-          .admin-newsletter-controls {
-            grid-template-columns: 1fr !important;
-          }
-          .admin-breakdown-cols {
-            grid-template-columns: 1fr !important;
-          }
+          .admin-metrics-grid { grid-template-columns: repeat(2, 1fr) !important; }
+          .admin-breakdown-cols { grid-template-columns: 1fr !important; }
         }
         @media (max-width: 480px) {
-          .admin-metrics-grid {
-            grid-template-columns: 1fr !important;
-          }
+          .admin-metrics-grid { grid-template-columns: 1fr !important; }
         }
       `}</style>
     </div>
   )
 }
 
-function SendDetailPanel({ detail, loading }) {
-  if (loading) return <div style={{ padding: '20px', background: 'rgba(255,255,255,0.02)' }}><Skeleton height={80} /></div>
-  if (!detail) return null
+// ─── Components ─────────────────────────────────────────────────────
 
-  const { send, statusBreakdown, engaged, bounced } = detail
-
+function Section({ theme, title, children, style }) {
   return (
-    <div style={{ padding: '20px 0', background: 'rgba(255,255,255,0.02)', borderBottom: '2px solid rgba(155,81,224,0.2)' }}>
-      <div style={{ marginBottom: '16px' }}>
-        <h3 style={{ fontSize: '16px', fontWeight: 400, color: '#fff', marginBottom: '4px' }}>{send.subject}</h3>
-        <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.35)' }}>
-          {relativeDate(send.created_at)}
-          {send.preview_text && <span style={{ marginLeft: '12px' }}>{send.preview_text}</span>}
-        </p>
-      </div>
-
-      {/* Status breakdown */}
-      {Object.keys(statusBreakdown).length > 0 && (
-        <div style={{ display: 'flex', gap: '16px', marginBottom: '16px', flexWrap: 'wrap' }}>
-          {Object.entries(statusBreakdown).map(([status, count]) => (
-            <div key={status} style={{ fontSize: '13px' }}>
-              <span style={{ color: 'rgba(255,255,255,0.4)' }}>{status}: </span>
-              <span style={{ color: '#fff' }}>{count}</span>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* Engaged recipients */}
-      {engaged.length > 0 && (
-        <div>
-          <h4 style={{ ...sectionHeading, marginBottom: '8px' }}>Who engaged</h4>
-          <div style={{ overflowX: 'auto' }}>
-          <div style={{ minWidth: '480px' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1.4fr 1fr 0.6fr 0.8fr', gap: '8px', padding: '6px 0', borderBottom: '1px solid rgba(255,255,255,0.06)', fontSize: '11px', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-            <div>Name</div>
-            <div>Email</div>
-            <div>Organisation</div>
-            <div>Action</div>
-            <div>When</div>
-          </div>
-          {engaged.map((r, i) => (
-            <div key={i} style={{ display: 'grid', gridTemplateColumns: '1.2fr 1.4fr 1fr 0.6fr 0.8fr', gap: '8px', padding: '8px 0', borderBottom: '1px solid rgba(255,255,255,0.03)', fontSize: '13px', color: 'rgba(255,255,255,0.6)' }}>
-              <div style={{ color: '#fff' }}>
-                {r.contact ? `${r.contact.first_name || ''} ${r.contact.last_name || ''}`.trim() : '-'}
-              </div>
-              <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{r.email}</div>
-              <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{r.contact?.organisation_name || '-'}</div>
-              <div>
-                <span style={{ fontSize: '11px', padding: '1px 6px', borderRadius: '3px', background: r.clicked_at ? 'rgba(155,81,224,0.15)' : 'rgba(45,212,191,0.15)', color: r.clicked_at ? '#9B51E0' : '#2DD4BF' }}>
-                  {r.clicked_at ? 'clicked' : 'opened'}
-                </span>
-              </div>
-              <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.3)' }}>
-                {relativeTime(r.clicked_at || r.opened_at)}
-              </div>
-            </div>
-          ))}
-          </div>
-          </div>
-        </div>
-      )}
-
-      {engaged.length === 0 && bounced.length === 0 && (
-        <p style={emptyText}>No engagement data yet</p>
-      )}
-    </div>
+    <section style={{
+      background: theme.cardBg,
+      border: `1px solid ${theme.cardBorder}`,
+      borderRadius: '10px',
+      padding: '20px 22px',
+      ...style,
+    }}>
+      <h2 style={{
+        fontSize: '13px',
+        fontWeight: 400,
+        color: theme.textMuted,
+        textTransform: 'uppercase',
+        letterSpacing: '0.5px',
+        marginBottom: '16px',
+        marginTop: 0,
+      }}>
+        {title}
+      </h2>
+      {children}
+    </section>
   )
 }
 
-function Card({ label, value }) {
+function Card({ theme, label, value }) {
   return (
-    <div style={cardStyle}>
-      <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '8px' }}>{label}</div>
+    <div style={{
+      background: theme.cardBg,
+      border: `1px solid ${theme.cardBorder}`,
+      borderRadius: '10px',
+      padding: '20px',
+    }}>
+      <div style={{
+        fontSize: '12px',
+        color: theme.textMuted,
+        textTransform: 'uppercase',
+        letterSpacing: '0.5px',
+        marginBottom: '8px',
+      }}>{label}</div>
       {value === null ? (
-        <Skeleton height={28} width={60} />
+        <Skeleton theme={theme} height={28} width={60} />
       ) : (
-        <div style={{ fontSize: '28px', fontWeight: 500, color: '#fff' }}>{typeof value === 'number' ? value.toLocaleString() : value}</div>
+        <div style={{ fontSize: '28px', fontWeight: 500, color: theme.textPrimary }}>
+          {typeof value === 'number' ? value.toLocaleString() : value}
+        </div>
       )}
     </div>
   )
 }
 
-function Skeleton({ height = 20, width }) {
-  return <div style={{ height, width: width || '100%', background: 'rgba(255,255,255,0.06)', borderRadius: '4px', animation: 'pulse 1.5s ease-in-out infinite' }} />
+function Skeleton({ theme, height = 20, width }) {
+  return (
+    <div style={{
+      height,
+      width: width || '100%',
+      background: theme.inputBg,
+      borderRadius: '4px',
+      animation: 'pulse 1.5s ease-in-out infinite',
+    }} />
+  )
 }
 
-function ToggleControl({ label, value, onChange }) {
+function LastSendSummary({ theme, send }) {
+  const openRate = pct(send.opened, send.total)
+  const clickRate = pct(send.clicked, send.total)
+  const bounceRate = pct(send.bounced, send.total)
+  const bounceHigh = bounceRate !== null && bounceRate > 2
+
   return (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px', background: 'rgba(255,255,255,0.03)', borderRadius: '6px' }}>
-      <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.6)' }}>{label}</span>
-      <button
-        onClick={() => onChange(!value)}
-        style={{
-          width: '36px', height: '20px', borderRadius: '10px', border: 'none', cursor: 'pointer', position: 'relative',
-          background: value ? '#9B51E0' : 'rgba(255,255,255,0.15)', transition: 'background 0.2s',
-        }}
-      >
-        <div style={{
-          width: '16px', height: '16px', borderRadius: '50%', background: '#fff', position: 'absolute', top: '2px',
-          left: value ? '18px' : '2px', transition: 'left 0.2s',
-        }} />
-      </button>
+    <div>
+      <div style={{ marginBottom: '20px' }}>
+        <div style={{ fontSize: '17px', color: theme.textPrimary, fontWeight: 400, lineHeight: 1.4 }}>
+          {send.subject}
+        </div>
+        <div style={{ fontSize: '12px', color: theme.textMuted, marginTop: '4px' }}>
+          {fullDate(send.createdAt)}{send.batchCount > 1 ? ` · ${send.batchCount} batches` : ''}
+        </div>
+      </div>
+
+      <div className="admin-lastsend-metrics" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px' }}>
+        <Metric theme={theme} label="Sent" value={send.total.toLocaleString()} />
+        <Metric
+          theme={theme}
+          label="Open rate"
+          value={openRate !== null ? openRate.toFixed(1) + '%' : '—'}
+          sub={`${send.opened.toLocaleString()} opens`}
+        />
+        <Metric
+          theme={theme}
+          label="Click rate"
+          value={clickRate !== null ? clickRate.toFixed(1) + '%' : '—'}
+          sub={`${send.clicked.toLocaleString()} clicks`}
+        />
+        <Metric
+          theme={theme}
+          label="Bounce rate"
+          value={bounceRate !== null ? bounceRate.toFixed(1) + '%' : '—'}
+          sub={`${send.bounced.toLocaleString()} bounces`}
+          highlight={bounceHigh ? theme.danger : null}
+        />
+      </div>
+
+      <style>{`
+        @media (max-width: 640px) {
+          .admin-lastsend-metrics { grid-template-columns: repeat(2, 1fr) !important; }
+        }
+      `}</style>
     </div>
   )
 }
 
-function NumberControl({ label, value, step, min, max, onChange }) {
-  const numVal = parseFloat(value)
+function Metric({ theme, label, value, sub, highlight }) {
   return (
-    <div style={{ padding: '10px 14px', background: 'rgba(255,255,255,0.03)', borderRadius: '6px' }}>
-      <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'block', marginBottom: '8px' }}>{label}</span>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-        <button
-          onClick={() => { const v = Math.max(min, numVal - step); onChange(Number(step < 1 ? v.toFixed(1) : v)) }}
-          style={{ width: '28px', height: '28px', borderRadius: '4px', border: '1px solid rgba(255,255,255,0.1)', background: 'transparent', color: '#fff', cursor: 'pointer', fontSize: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-        >
-          -
-        </button>
-        <span style={{ fontSize: '18px', fontWeight: 400, color: '#fff', minWidth: '50px', textAlign: 'center' }}>{value}</span>
-        <button
-          onClick={() => { const v = Math.min(max, numVal + step); onChange(Number(step < 1 ? v.toFixed(1) : v)) }}
-          style={{ width: '28px', height: '28px', borderRadius: '4px', border: '1px solid rgba(255,255,255,0.1)', background: 'transparent', color: '#fff', cursor: 'pointer', fontSize: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-        >
-          +
-        </button>
+    <div>
+      <div style={{
+        fontSize: '11px',
+        color: theme.textMuted,
+        textTransform: 'uppercase',
+        letterSpacing: '0.5px',
+        marginBottom: '6px',
+      }}>{label}</div>
+      <div style={{
+        fontSize: '24px',
+        fontWeight: 400,
+        color: highlight || theme.textPrimary,
+        letterSpacing: '-0.01em',
+        lineHeight: 1.1,
+      }}>{value}</div>
+      {sub && (
+        <div style={{ fontSize: '12px', color: theme.textMuted, marginTop: '4px' }}>
+          {sub}
+        </div>
+      )}
+    </div>
+  )
+}
+
+function SendHistory({ theme, sends, expanded, setExpanded }) {
+  const cols = '2.4fr 0.6fr 0.7fr 0.8fr 0.8fr 0.7fr 0.7fr 0.3fr'
+
+  function toggle(key) {
+    setExpanded({ ...expanded, [key]: !expanded[key] })
+  }
+
+  return (
+    <div style={{ overflowX: 'auto' }}>
+      <div style={{ minWidth: '720px' }}>
+        {/* Header */}
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: cols,
+          gap: '8px',
+          padding: '8px 4px',
+          borderBottom: `1px solid ${theme.headerBorder}`,
+          fontSize: '11px',
+          color: theme.textMuted,
+          textTransform: 'uppercase',
+          letterSpacing: '0.5px',
+        }}>
+          <div>Subject</div>
+          <div>Date</div>
+          <div>Sent</div>
+          <div>Open rate</div>
+          <div>Click rate</div>
+          <div>Bounces</div>
+          <div>Status</div>
+          <div></div>
+        </div>
+
+        {sends.map((g) => {
+          const isOpen = !!expanded[g.key]
+          const canExpand = g.batchCount > 1
+          const openRate = pct(g.opened, g.total)
+          const clickRate = pct(g.clicked, g.total)
+          const bounceRate = pct(g.bounced, g.total)
+          const bounceHigh = bounceRate !== null && bounceRate > 2
+
+          return (
+            <div key={g.key}>
+              <div
+                onClick={() => canExpand && toggle(g.key)}
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: cols,
+                  gap: '8px',
+                  padding: '14px 4px',
+                  borderBottom: `1px solid ${theme.rowBorder}`,
+                  fontSize: '13px',
+                  color: theme.textSecondary,
+                  cursor: canExpand ? 'pointer' : 'default',
+                  alignItems: 'center',
+                  transition: 'background 0.1s',
+                  background: isOpen ? theme.accentBg : 'transparent',
+                }}
+                onMouseEnter={(e) => { if (canExpand && !isOpen) e.currentTarget.style.background = theme.cardBgHover }}
+                onMouseLeave={(e) => { if (canExpand && !isOpen) e.currentTarget.style.background = 'transparent' }}
+              >
+                <div style={{ color: theme.textPrimary, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {g.subject}
+                  {g.batchCount > 1 && (
+                    <span style={{ fontSize: '11px', marginLeft: '8px', color: theme.textMuted }}>
+                      {g.batchCount} batches
+                    </span>
+                  )}
+                </div>
+                <div style={{ fontSize: '12px', color: theme.textMuted }}>
+                  {shortDate(g.createdAt)}
+                </div>
+                <div>{g.total.toLocaleString()}</div>
+                <div>
+                  {openRate !== null ? openRate.toFixed(1) + '%' : '—'}
+                  <span style={{ fontSize: '11px', marginLeft: '4px', color: theme.textMuted }}>
+                    {g.opened.toLocaleString()}
+                  </span>
+                </div>
+                <div>
+                  {clickRate !== null ? clickRate.toFixed(1) + '%' : '—'}
+                  <span style={{ fontSize: '11px', marginLeft: '4px', color: theme.textMuted }}>
+                    {g.clicked.toLocaleString()}
+                  </span>
+                </div>
+                <div style={{ color: g.bounced > 0 ? theme.danger : theme.textSecondary, fontWeight: bounceHigh ? 400 : 300 }}>
+                  {g.bounced.toLocaleString()}
+                </div>
+                <div>
+                  <StatusBadge theme={theme} status={g.status} />
+                </div>
+                <div style={{ textAlign: 'right', color: theme.textMuted, fontSize: '12px' }}>
+                  {canExpand ? (isOpen ? '▾' : '▸') : ''}
+                </div>
+              </div>
+
+              {isOpen && canExpand && (
+                <div style={{ background: theme.inputBg, padding: '4px 0' }}>
+                  {g.batches.map((b, i) => {
+                    const bOpen = pct(b.opened, b.total)
+                    const bClick = pct(b.clicked, b.total)
+                    return (
+                      <div key={b.id} style={{
+                        display: 'grid',
+                        gridTemplateColumns: cols,
+                        gap: '8px',
+                        padding: '10px 4px 10px 24px',
+                        fontSize: '12px',
+                        color: theme.textMuted,
+                        borderBottom: i < g.batches.length - 1 ? `1px solid ${theme.rowBorder}` : 'none',
+                      }}>
+                        <div>Batch {g.batches.length - i}</div>
+                        <div>{shortDate(b.createdAt)}</div>
+                        <div>{b.total.toLocaleString()}</div>
+                        <div>{bOpen !== null ? bOpen.toFixed(1) + '%' : '—'}</div>
+                        <div>{bClick !== null ? bClick.toFixed(1) + '%' : '—'}</div>
+                        <div style={{ color: b.bounced > 0 ? theme.danger : theme.textMuted }}>{b.bounced}</div>
+                        <div><StatusBadge theme={theme} status={b.status} small /></div>
+                        <div></div>
+                      </div>
+                    )
+                  })}
+                </div>
+              )}
+            </div>
+          )
+        })}
       </div>
     </div>
   )
 }
 
-const cardStyle = { background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '10px', padding: '20px' }
-const sectionHeading = { fontSize: '13px', fontWeight: 400, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '16px' }
-const emptyText = { fontSize: '14px', color: 'rgba(255,255,255,0.3)', fontStyle: 'italic' }
+function StatusBadge({ theme, status, small }) {
+  // Build a faint background from the foreground colour so badges work
+  // in both light and dark themes without inspecting the mode.
+  function tint(hex) {
+    return hex + '22' // ~13% alpha
+  }
+  const palette = {
+    complete: { bg: tint(theme.success), fg: theme.success },
+    sending: { bg: tint(theme.warning), fg: theme.warning },
+    failed: { bg: tint(theme.danger), fg: theme.danger },
+    queued: { bg: theme.inputBg, fg: theme.textMuted },
+    draft: { bg: theme.inputBg, fg: theme.textMuted },
+  }
+  const p = palette[status] || palette.draft
+  return (
+    <span style={{
+      fontSize: small ? '10px' : '11px',
+      padding: small ? '1px 6px' : '2px 8px',
+      borderRadius: '3px',
+      background: p.bg,
+      color: p.fg,
+      textTransform: 'lowercase',
+      letterSpacing: '0.02em',
+    }}>
+      {status}
+    </span>
+  )
+}
+
+const emptyText = (theme) => ({ fontSize: '14px', color: theme.textMuted, fontStyle: 'italic' })

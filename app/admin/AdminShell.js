@@ -2,6 +2,7 @@
 
 import { usePathname, useRouter } from 'next/navigation'
 import { useState } from 'react'
+import { AdminThemeProvider, useAdminTheme } from '../../lib/admin-theme-context'
 
 const navItems = [
   { label: 'Overview', href: '/admin' },
@@ -15,12 +16,39 @@ const navItems = [
   { label: 'Tenders', href: '/admin/tenders' },
 ]
 
+// Pages that have been migrated to use the admin theme tokens.
+// Un-migrated pages keep the dark background so their hardcoded white
+// text stays readable in light mode. Add as pages are converted.
+const THEMED_PATHS = [
+  '/admin/newsletter',
+]
+
+function isPathThemed(pathname) {
+  return THEMED_PATHS.some(p => pathname === p || pathname.startsWith(p + '/'))
+}
+
 export default function AdminShell({ children }) {
+  return (
+    <AdminThemeProvider>
+      <ShellInner>{children}</ShellInner>
+    </AdminThemeProvider>
+  )
+}
+
+function ShellInner({ children }) {
   const rawPathname = usePathname()
-  // Normalise trailing slash so comparisons work under trailingSlash: true
   const pathname = (rawPathname || '/').replace(/\/+$/, '') || '/'
   const router = useRouter()
   const [mobileOpen, setMobileOpen] = useState(false)
+  const { theme, mode, toggleTheme } = useAdminTheme()
+  const themed = isPathThemed(pathname)
+
+  // Pages not yet migrated to the theme system stay on the dark palette so
+  // their hardcoded white text remains readable. The toggle still works
+  // globally; the visual effect rolls out as pages get migrated.
+  const mainBg = themed ? theme.pageBg : '#1a1625'
+  const mainText = themed ? theme.textPrimary : '#ffffff'
+  const mainSecondaryText = themed ? theme.textSecondary : 'rgba(255,255,255,0.65)'
 
   // Don't show shell on login page
   if (pathname === '/admin/login') {
@@ -36,9 +64,10 @@ export default function AdminShell({ children }) {
     <div style={{
       display: 'flex',
       minHeight: '100vh',
-      background: '#221C2B',
-      color: 'rgba(255,255,255,0.85)',
+      background: mainBg,
+      color: mainSecondaryText,
       fontFamily: 'var(--font-source-sans), Source Sans 3, sans-serif',
+      transition: 'background 0.2s ease',
     }}>
       {/* Mobile top bar */}
       <div
@@ -49,8 +78,8 @@ export default function AdminShell({ children }) {
           left: 0,
           right: 0,
           height: '56px',
-          background: 'rgba(34,28,43,0.98)',
-          borderBottom: '1px solid rgba(255,255,255,0.06)',
+          background: theme.sidebarBg,
+          borderBottom: `1px solid ${theme.sidebarBorder}`,
           display: 'none',
           alignItems: 'center',
           padding: '0 16px',
@@ -82,13 +111,13 @@ export default function AdminShell({ children }) {
         </span>
       </div>
 
-      {/* Sidebar */}
+      {/* Sidebar — stays dark in both modes for contrast */}
       <aside
         style={{
           width: '220px',
           flexShrink: 0,
-          background: 'rgba(255,255,255,0.04)',
-          borderRight: '1px solid rgba(255,255,255,0.06)',
+          background: theme.sidebarBg,
+          borderRight: `1px solid ${theme.sidebarBorder}`,
           display: 'flex',
           flexDirection: 'column',
           position: 'fixed',
@@ -102,7 +131,7 @@ export default function AdminShell({ children }) {
         {/* Logo area */}
         <div style={{
           padding: '24px 20px 20px',
-          borderBottom: '1px solid rgba(255,255,255,0.06)',
+          borderBottom: `1px solid ${theme.sidebarBorder}`,
         }}>
           <span style={{
             fontSize: '16px',
@@ -127,7 +156,7 @@ export default function AdminShell({ children }) {
         {/* Nav links */}
         <nav style={{ flex: 1, padding: '12px 0' }}>
           {navItems.map((item) => {
-            const isActive = pathname === item.href
+            const isActive = pathname === item.href || (item.href !== '/admin' && pathname.startsWith(item.href + '/'))
             return (
               <a
                 key={item.href}
@@ -142,7 +171,7 @@ export default function AdminShell({ children }) {
                   padding: '10px 20px',
                   fontSize: '14px',
                   fontWeight: 400,
-                  color: isActive ? '#fff' : 'rgba(255,255,255,0.5)',
+                  color: isActive ? theme.sidebarTextActive : theme.sidebarText,
                   textDecoration: 'none',
                   borderLeft: isActive ? '2px solid #9B51E0' : '2px solid transparent',
                   background: isActive ? 'rgba(155,81,224,0.08)' : 'transparent',
@@ -151,12 +180,12 @@ export default function AdminShell({ children }) {
                 onMouseEnter={(e) => {
                   if (!isActive) {
                     e.target.style.color = 'rgba(255,255,255,0.8)'
-                    e.target.style.background = 'rgba(255,255,255,0.02)'
+                    e.target.style.background = theme.sidebarHover
                   }
                 }}
                 onMouseLeave={(e) => {
                   if (!isActive) {
-                    e.target.style.color = 'rgba(255,255,255,0.5)'
+                    e.target.style.color = theme.sidebarText
                     e.target.style.background = 'transparent'
                   }
                 }}
@@ -167,11 +196,39 @@ export default function AdminShell({ children }) {
           })}
         </nav>
 
-        {/* Logout */}
+        {/* Theme toggle + logout */}
         <div style={{
           padding: '16px 20px',
-          borderTop: '1px solid rgba(255,255,255,0.06)',
+          borderTop: `1px solid ${theme.sidebarBorder}`,
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '10px',
         }}>
+          <button
+            onClick={toggleTheme}
+            style={{
+              background: 'none',
+              border: 'none',
+              color: 'rgba(255,255,255,0.5)',
+              fontSize: '13px',
+              cursor: 'pointer',
+              padding: 0,
+              fontFamily: 'inherit',
+              textAlign: 'left',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '8px',
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.color = 'rgba(255,255,255,0.85)' }}
+            onMouseLeave={(e) => { e.currentTarget.style.color = 'rgba(255,255,255,0.5)' }}
+            aria-label={mode === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+          >
+            <span aria-hidden="true" style={{ fontSize: '14px' }}>
+              {mode === 'dark' ? '☀' : '☾'}
+            </span>
+            <span>{mode === 'dark' ? 'Light mode' : 'Dark mode'}</span>
+          </button>
+
           <button
             onClick={handleLogout}
             style={{
@@ -182,6 +239,7 @@ export default function AdminShell({ children }) {
               cursor: 'pointer',
               padding: 0,
               fontFamily: 'inherit',
+              textAlign: 'left',
             }}
             onMouseEnter={(e) => { e.target.style.color = 'rgba(255,255,255,0.7)' }}
             onMouseLeave={(e) => { e.target.style.color = 'rgba(255,255,255,0.35)' }}
@@ -200,6 +258,9 @@ export default function AdminShell({ children }) {
         maxWidth: 'calc(100vw - 220px)',
         overflowX: 'hidden',
         boxSizing: 'border-box',
+        background: mainBg,
+        color: mainText,
+        transition: 'background 0.2s ease, color 0.2s ease',
       }}
         className="admin-main"
       >
@@ -221,20 +282,14 @@ export default function AdminShell({ children }) {
       )}
 
       <style>{`
-        .admin-topbar {
-          display: none;
-        }
+        .admin-topbar { display: none; }
         @media (max-width: 768px) {
-          .admin-topbar {
-            display: flex !important;
-          }
+          .admin-topbar { display: flex !important; }
           .admin-sidebar {
             transform: translateX(-100%);
             transition: transform 0.25s ease;
           }
-          .admin-sidebar--open {
-            transform: translateX(0);
-          }
+          .admin-sidebar--open { transform: translateX(0); }
           .admin-main {
             margin-left: 0 !important;
             padding: 16px !important;

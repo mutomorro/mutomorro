@@ -1,0 +1,890 @@
+'use client'
+
+import { useState, useEffect, useMemo, useRef, useCallback } from 'react'
+
+const PROMO_DEFAULTS = {
+  subject: '',
+  previewText: '',
+  heroImageUrl: '',
+  headline: '',
+  body: '',
+  ctaText: '',
+  ctaUrl: '',
+  secondaryText: '',
+}
+
+export default function NewsletterSendPage() {
+  // Step 1
+  const [template, setTemplate] = useState(null)
+
+  // Step 2 — editorial
+  const [issues, setIssues] = useState([])
+  const [issuesLoading, setIssuesLoading] = useState(false)
+  const [selectedIssueId, setSelectedIssueId] = useState('')
+
+  // Editable subject / preview (both templates)
+  const [subject, setSubject] = useState('')
+  const [previewText, setPreviewText] = useState('')
+
+  // Step 2 — promo
+  const [promo, setPromo] = useState(PROMO_DEFAULTS)
+
+  // Step 3 — audience
+  const [audiences, setAudiences] = useState([])
+  const [audiencesLoading, setAudiencesLoading] = useState(false)
+  const [selectedAudienceId, setSelectedAudienceId] = useState('')
+  const [audienceCount, setAudienceCount] = useState(null)
+  const [audienceCountLoading, setAudienceCountLoading] = useState(false)
+
+  // Step 4 — preview
+  const [previewHtml, setPreviewHtml] = useState('')
+  const [previewLoading, setPreviewLoading] = useState(false)
+  const [previewError, setPreviewError] = useState('')
+  const [previewWidth, setPreviewWidth] = useState('desktop')
+
+  // Step 5 — actions
+  const [testSending, setTestSending] = useState(false)
+  const [testResult, setTestResult] = useState(null)
+  const [confirmOpen, setConfirmOpen] = useState(false)
+  const [confirmTestSent, setConfirmTestSent] = useState(false)
+  const [issueKey, setIssueKey] = useState('')
+  const [issueKeyEdited, setIssueKeyEdited] = useState(false)
+
+  // Send progress
+  const [sending, setSending] = useState(false)
+  const [sendProgress, setSendProgress] = useState(null)
+  const [sendError, setSendError] = useState('')
+
+  // Initial load
+  useEffect(() => {
+    setIssuesLoading(true)
+    fetch('/api/admin/newsletter/issues')
+      .then((r) => r.ok ? r.json() : Promise.reject())
+      .then((d) => setIssues(d.items || []))
+      .catch(() => setIssues([]))
+      .finally(() => setIssuesLoading(false))
+
+    setAudiencesLoading(true)
+    fetch('/api/admin/newsletter/audiences')
+      .then((r) => r.ok ? r.json() : Promise.reject())
+      .then((d) => {
+        setAudiences(d.audiences || [])
+        const def = (d.audiences || []).find((a) => a.is_default)
+        if (def) setSelectedAudienceId(def.id)
+      })
+      .catch(() => setAudiences([]))
+      .finally(() => setAudiencesLoading(false))
+  }, [])
+
+  const selectedIssue = useMemo(
+    () => issues.find((i) => i.id === selectedIssueId) || null,
+    [issues, selectedIssueId]
+  )
+
+  const selectedAudience = useMemo(
+    () => audiences.find((a) => a.id === selectedAudienceId) || null,
+    [audiences, selectedAudienceId]
+  )
+
+  // When issue is selected, populate subject/preview
+  useEffect(() => {
+    if (template === 'editorial' && selectedIssue) {
+      setSubject(selectedIssue.subject || selectedIssue.title || '')
+      setPreviewText(selectedIssue.preview_text || '')
+    }
+  }, [template, selectedIssueId, selectedIssue])
+
+  // Audience count when selection changes
+  useEffect(() => {
+    if (!selectedAudienceId) { setAudienceCount(null); return }
+    const initial = audiences.find((a) => a.id === selectedAudienceId)
+    if (initial && typeof initial.count === 'number') setAudienceCount(initial.count)
+
+    setAudienceCountLoading(true)
+    fetch(`/api/admin/newsletter/audiences/${selectedAudienceId}/count`)
+      .then((r) => r.ok ? r.json() : Promise.reject())
+      .then((d) => setAudienceCount(d.count))
+      .catch(() => {})
+      .finally(() => setAudienceCountLoading(false))
+  }, [selectedAudienceId, audiences])
+
+  // Auto-generate issue_key when subject / template changes (unless user edited it)
+  useEffect(() => {
+    if (issueKeyEdited) return
+    if (template === 'editorial' && selectedIssue) {
+      const lastTag = Array.isArray(selectedIssue.tags) && selectedIssue.tags.length > 0
+        ? selectedIssue.tags[selectedIssue.tags.length - 1]
+        : slugify(subject)
+      setIssueKey(`${slugify(lastTag)}-v1`)
+    } else if (template === 'promo' && subject) {
+      setIssueKey(`promo-${slugify(subject)}-v1`)
+    } else {
+      setIssueKey('')
+    }
+  }, [template, selectedIssue, subject, issueKeyEdited])
+
+  // Sync subject from promo state
+  useEffect(() => {
+    if (template === 'promo') {
+      setSubject(promo.subject)
+      setPreviewText(promo.previewText)
+    }
+  }, [template, promo.subject, promo.previewText])
+
+  // Debounced preview rendering
+  const previewBodyRef = useRef('')
+  useEffect(() => {
+    if (!template) { setPreviewHtml(''); return }
+    if (template === 'editorial' && (!selectedIssueId || !selectedIssue?.hasContent)) {
+      setPreviewHtml('')
+      return
+    }
+    if (template === 'promo') {
+      const required = ['subject', 'previewText', 'headline', 'body', 'ctaText', 'ctaUrl']
+      for (const k of required) {
+        if (!promo[k] || !promo[k].trim()) { setPreviewHtml(''); return }
+      }
+    }
+
+    const body = JSON.stringify(buildPreviewPayload({ template, selectedIssueId, subject, previewText, promo }))
+    if (body === previewBodyRef.current) return
+    previewBodyRef.current = body
+
+    const t = setTimeout(() => {
+      setPreviewLoading(true)
+      setPreviewError('')
+      fetch('/api/admin/newsletter/preview', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body,
+      })
+        .then(async (r) => {
+          const j = await r.json()
+          if (!r.ok) throw new Error(j.error || 'Preview failed')
+          return j
+        })
+        .then((d) => setPreviewHtml(d.html))
+        .catch((e) => setPreviewError(e.message))
+        .finally(() => setPreviewLoading(false))
+    }, 500)
+    return () => clearTimeout(t)
+  }, [template, selectedIssueId, subject, previewText, promo, selectedIssue])
+
+  const canTestSend = template && (
+    (template === 'editorial' && selectedIssue?.hasContent) ||
+    (template === 'promo' && promo.subject && promo.previewText && promo.headline && promo.body && promo.ctaText && promo.ctaUrl)
+  )
+
+  const canSend = canTestSend && selectedAudienceId && audienceCount && audienceCount > 0 && issueKey
+
+  async function handleTestSend() {
+    setTestSending(true)
+    setTestResult(null)
+    try {
+      const res = await fetch('/api/admin/newsletter/test-send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(buildPreviewPayload({ template, selectedIssueId, subject, previewText, promo })),
+      })
+      const d = await res.json()
+      if (!res.ok) throw new Error(d.error || 'Test send failed')
+      setTestResult({ type: 'success', message: `Test sent to james@mutomorro.com` })
+    } catch (e) {
+      setTestResult({ type: 'error', message: e.message })
+    } finally {
+      setTestSending(false)
+    }
+  }
+
+  const pollRef = useRef(null)
+  const pollSendStatus = useCallback((sendId) => {
+    fetch(`/api/admin/newsletter/send/${sendId}/status`)
+      .then((r) => r.ok ? r.json() : Promise.reject())
+      .then((d) => {
+        setSendProgress(d)
+        if (d.status === 'complete' || d.status === 'failed') {
+          if (pollRef.current) {
+            clearInterval(pollRef.current)
+            pollRef.current = null
+          }
+          setSending(false)
+        }
+      })
+      .catch(() => {})
+  }, [])
+
+  async function handleSend() {
+    setSending(true)
+    setSendError('')
+    setSendProgress(null)
+    try {
+      const payload = {
+        ...buildPreviewPayload({ template, selectedIssueId, subject, previewText, promo }),
+        subject,
+        previewText,
+        audienceId: selectedAudienceId,
+        issueKey,
+        confirmTestSent: true,
+      }
+      const res = await fetch('/api/admin/newsletter/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      })
+      const d = await res.json()
+      if (!res.ok) throw new Error(d.error || 'Send failed')
+      setSendProgress({ sendId: d.sendId, status: 'sending', sent: 0, total: d.total })
+      setConfirmOpen(false)
+
+      // Start polling
+      pollRef.current = setInterval(() => pollSendStatus(d.sendId), 3000)
+      pollSendStatus(d.sendId)
+    } catch (e) {
+      setSendError(e.message)
+      setSending(false)
+    }
+  }
+
+  useEffect(() => () => { if (pollRef.current) clearInterval(pollRef.current) }, [])
+
+  return (
+    <div>
+      <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: '24px', flexWrap: 'wrap', gap: '12px' }}>
+        <div>
+          <h1 style={{ fontSize: '28px', fontWeight: 400, color: '#fff', letterSpacing: '-0.02em', margin: 0 }}>
+            Send newsletter
+          </h1>
+          <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.4)', margin: '6px 0 0 0' }}>
+            Pick a template, fill in the content, choose an audience, preview, then send.
+          </p>
+        </div>
+        <a href="/admin/newsletter" style={{ fontSize: '13px', color: 'rgba(255,255,255,0.45)', textDecoration: 'none' }}>
+          ← Back to newsletter
+        </a>
+      </div>
+
+      {/* Step 1 — template */}
+      <Step number={1} title="Choose a template">
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }} className="newsletter-template-grid">
+          <TemplateCard
+            active={template === 'editorial'}
+            onClick={() => setTemplate('editorial')}
+            label="Editorial"
+            description="Content-led newsletter. Pulls from your planned content."
+            iconType="editorial"
+          />
+          <TemplateCard
+            active={template === 'promo'}
+            onClick={() => setTemplate('promo')}
+            label="Promo"
+            description="Announcement or promotion. Hero image, headline, CTA."
+            iconType="promo"
+          />
+        </div>
+      </Step>
+
+      {/* Step 2 — content */}
+      {template && (
+        <Step number={2} title="Content">
+          {template === 'editorial' ? (
+            <EditorialContent
+              issues={issues}
+              loading={issuesLoading}
+              selectedIssueId={selectedIssueId}
+              onSelectIssue={setSelectedIssueId}
+              selectedIssue={selectedIssue}
+              subject={subject}
+              setSubject={setSubject}
+              previewText={previewText}
+              setPreviewText={setPreviewText}
+            />
+          ) : (
+            <PromoContent
+              promo={promo}
+              setPromo={setPromo}
+            />
+          )}
+        </Step>
+      )}
+
+      {/* Step 3 — audience */}
+      {template && (
+        <Step number={3} title="Audience">
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }} className="newsletter-audience-grid">
+            <div>
+              <label style={labelStyle}>Audience</label>
+              <select
+                value={selectedAudienceId}
+                onChange={(e) => setSelectedAudienceId(e.target.value)}
+                style={selectStyle}
+                disabled={audiencesLoading}
+              >
+                <option value="">{audiencesLoading ? 'Loading…' : 'Select an audience'}</option>
+                {audiences.map((a) => (
+                  <option key={a.id} value={a.id}>
+                    {a.name}{typeof a.count === 'number' ? ` — ${a.count.toLocaleString()}` : ''}
+                  </option>
+                ))}
+              </select>
+              {selectedAudience?.description && (
+                <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)', margin: '8px 0 0 0', lineHeight: 1.5 }}>
+                  {selectedAudience.description}
+                </p>
+              )}
+            </div>
+            <div style={{ alignSelf: 'end' }}>
+              <div style={{ padding: '14px 18px', background: 'rgba(155,81,224,0.06)', borderRadius: '6px', border: '1px solid rgba(155,81,224,0.18)' }}>
+                <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '4px' }}>
+                  Live count
+                </div>
+                <div style={{ fontSize: '28px', color: '#fff', fontWeight: 400, letterSpacing: '-0.02em' }}>
+                  {audienceCountLoading ? '…' : (audienceCount === null ? '—' : audienceCount.toLocaleString())}
+                </div>
+                <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', marginTop: '2px' }}>
+                  active subscribers in this segment
+                </div>
+              </div>
+            </div>
+          </div>
+        </Step>
+      )}
+
+      {/* Step 4 — preview */}
+      {template && (
+        <Step number={4} title="Preview">
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px', flexWrap: 'wrap', gap: '8px' }}>
+            <div style={{ display: 'inline-flex', background: 'rgba(255,255,255,0.04)', borderRadius: '6px', padding: '3px' }}>
+              {[
+                { id: 'desktop', label: 'Desktop' },
+                { id: 'mobile', label: 'Mobile' },
+              ].map((o) => (
+                <button
+                  key={o.id}
+                  onClick={() => setPreviewWidth(o.id)}
+                  style={{
+                    padding: '6px 14px',
+                    borderRadius: '4px',
+                    border: 'none',
+                    background: previewWidth === o.id ? 'rgba(155,81,224,0.2)' : 'transparent',
+                    color: previewWidth === o.id ? '#9B51E0' : 'rgba(255,255,255,0.5)',
+                    fontSize: '12px',
+                    fontFamily: 'inherit',
+                    cursor: 'pointer',
+                  }}
+                >
+                  {o.label}
+                </button>
+              ))}
+            </div>
+            {previewLoading && <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)' }}>Rendering…</span>}
+          </div>
+
+          {previewError ? (
+            <div style={{ padding: '16px', background: 'rgba(255,66,121,0.08)', borderLeft: '3px solid #FF4279', borderRadius: '4px', fontSize: '13px', color: '#FF4279' }}>
+              {previewError}
+            </div>
+          ) : !previewHtml ? (
+            <div style={{ padding: '40px 20px', textAlign: 'center', background: 'rgba(255,255,255,0.02)', borderRadius: '6px', border: '1px dashed rgba(255,255,255,0.08)' }}>
+              <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.35)', margin: 0 }}>
+                {template === 'editorial' && !selectedIssueId
+                  ? 'Select an issue to see a preview.'
+                  : template === 'editorial' && selectedIssue && !selectedIssue.hasContent
+                  ? "This issue doesn't have structured content yet. Populate content_json on the calendar item before sending."
+                  : 'Fill in the content fields above to see a preview.'}
+              </p>
+            </div>
+          ) : (
+            <div style={{ background: '#FAF6F1', borderRadius: '6px', padding: '24px', overflow: 'auto' }}>
+              <iframe
+                title="Email preview"
+                srcDoc={previewHtml}
+                style={{
+                  width: previewWidth === 'mobile' ? '375px' : '600px',
+                  height: '720px',
+                  margin: '0 auto',
+                  display: 'block',
+                  border: 'none',
+                  background: '#fff',
+                  boxShadow: '0 1px 8px rgba(0,0,0,0.08)',
+                }}
+              />
+              <p style={{ fontSize: '11px', color: 'rgba(0,0,0,0.4)', textAlign: 'center', margin: '12px 0 0 0' }}>
+                Preview is approximate. Send a test to see the exact rendering in your inbox.
+              </p>
+            </div>
+          )}
+        </Step>
+      )}
+
+      {/* Step 5 — actions */}
+      {template && (
+        <Step number={5} title="Send">
+          <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
+            <button
+              onClick={handleTestSend}
+              disabled={!canTestSend || testSending}
+              style={{
+                padding: '10px 20px',
+                borderRadius: '6px',
+                border: '1px solid rgba(255,255,255,0.12)',
+                background: 'rgba(255,255,255,0.04)',
+                color: canTestSend && !testSending ? '#fff' : 'rgba(255,255,255,0.3)',
+                fontSize: '13px',
+                fontFamily: 'inherit',
+                cursor: canTestSend && !testSending ? 'pointer' : 'not-allowed',
+              }}
+            >
+              {testSending ? 'Sending test…' : 'Send test to james@mutomorro.com'}
+            </button>
+
+            <button
+              onClick={() => setConfirmOpen(true)}
+              disabled={!canSend || sending}
+              style={{
+                padding: '10px 22px',
+                borderRadius: '6px',
+                border: 'none',
+                background: canSend && !sending ? '#9B51E0' : 'rgba(155,81,224,0.2)',
+                color: canSend && !sending ? '#fff' : 'rgba(255,255,255,0.4)',
+                fontSize: '13px',
+                fontWeight: 400,
+                fontFamily: 'inherit',
+                cursor: canSend && !sending ? 'pointer' : 'not-allowed',
+              }}
+            >
+              {sending
+                ? 'Sending…'
+                : selectedAudience && audienceCount !== null
+                  ? `Send to ${selectedAudience.name} (${audienceCount.toLocaleString()})`
+                  : 'Send to audience'}
+            </button>
+
+            {testResult && (
+              <span style={{
+                fontSize: '12px',
+                padding: '6px 12px',
+                borderRadius: '4px',
+                background: testResult.type === 'success' ? 'rgba(45,212,191,0.1)' : 'rgba(255,66,121,0.1)',
+                color: testResult.type === 'success' ? '#2DD4BF' : '#FF4279',
+              }}>
+                {testResult.message}
+              </span>
+            )}
+          </div>
+
+          {sendError && (
+            <div style={{ marginTop: '14px', padding: '12px 16px', background: 'rgba(255,66,121,0.08)', borderLeft: '3px solid #FF4279', borderRadius: '4px', fontSize: '13px', color: '#FF4279' }}>
+              {sendError}
+            </div>
+          )}
+
+          {sendProgress && (
+            <SendProgress progress={sendProgress} />
+          )}
+        </Step>
+      )}
+
+      {/* Confirmation modal */}
+      {confirmOpen && (
+        <ConfirmModal
+          template={template}
+          subject={subject}
+          audienceName={selectedAudience?.name}
+          audienceCount={audienceCount}
+          issueKey={issueKey}
+          setIssueKey={(v) => { setIssueKey(v); setIssueKeyEdited(true) }}
+          confirmTestSent={confirmTestSent}
+          setConfirmTestSent={setConfirmTestSent}
+          onCancel={() => { setConfirmOpen(false); setConfirmTestSent(false) }}
+          onConfirm={handleSend}
+          sending={sending}
+        />
+      )}
+
+      <style>{`
+        @media (max-width: 768px) {
+          .newsletter-template-grid { grid-template-columns: 1fr !important; }
+          .newsletter-audience-grid { grid-template-columns: 1fr !important; }
+        }
+      `}</style>
+    </div>
+  )
+}
+
+function buildPreviewPayload({ template, selectedIssueId, subject, previewText, promo }) {
+  if (template === 'editorial') {
+    return {
+      template,
+      content: {
+        calendarItemId: selectedIssueId,
+        subject,
+        previewText,
+      },
+    }
+  }
+  return {
+    template,
+    content: { ...promo, subject, previewText },
+  }
+}
+
+function slugify(text) {
+  return String(text || '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 60)
+}
+
+// ─── Components ────────────────────────────────────────────────────
+
+function Step({ number, title, children }) {
+  return (
+    <section style={{ ...cardStyle, marginBottom: '20px' }}>
+      <div style={{ display: 'flex', alignItems: 'baseline', gap: '12px', marginBottom: '20px' }}>
+        <span style={{
+          width: '24px', height: '24px', borderRadius: '50%',
+          background: 'rgba(155,81,224,0.15)', color: '#9B51E0',
+          fontSize: '12px', fontWeight: 400,
+          display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+          flexShrink: 0,
+        }}>
+          {number}
+        </span>
+        <h2 style={{ fontSize: '15px', fontWeight: 400, color: '#fff', margin: 0, letterSpacing: '-0.01em' }}>
+          {title}
+        </h2>
+      </div>
+      {children}
+    </section>
+  )
+}
+
+function TemplateCard({ active, onClick, label, description, iconType }) {
+  return (
+    <button
+      onClick={onClick}
+      style={{
+        textAlign: 'left',
+        padding: '20px',
+        borderRadius: '8px',
+        border: `1px solid ${active ? 'rgba(155,81,224,0.4)' : 'rgba(255,255,255,0.08)'}`,
+        background: active ? 'rgba(155,81,224,0.08)' : 'rgba(255,255,255,0.02)',
+        color: '#fff',
+        cursor: 'pointer',
+        fontFamily: 'inherit',
+        transition: 'all 0.15s ease',
+      }}
+    >
+      <div style={{ display: 'flex', gap: '14px', alignItems: 'flex-start' }}>
+        <div style={{
+          width: '36px', height: '36px', borderRadius: '6px',
+          background: active ? 'rgba(155,81,224,0.2)' : 'rgba(255,255,255,0.04)',
+          display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+          flexShrink: 0,
+        }}>
+          {iconType === 'editorial' ? <EditorialIcon active={active} /> : <PromoIcon active={active} />}
+        </div>
+        <div>
+          <div style={{ fontSize: '15px', fontWeight: 400, marginBottom: '4px' }}>{label}</div>
+          <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.5)', lineHeight: 1.5 }}>{description}</div>
+        </div>
+      </div>
+    </button>
+  )
+}
+
+function EditorialIcon({ active }) {
+  const c = active ? '#9B51E0' : 'rgba(255,255,255,0.5)'
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="1.5">
+      <line x1="5" y1="7" x2="19" y2="7" />
+      <line x1="5" y1="11" x2="19" y2="11" />
+      <line x1="5" y1="15" x2="14" y2="15" />
+    </svg>
+  )
+}
+
+function PromoIcon({ active }) {
+  const c = active ? '#9B51E0' : 'rgba(255,255,255,0.5)'
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="1.5">
+      <rect x="4" y="5" width="16" height="9" />
+      <rect x="8" y="17" width="8" height="3" rx="1" />
+    </svg>
+  )
+}
+
+function EditorialContent({ issues, loading, selectedIssueId, onSelectIssue, selectedIssue, subject, setSubject, previewText, setPreviewText }) {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+      <div>
+        <label style={labelStyle}>Newsletter issue</label>
+        <select
+          value={selectedIssueId}
+          onChange={(e) => onSelectIssue(e.target.value)}
+          style={selectStyle}
+          disabled={loading}
+        >
+          <option value="">{loading ? 'Loading issues…' : 'Select an issue'}</option>
+          {issues.map((i) => (
+            <option key={i.id} value={i.id}>
+              {i.title}{i.scheduled_date ? ` — ${i.scheduled_date}` : ''}{!i.hasContent ? ' (no content yet)' : ''}
+            </option>
+          ))}
+        </select>
+        {selectedIssue?.description && (
+          <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)', margin: '6px 0 0 0', lineHeight: 1.5 }}>
+            {selectedIssue.description}
+          </p>
+        )}
+        {selectedIssue && !selectedIssue.hasContent && (
+          <p style={{ fontSize: '12px', color: '#FF4279', margin: '8px 0 0 0', lineHeight: 1.5 }}>
+            This issue has no <code style={{ fontSize: '11px' }}>content_json</code> yet. Populate it on the calendar item before previewing or sending.
+          </p>
+        )}
+      </div>
+
+      {selectedIssueId && (
+        <>
+          <div>
+            <label style={labelStyle}>Subject line</label>
+            <input
+              type="text"
+              value={subject}
+              onChange={(e) => setSubject(e.target.value)}
+              style={inputStyle}
+              placeholder="Subject line"
+            />
+          </div>
+          <div>
+            <label style={labelStyle}>Preview text</label>
+            <input
+              type="text"
+              value={previewText}
+              onChange={(e) => setPreviewText(e.target.value)}
+              style={inputStyle}
+              placeholder="Inbox preview snippet"
+            />
+          </div>
+        </>
+      )}
+    </div>
+  )
+}
+
+function PromoContent({ promo, setPromo }) {
+  const set = (k) => (v) => setPromo({ ...promo, [k]: v })
+  const onChange = (k) => (e) => set(k)(e.target.value)
+  return (
+    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }} className="newsletter-promo-grid">
+      <Field label="Subject line" required>
+        <input type="text" value={promo.subject} onChange={onChange('subject')} style={inputStyle} />
+      </Field>
+      <Field label="Preview text" required>
+        <input type="text" value={promo.previewText} onChange={onChange('previewText')} style={inputStyle} />
+      </Field>
+      <Field label="Hero image URL" full>
+        <input type="text" value={promo.heroImageUrl} onChange={onChange('heroImageUrl')} style={inputStyle} placeholder="https://… (optional)" />
+      </Field>
+      <Field label="Headline" required full>
+        <input type="text" value={promo.headline} onChange={onChange('headline')} style={inputStyle} />
+      </Field>
+      <Field label="Body" required full>
+        <textarea
+          value={promo.body}
+          onChange={onChange('body')}
+          rows={5}
+          style={{ ...inputStyle, fontFamily: 'inherit', resize: 'vertical' }}
+          placeholder="Markdown supported. Blank lines split into paragraphs."
+        />
+      </Field>
+      <Field label="CTA text" required>
+        <input type="text" value={promo.ctaText} onChange={onChange('ctaText')} style={inputStyle} placeholder="Take the snapshot" />
+      </Field>
+      <Field label="CTA URL" required>
+        <input type="text" value={promo.ctaUrl} onChange={onChange('ctaUrl')} style={inputStyle} placeholder="https://mutomorro.com/…" />
+      </Field>
+      <Field label="Secondary text" full>
+        <textarea value={promo.secondaryText} onChange={onChange('secondaryText')} rows={3} style={{ ...inputStyle, fontFamily: 'inherit', resize: 'vertical' }} placeholder="Optional paragraph below the CTA" />
+      </Field>
+      <style>{`
+        @media (max-width: 768px) {
+          .newsletter-promo-grid { grid-template-columns: 1fr !important; }
+        }
+      `}</style>
+    </div>
+  )
+}
+
+function Field({ label, required, full, children }) {
+  return (
+    <div style={full ? { gridColumn: '1 / -1' } : {}}>
+      <label style={labelStyle}>
+        {label}{required && <span style={{ color: '#FF4279' }}> *</span>}
+      </label>
+      {children}
+    </div>
+  )
+}
+
+function SendProgress({ progress }) {
+  const pct = progress.total > 0 ? Math.min(100, (progress.sent / progress.total) * 100) : 0
+  const isComplete = progress.status === 'complete'
+  const isFailed = progress.status === 'failed'
+  return (
+    <div style={{ marginTop: '20px', padding: '18px', background: isComplete ? 'rgba(45,212,191,0.06)' : isFailed ? 'rgba(255,66,121,0.06)' : 'rgba(155,81,224,0.06)', borderRadius: '6px', border: `1px solid ${isComplete ? 'rgba(45,212,191,0.2)' : isFailed ? 'rgba(255,66,121,0.2)' : 'rgba(155,81,224,0.2)'}` }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '10px', flexWrap: 'wrap', gap: '8px' }}>
+        <span style={{ fontSize: '14px', color: '#fff', fontWeight: 400 }}>
+          {isComplete ? 'Send complete' : isFailed ? 'Send failed' : 'Sending…'}
+        </span>
+        <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.6)' }}>
+          {progress.sent.toLocaleString()} / {progress.total.toLocaleString()}
+        </span>
+      </div>
+      <div style={{ height: '6px', background: 'rgba(255,255,255,0.08)', borderRadius: '3px', overflow: 'hidden' }}>
+        <div style={{ width: `${pct}%`, height: '100%', background: isComplete ? '#2DD4BF' : isFailed ? '#FF4279' : '#9B51E0', transition: 'width 0.5s ease' }} />
+      </div>
+      {progress.issueKey && (
+        <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.35)', marginTop: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+          Issue key: {progress.issueKey}
+        </div>
+      )}
+    </div>
+  )
+}
+
+function ConfirmModal({ template, subject, audienceName, audienceCount, issueKey, setIssueKey, confirmTestSent, setConfirmTestSent, onCancel, onConfirm, sending }) {
+  return (
+    <div
+      onClick={onCancel}
+      style={{
+        position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', zIndex: 2000,
+        display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px',
+      }}
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        style={{
+          background: '#2A2336', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '10px',
+          padding: '28px', maxWidth: '480px', width: '100%',
+        }}
+      >
+        <h3 style={{ fontSize: '18px', fontWeight: 400, color: '#fff', margin: '0 0 6px 0' }}>
+          Confirm send
+        </h3>
+        <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.5)', margin: '0 0 20px 0', lineHeight: 1.5 }}>
+          You are about to send to {audienceCount?.toLocaleString() || '—'} real subscribers. This cannot be undone.
+        </p>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '20px', fontSize: '13px' }}>
+          <Row label="Template" value={template === 'editorial' ? 'Editorial' : 'Promo'} />
+          <Row label="Subject" value={subject} />
+          <Row label="Audience" value={`${audienceName || '—'} (${audienceCount?.toLocaleString() || '—'} subscribers)`} />
+          <div>
+            <label style={{ ...labelStyle, marginBottom: '6px' }}>Issue key</label>
+            <input
+              type="text"
+              value={issueKey}
+              onChange={(e) => setIssueKey(e.target.value)}
+              style={inputStyle}
+            />
+            <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.35)', margin: '4px 0 0 0' }}>
+              No subscriber will receive the same issue key twice.
+            </p>
+          </div>
+        </div>
+
+        <label style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '12px', background: 'rgba(255,255,255,0.03)', borderRadius: '6px', cursor: 'pointer', marginBottom: '20px' }}>
+          <input
+            type="checkbox"
+            checked={confirmTestSent}
+            onChange={(e) => setConfirmTestSent(e.target.checked)}
+            style={{ width: '16px', height: '16px', cursor: 'pointer' }}
+          />
+          <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.8)' }}>
+            I&apos;ve sent a test and reviewed it
+          </span>
+        </label>
+
+        <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+          <button
+            onClick={onCancel}
+            disabled={sending}
+            style={{
+              padding: '10px 18px', borderRadius: '6px',
+              border: '1px solid rgba(255,255,255,0.12)', background: 'transparent', color: 'rgba(255,255,255,0.7)',
+              fontSize: '13px', fontFamily: 'inherit', cursor: sending ? 'not-allowed' : 'pointer',
+            }}
+          >
+            Cancel
+          </button>
+          <button
+            onClick={onConfirm}
+            disabled={!confirmTestSent || !issueKey || sending}
+            style={{
+              padding: '10px 22px', borderRadius: '6px', border: 'none',
+              background: confirmTestSent && issueKey && !sending ? '#9B51E0' : 'rgba(155,81,224,0.2)',
+              color: confirmTestSent && issueKey && !sending ? '#fff' : 'rgba(255,255,255,0.4)',
+              fontSize: '13px', fontFamily: 'inherit',
+              cursor: confirmTestSent && issueKey && !sending ? 'pointer' : 'not-allowed',
+            }}
+          >
+            {sending ? 'Starting…' : 'Send now'}
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function Row({ label, value }) {
+  return (
+    <div style={{ display: 'flex', gap: '10px' }}>
+      <span style={{ width: '90px', flexShrink: 0, fontSize: '12px', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.5px', paddingTop: '2px' }}>
+        {label}
+      </span>
+      <span style={{ flex: 1, fontSize: '14px', color: '#fff', wordBreak: 'break-word' }}>
+        {value || '—'}
+      </span>
+    </div>
+  )
+}
+
+const cardStyle = {
+  background: 'rgba(255,255,255,0.04)',
+  border: '1px solid rgba(255,255,255,0.06)',
+  borderRadius: '10px',
+  padding: '24px',
+}
+
+const labelStyle = {
+  display: 'block',
+  fontSize: '11px',
+  color: 'rgba(255,255,255,0.45)',
+  textTransform: 'uppercase',
+  letterSpacing: '0.5px',
+  marginBottom: '6px',
+}
+
+const inputStyle = {
+  display: 'block',
+  width: '100%',
+  padding: '10px 12px',
+  borderRadius: '6px',
+  border: '1px solid rgba(255,255,255,0.1)',
+  background: 'rgba(255,255,255,0.02)',
+  color: '#fff',
+  fontSize: '14px',
+  fontFamily: 'inherit',
+  boxSizing: 'border-box',
+}
+
+const selectStyle = {
+  ...inputStyle,
+  appearance: 'none',
+  backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none'%3E%3Cpath d='M1 1L6 6L11 1' stroke='rgba(255,255,255,0.4)' stroke-width='1.5'/%3E%3C/svg%3E\")",
+  backgroundRepeat: 'no-repeat',
+  backgroundPosition: 'right 12px center',
+  paddingRight: '36px',
+}

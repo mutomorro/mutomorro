@@ -53,6 +53,8 @@ next-env.d.ts
 /scripts/*
 # Tracked migration scripts (kept for reference / re-runnability):
 !/scripts/sanity-remove-trailing-slashes.js
+!/scripts/migrations/
+!/scripts/migrations/**
 /wp-export/
 import-contacts.mjs
 import-apollo-csv.js

@@ -16,17 +16,6 @@ const navItems = [
   { label: 'Tenders', href: '/admin/tenders' },
 ]
 
-// Pages that have been migrated to use the admin theme tokens.
-// Un-migrated pages keep the dark background so their hardcoded white
-// text stays readable in light mode. Add as pages are converted.
-const THEMED_PATHS = [
-  '/admin/newsletter',
-]
-
-function isPathThemed(pathname) {
-  return THEMED_PATHS.some(p => pathname === p || pathname.startsWith(p + '/'))
-}
-
 export default function AdminShell({ children }) {
   return (
     <AdminThemeProvider>
@@ -41,14 +30,11 @@ function ShellInner({ children }) {
   const router = useRouter()
   const [mobileOpen, setMobileOpen] = useState(false)
   const { theme, mode, toggleTheme } = useAdminTheme()
-  const themed = isPathThemed(pathname)
 
-  // Pages not yet migrated to the theme system stay on the dark palette so
-  // their hardcoded white text remains readable. The toggle still works
-  // globally; the visual effect rolls out as pages get migrated.
-  const mainBg = themed ? theme.pageBg : '#1a1625'
-  const mainText = themed ? theme.textPrimary : '#ffffff'
-  const mainSecondaryText = themed ? theme.textSecondary : 'rgba(255,255,255,0.65)'
+  // All admin pages are themed — main bg always follows the active theme.
+  const mainBg = theme.pageBg
+  const mainText = theme.textPrimary
+  const mainSecondaryText = theme.textSecondary
 
   // Don't show shell on login page
   if (pathname === '/admin/login') {

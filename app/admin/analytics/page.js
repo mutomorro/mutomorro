@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useAdminTheme } from '../../../lib/admin-theme-context'
 
 // Known acronyms for tool name formatting
 const ACRONYMS = ['pestle', 'adkar', 'dmaic', 'vuca', 'pdca', 'swot', 'raci', 'smart', 'okr', 'okrs', 'kpi', 'kpis']
@@ -25,6 +26,7 @@ function formatReferrer(domain) {
 }
 
 export default function AnalyticsPage() {
+  const { theme } = useAdminTheme()
   const [data, setData] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -43,39 +45,56 @@ export default function AnalyticsPage() {
       .finally(() => setLoading(false))
   }, [])
 
+  const cardStyle = {
+    background: theme.cardBg,
+    border: `1px solid ${theme.cardBorder}`,
+    borderRadius: '10px',
+    padding: '20px',
+  }
+
+  const sectionHeading = {
+    fontSize: '13px',
+    fontWeight: 400,
+    color: theme.textMuted,
+    textTransform: 'uppercase',
+    letterSpacing: '0.5px',
+    marginBottom: '16px',
+  }
+
   return (
     <div>
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap', gap: '12px' }}>
-        <h1 style={{ fontSize: '28px', fontWeight: 400, color: '#fff', letterSpacing: '-0.02em' }}>
+        <h1 style={{ fontSize: '28px', fontWeight: 400, color: theme.textPrimary, letterSpacing: '-0.02em' }}>
           Analytics
         </h1>
-        <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.35)' }}>
+        <div style={{ fontSize: '13px', color: theme.textMuted }}>
           Last 30 days from PostHog
         </div>
       </div>
 
       {error && (
-        <div style={{ ...cardStyle, borderLeft: '3px solid #FF4279', marginBottom: '24px' }}>
-          <p style={{ color: '#FF4279', fontSize: '14px', margin: 0 }}>{error}</p>
+        <div style={{ ...cardStyle, borderLeft: `3px solid ${theme.danger}`, marginBottom: '24px' }}>
+          <p style={{ color: theme.danger, fontSize: '14px', margin: 0 }}>{error}</p>
         </div>
       )}
 
       {/* Row 1 - Summary cards */}
       <div className="admin-metrics-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '24px' }}>
-        <SummaryCard label="Visitors today" value={loading ? null : data?.today?.visitors} colour="#2DD4BF" />
-        <SummaryCard label="Pageviews today" value={loading ? null : data?.today?.pageviews} colour="#9B51E0" />
-        <SummaryCard label="Downloads today" value={loading ? null : data?.today?.downloads} colour="#F59E0B" />
-        <SummaryCard label="Signups today" value={loading ? null : data?.today?.signups} colour="#FF4279" />
+        <SummaryCard theme={theme} label="Visitors today" value={loading ? null : data?.today?.visitors} colour={theme.success} />
+        <SummaryCard theme={theme} label="Pageviews today" value={loading ? null : data?.today?.pageviews} colour={theme.accent} />
+        <SummaryCard theme={theme} label="Downloads today" value={loading ? null : data?.today?.downloads} colour="#F59E0B" />
+        <SummaryCard theme={theme} label="Signups today" value={loading ? null : data?.today?.signups} colour={theme.danger} />
       </div>
 
       {/* Row 2 - Visitors and pageviews chart */}
       <div style={{ ...cardStyle, marginBottom: '24px' }}>
         <h2 style={sectionHeading}>Visitors &amp; pageviews - 30 days</h2>
         {loading ? (
-          <Skeleton height="200px" />
+          <Skeleton theme={theme} height="200px" />
         ) : (
           <DualLineChart
+            theme={theme}
             visitors={data?.visitorsOverTime || []}
             pageviews={data?.pageviewsOverTime || []}
           />
@@ -89,11 +108,12 @@ export default function AnalyticsPage() {
           {/* Exploration traffic */}
           <div style={cardStyle}>
             <h2 style={sectionHeading}>Exploration traffic</h2>
-            <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.3)', marginBottom: '12px', marginTop: '-8px' }}>
+            <p style={{ fontSize: '12px', color: theme.textLabel, marginBottom: '12px', marginTop: '-8px' }}>
               People exploring what Mutomorro does
             </p>
-            {loading ? <Skeleton /> : (
+            {loading ? <Skeleton theme={theme} /> : (
               <PageList
+                theme={theme}
                 pages={data?.topPagesExploration || []}
                 formatter={formatPagePath}
                 highlightNonHomepage
@@ -104,11 +124,12 @@ export default function AnalyticsPage() {
           {/* Tool traffic */}
           <div style={cardStyle}>
             <h2 style={sectionHeading}>Tool traffic</h2>
-            <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.3)', marginBottom: '12px', marginTop: '-8px' }}>
+            <p style={{ fontSize: '12px', color: theme.textLabel, marginBottom: '12px', marginTop: '-8px' }}>
               People who found a template via search
             </p>
-            {loading ? <Skeleton /> : (
+            {loading ? <Skeleton theme={theme} /> : (
               <PageList
+                theme={theme}
                 pages={(data?.topToolPages || []).slice(0, 10)}
                 formatter={(path) => formatToolName(path)}
               />
@@ -121,8 +142,9 @@ export default function AnalyticsPage() {
           {/* Referrers */}
           <div style={cardStyle}>
             <h2 style={sectionHeading}>Top referrers</h2>
-            {loading ? <Skeleton /> : (
+            {loading ? <Skeleton theme={theme} /> : (
               <DataTable
+                theme={theme}
                 rows={(data?.referralSources || []).map(r => ({ label: formatReferrer(r.label), count: r.count }))}
                 countLabel="Views"
               />
@@ -132,8 +154,9 @@ export default function AnalyticsPage() {
           {/* Countries */}
           <div style={cardStyle}>
             <h2 style={sectionHeading}>Top countries</h2>
-            {loading ? <Skeleton /> : (
+            {loading ? <Skeleton theme={theme} /> : (
               <DataTable
+                theme={theme}
                 rows={data?.countries || []}
                 countLabel="Views"
               />
@@ -143,8 +166,8 @@ export default function AnalyticsPage() {
           {/* Devices */}
           <div style={cardStyle}>
             <h2 style={sectionHeading}>Devices</h2>
-            {loading ? <Skeleton /> : (
-              <DeviceBar devices={data?.devices || []} />
+            {loading ? <Skeleton theme={theme} /> : (
+              <DeviceBar theme={theme} devices={data?.devices || []} />
             )}
           </div>
         </div>
@@ -153,8 +176,8 @@ export default function AnalyticsPage() {
       {/* Row 4 - Custom events */}
       <div style={cardStyle}>
         <h2 style={sectionHeading}>Conversions - 30 days</h2>
-        {loading ? <Skeleton height="160px" /> : (
-          <CustomEventsTable events={data?.customEvents || []} />
+        {loading ? <Skeleton theme={theme} height="160px" /> : (
+          <CustomEventsTable theme={theme} events={data?.customEvents || []} />
         )}
       </div>
 
@@ -185,16 +208,22 @@ export default function AnalyticsPage() {
 }
 
 // --- Summary card ---
-function SummaryCard({ label, value, colour }) {
+function SummaryCard({ theme, label, value, colour }) {
+  const cardStyle = {
+    background: theme.cardBg,
+    border: `1px solid ${theme.cardBorder}`,
+    borderRadius: '10px',
+    padding: '20px',
+  }
   return (
     <div style={cardStyle}>
-      <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '8px' }}>
+      <div style={{ fontSize: '12px', color: theme.textMuted, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '8px' }}>
         {label}
       </div>
       {value === null ? (
-        <div style={{ height: '28px', width: '60px', background: 'rgba(255,255,255,0.06)', borderRadius: '4px', animation: 'pulse 1.5s ease-in-out infinite' }} />
+        <div style={{ height: '28px', width: '60px', background: theme.cardBg, borderRadius: '4px', animation: 'pulse 1.5s ease-in-out infinite' }} />
       ) : (
-        <div style={{ fontSize: '28px', fontWeight: 500, color: colour || '#fff' }}>
+        <div style={{ fontSize: '28px', fontWeight: 500, color: colour || theme.textPrimary }}>
           {typeof value === 'number' ? value.toLocaleString() : value}
         </div>
       )}
@@ -203,7 +232,8 @@ function SummaryCard({ label, value, colour }) {
 }
 
 // --- Dual line chart (visitors + pageviews) ---
-function DualLineChart({ visitors, pageviews }) {
+function DualLineChart({ theme, visitors, pageviews }) {
+  const emptyText = { fontSize: '14px', color: theme.textLabel, fontStyle: 'italic' }
   if (!visitors.length && !pageviews.length) {
     return <p style={emptyText}>No data yet</p>
   }
@@ -230,25 +260,25 @@ function DualLineChart({ visitors, pageviews }) {
   return (
     <div>
       <div style={{ display: 'flex', gap: '16px', marginBottom: '12px' }}>
-        <span style={{ fontSize: '12px', color: '#2DD4BF' }}>&#9644; Visitors</span>
-        <span style={{ fontSize: '12px', color: '#9B51E0' }}>&#9644; Pageviews</span>
+        <span style={{ fontSize: '12px', color: theme.success }}>&#9644; Visitors</span>
+        <span style={{ fontSize: '12px', color: theme.accent }}>&#9644; Pageviews</span>
       </div>
       <svg viewBox={`0 0 100 ${chartHeight}`} preserveAspectRatio="none" style={{ width: '100%', height: '180px' }}>
         {/* Grid lines */}
         {[0, 0.25, 0.5, 0.75, 1].map(f => (
-          <line key={f} x1="0" x2="100" y1={chartHeight - f * (chartHeight - 20)} y2={chartHeight - f * (chartHeight - 20)} stroke="rgba(255,255,255,0.05)" strokeWidth="0.3" />
+          <line key={f} x1="0" x2="100" y1={chartHeight - f * (chartHeight - 20)} y2={chartHeight - f * (chartHeight - 20)} stroke={theme.rowBorder} strokeWidth="0.3" />
         ))}
         {/* Pageviews line */}
-        <path d={buildPath(pageviews)} fill="none" stroke="#9B51E0" strokeWidth="0.6" vectorEffect="non-scaling-stroke" />
+        <path d={buildPath(pageviews)} fill="none" stroke={theme.accent} strokeWidth="0.6" vectorEffect="non-scaling-stroke" />
         {/* Visitors line */}
-        <path d={buildPath(visitors)} fill="none" stroke="#2DD4BF" strokeWidth="0.6" vectorEffect="non-scaling-stroke" />
+        <path d={buildPath(visitors)} fill="none" stroke={theme.success} strokeWidth="0.6" vectorEffect="non-scaling-stroke" />
       </svg>
       <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '4px' }}>
         {labelIndices.map(idx => {
           const d = dateLabels[idx]
           if (!d) return null
           return (
-            <span key={idx} style={{ fontSize: '11px', color: 'rgba(255,255,255,0.3)' }}>
+            <span key={idx} style={{ fontSize: '11px', color: theme.textLabel }}>
               {new Date(d.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
             </span>
           )
@@ -259,7 +289,8 @@ function DualLineChart({ visitors, pageviews }) {
 }
 
 // --- Page list (for traffic split) ---
-function PageList({ pages, formatter, highlightNonHomepage }) {
+function PageList({ theme, pages, formatter, highlightNonHomepage }) {
+  const emptyText = { fontSize: '14px', color: theme.textLabel, fontStyle: 'italic' }
   if (!pages || pages.length === 0) {
     return <p style={emptyText}>No data yet</p>
   }
@@ -278,12 +309,12 @@ function PageList({ pages, formatter, highlightNonHomepage }) {
               justifyContent: 'space-between',
               alignItems: 'center',
               padding: '7px 0',
-              borderBottom: '1px solid rgba(255,255,255,0.03)',
+              borderBottom: `1px solid ${theme.rowBorder}`,
             }}
           >
             <span style={{
               fontSize: '13px',
-              color: isInteresting ? '#2DD4BF' : 'rgba(255,255,255,0.65)',
+              color: isInteresting ? theme.success : theme.textSecondary,
               overflow: 'hidden',
               textOverflow: 'ellipsis',
               whiteSpace: 'nowrap',
@@ -291,7 +322,7 @@ function PageList({ pages, formatter, highlightNonHomepage }) {
             }}>
               {displayName}
             </span>
-            <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.4)', flexShrink: 0, marginLeft: '8px' }}>
+            <span style={{ fontSize: '13px', color: theme.textMuted, flexShrink: 0, marginLeft: '8px' }}>
               {p.count.toLocaleString()}
             </span>
           </div>
@@ -302,7 +333,25 @@ function PageList({ pages, formatter, highlightNonHomepage }) {
 }
 
 // --- Generic data table ---
-function DataTable({ rows, countLabel = 'Count' }) {
+function DataTable({ theme, rows, countLabel = 'Count' }) {
+  const emptyText = { fontSize: '14px', color: theme.textLabel, fontStyle: 'italic' }
+  const thStyle = {
+    fontSize: '11px',
+    fontWeight: 400,
+    color: theme.textLabel,
+    textTransform: 'uppercase',
+    letterSpacing: '0.5px',
+    padding: '6px 0',
+    borderBottom: `1px solid ${theme.headerBorder}`,
+    textAlign: 'left',
+  }
+  const tdStyle = {
+    fontSize: '13px',
+    color: theme.textSecondary,
+    padding: '8px 0',
+    borderBottom: `1px solid ${theme.rowBorder}`,
+  }
+
   if (!rows || rows.length === 0) {
     return <p style={emptyText}>No data yet</p>
   }
@@ -323,7 +372,7 @@ function DataTable({ rows, countLabel = 'Count' }) {
                 {r.label || 'Unknown'}
               </span>
             </td>
-            <td style={{ ...tdStyle, textAlign: 'right', color: 'rgba(255,255,255,0.5)' }}>
+            <td style={{ ...tdStyle, textAlign: 'right', color: theme.textMuted }}>
               {r.count.toLocaleString()}
             </td>
           </tr>
@@ -334,13 +383,14 @@ function DataTable({ rows, countLabel = 'Count' }) {
 }
 
 // --- Device breakdown bar ---
-function DeviceBar({ devices }) {
+function DeviceBar({ theme, devices }) {
+  const emptyText = { fontSize: '14px', color: theme.textLabel, fontStyle: 'italic' }
   if (!devices || devices.length === 0) {
     return <p style={emptyText}>No data yet</p>
   }
 
   const total = devices.reduce((sum, d) => sum + d.count, 0)
-  const colours = { Desktop: '#9B51E0', Mobile: '#2DD4BF', Tablet: '#F59E0B' }
+  const colours = { Desktop: theme.accent, Mobile: theme.success, Tablet: '#F59E0B' }
 
   return (
     <div>
@@ -350,15 +400,15 @@ function DeviceBar({ devices }) {
             key={i}
             style={{
               width: `${total > 0 ? (d.count / total) * 100 : 0}%`,
-              background: colours[d.label] || 'rgba(255,255,255,0.2)',
+              background: colours[d.label] || theme.textLabel,
             }}
           />
         ))}
       </div>
       <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
         {devices.map((d, i) => (
-          <span key={i} style={{ fontSize: '12px', color: 'rgba(255,255,255,0.5)' }}>
-            <span style={{ color: colours[d.label] || '#fff' }}>&#9679;</span>{' '}
+          <span key={i} style={{ fontSize: '12px', color: theme.textSecondary }}>
+            <span style={{ color: colours[d.label] || theme.textPrimary }}>&#9679;</span>{' '}
             {d.label}: {total > 0 ? Math.round((d.count / total) * 100) : 0}%
           </span>
         ))}
@@ -368,7 +418,8 @@ function DeviceBar({ devices }) {
 }
 
 // --- Custom events table ---
-function CustomEventsTable({ events }) {
+function CustomEventsTable({ theme, events }) {
+  const emptyText = { fontSize: '14px', color: theme.textLabel, fontStyle: 'italic' }
   if (!events || events.length === 0) {
     return <p style={emptyText}>No conversion data yet</p>
   }
@@ -381,10 +432,10 @@ function CustomEventsTable({ events }) {
   }
 
   const eventColours = {
-    tool_download: '#9B51E0',
+    tool_download: theme.accent,
     resource_download: '#F59E0B',
-    newsletter_signup: '#2DD4BF',
-    contact_form_submitted: '#FF4279',
+    newsletter_signup: theme.success,
+    contact_form_submitted: theme.danger,
   }
 
   return (
@@ -392,10 +443,10 @@ function CustomEventsTable({ events }) {
       <div className="admin-conversions-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '20px' }}>
         {events.map((e, i) => (
           <div key={i} style={{ padding: '12px 0' }}>
-            <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '4px' }}>
+            <div style={{ fontSize: '11px', color: theme.textMuted, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '4px' }}>
               {eventLabels[e.event] || e.event}
             </div>
-            <div style={{ fontSize: '24px', fontWeight: 500, color: eventColours[e.event] || '#fff' }}>
+            <div style={{ fontSize: '24px', fontWeight: 500, color: eventColours[e.event] || theme.textPrimary }}>
               {e.total.toLocaleString()}
             </div>
           </div>
@@ -405,7 +456,7 @@ function CustomEventsTable({ events }) {
       {/* Sparklines for each event */}
       <div className="admin-conversions-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px' }}>
         {events.map((e, i) => (
-          <Sparkline key={i} data={e.days} colour={eventColours[e.event] || '#9B51E0'} />
+          <Sparkline key={i} data={e.days} colour={eventColours[e.event] || theme.accent} />
         ))}
       </div>
     </div>
@@ -432,47 +483,6 @@ function Sparkline({ data, colour }) {
 }
 
 // --- Skeleton loader ---
-function Skeleton({ height = '120px' }) {
-  return <div style={{ height, background: 'rgba(255,255,255,0.04)', borderRadius: '4px', animation: 'pulse 1.5s ease-in-out infinite' }} />
-}
-
-// --- Shared styles ---
-const cardStyle = {
-  background: 'rgba(255,255,255,0.04)',
-  border: '1px solid rgba(255,255,255,0.06)',
-  borderRadius: '10px',
-  padding: '20px',
-}
-
-const sectionHeading = {
-  fontSize: '13px',
-  fontWeight: 400,
-  color: 'rgba(255,255,255,0.4)',
-  textTransform: 'uppercase',
-  letterSpacing: '0.5px',
-  marginBottom: '16px',
-}
-
-const thStyle = {
-  fontSize: '11px',
-  fontWeight: 400,
-  color: 'rgba(255,255,255,0.3)',
-  textTransform: 'uppercase',
-  letterSpacing: '0.5px',
-  padding: '6px 0',
-  borderBottom: '1px solid rgba(255,255,255,0.06)',
-  textAlign: 'left',
-}
-
-const tdStyle = {
-  fontSize: '13px',
-  color: 'rgba(255,255,255,0.65)',
-  padding: '8px 0',
-  borderBottom: '1px solid rgba(255,255,255,0.03)',
-}
-
-const emptyText = {
-  fontSize: '14px',
-  color: 'rgba(255,255,255,0.3)',
-  fontStyle: 'italic',
+function Skeleton({ theme, height = '120px' }) {
+  return <div style={{ height, background: theme.cardBg, borderRadius: '4px', animation: 'pulse 1.5s ease-in-out infinite' }} />
 }

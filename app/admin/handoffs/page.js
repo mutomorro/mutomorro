@@ -1,19 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-
-const priorityColours = {
-  high: '#FF4279',
-  medium: '#F59E0B',
-  low: '#2DD4BF',
-}
-
-const typeBadgeColours = {
-  lead: { bg: 'rgba(155,81,224,0.15)', text: '#C9A4F0' },
-  task: { bg: 'rgba(245,158,11,0.15)', text: '#F59E0B' },
-  idea: { bg: 'rgba(45,212,191,0.15)', text: '#2DD4BF' },
-  question: { bg: 'rgba(59,130,246,0.15)', text: '#60A5FA' },
-}
+import { useAdminTheme } from '../../../lib/admin-theme-context'
 
 const projectLabels = {
   'command-centre': 'Command Centre',
@@ -47,6 +35,7 @@ function relativeTime(dateStr) {
 }
 
 export default function HandoffsPage() {
+  const { theme } = useAdminTheme()
   const [handoffs, setHandoffs] = useState([])
   const [counts, setCounts] = useState({ open: 0, pickedUp: 0, completedThisWeek: 0 })
   const [loading, setLoading] = useState(true)
@@ -147,28 +136,83 @@ export default function HandoffsPage() {
     }
   }
 
+  const cardStyle = {
+    background: theme.cardBg,
+    border: `1px solid ${theme.cardBorder}`,
+    borderRadius: '10px',
+    padding: '20px',
+  }
+
+  const labelStyle = {
+    display: 'block',
+    fontSize: '11px',
+    fontWeight: 400,
+    color: theme.textMuted,
+    textTransform: 'uppercase',
+    letterSpacing: '0.1em',
+    marginBottom: '6px',
+  }
+
+  const inputStyle = {
+    width: '100%',
+    padding: '10px 12px',
+    background: theme.inputBg,
+    border: `1px solid ${theme.cardBorder}`,
+    borderRadius: '0',
+    color: theme.textPrimary,
+    fontSize: '14px',
+    fontFamily: 'inherit',
+    outline: 'none',
+    boxSizing: 'border-box',
+  }
+
+  const filterStyle = {
+    padding: '7px 10px',
+    background: theme.inputBg,
+    border: `1px solid ${theme.cardBorder}`,
+    borderRadius: '0',
+    color: theme.textSecondary,
+    fontSize: '13px',
+    fontFamily: 'inherit',
+    outline: 'none',
+    cursor: 'pointer',
+  }
+
+  const priorityColours = {
+    high: theme.danger,
+    medium: '#F59E0B',
+    low: theme.success,
+  }
+
+  const typeBadgeColours = {
+    lead: { bg: theme.accentBg, text: theme.accent },
+    task: { bg: 'rgba(245,158,11,0.15)', text: '#F59E0B' },
+    idea: { bg: 'rgba(45,212,191,0.15)', text: theme.success },
+    question: { bg: 'rgba(59,130,246,0.15)', text: '#60A5FA' },
+  }
+
   return (
     <div>
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px' }}>
         <div>
-          <h1 style={{ fontSize: '28px', fontWeight: 400, color: '#fff', letterSpacing: '-0.02em', marginBottom: '4px' }}>
+          <h1 style={{ fontSize: '28px', fontWeight: 400, color: theme.textPrimary, letterSpacing: '-0.02em', marginBottom: '4px' }}>
             Handoffs
           </h1>
-          <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.4)' }}>Cross-project tasks and leads</p>
+          <p style={{ fontSize: '14px', color: theme.textMuted }}>Cross-project tasks and leads</p>
         </div>
       </div>
 
       {/* Summary cards */}
       <div className="admin-metrics-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', marginBottom: '24px' }}>
-        <MetricCard label="Open" value={loading ? null : counts.open} colour={counts.open > 0 ? '#F59E0B' : null} />
-        <MetricCard label="Picked up" value={loading ? null : counts.pickedUp} colour={counts.pickedUp > 0 ? '#9B51E0' : null} />
-        <MetricCard label="Completed this week" value={loading ? null : counts.completedThisWeek} colour={counts.completedThisWeek > 0 ? '#2DD4BF' : null} />
+        <MetricCard theme={theme} label="Open" value={loading ? null : counts.open} colour={counts.open > 0 ? '#F59E0B' : null} />
+        <MetricCard theme={theme} label="Picked up" value={loading ? null : counts.pickedUp} colour={counts.pickedUp > 0 ? theme.accent : null} />
+        <MetricCard theme={theme} label="Completed this week" value={loading ? null : counts.completedThisWeek} colour={counts.completedThisWeek > 0 ? theme.success : null} />
       </div>
 
       {error && (
-        <div style={{ ...cardStyle, borderLeft: '3px solid #FF4279', padding: '16px 20px', marginBottom: '24px' }}>
-          <p style={{ fontSize: '14px', color: '#FF4279' }}>Failed to load handoffs. Try refreshing.</p>
+        <div style={{ ...cardStyle, borderLeft: `3px solid ${theme.danger}`, padding: '16px 20px', marginBottom: '24px' }}>
+          <p style={{ fontSize: '14px', color: theme.danger }}>Failed to load handoffs. Try refreshing.</p>
         </div>
       )}
 
@@ -179,7 +223,7 @@ export default function HandoffsPage() {
           style={{
             background: 'none',
             border: 'none',
-            color: '#fff',
+            color: theme.textPrimary,
             fontSize: '14px',
             fontWeight: 400,
             cursor: 'pointer',
@@ -191,7 +235,7 @@ export default function HandoffsPage() {
             width: '100%',
           }}
         >
-          <span style={{ fontSize: '18px', color: 'rgba(255,255,255,0.4)', transition: 'transform 0.2s', transform: formOpen ? 'rotate(45deg)' : 'rotate(0deg)' }}>+</span>
+          <span style={{ fontSize: '18px', color: theme.textMuted, transition: 'transform 0.2s', transform: formOpen ? 'rotate(45deg)' : 'rotate(0deg)' }}>+</span>
           Add handoff
         </button>
 
@@ -249,7 +293,7 @@ export default function HandoffsPage() {
                   disabled={saving || !formTitle.trim()}
                   style={{
                     padding: '10px 24px',
-                    background: '#9B51E0',
+                    background: theme.accent,
                     border: 'none',
                     color: '#fff',
                     fontSize: '14px',
@@ -290,7 +334,7 @@ export default function HandoffsPage() {
 
         <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '8px' }}>
           <label
-            style={{ fontSize: '13px', color: 'rgba(255,255,255,0.4)', cursor: 'pointer', userSelect: 'none', display: 'flex', alignItems: 'center', gap: '6px' }}
+            style={{ fontSize: '13px', color: theme.textMuted, cursor: 'pointer', userSelect: 'none', display: 'flex', alignItems: 'center', gap: '6px' }}
           >
             <span
               onClick={() => setShowCompleted(!showCompleted)}
@@ -298,7 +342,7 @@ export default function HandoffsPage() {
                 width: '32px',
                 height: '18px',
                 borderRadius: '9px',
-                background: showCompleted ? '#9B51E0' : 'rgba(255,255,255,0.12)',
+                background: showCompleted ? theme.accent : theme.cardBorder,
                 display: 'inline-block',
                 position: 'relative',
                 cursor: 'pointer',
@@ -329,7 +373,7 @@ export default function HandoffsPage() {
           ))
         ) : handoffs.length === 0 ? (
           <div style={{ ...cardStyle, textAlign: 'center', padding: '40px 20px' }}>
-            <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.3)', fontStyle: 'italic' }}>
+            <p style={{ fontSize: '14px', color: theme.textLabel, fontStyle: 'italic' }}>
               No open handoffs. Everything&apos;s been picked up.
             </p>
           </div>
@@ -355,10 +399,10 @@ export default function HandoffsPage() {
                     <div style={{
                       fontSize: '15px',
                       fontWeight: 400,
-                      color: '#fff',
+                      color: theme.textPrimary,
                       marginBottom: '6px',
                       textDecoration: isDone ? 'line-through' : 'none',
-                      textDecorationColor: 'rgba(255,255,255,0.3)',
+                      textDecorationColor: theme.textLabel,
                     }}>
                       {h.title}
                     </div>
@@ -366,9 +410,9 @@ export default function HandoffsPage() {
                     {/* Meta row */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
                       {/* Source → Target */}
-                      <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.45)' }}>
+                      <span style={{ fontSize: '12px', color: theme.textMuted }}>
                         {projectLabels[h.source_project] || h.source_project}
-                        <span style={{ margin: '0 4px', color: 'rgba(255,255,255,0.2)' }}>→</span>
+                        <span style={{ margin: '0 4px', color: theme.textLabel }}>→</span>
                         {projectLabels[h.target_project] || h.target_project}
                       </span>
 
@@ -390,7 +434,7 @@ export default function HandoffsPage() {
                       {h.contacts && (
                         <a
                           href={`/admin/contacts?search=${encodeURIComponent((h.contacts.first_name || '') + ' ' + (h.contacts.last_name || ''))}`}
-                          style={{ fontSize: '12px', color: '#9B51E0', textDecoration: 'none' }}
+                          style={{ fontSize: '12px', color: theme.accent, textDecoration: 'none' }}
                         >
                           {`${h.contacts.first_name || ''} ${h.contacts.last_name || ''}`.trim()}
                         </a>
@@ -398,13 +442,13 @@ export default function HandoffsPage() {
 
                       {/* Organisation */}
                       {h.organisations && (
-                        <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.35)' }}>
+                        <span style={{ fontSize: '12px', color: theme.textMuted }}>
                           {h.organisations.name}
                         </span>
                       )}
 
                       {/* Time */}
-                      <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.25)' }}>
+                      <span style={{ fontSize: '11px', color: theme.textLabel }}>
                         {relativeTime(h.created_at)}
                       </span>
                     </div>
@@ -417,7 +461,7 @@ export default function HandoffsPage() {
                           style={{
                             background: 'none',
                             border: 'none',
-                            color: 'rgba(255,255,255,0.35)',
+                            color: theme.textMuted,
                             fontSize: '12px',
                             cursor: 'pointer',
                             padding: 0,
@@ -427,7 +471,7 @@ export default function HandoffsPage() {
                           {isExpanded ? 'Hide detail ▴' : 'Show detail ▾'}
                         </button>
                         {isExpanded && (
-                          <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.5)', marginTop: '6px', lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>
+                          <p style={{ fontSize: '13px', color: theme.textSecondary, marginTop: '6px', lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>
                             {h.detail}
                           </p>
                         )}
@@ -439,15 +483,15 @@ export default function HandoffsPage() {
                   <div style={{ display: 'flex', gap: '6px', flexShrink: 0 }}>
                     {h.status === 'open' && (
                       <>
-                        <StatusButton label="Pick up" onClick={() => updateStatus(h.id, 'picked-up')} colour="#9B51E0" />
-                        <StatusButton label="Dismiss" onClick={() => updateStatus(h.id, 'dismissed')} colour="rgba(255,255,255,0.15)" />
+                        <StatusButton label="Pick up" onClick={() => updateStatus(h.id, 'picked-up')} colour={theme.accent} />
+                        <StatusButton label="Dismiss" onClick={() => updateStatus(h.id, 'dismissed')} colour={theme.cardBorder} />
                       </>
                     )}
                     {h.status === 'picked-up' && (
-                      <StatusButton label="Done" onClick={() => updateStatus(h.id, 'done')} colour="#2DD4BF" />
+                      <StatusButton label="Done" onClick={() => updateStatus(h.id, 'done')} colour={theme.success} />
                     )}
                     {isDone && (
-                      <StatusButton label="Reopen" onClick={() => updateStatus(h.id, 'open')} colour="rgba(255,255,255,0.15)" />
+                      <StatusButton label="Reopen" onClick={() => updateStatus(h.id, 'open')} colour={theme.cardBorder} />
                     )}
                   </div>
                 </div>
@@ -480,12 +524,18 @@ export default function HandoffsPage() {
   )
 }
 
-function MetricCard({ label, value, colour }) {
+function MetricCard({ theme, label, value, colour }) {
+  const cardStyle = {
+    background: theme.cardBg,
+    border: `1px solid ${theme.cardBorder}`,
+    borderRadius: '10px',
+    padding: '20px',
+  }
   return (
     <div style={cardStyle}>
       <div style={{
         fontSize: '12px',
-        color: 'rgba(255,255,255,0.4)',
+        color: theme.textMuted,
         textTransform: 'uppercase',
         letterSpacing: '0.5px',
         marginBottom: '8px',
@@ -493,9 +543,9 @@ function MetricCard({ label, value, colour }) {
         {label}
       </div>
       {value === null ? (
-        <div style={{ width: '40px', height: '28px', background: 'rgba(255,255,255,0.06)', borderRadius: '4px', animation: 'pulse 1.5s ease-in-out infinite' }} />
+        <div style={{ width: '40px', height: '28px', background: theme.cardBg, borderRadius: '4px', animation: 'pulse 1.5s ease-in-out infinite' }} />
       ) : (
-        <div style={{ fontSize: '28px', fontWeight: 500, color: colour || '#fff' }}>
+        <div style={{ fontSize: '28px', fontWeight: 500, color: colour || theme.textPrimary }}>
           {value}
         </div>
       )}
@@ -527,46 +577,4 @@ function StatusButton({ label, onClick, colour }) {
       {label}
     </button>
   )
-}
-
-const cardStyle = {
-  background: 'rgba(255,255,255,0.04)',
-  border: '1px solid rgba(255,255,255,0.06)',
-  borderRadius: '10px',
-  padding: '20px',
-}
-
-const labelStyle = {
-  display: 'block',
-  fontSize: '11px',
-  fontWeight: 400,
-  color: 'rgba(255,255,255,0.4)',
-  textTransform: 'uppercase',
-  letterSpacing: '0.1em',
-  marginBottom: '6px',
-}
-
-const inputStyle = {
-  width: '100%',
-  padding: '10px 12px',
-  background: 'rgba(255,255,255,0.06)',
-  border: '1px solid rgba(255,255,255,0.1)',
-  borderRadius: '0',
-  color: '#fff',
-  fontSize: '14px',
-  fontFamily: 'inherit',
-  outline: 'none',
-  boxSizing: 'border-box',
-}
-
-const filterStyle = {
-  padding: '7px 10px',
-  background: 'rgba(255,255,255,0.06)',
-  border: '1px solid rgba(255,255,255,0.08)',
-  borderRadius: '0',
-  color: 'rgba(255,255,255,0.7)',
-  fontSize: '13px',
-  fontFamily: 'inherit',
-  outline: 'none',
-  cursor: 'pointer',
 }

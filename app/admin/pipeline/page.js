@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useAdminTheme } from '../../../lib/admin-theme-context'
 
 const pipelineStatuses = [
   { key: 'new', label: 'New', colour: 'rgba(155,81,224,0.15)' },
@@ -26,6 +27,7 @@ function relativeTime(dateStr) {
 }
 
 export default function PipelinePage() {
+  const { theme } = useAdminTheme()
   const [orgs, setOrgs] = useState([])
   const [loading, setLoading] = useState(true)
   const [selectedOrg, setSelectedOrg] = useState(null)
@@ -147,16 +149,35 @@ export default function PipelinePage() {
     }
   })
 
+  const sectionHeading = {
+    fontSize: '11px',
+    color: theme.textMuted,
+    textTransform: 'uppercase',
+    letterSpacing: '0.5px',
+    marginBottom: '10px',
+  }
+
+  const miniInput = {
+    padding: '6px 8px',
+    background: theme.inputBg,
+    border: `1px solid ${theme.cardBorder}`,
+    borderRadius: '0',
+    color: theme.textPrimary,
+    fontSize: '12px',
+    fontFamily: 'inherit',
+    outline: 'none',
+  }
+
   return (
     <div>
-      <h1 style={{ fontSize: '28px', fontWeight: 400, color: '#fff', letterSpacing: '-0.02em', marginBottom: '24px' }}>
+      <h1 style={{ fontSize: '28px', fontWeight: 400, color: theme.textPrimary, letterSpacing: '-0.02em', marginBottom: '24px' }}>
         Pipeline
       </h1>
 
       {loading ? (
         <div style={{ display: 'flex', gap: '12px', overflowX: 'auto' }}>
           {[1, 2, 3, 4, 5, 6].map((i) => (
-            <div key={i} style={{ flex: '1 0 140px', minWidth: '140px', height: '200px', background: 'rgba(255,255,255,0.04)', borderRadius: '8px', animation: 'pulse 1.5s ease-in-out infinite' }} />
+            <div key={i} style={{ flex: '1 0 140px', minWidth: '140px', height: '200px', background: theme.cardBg, borderRadius: '8px', animation: 'pulse 1.5s ease-in-out infinite' }} />
           ))}
         </div>
       ) : (
@@ -173,7 +194,7 @@ export default function PipelinePage() {
                   marginBottom: '10px',
                   padding: '0 4px',
                 }}>
-                  <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.45)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                  <span style={{ fontSize: '12px', color: theme.textMuted, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                     {status.label}
                   </span>
                   <span style={{
@@ -195,34 +216,34 @@ export default function PipelinePage() {
                       onClick={() => openDetail(org)}
                       style={{
                         padding: '12px',
-                        background: selectedOrg?.id === org.id ? 'rgba(155,81,224,0.1)' : 'rgba(255,255,255,0.04)',
-                        border: selectedOrg?.id === org.id ? '1px solid rgba(155,81,224,0.3)' : '1px solid rgba(255,255,255,0.06)',
+                        background: selectedOrg?.id === org.id ? theme.accentBg : theme.cardBg,
+                        border: selectedOrg?.id === org.id ? `1px solid ${theme.accentBorder}` : `1px solid ${theme.cardBorder}`,
                         borderLeft: `3px solid ${status.colour}`,
                         borderRadius: '6px',
                         cursor: 'pointer',
                         transition: 'background 0.15s',
                       }}
-                      onMouseEnter={(e) => { if (selectedOrg?.id !== org.id) e.currentTarget.style.background = 'rgba(255,255,255,0.06)' }}
-                      onMouseLeave={(e) => { if (selectedOrg?.id !== org.id) e.currentTarget.style.background = 'rgba(255,255,255,0.04)' }}
+                      onMouseEnter={(e) => { if (selectedOrg?.id !== org.id) e.currentTarget.style.background = theme.cardBgHover }}
+                      onMouseLeave={(e) => { if (selectedOrg?.id !== org.id) e.currentTarget.style.background = theme.cardBg }}
                     >
-                      <div style={{ fontSize: '14px', fontWeight: 400, color: '#fff', marginBottom: '4px' }}>
+                      <div style={{ fontSize: '14px', fontWeight: 400, color: theme.textPrimary, marginBottom: '4px' }}>
                         {org.name}
                       </div>
                       {org.sector && (
-                        <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.35)', marginBottom: '6px' }}>
+                        <div style={{ fontSize: '12px', color: theme.textMuted, marginBottom: '6px' }}>
                           {org.sector}
                         </div>
                       )}
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.3)' }}>
+                        <span style={{ fontSize: '11px', color: theme.textLabel }}>
                           {org.contact_count} contact{org.contact_count !== 1 ? 's' : ''}
                         </span>
-                        <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.25)' }}>
+                        <span style={{ fontSize: '11px', color: theme.textLabel }}>
                           {relativeTime(org.last_interaction_date)}
                         </span>
                       </div>
                       {org.contact_names && org.contact_names.length > 0 && (
-                        <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', marginTop: '4px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        <div style={{ fontSize: '11px', color: theme.textMuted, marginTop: '4px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                           {org.contact_names.slice(0, 3).join(', ')}
                           {org.contact_names.length > 3 && ` +${org.contact_names.length - 3} more`}
                         </div>
@@ -242,10 +263,10 @@ export default function PipelinePage() {
                           marginTop: '8px',
                           width: '100%',
                           padding: '4px 6px',
-                          background: 'rgba(255,255,255,0.04)',
-                          border: '1px solid rgba(255,255,255,0.08)',
+                          background: theme.cardBg,
+                          border: `1px solid ${theme.cardBorder}`,
                           borderRadius: '0',
-                          color: 'rgba(255,255,255,0.5)',
+                          color: theme.textSecondary,
                           fontSize: '11px',
                           fontFamily: 'inherit',
                           cursor: 'pointer',
@@ -259,7 +280,7 @@ export default function PipelinePage() {
                   ))}
 
                   {items.length === 0 && (
-                    <div style={{ padding: '20px 12px', textAlign: 'center', fontSize: '12px', color: 'rgba(255,255,255,0.15)', fontStyle: 'italic' }}>
+                    <div style={{ padding: '20px 12px', textAlign: 'center', fontSize: '12px', color: theme.textLabel, fontStyle: 'italic' }}>
                       Empty
                     </div>
                   )}
@@ -274,15 +295,15 @@ export default function PipelinePage() {
       {selectedOrg && (
         <div style={{
           marginTop: '24px',
-          background: 'rgba(255,255,255,0.04)',
-          border: '1px solid rgba(255,255,255,0.06)',
+          background: theme.cardBg,
+          border: `1px solid ${theme.cardBorder}`,
           borderRadius: '10px',
           padding: '24px',
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
             <div>
-              <h2 style={{ fontSize: '20px', fontWeight: 400, color: '#fff', marginBottom: '4px' }}>{selectedOrg.name}</h2>
-              <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.4)', display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+              <h2 style={{ fontSize: '20px', fontWeight: 400, color: theme.textPrimary, marginBottom: '4px' }}>{selectedOrg.name}</h2>
+              <div style={{ fontSize: '13px', color: theme.textMuted, display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
                 {selectedOrg.sector && <span>{selectedOrg.sector}</span>}
                 {selectedOrg.size && <span>{selectedOrg.size}</span>}
                 {selectedOrg.website && <span>{selectedOrg.website}</span>}
@@ -291,20 +312,20 @@ export default function PipelinePage() {
             </div>
             <button
               onClick={() => setSelectedOrg(null)}
-              style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.3)', fontSize: '18px', cursor: 'pointer', fontFamily: 'inherit' }}
+              style={{ background: 'none', border: 'none', color: theme.textLabel, fontSize: '18px', cursor: 'pointer', fontFamily: 'inherit' }}
             >
               ✕
             </button>
           </div>
 
           {selectedOrg.notes && (
-            <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.5)', marginBottom: '16px', padding: '10px 12px', background: 'rgba(255,255,255,0.03)', borderRadius: '4px' }}>
+            <div style={{ fontSize: '13px', color: theme.textSecondary, marginBottom: '16px', padding: '10px 12px', background: theme.cardBgHover, borderRadius: '4px' }}>
               {selectedOrg.notes}
             </div>
           )}
 
           {detailLoading ? (
-            <div style={{ height: '60px', background: 'rgba(255,255,255,0.04)', borderRadius: '4px', animation: 'pulse 1.5s ease-in-out infinite' }} />
+            <div style={{ height: '60px', background: theme.cardBgHover, borderRadius: '4px', animation: 'pulse 1.5s ease-in-out infinite' }} />
           ) : (
             <div className="admin-pipeline-detail-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
               {/* Contacts */}
@@ -313,16 +334,16 @@ export default function PipelinePage() {
                 {detailContacts.length > 0 ? (
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                     {detailContacts.slice(0, 10).map((c) => (
-                      <div key={c.id} style={{ fontSize: '13px', padding: '6px 0', borderBottom: '1px solid rgba(255,255,255,0.03)', display: 'flex', justifyContent: 'space-between' }}>
-                        <span style={{ color: 'rgba(255,255,255,0.7)' }}>
+                      <div key={c.id} style={{ fontSize: '13px', padding: '6px 0', borderBottom: `1px solid ${theme.rowBorder}`, display: 'flex', justifyContent: 'space-between' }}>
+                        <span style={{ color: theme.textSecondary }}>
                           {[c.first_name, c.last_name].filter(Boolean).join(' ') || c.signup_email}
                         </span>
-                        <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.3)' }}>{c.role || ''}</span>
+                        <span style={{ fontSize: '12px', color: theme.textLabel }}>{c.role || ''}</span>
                       </div>
                     ))}
                   </div>
                 ) : (
-                  <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.25)', fontStyle: 'italic' }}>No contacts matched</p>
+                  <p style={{ fontSize: '13px', color: theme.textLabel, fontStyle: 'italic' }}>No contacts matched</p>
                 )}
               </div>
 
@@ -334,9 +355,9 @@ export default function PipelinePage() {
                     onClick={() => setShowIntForm(!showIntForm)}
                     style={{
                       padding: '3px 10px',
-                      background: 'rgba(155,81,224,0.15)',
+                      background: theme.accentBg,
                       border: 'none',
-                      color: '#9B51E0',
+                      color: theme.accent,
                       fontSize: '12px',
                       cursor: 'pointer',
                       fontFamily: 'inherit',
@@ -348,13 +369,13 @@ export default function PipelinePage() {
                 </div>
 
                 {showIntForm && (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', padding: '10px', background: 'rgba(255,255,255,0.03)', borderRadius: '4px', marginBottom: '10px' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', padding: '10px', background: theme.cardBgHover, borderRadius: '4px', marginBottom: '10px' }}>
                     <select value={intType} onChange={(e) => setIntType(e.target.value)} style={miniInput}>
                       {interactionTypes.map((t) => <option key={t} value={t}>{t}</option>)}
                     </select>
                     <input type="text" value={intSummary} onChange={(e) => setIntSummary(e.target.value)} placeholder="Summary" style={miniInput} />
                     <input type="text" value={intNextAction} onChange={(e) => setIntNextAction(e.target.value)} placeholder="Next action (optional)" style={miniInput} />
-                    <button onClick={logInteraction} disabled={saving || !intSummary.trim()} style={{ padding: '5px 12px', background: '#9B51E0', border: 'none', color: '#fff', fontSize: '12px', cursor: 'pointer', fontFamily: 'inherit', borderRadius: '0' }}>
+                    <button onClick={logInteraction} disabled={saving || !intSummary.trim()} style={{ padding: '5px 12px', background: theme.accent, border: 'none', color: '#fff', fontSize: '12px', cursor: 'pointer', fontFamily: 'inherit', borderRadius: '0' }}>
                       {saving ? 'Saving...' : 'Save'}
                     </button>
                   </div>
@@ -363,13 +384,13 @@ export default function PipelinePage() {
                 {detailInteractions.length > 0 ? (
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                     {detailInteractions.map((int) => (
-                      <div key={int.id} style={{ padding: '6px 0', borderBottom: '1px solid rgba(255,255,255,0.03)' }}>
+                      <div key={int.id} style={{ padding: '6px 0', borderBottom: `1px solid ${theme.rowBorder}` }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}>
                           <span>
-                            <span style={{ color: '#9B51E0', fontSize: '12px' }}>{int.type}</span>
-                            <span style={{ color: 'rgba(255,255,255,0.55)', marginLeft: '8px' }}>{int.summary}</span>
+                            <span style={{ color: theme.accent, fontSize: '12px' }}>{int.type}</span>
+                            <span style={{ color: theme.textSecondary, marginLeft: '8px' }}>{int.summary}</span>
                           </span>
-                          <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.25)', flexShrink: 0 }}>{relativeTime(int.created_at)}</span>
+                          <span style={{ fontSize: '11px', color: theme.textLabel, flexShrink: 0 }}>{relativeTime(int.created_at)}</span>
                         </div>
                         {int.next_action && (
                           <div style={{ fontSize: '11px', color: '#F59E0B', marginTop: '2px' }}>Next: {int.next_action}</div>
@@ -378,7 +399,7 @@ export default function PipelinePage() {
                     ))}
                   </div>
                 ) : (
-                  <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.25)', fontStyle: 'italic' }}>No interactions yet</p>
+                  <p style={{ fontSize: '13px', color: theme.textLabel, fontStyle: 'italic' }}>No interactions yet</p>
                 )}
               </div>
             </div>
@@ -396,23 +417,4 @@ export default function PipelinePage() {
       `}</style>
     </div>
   )
-}
-
-const sectionHeading = {
-  fontSize: '11px',
-  color: 'rgba(255,255,255,0.35)',
-  textTransform: 'uppercase',
-  letterSpacing: '0.5px',
-  marginBottom: '10px',
-}
-
-const miniInput = {
-  padding: '6px 8px',
-  background: 'rgba(255,255,255,0.06)',
-  border: '1px solid rgba(255,255,255,0.08)',
-  borderRadius: '0',
-  color: '#fff',
-  fontSize: '12px',
-  fontFamily: 'inherit',
-  outline: 'none',
 }

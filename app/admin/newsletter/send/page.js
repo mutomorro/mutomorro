@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useMemo, useRef, useCallback } from 'react'
+import { useAdminTheme } from '../../../../lib/admin-theme-context'
 
 const PROMO_DEFAULTS = {
   subject: '',
@@ -14,6 +15,8 @@ const PROMO_DEFAULTS = {
 }
 
 export default function NewsletterSendPage() {
+  const { theme } = useAdminTheme()
+
   // Step 1
   const [template, setTemplate] = useState(null)
 
@@ -251,22 +254,23 @@ export default function NewsletterSendPage() {
     <div>
       <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: '24px', flexWrap: 'wrap', gap: '12px' }}>
         <div>
-          <h1 style={{ fontSize: '28px', fontWeight: 400, color: '#fff', letterSpacing: '-0.02em', margin: 0 }}>
+          <h1 style={{ fontSize: '28px', fontWeight: 400, color: theme.textPrimary, letterSpacing: '-0.02em', margin: 0 }}>
             Send newsletter
           </h1>
-          <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.4)', margin: '6px 0 0 0' }}>
+          <p style={{ fontSize: '13px', color: theme.textMuted, margin: '6px 0 0 0' }}>
             Pick a template, fill in the content, choose an audience, preview, then send.
           </p>
         </div>
-        <a href="/admin/newsletter" style={{ fontSize: '13px', color: 'rgba(255,255,255,0.45)', textDecoration: 'none' }}>
+        <a href="/admin/newsletter" style={{ fontSize: '13px', color: theme.textMuted, textDecoration: 'none' }}>
           ← Back to newsletter
         </a>
       </div>
 
       {/* Step 1 — template */}
-      <Step number={1} title="Choose a template">
+      <Step number={1} title="Choose a template" theme={theme}>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }} className="newsletter-template-grid">
           <TemplateCard
+            theme={theme}
             active={template === 'editorial'}
             onClick={() => setTemplate('editorial')}
             label="Editorial"
@@ -274,6 +278,7 @@ export default function NewsletterSendPage() {
             iconType="editorial"
           />
           <TemplateCard
+            theme={theme}
             active={template === 'promo'}
             onClick={() => setTemplate('promo')}
             label="Promo"
@@ -285,9 +290,10 @@ export default function NewsletterSendPage() {
 
       {/* Step 2 — content */}
       {template && (
-        <Step number={2} title="Content">
+        <Step number={2} title="Content" theme={theme}>
           {template === 'editorial' ? (
             <EditorialContent
+              theme={theme}
               issues={issues}
               loading={issuesLoading}
               selectedIssueId={selectedIssueId}
@@ -300,6 +306,7 @@ export default function NewsletterSendPage() {
             />
           ) : (
             <PromoContent
+              theme={theme}
               promo={promo}
               setPromo={setPromo}
             />
@@ -309,14 +316,14 @@ export default function NewsletterSendPage() {
 
       {/* Step 3 — audience */}
       {template && (
-        <Step number={3} title="Audience">
+        <Step number={3} title="Audience" theme={theme}>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }} className="newsletter-audience-grid">
             <div>
-              <label style={labelStyle}>Audience</label>
+              <label style={getLabelStyle(theme)}>Audience</label>
               <select
                 value={selectedAudienceId}
                 onChange={(e) => setSelectedAudienceId(e.target.value)}
-                style={selectStyle}
+                style={getSelectStyle(theme)}
                 disabled={audiencesLoading}
               >
                 <option value="">{audiencesLoading ? 'Loading…' : 'Select an audience'}</option>
@@ -327,20 +334,20 @@ export default function NewsletterSendPage() {
                 ))}
               </select>
               {selectedAudience?.description && (
-                <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)', margin: '8px 0 0 0', lineHeight: 1.5 }}>
+                <p style={{ fontSize: '12px', color: theme.textMuted, margin: '8px 0 0 0', lineHeight: 1.5 }}>
                   {selectedAudience.description}
                 </p>
               )}
             </div>
             <div style={{ alignSelf: 'end' }}>
-              <div style={{ padding: '14px 18px', background: 'rgba(155,81,224,0.06)', borderRadius: '6px', border: '1px solid rgba(155,81,224,0.18)' }}>
-                <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '4px' }}>
+              <div style={{ padding: '14px 18px', background: theme.accentBg, borderRadius: '6px', border: `1px solid ${theme.accentBorder}` }}>
+                <div style={{ fontSize: '11px', color: theme.textMuted, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '4px' }}>
                   Live count
                 </div>
-                <div style={{ fontSize: '28px', color: '#fff', fontWeight: 400, letterSpacing: '-0.02em' }}>
+                <div style={{ fontSize: '28px', color: theme.textPrimary, fontWeight: 400, letterSpacing: '-0.02em' }}>
                   {audienceCountLoading ? '…' : (audienceCount === null ? '—' : audienceCount.toLocaleString())}
                 </div>
-                <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', marginTop: '2px' }}>
+                <div style={{ fontSize: '11px', color: theme.textMuted, marginTop: '2px' }}>
                   active subscribers in this segment
                 </div>
               </div>
@@ -351,9 +358,9 @@ export default function NewsletterSendPage() {
 
       {/* Step 4 — preview */}
       {template && (
-        <Step number={4} title="Preview">
+        <Step number={4} title="Preview" theme={theme}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px', flexWrap: 'wrap', gap: '8px' }}>
-            <div style={{ display: 'inline-flex', background: 'rgba(255,255,255,0.04)', borderRadius: '6px', padding: '3px' }}>
+            <div style={{ display: 'inline-flex', background: theme.cardBg, borderRadius: '6px', padding: '3px' }}>
               {[
                 { id: 'desktop', label: 'Desktop' },
                 { id: 'mobile', label: 'Mobile' },
@@ -365,8 +372,8 @@ export default function NewsletterSendPage() {
                     padding: '6px 14px',
                     borderRadius: '4px',
                     border: 'none',
-                    background: previewWidth === o.id ? 'rgba(155,81,224,0.2)' : 'transparent',
-                    color: previewWidth === o.id ? '#9B51E0' : 'rgba(255,255,255,0.5)',
+                    background: previewWidth === o.id ? theme.accentBg : 'transparent',
+                    color: previewWidth === o.id ? theme.accent : theme.textSecondary,
                     fontSize: '12px',
                     fontFamily: 'inherit',
                     cursor: 'pointer',
@@ -376,16 +383,16 @@ export default function NewsletterSendPage() {
                 </button>
               ))}
             </div>
-            {previewLoading && <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)' }}>Rendering…</span>}
+            {previewLoading && <span style={{ fontSize: '12px', color: theme.textMuted }}>Rendering…</span>}
           </div>
 
           {previewError ? (
-            <div style={{ padding: '16px', background: 'rgba(255,66,121,0.08)', borderLeft: '3px solid #FF4279', borderRadius: '4px', fontSize: '13px', color: '#FF4279' }}>
+            <div style={{ padding: '16px', background: 'rgba(255,66,121,0.08)', borderLeft: `3px solid ${theme.danger}`, borderRadius: '4px', fontSize: '13px', color: theme.danger }}>
               {previewError}
             </div>
           ) : !previewHtml ? (
-            <div style={{ padding: '40px 20px', textAlign: 'center', background: 'rgba(255,255,255,0.02)', borderRadius: '6px', border: '1px dashed rgba(255,255,255,0.08)' }}>
-              <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.35)', margin: 0 }}>
+            <div style={{ padding: '40px 20px', textAlign: 'center', background: theme.cardBg, borderRadius: '6px', border: `1px dashed ${theme.cardBorder}` }}>
+              <p style={{ fontSize: '14px', color: theme.textMuted, margin: 0 }}>
                 {template === 'editorial' && !selectedIssueId
                   ? 'Select an issue to see a preview.'
                   : template === 'editorial' && selectedIssue && !selectedIssue.hasContent
@@ -418,7 +425,7 @@ export default function NewsletterSendPage() {
 
       {/* Step 5 — actions */}
       {template && (
-        <Step number={5} title="Send">
+        <Step number={5} title="Send" theme={theme}>
           <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
             <button
               onClick={handleTestSend}
@@ -426,9 +433,9 @@ export default function NewsletterSendPage() {
               style={{
                 padding: '10px 20px',
                 borderRadius: '6px',
-                border: '1px solid rgba(255,255,255,0.12)',
-                background: 'rgba(255,255,255,0.04)',
-                color: canTestSend && !testSending ? '#fff' : 'rgba(255,255,255,0.3)',
+                border: `1px solid ${theme.cardBorder}`,
+                background: theme.cardBg,
+                color: canTestSend && !testSending ? theme.textPrimary : theme.textLabel,
                 fontSize: '13px',
                 fontFamily: 'inherit',
                 cursor: canTestSend && !testSending ? 'pointer' : 'not-allowed',
@@ -444,8 +451,8 @@ export default function NewsletterSendPage() {
                 padding: '10px 22px',
                 borderRadius: '6px',
                 border: 'none',
-                background: canSend && !sending ? '#9B51E0' : 'rgba(155,81,224,0.2)',
-                color: canSend && !sending ? '#fff' : 'rgba(255,255,255,0.4)',
+                background: canSend && !sending ? theme.accent : theme.accentBg,
+                color: canSend && !sending ? '#fff' : theme.textMuted,
                 fontSize: '13px',
                 fontWeight: 400,
                 fontFamily: 'inherit',
@@ -465,7 +472,7 @@ export default function NewsletterSendPage() {
                 padding: '6px 12px',
                 borderRadius: '4px',
                 background: testResult.type === 'success' ? 'rgba(45,212,191,0.1)' : 'rgba(255,66,121,0.1)',
-                color: testResult.type === 'success' ? '#2DD4BF' : '#FF4279',
+                color: testResult.type === 'success' ? theme.success : theme.danger,
               }}>
                 {testResult.message}
               </span>
@@ -473,13 +480,13 @@ export default function NewsletterSendPage() {
           </div>
 
           {sendError && (
-            <div style={{ marginTop: '14px', padding: '12px 16px', background: 'rgba(255,66,121,0.08)', borderLeft: '3px solid #FF4279', borderRadius: '4px', fontSize: '13px', color: '#FF4279' }}>
+            <div style={{ marginTop: '14px', padding: '12px 16px', background: 'rgba(255,66,121,0.08)', borderLeft: `3px solid ${theme.danger}`, borderRadius: '4px', fontSize: '13px', color: theme.danger }}>
               {sendError}
             </div>
           )}
 
           {sendProgress && (
-            <SendProgress progress={sendProgress} />
+            <SendProgress theme={theme} progress={sendProgress} />
           )}
         </Step>
       )}
@@ -487,6 +494,7 @@ export default function NewsletterSendPage() {
       {/* Confirmation modal */}
       {confirmOpen && (
         <ConfirmModal
+          theme={theme}
           template={template}
           subject={subject}
           audienceName={selectedAudience?.name}
@@ -538,20 +546,20 @@ function slugify(text) {
 
 // ─── Components ────────────────────────────────────────────────────
 
-function Step({ number, title, children }) {
+function Step({ number, title, theme, children }) {
   return (
-    <section style={{ ...cardStyle, marginBottom: '20px' }}>
+    <section style={{ ...getCardStyle(theme), marginBottom: '20px' }}>
       <div style={{ display: 'flex', alignItems: 'baseline', gap: '12px', marginBottom: '20px' }}>
         <span style={{
           width: '24px', height: '24px', borderRadius: '50%',
-          background: 'rgba(155,81,224,0.15)', color: '#9B51E0',
+          background: theme.accentBg, color: theme.accent,
           fontSize: '12px', fontWeight: 400,
           display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
           flexShrink: 0,
         }}>
           {number}
         </span>
-        <h2 style={{ fontSize: '15px', fontWeight: 400, color: '#fff', margin: 0, letterSpacing: '-0.01em' }}>
+        <h2 style={{ fontSize: '15px', fontWeight: 400, color: theme.textPrimary, margin: 0, letterSpacing: '-0.01em' }}>
           {title}
         </h2>
       </div>
@@ -560,7 +568,7 @@ function Step({ number, title, children }) {
   )
 }
 
-function TemplateCard({ active, onClick, label, description, iconType }) {
+function TemplateCard({ theme, active, onClick, label, description, iconType }) {
   return (
     <button
       onClick={onClick}
@@ -568,9 +576,9 @@ function TemplateCard({ active, onClick, label, description, iconType }) {
         textAlign: 'left',
         padding: '20px',
         borderRadius: '8px',
-        border: `1px solid ${active ? 'rgba(155,81,224,0.4)' : 'rgba(255,255,255,0.08)'}`,
-        background: active ? 'rgba(155,81,224,0.08)' : 'rgba(255,255,255,0.02)',
-        color: '#fff',
+        border: `1px solid ${active ? theme.accentBorder : theme.cardBorder}`,
+        background: active ? theme.accentBg : theme.cardBg,
+        color: theme.textPrimary,
         cursor: 'pointer',
         fontFamily: 'inherit',
         transition: 'all 0.15s ease',
@@ -579,23 +587,23 @@ function TemplateCard({ active, onClick, label, description, iconType }) {
       <div style={{ display: 'flex', gap: '14px', alignItems: 'flex-start' }}>
         <div style={{
           width: '36px', height: '36px', borderRadius: '6px',
-          background: active ? 'rgba(155,81,224,0.2)' : 'rgba(255,255,255,0.04)',
+          background: active ? theme.accentBg : theme.cardBg,
           display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
           flexShrink: 0,
         }}>
-          {iconType === 'editorial' ? <EditorialIcon active={active} /> : <PromoIcon active={active} />}
+          {iconType === 'editorial' ? <EditorialIcon active={active} theme={theme} /> : <PromoIcon active={active} theme={theme} />}
         </div>
         <div>
           <div style={{ fontSize: '15px', fontWeight: 400, marginBottom: '4px' }}>{label}</div>
-          <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.5)', lineHeight: 1.5 }}>{description}</div>
+          <div style={{ fontSize: '13px', color: theme.textSecondary, lineHeight: 1.5 }}>{description}</div>
         </div>
       </div>
     </button>
   )
 }
 
-function EditorialIcon({ active }) {
-  const c = active ? '#9B51E0' : 'rgba(255,255,255,0.5)'
+function EditorialIcon({ active, theme }) {
+  const c = active ? theme.accent : theme.textSecondary
   return (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="1.5">
       <line x1="5" y1="7" x2="19" y2="7" />
@@ -605,8 +613,8 @@ function EditorialIcon({ active }) {
   )
 }
 
-function PromoIcon({ active }) {
-  const c = active ? '#9B51E0' : 'rgba(255,255,255,0.5)'
+function PromoIcon({ active, theme }) {
+  const c = active ? theme.accent : theme.textSecondary
   return (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="1.5">
       <rect x="4" y="5" width="16" height="9" />
@@ -615,15 +623,15 @@ function PromoIcon({ active }) {
   )
 }
 
-function EditorialContent({ issues, loading, selectedIssueId, onSelectIssue, selectedIssue, subject, setSubject, previewText, setPreviewText }) {
+function EditorialContent({ theme, issues, loading, selectedIssueId, onSelectIssue, selectedIssue, subject, setSubject, previewText, setPreviewText }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
       <div>
-        <label style={labelStyle}>Newsletter issue</label>
+        <label style={getLabelStyle(theme)}>Newsletter issue</label>
         <select
           value={selectedIssueId}
           onChange={(e) => onSelectIssue(e.target.value)}
-          style={selectStyle}
+          style={getSelectStyle(theme)}
           disabled={loading}
         >
           <option value="">{loading ? 'Loading issues…' : 'Select an issue'}</option>
@@ -634,12 +642,12 @@ function EditorialContent({ issues, loading, selectedIssueId, onSelectIssue, sel
           ))}
         </select>
         {selectedIssue?.description && (
-          <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)', margin: '6px 0 0 0', lineHeight: 1.5 }}>
+          <p style={{ fontSize: '12px', color: theme.textMuted, margin: '6px 0 0 0', lineHeight: 1.5 }}>
             {selectedIssue.description}
           </p>
         )}
         {selectedIssue && !selectedIssue.hasContent && (
-          <p style={{ fontSize: '12px', color: '#FF4279', margin: '8px 0 0 0', lineHeight: 1.5 }}>
+          <p style={{ fontSize: '12px', color: theme.danger, margin: '8px 0 0 0', lineHeight: 1.5 }}>
             This issue has no <code style={{ fontSize: '11px' }}>content_json</code> yet. Populate it on the calendar item before previewing or sending.
           </p>
         )}
@@ -648,22 +656,22 @@ function EditorialContent({ issues, loading, selectedIssueId, onSelectIssue, sel
       {selectedIssueId && (
         <>
           <div>
-            <label style={labelStyle}>Subject line</label>
+            <label style={getLabelStyle(theme)}>Subject line</label>
             <input
               type="text"
               value={subject}
               onChange={(e) => setSubject(e.target.value)}
-              style={inputStyle}
+              style={getInputStyle(theme)}
               placeholder="Subject line"
             />
           </div>
           <div>
-            <label style={labelStyle}>Preview text</label>
+            <label style={getLabelStyle(theme)}>Preview text</label>
             <input
               type="text"
               value={previewText}
               onChange={(e) => setPreviewText(e.target.value)}
-              style={inputStyle}
+              style={getInputStyle(theme)}
               placeholder="Inbox preview snippet"
             />
           </div>
@@ -673,40 +681,40 @@ function EditorialContent({ issues, loading, selectedIssueId, onSelectIssue, sel
   )
 }
 
-function PromoContent({ promo, setPromo }) {
+function PromoContent({ theme, promo, setPromo }) {
   const set = (k) => (v) => setPromo({ ...promo, [k]: v })
   const onChange = (k) => (e) => set(k)(e.target.value)
   return (
     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }} className="newsletter-promo-grid">
-      <Field label="Subject line" required>
-        <input type="text" value={promo.subject} onChange={onChange('subject')} style={inputStyle} />
+      <Field theme={theme} label="Subject line" required>
+        <input type="text" value={promo.subject} onChange={onChange('subject')} style={getInputStyle(theme)} />
       </Field>
-      <Field label="Preview text" required>
-        <input type="text" value={promo.previewText} onChange={onChange('previewText')} style={inputStyle} />
+      <Field theme={theme} label="Preview text" required>
+        <input type="text" value={promo.previewText} onChange={onChange('previewText')} style={getInputStyle(theme)} />
       </Field>
-      <Field label="Hero image URL" full>
-        <input type="text" value={promo.heroImageUrl} onChange={onChange('heroImageUrl')} style={inputStyle} placeholder="https://… (optional)" />
+      <Field theme={theme} label="Hero image URL" full>
+        <input type="text" value={promo.heroImageUrl} onChange={onChange('heroImageUrl')} style={getInputStyle(theme)} placeholder="https://… (optional)" />
       </Field>
-      <Field label="Headline" required full>
-        <input type="text" value={promo.headline} onChange={onChange('headline')} style={inputStyle} />
+      <Field theme={theme} label="Headline" required full>
+        <input type="text" value={promo.headline} onChange={onChange('headline')} style={getInputStyle(theme)} />
       </Field>
-      <Field label="Body" required full>
+      <Field theme={theme} label="Body" required full>
         <textarea
           value={promo.body}
           onChange={onChange('body')}
           rows={5}
-          style={{ ...inputStyle, fontFamily: 'inherit', resize: 'vertical' }}
+          style={{ ...getInputStyle(theme), fontFamily: 'inherit', resize: 'vertical' }}
           placeholder="Markdown supported. Blank lines split into paragraphs."
         />
       </Field>
-      <Field label="CTA text" required>
-        <input type="text" value={promo.ctaText} onChange={onChange('ctaText')} style={inputStyle} placeholder="Take the snapshot" />
+      <Field theme={theme} label="CTA text" required>
+        <input type="text" value={promo.ctaText} onChange={onChange('ctaText')} style={getInputStyle(theme)} placeholder="Take the snapshot" />
       </Field>
-      <Field label="CTA URL" required>
-        <input type="text" value={promo.ctaUrl} onChange={onChange('ctaUrl')} style={inputStyle} placeholder="https://mutomorro.com/…" />
+      <Field theme={theme} label="CTA URL" required>
+        <input type="text" value={promo.ctaUrl} onChange={onChange('ctaUrl')} style={getInputStyle(theme)} placeholder="https://mutomorro.com/…" />
       </Field>
-      <Field label="Secondary text" full>
-        <textarea value={promo.secondaryText} onChange={onChange('secondaryText')} rows={3} style={{ ...inputStyle, fontFamily: 'inherit', resize: 'vertical' }} placeholder="Optional paragraph below the CTA" />
+      <Field theme={theme} label="Secondary text" full>
+        <textarea value={promo.secondaryText} onChange={onChange('secondaryText')} rows={3} style={{ ...getInputStyle(theme), fontFamily: 'inherit', resize: 'vertical' }} placeholder="Optional paragraph below the CTA" />
       </Field>
       <style>{`
         @media (max-width: 768px) {
@@ -717,36 +725,36 @@ function PromoContent({ promo, setPromo }) {
   )
 }
 
-function Field({ label, required, full, children }) {
+function Field({ theme, label, required, full, children }) {
   return (
     <div style={full ? { gridColumn: '1 / -1' } : {}}>
-      <label style={labelStyle}>
-        {label}{required && <span style={{ color: '#FF4279' }}> *</span>}
+      <label style={getLabelStyle(theme)}>
+        {label}{required && <span style={{ color: theme.danger }}> *</span>}
       </label>
       {children}
     </div>
   )
 }
 
-function SendProgress({ progress }) {
+function SendProgress({ theme, progress }) {
   const pct = progress.total > 0 ? Math.min(100, (progress.sent / progress.total) * 100) : 0
   const isComplete = progress.status === 'complete'
   const isFailed = progress.status === 'failed'
   return (
-    <div style={{ marginTop: '20px', padding: '18px', background: isComplete ? 'rgba(45,212,191,0.06)' : isFailed ? 'rgba(255,66,121,0.06)' : 'rgba(155,81,224,0.06)', borderRadius: '6px', border: `1px solid ${isComplete ? 'rgba(45,212,191,0.2)' : isFailed ? 'rgba(255,66,121,0.2)' : 'rgba(155,81,224,0.2)'}` }}>
+    <div style={{ marginTop: '20px', padding: '18px', background: isComplete ? 'rgba(45,212,191,0.06)' : isFailed ? 'rgba(255,66,121,0.06)' : theme.accentBg, borderRadius: '6px', border: `1px solid ${isComplete ? 'rgba(45,212,191,0.2)' : isFailed ? 'rgba(255,66,121,0.2)' : theme.accentBorder}` }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '10px', flexWrap: 'wrap', gap: '8px' }}>
-        <span style={{ fontSize: '14px', color: '#fff', fontWeight: 400 }}>
+        <span style={{ fontSize: '14px', color: theme.textPrimary, fontWeight: 400 }}>
           {isComplete ? 'Send complete' : isFailed ? 'Send failed' : 'Sending…'}
         </span>
-        <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.6)' }}>
+        <span style={{ fontSize: '13px', color: theme.textSecondary }}>
           {progress.sent.toLocaleString()} / {progress.total.toLocaleString()}
         </span>
       </div>
-      <div style={{ height: '6px', background: 'rgba(255,255,255,0.08)', borderRadius: '3px', overflow: 'hidden' }}>
-        <div style={{ width: `${pct}%`, height: '100%', background: isComplete ? '#2DD4BF' : isFailed ? '#FF4279' : '#9B51E0', transition: 'width 0.5s ease' }} />
+      <div style={{ height: '6px', background: theme.cardBg, borderRadius: '3px', overflow: 'hidden' }}>
+        <div style={{ width: `${pct}%`, height: '100%', background: isComplete ? theme.success : isFailed ? theme.danger : theme.accent, transition: 'width 0.5s ease' }} />
       </div>
       {progress.issueKey && (
-        <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.35)', marginTop: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+        <div style={{ fontSize: '11px', color: theme.textMuted, marginTop: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
           Issue key: {progress.issueKey}
         </div>
       )}
@@ -754,7 +762,7 @@ function SendProgress({ progress }) {
   )
 }
 
-function ConfirmModal({ template, subject, audienceName, audienceCount, issueKey, setIssueKey, confirmTestSent, setConfirmTestSent, onCancel, onConfirm, sending }) {
+function ConfirmModal({ theme, template, subject, audienceName, audienceCount, issueKey, setIssueKey, confirmTestSent, setConfirmTestSent, onCancel, onConfirm, sending }) {
   return (
     <div
       onClick={onCancel}
@@ -766,43 +774,43 @@ function ConfirmModal({ template, subject, audienceName, audienceCount, issueKey
       <div
         onClick={(e) => e.stopPropagation()}
         style={{
-          background: '#2A2336', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '10px',
+          background: theme.cardBg, border: `1px solid ${theme.cardBorder}`, borderRadius: '10px',
           padding: '28px', maxWidth: '480px', width: '100%',
         }}
       >
-        <h3 style={{ fontSize: '18px', fontWeight: 400, color: '#fff', margin: '0 0 6px 0' }}>
+        <h3 style={{ fontSize: '18px', fontWeight: 400, color: theme.textPrimary, margin: '0 0 6px 0' }}>
           Confirm send
         </h3>
-        <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.5)', margin: '0 0 20px 0', lineHeight: 1.5 }}>
+        <p style={{ fontSize: '13px', color: theme.textSecondary, margin: '0 0 20px 0', lineHeight: 1.5 }}>
           You are about to send to {audienceCount?.toLocaleString() || '—'} real subscribers. This cannot be undone.
         </p>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '20px', fontSize: '13px' }}>
-          <Row label="Template" value={template === 'editorial' ? 'Editorial' : 'Promo'} />
-          <Row label="Subject" value={subject} />
-          <Row label="Audience" value={`${audienceName || '—'} (${audienceCount?.toLocaleString() || '—'} subscribers)`} />
+          <Row theme={theme} label="Template" value={template === 'editorial' ? 'Editorial' : 'Promo'} />
+          <Row theme={theme} label="Subject" value={subject} />
+          <Row theme={theme} label="Audience" value={`${audienceName || '—'} (${audienceCount?.toLocaleString() || '—'} subscribers)`} />
           <div>
-            <label style={{ ...labelStyle, marginBottom: '6px' }}>Issue key</label>
+            <label style={{ ...getLabelStyle(theme), marginBottom: '6px' }}>Issue key</label>
             <input
               type="text"
               value={issueKey}
               onChange={(e) => setIssueKey(e.target.value)}
-              style={inputStyle}
+              style={getInputStyle(theme)}
             />
-            <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.35)', margin: '4px 0 0 0' }}>
+            <p style={{ fontSize: '11px', color: theme.textMuted, margin: '4px 0 0 0' }}>
               No subscriber will receive the same issue key twice.
             </p>
           </div>
         </div>
 
-        <label style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '12px', background: 'rgba(255,255,255,0.03)', borderRadius: '6px', cursor: 'pointer', marginBottom: '20px' }}>
+        <label style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '12px', background: theme.cardBg, border: `1px solid ${theme.cardBorder}`, borderRadius: '6px', cursor: 'pointer', marginBottom: '20px' }}>
           <input
             type="checkbox"
             checked={confirmTestSent}
             onChange={(e) => setConfirmTestSent(e.target.checked)}
             style={{ width: '16px', height: '16px', cursor: 'pointer' }}
           />
-          <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.8)' }}>
+          <span style={{ fontSize: '13px', color: theme.textPrimary }}>
             I&apos;ve sent a test and reviewed it
           </span>
         </label>
@@ -813,7 +821,7 @@ function ConfirmModal({ template, subject, audienceName, audienceCount, issueKey
             disabled={sending}
             style={{
               padding: '10px 18px', borderRadius: '6px',
-              border: '1px solid rgba(255,255,255,0.12)', background: 'transparent', color: 'rgba(255,255,255,0.7)',
+              border: `1px solid ${theme.cardBorder}`, background: 'transparent', color: theme.textSecondary,
               fontSize: '13px', fontFamily: 'inherit', cursor: sending ? 'not-allowed' : 'pointer',
             }}
           >
@@ -824,8 +832,8 @@ function ConfirmModal({ template, subject, audienceName, audienceCount, issueKey
             disabled={!confirmTestSent || !issueKey || sending}
             style={{
               padding: '10px 22px', borderRadius: '6px', border: 'none',
-              background: confirmTestSent && issueKey && !sending ? '#9B51E0' : 'rgba(155,81,224,0.2)',
-              color: confirmTestSent && issueKey && !sending ? '#fff' : 'rgba(255,255,255,0.4)',
+              background: confirmTestSent && issueKey && !sending ? theme.accent : theme.accentBg,
+              color: confirmTestSent && issueKey && !sending ? '#fff' : theme.textMuted,
               fontSize: '13px', fontFamily: 'inherit',
               cursor: confirmTestSent && issueKey && !sending ? 'pointer' : 'not-allowed',
             }}
@@ -838,53 +846,63 @@ function ConfirmModal({ template, subject, audienceName, audienceCount, issueKey
   )
 }
 
-function Row({ label, value }) {
+function Row({ theme, label, value }) {
   return (
     <div style={{ display: 'flex', gap: '10px' }}>
-      <span style={{ width: '90px', flexShrink: 0, fontSize: '12px', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.5px', paddingTop: '2px' }}>
+      <span style={{ width: '90px', flexShrink: 0, fontSize: '12px', color: theme.textMuted, textTransform: 'uppercase', letterSpacing: '0.5px', paddingTop: '2px' }}>
         {label}
       </span>
-      <span style={{ flex: 1, fontSize: '14px', color: '#fff', wordBreak: 'break-word' }}>
+      <span style={{ flex: 1, fontSize: '14px', color: theme.textPrimary, wordBreak: 'break-word' }}>
         {value || '—'}
       </span>
     </div>
   )
 }
 
-const cardStyle = {
-  background: 'rgba(255,255,255,0.04)',
-  border: '1px solid rgba(255,255,255,0.06)',
-  borderRadius: '10px',
-  padding: '24px',
+function getCardStyle(theme) {
+  return {
+    background: theme.cardBg,
+    border: `1px solid ${theme.cardBorder}`,
+    borderRadius: '10px',
+    padding: '24px',
+  }
 }
 
-const labelStyle = {
-  display: 'block',
-  fontSize: '11px',
-  color: 'rgba(255,255,255,0.45)',
-  textTransform: 'uppercase',
-  letterSpacing: '0.5px',
-  marginBottom: '6px',
+function getLabelStyle(theme) {
+  return {
+    display: 'block',
+    fontSize: '11px',
+    color: theme.textMuted,
+    textTransform: 'uppercase',
+    letterSpacing: '0.5px',
+    marginBottom: '6px',
+  }
 }
 
-const inputStyle = {
-  display: 'block',
-  width: '100%',
-  padding: '10px 12px',
-  borderRadius: '6px',
-  border: '1px solid rgba(255,255,255,0.1)',
-  background: 'rgba(255,255,255,0.02)',
-  color: '#fff',
-  fontSize: '14px',
-  fontFamily: 'inherit',
-  boxSizing: 'border-box',
+function getInputStyle(theme) {
+  return {
+    display: 'block',
+    width: '100%',
+    padding: '10px 12px',
+    borderRadius: '6px',
+    border: `1px solid ${theme.cardBorder}`,
+    background: theme.inputBg,
+    color: theme.textPrimary,
+    fontSize: '14px',
+    fontFamily: 'inherit',
+    boxSizing: 'border-box',
+  }
 }
 
-const selectStyle = {
-  ...inputStyle,
-  appearance: 'none',
-  backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none'%3E%3Cpath d='M1 1L6 6L11 1' stroke='rgba(255,255,255,0.4)' stroke-width='1.5'/%3E%3C/svg%3E\")",
-  backgroundRepeat: 'no-repeat',
-  backgroundPosition: 'right 12px center',
-  paddingRight: '36px',
+function getSelectStyle(theme) {
+  // Encode the chevron colour for the SVG data-uri
+  const arrowColor = encodeURIComponent(theme.textMuted)
+  return {
+    ...getInputStyle(theme),
+    appearance: 'none',
+    backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none'%3E%3Cpath d='M1 1L6 6L11 1' stroke='${arrowColor}' stroke-width='1.5'/%3E%3C/svg%3E")`,
+    backgroundRepeat: 'no-repeat',
+    backgroundPosition: 'right 12px center',
+    paddingRight: '36px',
+  }
 }

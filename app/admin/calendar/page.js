@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
+import { useAdminTheme } from '../../../lib/admin-theme-context'
 
 const typeColours = {
   newsletter: '#9B51E0',
@@ -62,6 +63,7 @@ function isToday(date) {
 }
 
 export default function CalendarPage() {
+  const { theme } = useAdminTheme()
   const [view, setView] = useState('week')
   const [anchorDate, setAnchorDate] = useState(() => getMonday(new Date()))
   const [items, setItems] = useState([])
@@ -205,19 +207,31 @@ export default function CalendarPage() {
     ? `${weekDays[0].toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })} - ${weekDays[6].toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}`
     : anchorDate.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' })
 
+  const navBtnStyle = {
+    background: theme.cardBg,
+    border: `1px solid ${theme.cardBorder}`,
+    color: theme.textSecondary,
+    fontSize: '18px',
+    padding: '6px 10px',
+    cursor: 'pointer',
+    borderRadius: '6px',
+    fontFamily: 'inherit',
+    lineHeight: 1,
+  }
+
   return (
     <div>
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap', gap: '12px' }}>
         <div>
-          <h1 style={{ fontSize: '28px', fontWeight: 400, color: '#fff', letterSpacing: '-0.02em', marginBottom: '4px' }}>
+          <h1 style={{ fontSize: '28px', fontWeight: 400, color: theme.textPrimary, letterSpacing: '-0.02em', marginBottom: '4px' }}>
             Calendar
           </h1>
-          <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.4)' }}>{weekLabel}</p>
+          <p style={{ fontSize: '14px', color: theme.textMuted }}>{weekLabel}</p>
         </div>
         <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
           {/* View toggle */}
-          <div style={{ display: 'flex', background: 'rgba(255,255,255,0.04)', borderRadius: '6px', overflow: 'hidden', marginRight: '8px' }}>
+          <div style={{ display: 'flex', background: theme.cardBg, borderRadius: '6px', overflow: 'hidden', marginRight: '8px' }}>
             {['week', 'month'].map((v) => (
               <button
                 key={v}
@@ -225,8 +239,8 @@ export default function CalendarPage() {
                 style={{
                   padding: '6px 14px',
                   fontSize: '13px',
-                  background: view === v ? 'rgba(155,81,224,0.2)' : 'transparent',
-                  color: view === v ? '#fff' : 'rgba(255,255,255,0.4)',
+                  background: view === v ? theme.accentBg : 'transparent',
+                  color: view === v ? theme.textPrimary : theme.textMuted,
                   border: 'none',
                   cursor: 'pointer',
                   fontFamily: 'inherit',
@@ -246,6 +260,7 @@ export default function CalendarPage() {
       {/* Calendar grid */}
       {view === 'week' ? (
         <WeekView
+          theme={theme}
           days={weekDays}
           items={items}
           itemsForDate={itemsForDate}
@@ -256,6 +271,7 @@ export default function CalendarPage() {
         />
       ) : (
         <MonthView
+          theme={theme}
           days={monthDays}
           monthStart={monthStart}
           monthEnd={monthEnd}
@@ -269,6 +285,7 @@ export default function CalendarPage() {
       {/* Modal */}
       {modalOpen && (
         <ItemModal
+          theme={theme}
           item={editingItem}
           defaultDate={modalDate}
           onSave={handleSave}
@@ -280,7 +297,7 @@ export default function CalendarPage() {
   )
 }
 
-function WeekView({ days, itemsForDate, onAddClick, onItemClick, onStatusCycle, loading }) {
+function WeekView({ theme, days, itemsForDate, onAddClick, onItemClick, onStatusCycle, loading }) {
   return (
     <div className="admin-week-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '8px' }}>
       {days.map((day) => {
@@ -292,8 +309,8 @@ function WeekView({ days, itemsForDate, onAddClick, onItemClick, onStatusCycle, 
           <div
             key={dateStr}
             style={{
-              background: 'rgba(255,255,255,0.04)',
-              border: today ? '1px solid rgba(155,81,224,0.4)' : '1px solid rgba(255,255,255,0.06)',
+              background: theme.cardBg,
+              border: today ? `1px solid ${theme.accentBorder}` : `1px solid ${theme.cardBorder}`,
               borderRadius: '8px',
               minHeight: '200px',
               display: 'flex',
@@ -303,20 +320,20 @@ function WeekView({ days, itemsForDate, onAddClick, onItemClick, onStatusCycle, 
             {/* Day header */}
             <div style={{
               padding: '10px 12px 8px',
-              borderBottom: '1px solid rgba(255,255,255,0.04)',
+              borderBottom: `1px solid ${theme.rowBorder}`,
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'center',
             }}>
               <div>
-                <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                <span style={{ fontSize: '12px', color: theme.textMuted, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                   {dayNames[days.indexOf(day)]}
                 </span>
                 <span style={{
                   marginLeft: '6px',
                   fontSize: '14px',
                   fontWeight: 400,
-                  color: today ? '#9B51E0' : 'rgba(255,255,255,0.7)',
+                  color: today ? theme.accent : theme.textSecondary,
                 }}>
                   {day.getDate()}
                 </span>
@@ -326,15 +343,15 @@ function WeekView({ days, itemsForDate, onAddClick, onItemClick, onStatusCycle, 
                 style={{
                   background: 'none',
                   border: 'none',
-                  color: 'rgba(255,255,255,0.15)',
+                  color: theme.textLabel,
                   fontSize: '18px',
                   cursor: 'pointer',
                   padding: '0 4px',
                   lineHeight: 1,
                   fontFamily: 'inherit',
                 }}
-                onMouseEnter={(e) => { e.target.style.color = 'rgba(255,255,255,0.5)' }}
-                onMouseLeave={(e) => { e.target.style.color = 'rgba(255,255,255,0.15)' }}
+                onMouseEnter={(e) => { e.target.style.color = theme.textSecondary }}
+                onMouseLeave={(e) => { e.target.style.color = theme.textLabel }}
               >
                 +
               </button>
@@ -343,29 +360,29 @@ function WeekView({ days, itemsForDate, onAddClick, onItemClick, onStatusCycle, 
             {/* Items */}
             <div style={{ padding: '6px 8px', flex: 1, display: 'flex', flexDirection: 'column', gap: '4px' }}>
               {loading ? (
-                <div style={{ height: '30px', background: 'rgba(255,255,255,0.04)', borderRadius: '4px', animation: 'pulse 1.5s ease-in-out infinite' }} />
+                <div style={{ height: '30px', background: theme.cardBg, borderRadius: '4px', animation: 'pulse 1.5s ease-in-out infinite' }} />
               ) : (
                 dayItems.map((item) => (
                   <div
                     key={item.id}
                     style={{
                       padding: '6px 8px',
-                      borderLeft: `3px solid ${typeColours[item.type] || 'rgba(255,255,255,0.2)'}`,
-                      background: 'rgba(255,255,255,0.03)',
+                      borderLeft: `3px solid ${typeColours[item.type] || theme.textLabel}`,
+                      background: theme.cardBg,
                       borderRadius: '0 4px 4px 0',
                       cursor: 'pointer',
                       transition: 'background 0.15s',
                     }}
                     onClick={() => onItemClick(item)}
-                    onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.06)' }}
-                    onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.03)' }}
+                    onMouseEnter={(e) => { e.currentTarget.style.background = theme.cardBgHover }}
+                    onMouseLeave={(e) => { e.currentTarget.style.background = theme.cardBg }}
                   >
-                    <div style={{ fontSize: '13px', color: '#fff', marginBottom: '2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    <div style={{ fontSize: '13px', color: theme.textPrimary, marginBottom: '2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {item.title}
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                       {item.scheduled_time && (
-                        <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.35)' }}>
+                        <span style={{ fontSize: '11px', color: theme.textMuted }}>
                           {item.scheduled_time.slice(0, 5)}
                         </span>
                       )}
@@ -374,8 +391,8 @@ function WeekView({ days, itemsForDate, onAddClick, onItemClick, onStatusCycle, 
                         style={{
                           fontSize: '10px',
                           padding: '1px 5px',
-                          background: item.status === 'done' ? 'rgba(155,81,224,0.2)' : 'rgba(255,255,255,0.06)',
-                          color: item.status === 'done' ? '#9B51E0' : 'rgba(255,255,255,0.45)',
+                          background: item.status === 'done' ? theme.accentBg : theme.cardBgHover,
+                          color: item.status === 'done' ? theme.accent : theme.textMuted,
                           border: 'none',
                           borderRadius: '3px',
                           cursor: 'pointer',
@@ -408,13 +425,13 @@ function WeekView({ days, itemsForDate, onAddClick, onItemClick, onStatusCycle, 
   )
 }
 
-function MonthView({ days, monthStart, monthEnd, itemsForDate, onDayClick, onItemClick }) {
+function MonthView({ theme, days, monthStart, monthEnd, itemsForDate, onDayClick, onItemClick }) {
   return (
     <div style={{ overflowX: 'auto' }}>
       {/* Day headers */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '4px', marginBottom: '4px', minWidth: '500px' }}>
         {dayNames.map((name) => (
-          <div key={name} style={{ textAlign: 'center', fontSize: '12px', color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', letterSpacing: '0.5px', padding: '8px 0' }}>
+          <div key={name} style={{ textAlign: 'center', fontSize: '12px', color: theme.textMuted, textTransform: 'uppercase', letterSpacing: '0.5px', padding: '8px 0' }}>
             {name}
           </div>
         ))}
@@ -428,25 +445,27 @@ function MonthView({ days, monthStart, monthEnd, itemsForDate, onDayClick, onIte
           const inMonth = day >= monthStart && day <= monthEnd
           const today = isToday(day)
 
+          const inMonthBg = inMonth ? theme.cardBg : theme.sidebarHover
+
           return (
             <div
               key={dateStr}
               onClick={() => onDayClick(dateStr)}
               style={{
-                background: inMonth ? 'rgba(255,255,255,0.04)' : 'rgba(255,255,255,0.01)',
-                border: today ? '1px solid rgba(155,81,224,0.4)' : '1px solid rgba(255,255,255,0.04)',
+                background: inMonthBg,
+                border: today ? `1px solid ${theme.accentBorder}` : `1px solid ${theme.rowBorder}`,
                 borderRadius: '6px',
                 padding: '8px',
                 minHeight: '110px',
                 cursor: 'pointer',
                 transition: 'background 0.15s',
               }}
-              onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.06)' }}
-              onMouseLeave={(e) => { e.currentTarget.style.background = inMonth ? 'rgba(255,255,255,0.04)' : 'rgba(255,255,255,0.01)' }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = theme.cardBgHover }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = inMonthBg }}
             >
               <div style={{
                 fontSize: '13px',
-                color: today ? '#9B51E0' : inMonth ? 'rgba(255,255,255,0.6)' : 'rgba(255,255,255,0.2)',
+                color: today ? theme.accent : inMonth ? theme.textSecondary : theme.textLabel,
                 marginBottom: '6px',
               }}>
                 {day.getDate()}
@@ -462,14 +481,14 @@ function MonthView({ days, monthStart, monthEnd, itemsForDate, onDayClick, onIte
                       alignItems: 'center',
                       gap: '4px',
                       padding: '2px 4px',
-                      borderLeft: `2px solid ${typeColours[item.type] || 'rgba(255,255,255,0.2)'}`,
+                      borderLeft: `2px solid ${typeColours[item.type] || theme.textLabel}`,
                       borderRadius: '0 2px 2px 0',
-                      background: 'rgba(255,255,255,0.03)',
+                      background: theme.cardBg,
                       cursor: 'pointer',
                       overflow: 'hidden',
                     }}
                   >
-                    <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.6)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    <span style={{ fontSize: '11px', color: theme.textSecondary, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {item.title}
                     </span>
                   </div>
@@ -483,7 +502,7 @@ function MonthView({ days, monthStart, monthEnd, itemsForDate, onDayClick, onIte
   )
 }
 
-function ItemModal({ item, defaultDate, onSave, onDelete, onClose }) {
+function ItemModal({ theme, item, defaultDate, onSave, onDelete, onClose }) {
   const [title, setTitle] = useState(item?.title || '')
   const [type, setType] = useState(item?.type || 'task')
   const [platform, setPlatform] = useState(item?.platform || '')
@@ -518,6 +537,29 @@ function ItemModal({ item, defaultDate, onSave, onDelete, onClose }) {
     setSaving(false)
   }
 
+  const labelStyle = {
+    display: 'block',
+    fontSize: '11px',
+    fontWeight: 400,
+    color: theme.textMuted,
+    textTransform: 'uppercase',
+    letterSpacing: '0.1em',
+    marginBottom: '6px',
+  }
+
+  const inputStyle = {
+    width: '100%',
+    padding: '10px 12px',
+    background: theme.inputBg,
+    border: `1px solid ${theme.cardBorder}`,
+    borderRadius: '0',
+    color: theme.textPrimary,
+    fontSize: '14px',
+    fontFamily: 'inherit',
+    outline: 'none',
+    boxSizing: 'border-box',
+  }
+
   return (
     <>
       {/* Backdrop */}
@@ -535,18 +577,18 @@ function ItemModal({ item, defaultDate, onSave, onDelete, onClose }) {
         maxWidth: '480px',
         maxHeight: '85vh',
         overflowY: 'auto',
-        background: '#2a2433',
-        border: '1px solid rgba(255,255,255,0.08)',
+        background: theme.cardBg,
+        border: `1px solid ${theme.cardBorder}`,
         borderRadius: '10px',
         padding: '28px',
         zIndex: 1001,
         boxSizing: 'border-box',
       }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-          <h2 style={{ fontSize: '18px', fontWeight: 400, color: '#fff' }}>
+          <h2 style={{ fontSize: '18px', fontWeight: 400, color: theme.textPrimary }}>
             {item ? 'Edit item' : 'New item'}
           </h2>
-          <button onClick={onClose} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.4)', fontSize: '20px', cursor: 'pointer', fontFamily: 'inherit' }}>
+          <button onClick={onClose} style={{ background: 'none', border: 'none', color: theme.textMuted, fontSize: '20px', cursor: 'pointer', fontFamily: 'inherit' }}>
             ✕
           </button>
         </div>
@@ -649,8 +691,8 @@ function ItemModal({ item, defaultDate, onSave, onDelete, onClose }) {
                 style={{
                   padding: '10px 16px',
                   background: 'none',
-                  border: '1px solid rgba(255,66,121,0.3)',
-                  color: '#FF4279',
+                  border: `1px solid ${theme.danger}`,
+                  color: theme.danger,
                   fontSize: '14px',
                   cursor: 'pointer',
                   borderRadius: '0',
@@ -667,7 +709,7 @@ function ItemModal({ item, defaultDate, onSave, onDelete, onClose }) {
               disabled={saving || !title.trim()}
               style={{
                 padding: '10px 24px',
-                background: '#9B51E0',
+                background: theme.accent,
                 border: 'none',
                 color: '#fff',
                 fontSize: '14px',
@@ -686,39 +728,4 @@ function ItemModal({ item, defaultDate, onSave, onDelete, onClose }) {
       </div>
     </>
   )
-}
-
-const navBtnStyle = {
-  background: 'rgba(255,255,255,0.04)',
-  border: '1px solid rgba(255,255,255,0.08)',
-  color: 'rgba(255,255,255,0.6)',
-  fontSize: '18px',
-  padding: '6px 10px',
-  cursor: 'pointer',
-  borderRadius: '6px',
-  fontFamily: 'inherit',
-  lineHeight: 1,
-}
-
-const labelStyle = {
-  display: 'block',
-  fontSize: '11px',
-  fontWeight: 400,
-  color: 'rgba(255,255,255,0.4)',
-  textTransform: 'uppercase',
-  letterSpacing: '0.1em',
-  marginBottom: '6px',
-}
-
-const inputStyle = {
-  width: '100%',
-  padding: '10px 12px',
-  background: 'rgba(255,255,255,0.06)',
-  border: '1px solid rgba(255,255,255,0.1)',
-  borderRadius: '0',
-  color: '#fff',
-  fontSize: '14px',
-  fontFamily: 'inherit',
-  outline: 'none',
-  boxSizing: 'border-box',
 }

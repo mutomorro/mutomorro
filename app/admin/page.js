@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useAdminTheme } from '../../lib/admin-theme-context'
 
 // Type colours
 const typeColours = {
@@ -9,13 +10,6 @@ const typeColours = {
   task: '#F59E0B',
   outreach: '#FF4279',
   content: '#3B82F6',
-}
-
-// Signal strength colours
-const strengthColours = {
-  high: '#9B51E0',
-  medium: '#2DD4BF',
-  low: 'rgba(255,255,255,0.25)',
 }
 
 // Pipeline statuses in order
@@ -55,12 +49,12 @@ function signalLabel(type) {
 }
 
 // Skeleton loader
-function Skeleton({ width, height = 20 }) {
+function Skeleton({ theme, width, height = 20 }) {
   return (
     <div style={{
       width: width || '100%',
       height,
-      background: 'rgba(255,255,255,0.06)',
+      background: theme.cardBg,
       borderRadius: '4px',
       animation: 'pulse 1.5s ease-in-out infinite',
     }} />
@@ -68,6 +62,7 @@ function Skeleton({ width, height = 20 }) {
 }
 
 export default function AdminOverview() {
+  const { theme } = useAdminTheme()
   const [data, setData] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -90,23 +85,52 @@ export default function AdminOverview() {
       .finally(() => setLoading(false))
   }, [])
 
+  const cardStyle = {
+    background: theme.cardBg,
+    border: `1px solid ${theme.cardBorder}`,
+    borderRadius: '10px',
+    padding: '20px',
+  }
+
+  const cardHeading = {
+    fontSize: '13px',
+    fontWeight: 400,
+    color: theme.textMuted,
+    textTransform: 'uppercase',
+    letterSpacing: '0.5px',
+    marginBottom: '16px',
+  }
+
+  const emptyText = {
+    fontSize: '14px',
+    color: theme.textLabel,
+    fontStyle: 'italic',
+  }
+
+  // Signal strength colours - low strength uses textLabel for theme awareness
+  const strengthColours = {
+    high: theme.accent,
+    medium: theme.success,
+    low: theme.textLabel,
+  }
+
   return (
     <div>
       {/* Top bar */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '32px' }}>
         <div>
-          <h1 style={{ fontSize: '28px', fontWeight: 400, color: '#fff', letterSpacing: '-0.02em', marginBottom: '4px' }}>
+          <h1 style={{ fontSize: '28px', fontWeight: 400, color: theme.textPrimary, letterSpacing: '-0.02em', marginBottom: '4px' }}>
             Command Centre
           </h1>
-          <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.4)' }}>{today}</p>
+          <p style={{ fontSize: '14px', color: theme.textMuted }}>{today}</p>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px', color: 'rgba(255,255,255,0.35)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px', color: theme.textMuted }}>
           {!loading && data?.analytics?.activeVisitors > 0 && (
             <span style={{
               width: '8px',
               height: '8px',
               borderRadius: '50%',
-              background: '#2DD4BF',
+              background: theme.success,
               display: 'inline-block',
               animation: 'activePulse 2s ease-in-out infinite',
             }} />
@@ -118,26 +142,29 @@ export default function AdminOverview() {
       {/* Metric cards */}
       <div className="admin-metrics-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '32px' }}>
         <MetricCard
+          theme={theme}
           label="Visitors this week"
           value={loading ? null : data?.analytics?.visitors ?? '-'}
           subtitle={!loading && data?.analytics?.pageviews ? `${data.analytics.pageviews.toLocaleString()} pageviews` : null}
         />
         <MetricCard
+          theme={theme}
           label="New contacts"
           value={loading ? null : data?.contactsThisWeek?.total ?? 0}
           previousValue={loading ? null : data?.contactsThisWeek?.previousWeek}
         />
         <MetricCard
+          theme={theme}
           label="Newsletter subscribers"
           value={loading ? null : data?.newsletterSubscribers ?? 0}
           subtitle={!loading && data?.newsletterNewThisWeek > 0 ? `+${data.newsletterNewThisWeek} this week` : null}
         />
-        <MetricCard label="Pipeline (active)" value={loading ? null : data?.pipeline?.activeTotal ?? 0} />
+        <MetricCard theme={theme} label="Pipeline (active)" value={loading ? null : data?.pipeline?.activeTotal ?? 0} />
       </div>
 
       {error && (
-        <div style={{ ...cardStyle, borderLeft: '3px solid #FF4279', padding: '16px 20px', marginBottom: '24px' }}>
-          <p style={{ fontSize: '14px', color: '#FF4279' }}>Failed to load dashboard data. Try refreshing.</p>
+        <div style={{ ...cardStyle, borderLeft: `3px solid ${theme.danger}`, padding: '16px 20px', marginBottom: '24px' }}>
+          <p style={{ fontSize: '14px', color: theme.danger }}>Failed to load dashboard data. Try refreshing.</p>
         </div>
       )}
 
@@ -148,7 +175,7 @@ export default function AdminOverview() {
           <h2 style={cardHeading}>Recent signals</h2>
           {loading ? (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              {[1, 2, 3, 4, 5].map((i) => <Skeleton key={i} height={44} />)}
+              {[1, 2, 3, 4, 5].map((i) => <Skeleton key={i} theme={theme} height={44} />)}
             </div>
           ) : data?.signals?.length > 0 ? (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
@@ -158,7 +185,7 @@ export default function AdminOverview() {
                   alignItems: 'flex-start',
                   gap: '12px',
                   padding: '12px 0',
-                  borderBottom: '1px solid rgba(255,255,255,0.04)',
+                  borderBottom: `1px solid ${theme.rowBorder}`,
                 }}>
                   {/* Strength dot */}
                   <div style={{
@@ -171,14 +198,14 @@ export default function AdminOverview() {
                   }} />
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '2px' }}>
-                      <span style={{ fontSize: '14px', fontWeight: 400, color: '#fff', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      <span style={{ fontSize: '14px', fontWeight: 400, color: theme.textPrimary, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {signal.detail || signalLabel(signal.type)}
                       </span>
                       <span style={{
                         fontSize: '10px',
                         fontWeight: 400,
-                        color: 'rgba(255,255,255,0.5)',
-                        background: 'rgba(255,255,255,0.06)',
+                        color: theme.textSecondary,
+                        background: theme.cardBgHover,
                         padding: '2px 7px',
                         borderRadius: '3px',
                         whiteSpace: 'nowrap',
@@ -189,13 +216,13 @@ export default function AdminOverview() {
                         {signalLabel(signal.type)}
                       </span>
                     </div>
-                    <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.45)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    <div style={{ fontSize: '13px', color: theme.textMuted, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {signal.contact
                         ? `${signal.contact.first_name || ''} ${signal.contact.last_name || ''}`.trim() + (signal.contact.organisation_name ? ` - ${signal.contact.organisation_name}` : '')
                         : 'Unknown contact'}
                     </div>
                   </div>
-                  <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.3)', flexShrink: 0, whiteSpace: 'nowrap' }}>
+                  <div style={{ fontSize: '12px', color: theme.textLabel, flexShrink: 0, whiteSpace: 'nowrap' }}>
                     {relativeTime(signal.created_at)}
                   </div>
                 </div>
@@ -213,7 +240,7 @@ export default function AdminOverview() {
             <h2 style={cardHeading}>This week</h2>
             {loading ? (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                {[1, 2, 3].map((i) => <Skeleton key={i} height={36} />)}
+                {[1, 2, 3].map((i) => <Skeleton key={i} theme={theme} height={36} />)}
               </div>
             ) : data?.calendar?.length > 0 ? (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
@@ -223,20 +250,20 @@ export default function AdminOverview() {
                     alignItems: 'center',
                     gap: '10px',
                     padding: '10px 0',
-                    borderBottom: '1px solid rgba(255,255,255,0.04)',
+                    borderBottom: `1px solid ${theme.rowBorder}`,
                   }}>
                     <div style={{
                       width: '8px',
                       height: '8px',
                       borderRadius: '50%',
-                      background: typeColours[item.type] || 'rgba(255,255,255,0.25)',
+                      background: typeColours[item.type] || theme.textLabel,
                       flexShrink: 0,
                     }} />
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: '14px', color: '#fff', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      <div style={{ fontSize: '14px', color: theme.textPrimary, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {item.title}
                       </div>
-                      <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.35)' }}>
+                      <div style={{ fontSize: '12px', color: theme.textMuted }}>
                         {item.scheduled_date && new Date(item.scheduled_date).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' })}
                         {item.scheduled_time && ` at ${item.scheduled_time.slice(0, 5)}`}
                         {item.status && item.status !== 'planned' && (
@@ -244,9 +271,9 @@ export default function AdminOverview() {
                             marginLeft: '8px',
                             fontSize: '11px',
                             padding: '1px 6px',
-                            background: 'rgba(255,255,255,0.06)',
+                            background: theme.cardBgHover,
                             borderRadius: '3px',
-                            color: 'rgba(255,255,255,0.5)',
+                            color: theme.textSecondary,
                           }}>
                             {item.status}
                           </span>
@@ -272,13 +299,13 @@ export default function AdminOverview() {
                     justifyContent: 'space-between',
                     alignItems: 'center',
                     padding: '7px 0',
-                    borderBottom: '1px solid rgba(255,255,255,0.04)',
+                    borderBottom: `1px solid ${theme.rowBorder}`,
                     fontSize: '13px',
                   }}>
-                    <span style={{ color: 'rgba(255,255,255,0.6)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '75%' }}>
+                    <span style={{ color: theme.textSecondary, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '75%' }}>
                       {ref.referrer}
                     </span>
-                    <span style={{ color: 'rgba(255,255,255,0.35)', flexShrink: 0 }}>
+                    <span style={{ color: theme.textMuted, flexShrink: 0 }}>
                       {ref.views}
                     </span>
                   </div>
@@ -291,7 +318,7 @@ export default function AdminOverview() {
           <div style={cardStyle}>
             <h2 style={cardHeading}>Organisation pipeline</h2>
             {loading ? (
-              <Skeleton height={32} />
+              <Skeleton theme={theme} height={32} />
             ) : (() => {
               const counts = data?.pipeline?.counts || {}
               const total = Object.values(counts).reduce((a, b) => a + b, 0)
@@ -339,7 +366,7 @@ export default function AdminOverview() {
                       return (
                         <div key={s.key} style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
                           <div style={{ width: '8px', height: '8px', borderRadius: '2px', background: s.colour }} />
-                          <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.45)' }}>{s.label}</span>
+                          <span style={{ fontSize: '12px', color: theme.textMuted }}>{s.label}</span>
                         </div>
                       )
                     })}
@@ -354,19 +381,19 @@ export default function AdminOverview() {
               <h2 style={cardHeading}>Outreach</h2>
               <div style={{ display: 'flex', gap: '20px', marginBottom: '8px' }}>
                 <div>
-                  <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.3px' }}>Sequences</div>
-                  <div style={{ fontSize: '18px', fontWeight: 500, color: '#fff' }}>{data.outreach.activeSequences}</div>
+                  <div style={{ fontSize: '11px', color: theme.textLabel, textTransform: 'uppercase', letterSpacing: '0.3px' }}>Sequences</div>
+                  <div style={{ fontSize: '18px', fontWeight: 500, color: theme.textPrimary }}>{data.outreach.activeSequences}</div>
                 </div>
                 <div>
-                  <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.3px' }}>Enrolled</div>
-                  <div style={{ fontSize: '18px', fontWeight: 500, color: '#fff' }}>{data.outreach.totalContacts}</div>
+                  <div style={{ fontSize: '11px', color: theme.textLabel, textTransform: 'uppercase', letterSpacing: '0.3px' }}>Enrolled</div>
+                  <div style={{ fontSize: '18px', fontWeight: 500, color: theme.textPrimary }}>{data.outreach.totalContacts}</div>
                 </div>
                 <div>
-                  <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.3px' }}>Replies</div>
-                  <div style={{ fontSize: '18px', fontWeight: 500, color: '#2DD4BF' }}>{data.outreach.totalReplies}</div>
+                  <div style={{ fontSize: '11px', color: theme.textLabel, textTransform: 'uppercase', letterSpacing: '0.3px' }}>Replies</div>
+                  <div style={{ fontSize: '18px', fontWeight: 500, color: theme.success }}>{data.outreach.totalReplies}</div>
                 </div>
               </div>
-              <a href="/admin/outreach" style={{ fontSize: '12px', color: '#9B51E0', textDecoration: 'none' }}>View details →</a>
+              <a href="/admin/outreach" style={{ fontSize: '12px', color: theme.accent, textDecoration: 'none' }}>View details →</a>
             </div>
           )}
 
@@ -376,8 +403,8 @@ export default function AdminOverview() {
               <h2 style={cardHeading}>Handoffs</h2>
               <div style={{ display: 'flex', gap: '20px', marginBottom: '12px' }}>
                 <div>
-                  <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.3px' }}>Open</div>
-                  <div style={{ fontSize: '18px', fontWeight: 500, color: data.handoffs.openCount > 0 ? '#F59E0B' : '#fff' }}>{data.handoffs.openCount}</div>
+                  <div style={{ fontSize: '11px', color: theme.textLabel, textTransform: 'uppercase', letterSpacing: '0.3px' }}>Open</div>
+                  <div style={{ fontSize: '18px', fontWeight: 500, color: data.handoffs.openCount > 0 ? '#F59E0B' : theme.textPrimary }}>{data.handoffs.openCount}</div>
                 </div>
               </div>
               {data.handoffs.recent.length > 0 && (
@@ -388,20 +415,20 @@ export default function AdminOverview() {
                       alignItems: 'center',
                       gap: '8px',
                       padding: '7px 0',
-                      borderBottom: '1px solid rgba(255,255,255,0.04)',
+                      borderBottom: `1px solid ${theme.rowBorder}`,
                       fontSize: '13px',
                     }}>
-                      <span style={{ color: 'rgba(255,255,255,0.6)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>
+                      <span style={{ color: theme.textSecondary, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>
                         {h.title}
                       </span>
-                      <span style={{ color: 'rgba(255,255,255,0.25)', fontSize: '11px', flexShrink: 0 }}>
+                      <span style={{ color: theme.textLabel, fontSize: '11px', flexShrink: 0 }}>
                         {h.source_project} → {h.target_project}
                       </span>
                     </div>
                   ))}
                 </div>
               )}
-              <a href="/admin/handoffs" style={{ fontSize: '12px', color: '#9B51E0', textDecoration: 'none' }}>View all →</a>
+              <a href="/admin/handoffs" style={{ fontSize: '12px', color: theme.accent, textDecoration: 'none' }}>View all →</a>
             </div>
           )}
 
@@ -411,19 +438,19 @@ export default function AdminOverview() {
               <h2 style={cardHeading}>Tenders</h2>
               <div style={{ display: 'flex', gap: '20px', marginBottom: '8px' }}>
                 <div>
-                  <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.3px' }}>Hot</div>
-                  <div style={{ fontSize: '18px', fontWeight: 500, color: data.tenders.hot > 0 ? '#DC2626' : '#fff' }}>{data.tenders.hot}</div>
+                  <div style={{ fontSize: '11px', color: theme.textLabel, textTransform: 'uppercase', letterSpacing: '0.3px' }}>Hot</div>
+                  <div style={{ fontSize: '18px', fontWeight: 500, color: data.tenders.hot > 0 ? theme.danger : theme.textPrimary }}>{data.tenders.hot}</div>
                 </div>
                 <div>
-                  <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.3px' }}>Unreviewed</div>
-                  <div style={{ fontSize: '18px', fontWeight: 500, color: data.tenders.unreviewed > 0 ? '#D97706' : '#fff' }}>{data.tenders.unreviewed}</div>
+                  <div style={{ fontSize: '11px', color: theme.textLabel, textTransform: 'uppercase', letterSpacing: '0.3px' }}>Unreviewed</div>
+                  <div style={{ fontSize: '18px', fontWeight: 500, color: data.tenders.unreviewed > 0 ? theme.warning : theme.textPrimary }}>{data.tenders.unreviewed}</div>
                 </div>
                 <div>
-                  <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.3px' }}>Deadlines &lt;7d</div>
-                  <div style={{ fontSize: '18px', fontWeight: 500, color: data.tenders.urgent > 0 ? '#DC2626' : '#fff' }}>{data.tenders.urgent}</div>
+                  <div style={{ fontSize: '11px', color: theme.textLabel, textTransform: 'uppercase', letterSpacing: '0.3px' }}>Deadlines &lt;7d</div>
+                  <div style={{ fontSize: '18px', fontWeight: 500, color: data.tenders.urgent > 0 ? theme.danger : theme.textPrimary }}>{data.tenders.urgent}</div>
                 </div>
               </div>
-              <a href="/admin/tenders" style={{ fontSize: '12px', color: '#9B51E0', textDecoration: 'none' }}>View tenders →</a>
+              <a href="/admin/tenders" style={{ fontSize: '12px', color: theme.accent, textDecoration: 'none' }}>View tenders →</a>
             </div>
           )}
 
@@ -431,33 +458,33 @@ export default function AdminOverview() {
           {!loading && data?.lastNewsletter && (
             <div style={cardStyle}>
               <h2 style={cardHeading}>Last newsletter</h2>
-              <div style={{ fontSize: '14px', color: '#fff', marginBottom: '4px' }}>
+              <div style={{ fontSize: '14px', color: theme.textPrimary, marginBottom: '4px' }}>
                 {data.lastNewsletter.subject}
               </div>
-              <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.35)', marginBottom: '12px' }}>
+              <div style={{ fontSize: '12px', color: theme.textMuted, marginBottom: '12px' }}>
                 {new Date(data.lastNewsletter.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
               </div>
               <div style={{ display: 'flex', gap: '16px' }}>
                 <div>
-                  <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.3px' }}>Open rate</div>
-                  <div style={{ fontSize: '18px', fontWeight: 500, color: data.lastNewsletter.total_delivered > 0 && (data.lastNewsletter.total_opened / data.lastNewsletter.total_delivered * 100) > 25 ? '#2DD4BF' : '#fff' }}>
+                  <div style={{ fontSize: '11px', color: theme.textLabel, textTransform: 'uppercase', letterSpacing: '0.3px' }}>Open rate</div>
+                  <div style={{ fontSize: '18px', fontWeight: 500, color: data.lastNewsletter.total_delivered > 0 && (data.lastNewsletter.total_opened / data.lastNewsletter.total_delivered * 100) > 25 ? theme.success : theme.textPrimary }}>
                     {data.lastNewsletter.total_delivered > 0 ? ((data.lastNewsletter.total_opened / data.lastNewsletter.total_delivered) * 100).toFixed(1) + '%' : '-'}
                   </div>
                 </div>
                 <div>
-                  <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.3px' }}>Click rate</div>
-                  <div style={{ fontSize: '18px', fontWeight: 500, color: '#fff' }}>
+                  <div style={{ fontSize: '11px', color: theme.textLabel, textTransform: 'uppercase', letterSpacing: '0.3px' }}>Click rate</div>
+                  <div style={{ fontSize: '18px', fontWeight: 500, color: theme.textPrimary }}>
                     {data.lastNewsletter.total_delivered > 0 ? ((data.lastNewsletter.total_clicked / data.lastNewsletter.total_delivered) * 100).toFixed(1) + '%' : '-'}
                   </div>
                 </div>
                 <div>
-                  <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.3px' }}>Bounced</div>
-                  <div style={{ fontSize: '18px', fontWeight: 500, color: data.lastNewsletter.total_bounced > 0 ? '#FF4279' : '#fff' }}>
+                  <div style={{ fontSize: '11px', color: theme.textLabel, textTransform: 'uppercase', letterSpacing: '0.3px' }}>Bounced</div>
+                  <div style={{ fontSize: '18px', fontWeight: 500, color: data.lastNewsletter.total_bounced > 0 ? theme.danger : theme.textPrimary }}>
                     {data.lastNewsletter.total_bounced || 0}
                   </div>
                 </div>
               </div>
-              <a href="/admin/newsletter" style={{ display: 'inline-block', marginTop: '12px', fontSize: '12px', color: '#9B51E0', textDecoration: 'none' }}>
+              <a href="/admin/newsletter" style={{ display: 'inline-block', marginTop: '12px', fontSize: '12px', color: theme.accent, textDecoration: 'none' }}>
                 View details →
               </a>
             </div>
@@ -492,7 +519,7 @@ export default function AdminOverview() {
   )
 }
 
-function MetricCard({ label, value, subtitle, previousValue }) {
+function MetricCard({ theme, label, value, subtitle, previousValue }) {
   let change = null
   let isUp = null
   if (value !== null && previousValue !== null && previousValue !== undefined && previousValue > 0) {
@@ -501,11 +528,18 @@ function MetricCard({ label, value, subtitle, previousValue }) {
     isUp = value >= previousValue
   }
 
+  const cardStyle = {
+    background: theme.cardBg,
+    border: `1px solid ${theme.cardBorder}`,
+    borderRadius: '10px',
+    padding: '20px',
+  }
+
   return (
     <div style={cardStyle}>
       <div style={{
         fontSize: '12px',
-        color: 'rgba(255,255,255,0.4)',
+        color: theme.textMuted,
         textTransform: 'uppercase',
         letterSpacing: '0.5px',
         marginBottom: '8px',
@@ -513,19 +547,19 @@ function MetricCard({ label, value, subtitle, previousValue }) {
         {label}
       </div>
       {value === null ? (
-        <Skeleton width="60px" height={28} />
+        <Skeleton theme={theme} width="60px" height={28} />
       ) : (
         <>
-          <div style={{ fontSize: '28px', fontWeight: 500, color: '#fff' }}>
+          <div style={{ fontSize: '28px', fontWeight: 500, color: theme.textPrimary }}>
             {typeof value === 'number' ? value.toLocaleString() : value}
           </div>
           {change && (
-            <div style={{ fontSize: '12px', color: isUp ? '#2DD4BF' : '#FF4279', marginTop: '4px' }}>
+            <div style={{ fontSize: '12px', color: isUp ? theme.success : theme.danger, marginTop: '4px' }}>
               {isUp ? '↑' : '↓'} {change} vs last week
             </div>
           )}
           {subtitle && !change && (
-            <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.3)', marginTop: '4px' }}>
+            <div style={{ fontSize: '12px', color: theme.textLabel, marginTop: '4px' }}>
               {subtitle}
             </div>
           )}
@@ -533,26 +567,4 @@ function MetricCard({ label, value, subtitle, previousValue }) {
       )}
     </div>
   )
-}
-
-const cardStyle = {
-  background: 'rgba(255,255,255,0.04)',
-  border: '1px solid rgba(255,255,255,0.06)',
-  borderRadius: '10px',
-  padding: '20px',
-}
-
-const cardHeading = {
-  fontSize: '13px',
-  fontWeight: 400,
-  color: 'rgba(255,255,255,0.4)',
-  textTransform: 'uppercase',
-  letterSpacing: '0.5px',
-  marginBottom: '16px',
-}
-
-const emptyText = {
-  fontSize: '14px',
-  color: 'rgba(255,255,255,0.3)',
-  fontStyle: 'italic',
 }

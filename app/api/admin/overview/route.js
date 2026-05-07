@@ -185,7 +185,8 @@ function extractPostHogBreakdown(result) {
   if (!result?.results) return []
   return result.results
     .map((r) => ({
-      label: String(r.breakdown_value ?? r.label ?? 'Unknown'),
+      label: String(r.breakdown_value ?? r.label ?? 'Unknown')
+        .replace('$$_posthog_breakdown_other_$$', 'Other'),
       count: (r.data || []).reduce((sum, v) => sum + v, 0),
     }))
     .filter((r) => r.count > 0)

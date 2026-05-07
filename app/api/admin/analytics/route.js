@@ -51,10 +51,15 @@ export async function GET(request) {
       })),
 
       // 6. Referral sources
-      queryPostHog(trendsQuery({ dateRange: '-30d', breakdownProperty: '$referring_domain', breakdownLimit: 10 })),
+      queryPostHog(trendsQuery({
+        dateRange: '-30d',
+        breakdownProperty: '$referring_domain',
+        breakdownLimit: 25,
+        properties: [{ key: '$referring_domain', operator: 'not_icontains', type: 'event', value: 'localhost' }],
+      })),
 
       // 7. Countries
-      queryPostHog(trendsQuery({ dateRange: '-30d', breakdownProperty: '$geoip_country_name', breakdownLimit: 10 })),
+      queryPostHog(trendsQuery({ dateRange: '-30d', breakdownProperty: '$geoip_country_name', breakdownLimit: 20 })),
 
       // 8. Devices
       queryPostHog(trendsQuery({ dateRange: '-30d', breakdownProperty: '$device_type' })),
@@ -155,7 +160,8 @@ function extractBreakdown(result) {
   if (!result?.results) return []
   return result.results
     .map(r => ({
-      label: String(r.breakdown_value ?? r.label ?? 'Unknown'),
+      label: String(r.breakdown_value ?? r.label ?? 'Unknown')
+        .replace('$$_posthog_breakdown_other_$$', 'Other'),
       count: (r.data || []).reduce((sum, v) => sum + v, 0),
     }))
     .filter(r => r.count > 0)

@@ -15,12 +15,15 @@ export default defineType({
     { name: 'core', title: 'Core', default: true },
     { name: 'hero', title: 'Hero' },
     { name: 'context', title: 'Context' },
+    { name: 'proposition', title: 'Proposition' },
     { name: 'recognition', title: 'Recognition' },
+    { name: 'triggers', title: 'Triggers' },
     { name: 'stats', title: 'Stats' },
     { name: 'perspective', title: 'Perspective' },
     { name: 'approach', title: 'Approach' },
     { name: 'outcomes', title: 'Outcomes' },
     { name: 'examples', title: 'Examples' },
+    { name: 'faq', title: 'FAQ' },
     { name: 'cta', title: 'CTA' },
     { name: 'logoStrip', title: 'Logo Strip' },
     { name: 'seo', title: 'SEO' },
@@ -91,10 +94,18 @@ export default defineType({
     // ===========================
 
     defineField({
-      name: 'heroHeading',
-      title: 'Hero Heading',
+      name: 'heroKicker',
+      title: 'Hero Kicker (H1 - SEO label)',
       type: 'string',
-      description: 'The H1 - e.g. "Organisational Culture Change"',
+      description: 'Small uppercase label shown above the hero heading. This is the page\'s H1 and carries the primary SEO keyword - e.g. "Culture Change Consultancy". Falls back to the service title if blank.',
+      group: 'hero',
+    }),
+
+    defineField({
+      name: 'heroHeading',
+      title: 'Hero Heading (large H2 statement)',
+      type: 'string',
+      description: 'The large hero statement - e.g. "Creating the conditions for a thriving culture". Rendered as H2.',
       group: 'hero',
       validation: (rule) => rule.required(),
     }),
@@ -147,6 +158,97 @@ export default defineType({
       type: 'string',
       description: 'Caption below the diagram - e.g. "Change the conditions, and culture shifts naturally."',
       group: 'context',
+    }),
+
+    // ===========================
+    // PROPOSITION (new interactive 3-step stepper - optional)
+    // Renders the new PropositionStepper component when populated.
+    // Falls back to the legacy Recognition section if empty.
+    // ===========================
+
+    defineField({
+      name: 'propositionSteps',
+      title: 'Proposition Steps',
+      type: 'array',
+      description: 'Three-step interactive stepper. Leave empty to fall back to the legacy Recognition section.',
+      group: 'proposition',
+      of: [
+        {
+          type: 'object',
+          fields: [
+            defineField({
+              name: 'stepNumber',
+              title: 'Step Number',
+              type: 'number',
+              description: 'e.g. 1, 2, 3',
+              validation: (rule) => rule.required().min(1).max(3),
+            }),
+            defineField({
+              name: 'kicker',
+              title: 'Step Kicker',
+              type: 'string',
+              description: 'Small label above the headline - e.g. "The conditions"',
+            }),
+            defineField({
+              name: 'headline',
+              title: 'Step Headline',
+              type: 'string',
+              validation: (rule) => rule.required(),
+            }),
+            defineField({
+              name: 'body',
+              title: 'Step Body',
+              type: 'array',
+              of: [{ type: 'block' }],
+            }),
+            defineField({
+              name: 'animationKey',
+              title: 'Animation Key',
+              type: 'string',
+              description: 'Which canvas animation to use for this step (slug-based). For Culture Change: "culture-change-1", "culture-change-3", "culture-change-4".',
+            }),
+          ],
+          preview: {
+            select: { number: 'stepNumber', title: 'headline' },
+            prepare({ number, title }) {
+              return { title: `${number}. ${title}` }
+            },
+          },
+        },
+      ],
+      validation: (rule) => rule.max(3),
+    }),
+
+    defineField({
+      name: 'propositionKicker',
+      title: 'Proposition Section Kicker',
+      type: 'string',
+      description: 'Small label above the main proposition headline. Defaults to "Our proposition" if blank.',
+      group: 'proposition',
+    }),
+
+    defineField({
+      name: 'propositionHeadline',
+      title: 'Proposition Section Headline',
+      type: 'string',
+      description: 'The main heading above the three-step stepper.',
+      group: 'proposition',
+    }),
+
+    defineField({
+      name: 'propositionPhilosophyLinkLabel',
+      title: 'Philosophy link label (step 3)',
+      type: 'string',
+      description: 'Optional link shown at step 3 only - e.g. "Read more about our philosophy"',
+      group: 'proposition',
+    }),
+
+    defineField({
+      name: 'propositionPhilosophyLinkUrl',
+      title: 'Philosophy link URL (step 3)',
+      type: 'string',
+      description: 'Optional. e.g. "/philosophy"',
+      group: 'proposition',
     }),
 
     // ===========================
@@ -207,8 +309,67 @@ export default defineType({
     }),
 
     // ===========================
+    // TRIGGERS (new "leaders come to us at moments like these" section)
+    // Optional. Only renders when triggerCards has items.
+    // ===========================
+
+    defineField({
+      name: 'triggerSectionKicker',
+      title: 'Trigger Section Kicker',
+      type: 'string',
+      description: 'Small label - defaults to "Common catalysts" if blank',
+      group: 'triggers',
+    }),
+
+    defineField({
+      name: 'triggerSectionHeading',
+      title: 'Trigger Section Heading',
+      type: 'string',
+      description: 'Defaults to "Leaders come to us at moments like these" if blank',
+      group: 'triggers',
+    }),
+
+    defineField({
+      name: 'triggerCards',
+      title: 'Trigger Cards',
+      type: 'array',
+      description: 'Short phrases shown as pill-shaped chips on a dark background. e.g. "Bringing two cultures together"',
+      group: 'triggers',
+      of: [
+        {
+          type: 'object',
+          fields: [
+            defineField({
+              name: 'phrase',
+              title: 'Phrase',
+              type: 'string',
+              validation: (rule) => rule.required(),
+            }),
+          ],
+          preview: { select: { title: 'phrase' } },
+        },
+      ],
+    }),
+
+    // ===========================
     // STATS
     // ===========================
+
+    defineField({
+      name: 'statsSectionKicker',
+      title: 'Stats Section Kicker',
+      type: 'string',
+      description: 'Small label above the stats - e.g. "Independent research". Optional.',
+      group: 'stats',
+    }),
+
+    defineField({
+      name: 'statsSectionHeading',
+      title: 'Stats Section Heading',
+      type: 'string',
+      description: 'Heading shown above the stats row. Optional - if blank, the stats render without a heading.',
+      group: 'stats',
+    }),
 
     defineField({
       name: 'stats',
@@ -313,6 +474,43 @@ export default defineType({
       group: 'approach',
       of: [{ type: 'block' }],
       validation: (rule) => rule.required(),
+    }),
+
+    defineField({
+      name: 'approachIntroHeading',
+      title: 'Approach Intro Slide Heading',
+      type: 'string',
+      description: 'Headline shown on the INTRO slide of the Approach slider - e.g. "How we work"',
+      group: 'approach',
+    }),
+
+    defineField({
+      name: 'approachPrinciples',
+      title: 'Approach Principles',
+      type: 'array',
+      description: 'Optional principle cards shown on the INTRO slide of the Approach slider.',
+      group: 'approach',
+      of: [
+        {
+          type: 'object',
+          fields: [
+            defineField({
+              name: 'title',
+              title: 'Title',
+              type: 'string',
+              validation: (rule) => rule.required(),
+            }),
+            defineField({
+              name: 'description',
+              title: 'Description',
+              type: 'text',
+              rows: 3,
+              validation: (rule) => rule.required(),
+            }),
+          ],
+          preview: { select: { title: 'title' } },
+        },
+      ],
     }),
 
     defineField({
@@ -476,6 +674,31 @@ export default defineType({
     // ===========================
 
     defineField({
+      name: 'proofSectionKicker',
+      title: 'Proof Section Kicker',
+      type: 'string',
+      description: 'Defaults to "Proof in practice" if blank',
+      group: 'examples',
+    }),
+
+    defineField({
+      name: 'proofSectionHeading',
+      title: 'Proof Section Heading',
+      type: 'string',
+      description: 'Defaults to "See how this works in real organisations" if blank',
+      group: 'examples',
+    }),
+
+    defineField({
+      name: 'proofSectionIntro',
+      title: 'Proof Section Intro',
+      type: 'text',
+      description: 'Optional short paragraph below the proof heading - sets up the breadth-of-experience context above the case study cards.',
+      group: 'examples',
+      rows: 3,
+    }),
+
+    defineField({
       name: 'relatedProjects',
       title: 'Related Projects',
       type: 'array',
@@ -505,6 +728,55 @@ export default defineType({
       type: 'string',
       description: 'e.g. "Name, Role, Organisation"',
       group: 'examples',
+    }),
+
+    // ===========================
+    // FAQ (new) - only renders if faqItems has items
+    // ===========================
+
+    defineField({
+      name: 'faqSectionKicker',
+      title: 'FAQ Section Kicker',
+      type: 'string',
+      description: 'Optional small label above the FAQ heading',
+      group: 'faq',
+    }),
+
+    defineField({
+      name: 'faqSectionHeading',
+      title: 'FAQ Section Heading',
+      type: 'string',
+      description: 'Defaults to "Common questions" if blank',
+      group: 'faq',
+    }),
+
+    defineField({
+      name: 'faqItems',
+      title: 'FAQ Items',
+      type: 'array',
+      description: 'Accordion items rendered as JSON-LD FAQPage markup for SEO rich snippet eligibility',
+      group: 'faq',
+      of: [
+        {
+          type: 'object',
+          fields: [
+            defineField({
+              name: 'question',
+              title: 'Question',
+              type: 'string',
+              validation: (rule) => rule.required(),
+            }),
+            defineField({
+              name: 'answer',
+              title: 'Answer',
+              type: 'array',
+              of: [{ type: 'block' }],
+              validation: (rule) => rule.required(),
+            }),
+          ],
+          preview: { select: { title: 'question' } },
+        },
+      ],
     }),
 
     // ===========================

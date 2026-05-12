@@ -222,6 +222,15 @@ a:hover {
 .marker-bg--sweeping { animation: markerSweep 0.5s var(--ease) forwards; }
 @keyframes markerSweep { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0% 0 0); } }
 
+/* Simple inline highlighter — pure CSS, wraps naturally across lines.
+   Use on any <span> inside a heading or paragraph. */
+.marker-highlight {
+  background-image: linear-gradient(transparent 62%, rgba(155, 81, 224, 0.28) 62%, rgba(155, 81, 224, 0.28) 92%, transparent 92%);
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  padding: 0 2px;
+}
+
 /* ============================================
    5. INLINE LINKS
    ============================================ */
@@ -4318,3 +4327,640 @@ a:hover {
     grid-template-columns: 1fr;
   }
 }
+
+/* ============================================
+   SERVICE PAGE REDESIGN (12 May 2026)
+   New components: ApproachSlider, PropositionStepper,
+   RecognitionTriggers, ServiceFAQ + hero H1 kicker.
+   ============================================ */
+
+/* ----- Hero H1 (small uppercase kicker) ----- */
+.service-hero__h1 {
+  font-size: 13px;
+  font-weight: 400;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--coral);
+  display: block;
+  margin: 0 0 16px;
+  line-height: 1.4;
+}
+
+/* ----- ApproachSlider ----- */
+.approach-slider {
+  display: grid;
+  grid-template-columns: 88px 1fr;
+  align-items: stretch;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: var(--white);
+  /* No border-radius — sharp corners match the wider design language. */
+  /* No fixed height — container grows to fit the active slide. */
+}
+
+.approach-slider__rail {
+  background: #221C2B;
+  display: flex;
+  flex-direction: column;
+  /* Grow with the container instead of sticking — keeps the rail
+     visually anchored to the panel even on tall stage slides. */
+}
+
+.approach-slider__rail-item {
+  appearance: none;
+  background: transparent;
+  border: 0;
+  color: rgba(255, 255, 255, 0.55);
+  padding: 22px 8px;
+  text-align: center;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  /* Each item grows to fill the rail so it always extends to the
+     bottom of the container, even when slides are taller than the
+     natural item heights. */
+  flex: 1 1 auto;
+  min-height: 96px;
+  transition: background 0.2s var(--ease), color 0.2s var(--ease);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  position: relative;
+}
+.approach-slider__rail-item:last-child {
+  border-bottom: 0;
+}
+.approach-slider__rail-item:hover {
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.85);
+}
+.approach-slider__rail-item.is-active {
+  /* Each step keeps its own colour from the journey strip;
+     INTRO falls back to the accent purple. */
+  background: var(--step-colour, #9B51E0);
+  color: #fff;
+}
+
+.approach-slider__rail-number {
+  font-size: 32px;
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: -0.01em;
+  color: inherit;
+  opacity: 1;
+}
+/* Inactive: number takes its step's colour so each rail item has a
+   distinct identity. INTRO has no --step-colour, so it falls back to
+   a muted white. */
+.approach-slider__rail-item:not(.is-active) .approach-slider__rail-number {
+  color: var(--step-colour, rgba(255, 255, 255, 0.55));
+}
+
+.approach-slider__rail-label {
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  line-height: 1.2;
+  color: inherit;
+  opacity: 1;
+}
+.approach-slider__rail-item:not(.is-active) .approach-slider__rail-label {
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.approach-slider__panel {
+  padding: 2.5rem 2.75rem;
+  /* Grows to fit content — no fixed height, no scrollbar. */
+}
+
+.approach-slider__slide {
+  animation: approach-fade-in 0.25s var(--ease);
+}
+
+.approach-slider__practice-label {
+  color: var(--accent);
+  margin-bottom: 16px;
+  display: block;
+}
+
+@keyframes approach-fade-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.approach-slider__slide-top {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  gap: 2.5rem;
+  align-items: start;
+}
+
+.approach-slider__slide-image {
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 4px 18px rgba(34, 28, 43, 0.08);
+}
+.approach-slider__slide-image img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.approach-slider__divider {
+  height: 1px;
+  background: rgba(0, 0, 0, 0.08);
+  margin: 2rem 0;
+}
+
+.approach-slider__slide-bottom {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 2rem;
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .approach-slider {
+    grid-template-columns: 1fr;
+  }
+  .approach-slider__rail {
+    flex-direction: row;
+    overflow-x: auto;
+    overflow-y: visible;
+    max-height: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    position: static;
+  }
+  .approach-slider__rail-item {
+    flex: 0 0 auto;
+    min-width: 88px;
+    padding: 14px 10px;
+    border-bottom: 0;
+    border-right: 1px solid rgba(255, 255, 255, 0.06);
+  }
+  .approach-slider__panel {
+    padding: 1.75rem 1.5rem;
+  }
+  .approach-slider__slide-top,
+  .approach-slider__slide-bottom {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+}
+
+/* ----- PropositionStepper (3-col container: rail | body | canvas) ----- */
+.proposition-stepper {
+  display: grid;
+  grid-template-columns: 200px minmax(0, 1fr) minmax(0, 1fr);
+  align-items: stretch;
+  background: var(--warm);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+/* ----- Vertical nav rail ----- */
+.proposition-stepper__rail {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0;
+  padding: 40px 16px;
+  border-right: 1px solid rgba(0, 0, 0, 0.06);
+  background: rgba(255, 255, 255, 0.4);
+}
+
+.proposition-stepper__rail-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+}
+
+.proposition-stepper__node {
+  appearance: none;
+  background: var(--white);
+  border: 1.5px solid rgba(0, 0, 0, 0.12);
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: rgba(0, 0, 0, 0.25);
+  transition: border-color 0.2s var(--ease), color 0.2s var(--ease),
+    background 0.2s var(--ease), transform 0.2s var(--ease),
+    box-shadow 0.2s var(--ease);
+  flex-shrink: 0;
+}
+
+.proposition-stepper__node-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s var(--ease);
+}
+
+.proposition-stepper__node svg {
+  width: 24px;
+  height: 24px;
+  fill: currentColor;
+  stroke: currentColor;
+}
+
+.proposition-stepper__node:hover {
+  border-color: rgba(155, 81, 224, 0.6);
+  color: var(--accent);
+  background: #fff;
+  transform: scale(1.05);
+}
+
+.proposition-stepper__node.is-reached {
+  border-color: rgba(155, 81, 224, 0.45);
+  color: var(--accent);
+}
+
+.proposition-stepper__node.is-active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+  transform: scale(1.1);
+  box-shadow: 0 4px 18px rgba(155, 81, 224, 0.25);
+}
+
+.proposition-stepper__rail-label {
+  font-size: 9px;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  text-align: center;
+  color: rgba(0, 0, 0, 0.35);
+  transition: color 0.2s var(--ease);
+  line-height: 1.3;
+  max-width: 140px;
+  margin-top: 2px;
+}
+.proposition-stepper__rail-label.is-active {
+  color: var(--accent);
+  font-weight: 400;
+}
+
+.proposition-stepper__connector {
+  width: 2px;
+  height: 36px;
+  background: rgba(0, 0, 0, 0.1);
+  margin: 8px 0;
+  transition: background 0.3s var(--ease) 0.15s;
+}
+.proposition-stepper__connector.is-lit {
+  background: var(--accent);
+}
+
+/* ----- Body (middle column) ----- */
+.proposition-stepper__body {
+  padding: 40px 32px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.proposition-stepper__body-inner {
+  animation: prop-stepper-fade 0.35s var(--ease);
+  min-height: 240px;
+}
+
+@keyframes prop-stepper-fade {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.proposition-stepper__headline {
+  /* Matches .heading-h3 — testing whether this size feels right here. */
+  font-size: clamp(24px, 3vw, 34px);
+  font-weight: 400;
+  line-height: 1.2;
+  color: var(--dark);
+  margin: 0 0 16px;
+}
+
+.proposition-stepper__body .portable-text p {
+  font-size: 16px;
+  line-height: 1.65;
+  color: rgba(0, 0, 0, 0.7);
+}
+.proposition-stepper__body .portable-text p + p {
+  margin-top: 14px;
+}
+
+/* ----- Canvas (right column) ----- */
+.proposition-stepper__canvas {
+  position: relative;
+  margin: 32px 32px 32px 0;
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--white);
+  min-height: 360px;
+}
+
+.proposition-stepper__animation {
+  position: absolute;
+  inset: 0;
+  opacity: 1;
+  transition: opacity 0.45s var(--ease);
+}
+.proposition-stepper__animation.is-fading-out {
+  opacity: 0;
+}
+
+/* ----- Mobile / narrow: rail collapses to a horizontal strip at the top ----- */
+@media (max-width: 900px) {
+  .proposition-stepper {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto;
+  }
+  .proposition-stepper__rail {
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 20px;
+    border-right: 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  }
+  .proposition-stepper__rail-item {
+    flex-direction: column;
+    flex: 1 1 auto;
+  }
+  .proposition-stepper__node {
+    width: 46px;
+    height: 46px;
+  }
+  .proposition-stepper__node svg {
+    width: 20px;
+    height: 20px;
+  }
+  .proposition-stepper__connector {
+    position: absolute;
+    top: 22px;
+    left: calc(50% + 24px);
+    width: calc(100% - 24px);
+    height: 2px;
+    margin: 0;
+    z-index: 0;
+  }
+  .proposition-stepper__rail-item:last-child .proposition-stepper__connector {
+    display: none;
+  }
+  .proposition-stepper__rail-label {
+    font-size: 9px;
+    max-width: 90px;
+  }
+  .proposition-stepper__body {
+    padding: 28px 24px 8px;
+  }
+  .proposition-stepper__canvas {
+    margin: 12px 24px 28px;
+    aspect-ratio: 16 / 10;
+    min-height: 0;
+  }
+}
+
+@media (max-width: 560px) {
+  .proposition-stepper__rail-label {
+    display: none;
+  }
+}
+
+/* ----- RecognitionTriggers (centred, scattered pill cluster on dark) ----- */
+.recognition-triggers {
+  padding: 80px 0;
+}
+
+.recognition-triggers__header {
+  text-align: center;
+  max-width: 820px;
+  margin: 0 auto;
+}
+
+.recognition-triggers__kicker {
+  color: rgba(255, 255, 255, 0.55);
+  margin-bottom: 12px;
+  display: block;
+}
+
+.recognition-triggers__heading {
+  color: #fff;
+  margin: 0;
+}
+
+.recognition-triggers__cluster {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 16px 20px;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding-top: 32px;
+}
+
+.recognition-triggers__chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 16px 28px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 24px;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 16px;
+  font-weight: 400;
+  letter-spacing: 0.005em;
+  line-height: 1.3;
+  background: transparent;
+  cursor: default;
+  transition: border-color 0.2s var(--ease), color 0.2s var(--ease);
+}
+
+.recognition-triggers__chip:hover {
+  border-color: rgba(155, 81, 224, 0.6);
+  color: #fff;
+}
+
+/* Organic horizontal stagger — small nudges so rows don't line up
+   perfectly. Values are deliberate, not random, and only apply at
+   widths where the cluster actually wraps into multiple rows. */
+@media (min-width: 769px) {
+  .recognition-triggers__chip:nth-child(4) { margin-left: 32px; }
+  .recognition-triggers__chip:nth-child(6) { margin-right: 16px; }
+  .recognition-triggers__chip:nth-child(7) { margin-left: 24px; }
+}
+
+@media (max-width: 768px) {
+  .recognition-triggers {
+    padding: 64px 0;
+  }
+  .recognition-triggers__cluster {
+    gap: 12px;
+    padding-top: 28px;
+  }
+  .recognition-triggers__chip {
+    font-size: 15px;
+    padding: 12px 22px;
+  }
+}
+
+/* ----- ServiceFAQ accordion ----- */
+.service-faq__list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.service-faq__item {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.service-faq__trigger {
+  appearance: none;
+  background: transparent;
+  border: 0;
+  width: 100%;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 1.25rem 0;
+  cursor: pointer;
+  color: var(--dark);
+}
+.service-faq__trigger:hover {
+  color: var(--accent);
+}
+
+.service-faq__question {
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 1.35;
+  color: inherit;
+}
+
+.service-faq__icon {
+  font-size: 22px;
+  font-weight: 300;
+  color: var(--accent);
+  width: 24px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.service-faq__answer {
+  padding: 0 0 1.5rem;
+  color: rgba(0, 0, 0, 0.65);
+  max-width: 720px;
+  animation: approach-fade-in 0.2s var(--ease);
+}
+
+
+/* ----- ApproachSlider principle cards (INTRO slide) ----- */
+.approach-slider__principles {
+  margin-top: 2rem;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.approach-principle {
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 10px;
+  padding: 18px 20px;
+  background: var(--warm);
+  transition: border-color 0.2s var(--ease), transform 0.2s var(--ease);
+}
+
+.approach-principle:hover {
+  border-color: rgba(155, 81, 224, 0.4);
+  transform: translateY(-1px);
+}
+
+.approach-principle__title {
+  font-size: 15px;
+  font-weight: 400;
+  color: var(--dark);
+  margin: 0 0 6px;
+  line-height: 1.3;
+}
+
+.approach-principle__desc {
+  font-size: 14px;
+  font-weight: 400;
+  color: rgba(0, 0, 0, 0.6);
+  line-height: 1.55;
+  margin: 0;
+}
+
+@media (max-width: 700px) {
+  .approach-slider__principles {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+/* ----- ServiceProof case study grid ----- */
+.proof-cards-grid {
+  display: grid;
+  gap: 24px;
+}
+.proof-cards-grid--one { grid-template-columns: 1fr; }
+.proof-cards-grid--two { grid-template-columns: repeat(2, 1fr); }
+.proof-cards-grid--three { grid-template-columns: repeat(3, 1fr); }
+
+@media (max-width: 768px) {
+  .proof-cards-grid,
+  .proof-cards-grid--one,
+  .proof-cards-grid--two,
+  .proof-cards-grid--three {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+/* ----- ServiceStats section header (kicker + heading on dark) ----- */
+.stats-section__header {
+  text-align: center;
+  max-width: 820px;
+  margin: 0 auto 2rem;
+}
+
+.stats-section__kicker {
+  color: rgba(255, 255, 255, 0.55);
+  margin-bottom: 12px;
+  display: block;
+}
+
+.stats-section__heading {
+  font-size: clamp(22px, 2.4vw, 28px);
+  font-weight: 400;
+  line-height: 1.25;
+  color: #fff;
+  margin: 0 0 8px;
+  letter-spacing: -0.005em;
+}
+
+
+/* ----- ServiceFAQ section wrapper -----
+   White background contrasts with the warm Perspective section above
+   and the PageCallouts strip below, so the section reads as distinct
+   without needing an explicit divider line. */
+.service-faq-section {
+  padding: 128px 20px;
+}
+
+@media (max-width: 768px) {
+  .service-faq-section {
+    padding: 80px 20px;
+  }
+}
+

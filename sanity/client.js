@@ -268,6 +268,7 @@ export async function getService(slug) {
       categoryLabel,
 
       // Hero
+      heroKicker,
       heroHeading,
       heroTagline,
 
@@ -277,13 +278,35 @@ export async function getService(slug) {
       "propositionImageUrl": propositionImage.asset->url,
       propositionCaption,
 
+      // Proposition (new interactive stepper)
+      propositionKicker,
+      propositionHeadline,
+      propositionPhilosophyLinkLabel,
+      propositionPhilosophyLinkUrl,
+      propositionSteps[] {
+        stepNumber,
+        kicker,
+        headline,
+        body,
+        animationKey,
+      },
+
       // Recognition
       recognitionHeading,
       recognitionIntro,
       recognitionItems,
       recognitionBridge,
 
+      // Triggers (new scattered cards section)
+      triggerSectionKicker,
+      triggerSectionHeading,
+      triggerCards[] {
+        phrase,
+      },
+
       // Stats
+      statsSectionKicker,
+      statsSectionHeading,
       stats,
 
       // Perspective
@@ -295,6 +318,11 @@ export async function getService(slug) {
 
       // Approach
       approachIntro,
+      approachIntroHeading,
+      approachPrinciples[] {
+        title,
+        description,
+      },
       stages[] {
         stageNumber,
         stageTitle,
@@ -314,7 +342,10 @@ export async function getService(slug) {
       outcomes,
       outcomesClosing,
 
-      // Examples
+      // Examples (proof)
+      proofSectionKicker,
+      proofSectionHeading,
+      proofSectionIntro,
       relatedProjects[]-> {
         _id,
         title,
@@ -325,6 +356,14 @@ export async function getService(slug) {
       },
       testimonialQuote,
       testimonialAttribution,
+
+      // FAQ (new)
+      faqSectionKicker,
+      faqSectionHeading,
+      faqItems[] {
+        question,
+        answer,
+      },
 
       // CTA
       ctaHeading,

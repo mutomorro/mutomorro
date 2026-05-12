@@ -6,13 +6,16 @@ import { notFound } from 'next/navigation'
 import CTA from '../../../components/CTA'
 import ServiceTripleCta, { ServiceTripleCtaDark } from '../../../components/ServiceTripleCta'
 import EcosystemVisual from '../../../components/EcosystemVisual'
-import { JourneyStrip, ProgressBar } from '../../../components/ApproachJourney'
 import ServiceHero from '../../../components/heroes/ServiceHero'
 import RecognitionRow from '../../../components/RecognitionRow'
 import LogoStrip from '../../../components/LogoStrip'
 import BackgroundPattern from '@/components/animations/BackgroundPattern'
-import Lightbox from '../../../components/Lightbox'
 import PageCallouts from '../../../components/PageCallouts'
+import ApproachSlider from '../../../components/services/ApproachSlider'
+import PropositionStepper from '../../../components/services/PropositionStepper'
+import RecognitionTriggers from '../../../components/services/RecognitionTriggers'
+import ServiceFAQ from '../../../components/services/ServiceFAQ'
+import { buildFaqJsonLd } from '../../../components/services/faqJsonLd'
 
 export const revalidate = 3600
 
@@ -21,27 +24,65 @@ export async function generateStaticParams() {
   return services.map(s => ({ slug: s.slug }))
 }
 
-// Step colours matching the journey strip
-const STEP_COLOURS = ['#80388F', '#9B51E0', '#FF4279', '#E08F00']
-
-// Bento box colours for outcomes
-const BENTO_COLOURS = ['#80388F', '#9B51E0', '#FF4279', '#E08F00', '#221C2B']
-
-// Mid-page CTA - lightweight inline prompt + button
-function MidPageCta({ text, buttonLabel, serviceTitle }) {
+// Wraps a target phrase with the .marker-highlight span when it
+// appears inside `text`. Case-insensitive match; preserves the original
+// casing. Falls back to plain text if the phrase isn't found, so
+// per-service editorial changes don't break the page.
+function HighlightedText({ text, phrase }) {
+  if (!text) return null
+  if (!phrase) return text
+  const idx = text.toLowerCase().indexOf(phrase.toLowerCase())
+  if (idx === -1) return text
   return (
-    <div className="mid-page-cta">
-      <p className="mid-page-cta__text">
-        {text}
-      </p>
-      <a
-        href={`/contact?service=${encodeURIComponent(serviceTitle)}`}
-        className="btn-primary mid-page-cta__btn"
-      >
-        {buttonLabel}
-      </a>
-    </div>
+    <>
+      {text.slice(0, idx)}
+      <span className="marker-highlight">{text.slice(idx, idx + phrase.length)}</span>
+      {text.slice(idx + phrase.length)}
+    </>
   )
+}
+
+// Walks a portable-text array and, wherever a span contains `phrase`,
+// splits that span into three (before, linked, after) and adds a `link`
+// markDef so the standard PortableText renderer outputs an <a>. Lets
+// editors write prose normally in Sanity while specific phrases get
+// auto-linked at render time. Idempotent: skips spans already linked.
+function linkifyPhrase(blocks, phrase, href) {
+  if (!Array.isArray(blocks) || !phrase || !href) return blocks
+  const lowerPhrase = phrase.toLowerCase()
+  let linkCounter = 0
+  return blocks.map((block) => {
+    if (block._type !== 'block' || !Array.isArray(block.children)) return block
+    const newChildren = []
+    const newMarkDefs = [...(block.markDefs || [])]
+    let changed = false
+    for (const span of block.children) {
+      if (span._type !== 'span' || !span.text || !span.text.toLowerCase().includes(lowerPhrase)) {
+        newChildren.push(span)
+        continue
+      }
+      if (span.marks?.some((m) => newMarkDefs.find((d) => d._key === m && d._type === 'link'))) {
+        newChildren.push(span)
+        continue
+      }
+      const idx = span.text.toLowerCase().indexOf(lowerPhrase)
+      const before = span.text.slice(0, idx)
+      const match = span.text.slice(idx, idx + phrase.length)
+      const after = span.text.slice(idx + phrase.length)
+      const markKey = `auto-link-${block._key}-${linkCounter++}`
+      newMarkDefs.push({ _key: markKey, _type: 'link', href })
+      if (before) newChildren.push({ ...span, _key: `${span._key}-pre`, text: before })
+      newChildren.push({
+        ...span,
+        _key: `${span._key}-link`,
+        text: match,
+        marks: [...(span.marks || []), markKey],
+      })
+      if (after) newChildren.push({ ...span, _key: `${span._key}-post`, text: after })
+      changed = true
+    }
+    return changed ? { ...block, children: newChildren, markDefs: newMarkDefs } : block
+  })
 }
 
 // ============================================
@@ -52,7 +93,7 @@ export async function generateMetadata({ params }) {
   const { slug } = await params
   const service = await client.fetch(
     `*[_type == "service" && slug.current == $slug][0]{
-      title, heroHeading, seoTitle, seoDescription, heroTagline,
+      title, heroHeading, heroKicker, seoTitle, seoDescription, heroTagline,
       "ogImageUrl": propositionImage.asset->url
     }`,
     { slug }
@@ -90,6 +131,24 @@ export default async function ServicePage({ params }) {
 
   if (!service) notFound()
 
+  const heroKicker = service.heroKicker || service.title
+
+  const hasPropositionSteps = service.propositionSteps?.length > 0
+  const hasTriggers = service.triggerCards?.length > 0
+  const hasFaqs = service.faqItems?.length > 0
+
+  // Auto-link "Our philosophy page" → /our-philosophy in the perspective
+  // body. Editors keep the phrase as plain prose in Sanity; the link is
+  // applied at render time so per-service copy edits don't need to know
+  // about portable-text markDefs.
+  const perspectiveBody = linkifyPhrase(
+    service.perspectiveBody,
+    'Our philosophy page',
+    '/our-philosophy',
+  )
+  const hasRelatedProjects = service.relatedProjects?.length > 0
+  const hasMoreProjects = (service.relatedProjects?.length || 0) > 3
+
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Service',
@@ -122,6 +181,8 @@ export default async function ServicePage({ params }) {
     ],
   }
 
+  const faqJsonLd = hasFaqs ? buildFaqJsonLd(service.faqItems) : null
+
   return (
     <main className="service-page">
       <script
@@ -132,9 +193,16 @@ export default async function ServicePage({ params }) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
+      {faqJsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+        />
+      )}
 
       {/* ==========================================
           SECTION 1: HERO (dark)
+          H1 = small heroKicker label, H2 = large statement
           ========================================== */}
       <section className="section--full dark-bg section-padding-hero" style={{ position: 'relative', overflow: 'hidden' }}>
         <div style={{ display: 'flex', maxWidth: '1350px', margin: '0 auto', position: 'relative', zIndex: 2 }}>
@@ -146,10 +214,15 @@ export default async function ServicePage({ params }) {
               <span className="breadcrumb__current">{service.categoryLabel}</span>
             </div>
 
-            <span className="kicker" style={{ marginBottom: '16px' }}>{service.categoryLabel}</span>
-            <h1 className="heading-gradient heading-display" style={{ margin: '0 0 32px', maxWidth: '900px' }}>
-              {service.heroHeading}
+            {/* H1 - small kicker carries the SEO keyword */}
+            <h1 className="kicker service-hero__h1" style={{ marginBottom: '16px' }}>
+              {heroKicker}
             </h1>
+
+            {/* H2 - large visual hero statement */}
+            <h2 className="heading-gradient heading-display" style={{ margin: '0 0 32px', maxWidth: '900px' }}>
+              {service.heroHeading}
+            </h2>
             <p className="lead-text" style={{ color: 'rgba(255,255,255,0.6)', maxWidth: '680px' }}>
               {service.heroTagline}
             </p>
@@ -164,7 +237,6 @@ export default async function ServicePage({ params }) {
           width: 'min(50%, 750px)',
           height: '100%',
         }}>
-          {/* Fade gradient so animation doesn't compete with text */}
           <div style={{
             position: 'absolute',
             top: 0,
@@ -180,16 +252,18 @@ export default async function ServicePage({ params }) {
       </section>
 
       {/* ==========================================
-          ANCHOR NAV
+          ANCHOR NAV (updated labels for new section order)
           ========================================== */}
       <nav className="anchor-nav">
         <div className="anchor-nav__inner">
           {(() => {
-            const navItems = ['Context', 'Recognition']
-            if (service.relatedProjects?.length > 0 || service.testimonialQuote) {
-              navItems.push('Examples')
+            const navItems = ['Context']
+            if (hasPropositionSteps || service.recognitionItems?.length > 0) {
+              navItems.push('Proposition')
             }
-            navItems.push('Approach', 'Perspective', 'Outcomes')
+            if (hasRelatedProjects) navItems.push('Proof')
+            navItems.push('Approach', 'Perspective')
+            if (hasFaqs) navItems.push('FAQ')
             return navItems
           })().map((label) => (
             <a
@@ -207,7 +281,6 @@ export default async function ServicePage({ params }) {
           SECTION 2: CONTEXT (warm)
           ========================================== */}
       <BackgroundPattern variant="woven" className="section--full section-padding" style={{ background: '#FAF6F1', position: 'relative' }}>
-        {/* Shadow gradient from anchor nav dark zone */}
         <div style={{
           position: 'absolute',
           top: 0,
@@ -219,18 +292,16 @@ export default async function ServicePage({ params }) {
         }} />
 
         <div id="context" style={{ maxWidth: '1350px', margin: '0 auto' }}>
-          {/* Kicker + heading always full width */}
           <div className="scroll-in">
             <span className="kicker" style={{ color: '#FF4279', marginBottom: '16px' }}>Context</span>
             <h2 className="heading-h2" style={{ margin: '0 0 2rem' }}>
-              {service.contextHeading}
+              <HighlightedText text={service.contextHeading} phrase="create the conditions" />
             </h2>
           </div>
 
-          {/* Body text + fan image split below heading */}
           {(() => {
-            const fanImages = (service.stages || []).slice(0, 3).filter(s => s.stageImageUrl);
-            const hasFan = fanImages.length > 0;
+            const fanImages = (service.stages || []).slice(0, 3).filter(s => s.stageImageUrl)
+            const hasFan = fanImages.length > 0
             return (
               <div style={{
                 display: 'grid',
@@ -238,14 +309,11 @@ export default async function ServicePage({ params }) {
                 gap: '4rem',
                 alignItems: 'start',
               }}>
-                <div className="scroll-in" style={{
-                  maxWidth: hasFan ? 'none' : '800px',
-                }}>
+                <div className="scroll-in" style={{ maxWidth: hasFan ? 'none' : '800px' }}>
                   <div className="portable-text" style={{ color: 'rgba(0,0,0,0.7)' }}>
                     <PortableText value={service.contextBody} />
                   </div>
                   <ServiceTripleCta
-
                     serviceTitle={service.title}
                     heroHeading={service.heroHeading}
                     slug={slug}
@@ -253,7 +321,6 @@ export default async function ServicePage({ params }) {
                   />
                 </div>
 
-                {/* Fan composition of stage interface screenshots */}
                 {hasFan && (
                   <div className="fan-composition scroll-in delay-1">
                     {service.stages[2]?.stageImageUrl && (
@@ -292,70 +359,92 @@ export default async function ServicePage({ params }) {
                   </div>
                 )}
               </div>
-            );
+            )
           })()}
         </div>
       </BackgroundPattern>
 
       {/* ==========================================
-          SECTION 3: LOGO STRIP (single fixed placement)
+          LOGO STRIP
           ========================================== */}
       {service.showLogoStrip !== false && (
         <LogoStrip />
       )}
 
       {/* ==========================================
-          SECTION 4: RECOGNITION (white)
+          SECTION 3: PROPOSITION
+          New PropositionStepper if propositionSteps exists.
+          Otherwise falls back to the legacy Recognition section.
           ========================================== */}
-      <section id="recognition" className="section--full section-padding" style={{ background: 'var(--white)' }}>
-        <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
-          <div className="scroll-in">
-            <span className="kicker" style={{ color: '#FF4279', marginBottom: '16px' }}>Recognition</span>
-            <h2 className="heading-h2" style={{ margin: '0 0 20px' }}>
-              {service.recognitionHeading}
-            </h2>
-            {service.recognitionIntro && (
-              <p className="lead-text" style={{ maxWidth: '720px', marginBottom: '2.5rem' }}>
-                {service.recognitionIntro}
-              </p>
-            )}
-          </div>
-
-          {/* Recognition rows - horizontal stacked boxes, capped at 4 */}
-          {service.recognitionItems?.length > 0 && (
-            <div style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '20px',
-              marginBottom: '2.5rem',
-            }}>
-              {service.recognitionItems.slice(0, 4).map((item, i) => (
-                <RecognitionRow
-                  key={item._key || i}
-                  item={item}
-                  index={i}
-                  slug={slug}
-                  delay={i * 0.1}
+      {hasPropositionSteps ? (
+        <section id="proposition" className="section--full section-padding" style={{ background: 'var(--white)' }}>
+          <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
+            {/* Full-width section heading, sized like other section H2s */}
+            <div className="scroll-in" style={{ marginBottom: '2.5rem' }}>
+              <span className="kicker" style={{ color: 'var(--accent)', marginBottom: '16px' }}>
+                {service.propositionKicker || 'Our proposition'}
+              </span>
+              <h2 className="heading-h2" style={{ margin: 0 }}>
+                <HighlightedText
+                  text={service.propositionHeadline || service.recognitionHeading}
+                  phrase="conditions that create it"
                 />
-              ))}
+              </h2>
             </div>
-          )}
 
-          <ServiceTripleCta
+            <PropositionStepper
+              steps={service.propositionSteps}
+              philosophyLinkLabel={service.propositionPhilosophyLinkLabel}
+              philosophyLinkUrl={service.propositionPhilosophyLinkUrl}
+            />
+          </div>
+        </section>
+      ) : (
+        service.recognitionItems?.length > 0 && (
+          <section id="proposition" className="section--full section-padding" style={{ background: 'var(--white)' }}>
+            <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
+              <div className="scroll-in">
+                <span className="kicker" style={{ color: '#FF4279', marginBottom: '16px' }}>Recognition</span>
+                <h2 className="heading-h2" style={{ margin: '0 0 20px' }}>
+                  {service.recognitionHeading}
+                </h2>
+                {service.recognitionIntro && (
+                  <p className="lead-text" style={{ maxWidth: '720px', marginBottom: '2.5rem' }}>
+                    {service.recognitionIntro}
+                  </p>
+                )}
+              </div>
 
-            serviceTitle={service.title}
-            heroHeading={service.heroHeading}
-            slug={slug}
-            position="after-recognition"
-          />
+              <div style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '20px',
+                marginBottom: '2.5rem',
+              }}>
+                {service.recognitionItems.slice(0, 4).map((item, i) => (
+                  <RecognitionRow
+                    key={item._key || i}
+                    item={item}
+                    index={i}
+                    slug={slug}
+                    delay={i * 0.1}
+                  />
+                ))}
+              </div>
 
-        </div>
-      </section>
+              <ServiceTripleCta
+                serviceTitle={service.title}
+                heroHeading={service.heroHeading}
+                slug={slug}
+                position="after-recognition"
+              />
+            </div>
+          </section>
+        )
+      )}
 
-      {/* ==========================================
-          BRIDGE TEXT (mid-dark #423B49)
-          ========================================== */}
-      {service.recognitionBridge && (
+      {/* Bridge text only renders in the legacy recognition path */}
+      {!hasPropositionSteps && service.recognitionBridge && (
         <section className="section--full dark-bg bridge-text section-padding" style={{ background: '#423B49' }}>
           <div className="scroll-in" style={{
             maxWidth: '860px',
@@ -376,79 +465,114 @@ export default async function ServicePage({ params }) {
       )}
 
       {/* ==========================================
-          SECTION 5: EXAMPLES (white)
+          SECTION 4: RECOGNITION TRIGGERS (dark, scattered chips)
           ========================================== */}
-      {(service.relatedProjects?.length > 0 || service.testimonialQuote) && (
-        <section id="examples" className="section--full section-padding" style={{ background: 'var(--white)' }}>
+      {hasTriggers && (
+        <RecognitionTriggers
+          cards={service.triggerCards}
+          heading={service.triggerSectionHeading || 'Leaders come to us at moments like these'}
+          kicker={service.triggerSectionKicker || 'Common catalysts'}
+        />
+      )}
+
+      {/* ==========================================
+          SECTION 5: PROOF (case studies, 3 in a row)
+          ========================================== */}
+      {(hasRelatedProjects || service.testimonialQuote) && (
+        <section id="proof" className="section--full section-padding" style={{ background: 'var(--white)' }}>
           <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
             <div className="scroll-in">
-              <span className="kicker" style={{ color: 'var(--accent)', marginBottom: '16px' }}>Proof in practice</span>
-              <h2 className="heading-h2" style={{ margin: '0 0 2rem' }}>
-                See how this works in real organisations
+              <span className="kicker" style={{ color: 'var(--accent)', marginBottom: '16px' }}>
+                {service.proofSectionKicker || 'Proof in practice'}
+              </span>
+              <h2 className="heading-h2" style={{ margin: '0 0 1.25rem' }}>
+                {service.proofSectionHeading || 'See how this works in real organisations'}
               </h2>
+              {service.proofSectionIntro && (
+                <p className="lead-text" style={{ maxWidth: '760px', marginBottom: '2.5rem' }}>
+                  {service.proofSectionIntro}
+                </p>
+              )}
             </div>
 
-            {/* Related projects */}
-            {service.relatedProjects?.length > 0 && (
-              <div style={{
-                display: 'grid',
-                gridTemplateColumns: service.relatedProjects.length > 1 ? '1fr 1fr' : '1fr',
-                gap: '24px',
-                marginBottom: service.testimonialQuote ? '3rem' : 0,
-              }}>
-                {service.relatedProjects.map((project, i) => (
-                  <Link
-                    key={project._id}
-                    href={`/projects/${project.slug.current}`}
-                    className="card-a scroll-in"
-                    style={{ transitionDelay: `${i * 0.1}s`, overflow: 'hidden' }}
-                  >
-                    {project.heroImageUrl && (
-                      <div className="img-lift" style={{
-                        width: '100%',
-                        height: '200px',
-                        overflow: 'hidden',
-                      }}>
-                        <Image
-                          src={project.heroImageUrl}
-                          alt={project.title || ''}
-                          width={600}
-                          height={200}
-                          sizes="(max-width: 768px) 100vw, 600px"
-                          style={{
-                            width: '100%',
-                            height: '100%',
-                            objectFit: 'cover',
-                          }}
-                        />
-                      </div>
-                    )}
-                    <div className="card-a__corner"></div>
-                    <div className="card-a__body">
-                      {project.clientSector && (
-                        <span className="card-a__tag">{project.clientSector}</span>
+            {hasRelatedProjects && (
+              <>
+                <div
+                  className={`proof-cards-grid proof-cards-grid--${
+                    service.relatedProjects.length === 1
+                      ? 'one'
+                      : service.relatedProjects.length === 2
+                        ? 'two'
+                        : 'three'
+                  }`}
+                  style={{
+                    marginBottom: hasMoreProjects ? '1.5rem' : (service.testimonialQuote ? '3rem' : 0),
+                  }}
+                >
+                  {service.relatedProjects.slice(0, 3).map((project, i) => (
+                    <Link
+                      key={project._id}
+                      href={`/projects/${project.slug.current}`}
+                      className="card-a scroll-in"
+                      style={{ transitionDelay: `${i * 0.1}s`, overflow: 'hidden' }}
+                    >
+                      {project.heroImageUrl && (
+                        <div className="img-lift" style={{
+                          width: '100%',
+                          height: '200px',
+                          overflow: 'hidden',
+                        }}>
+                          <Image
+                            src={project.heroImageUrl}
+                            alt={project.title || ''}
+                            width={600}
+                            height={200}
+                            sizes="(max-width: 768px) 100vw, 600px"
+                            style={{
+                              width: '100%',
+                              height: '100%',
+                              objectFit: 'cover',
+                            }}
+                          />
+                        </div>
                       )}
-                      <p className="card-a__title">{project.title}</p>
-                      {project.shortSummary && (
-                        <p className="card-a__text">{project.shortSummary}</p>
-                      )}
-                    </div>
-                    <div className="card-a__footer">
-                      <div className="card-a__footer-bg"></div>
-                      <div className="card-a__action">
-                        Read the full story <span className="arrow">→</span>
+                      <div className="card-a__corner"></div>
+                      <div className="card-a__body">
+                        {project.clientSector && (
+                          <span className="card-a__tag">{project.clientSector}</span>
+                        )}
+                        <p className="card-a__title">{project.title}</p>
+                        {project.shortSummary && (
+                          <p className="card-a__text">{project.shortSummary}</p>
+                        )}
                       </div>
-                    </div>
-                  </Link>
-                ))}
-              </div>
+                      <div className="card-a__footer">
+                        <div className="card-a__footer-bg"></div>
+                        <div className="card-a__action">
+                          Read the full story <span className="arrow">→</span>
+                        </div>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+
+                {hasMoreProjects && (
+                  <p style={{ margin: '0 0 2.5rem' }}>
+                    <Link
+                      href={`/projects?service=${encodeURIComponent(service.title)}`}
+                      className="inline-link"
+                    >
+                      See more case studies →
+                    </Link>
+                  </p>
+                )}
+              </>
             )}
 
-            {/* Testimonial */}
             {service.testimonialQuote && (
               <div className="scroll-in pull-quote">
                 <blockquote style={{ margin: 0, fontStyle: 'italic' }}>
-                  "{service.testimonialQuote}"
+                  &ldquo;{service.testimonialQuote}&rdquo;
                 </blockquote>
                 {service.testimonialAttribution && (
                   <cite style={{
@@ -468,28 +592,25 @@ export default async function ServicePage({ params }) {
       )}
 
       {/* ==========================================
-          TRIPLE CTA: AFTER EXAMPLES
-          ========================================== */}
-      {(service.relatedProjects?.length > 0 || service.testimonialQuote) && (
-        <section className="section--full section-padding" style={{ background: 'var(--white)', paddingTop: 0 }}>
-          <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
-            <ServiceTripleCta
-
-              serviceTitle={service.title}
-              heroHeading={service.heroHeading}
-              slug={slug}
-              position="after-examples"
-            />
-          </div>
-        </section>
-      )}
-
-      {/* ==========================================
-          SECTION 6: STATS STRIP (full dark #221C2B)
+          SECTION 6: STATS (dark)
           ========================================== */}
       {service.stats?.length > 0 && (
         <BackgroundPattern variant="constellation" className="section--full dark-bg section-padding" style={{ background: '#221C2B' }}>
           <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
+            {(service.statsSectionKicker || service.statsSectionHeading) && (
+              <div className="scroll-in stats-section__header">
+                {service.statsSectionKicker && (
+                  <span className="kicker stats-section__kicker">
+                    {service.statsSectionKicker}
+                  </span>
+                )}
+                {service.statsSectionHeading && (
+                  <h2 className="stats-section__heading">
+                    {service.statsSectionHeading}
+                  </h2>
+                )}
+              </div>
+            )}
             <div className="stats-grid" style={{
               display: 'grid',
               gridTemplateColumns: `repeat(${service.stats.length}, 1fr)`,
@@ -528,120 +649,30 @@ export default async function ServicePage({ params }) {
       )}
 
       {/* ==========================================
-          SECTION 8: APPROACH OVERVIEW (white)
+          SECTION 7: APPROACH (slider)
           ========================================== */}
       <BackgroundPattern variant="network" className="section--full section-padding" style={{ background: '#FFFFFF' }}>
         <div id="approach" style={{ maxWidth: '1350px', margin: '0 auto' }}>
-          <div className="scroll-in">
-            <span className="kicker" style={{ color: 'var(--accent)', marginBottom: '16px' }}>Approach</span>
-            <h2 className="heading-h2" style={{ margin: '0 0 24px' }}>
-              Approach
-            </h2>
-            <div className="portable-text" style={{ maxWidth: '720px' }}>
-              <PortableText value={service.approachIntro} />
-            </div>
-          </div>
-
-          {/* Journey strip - connected nodes replacing the 4 cards */}
           {service.stages?.length > 0 && (
-            <JourneyStrip stages={service.stages} />
+            <ApproachSlider
+              approachIntro={service.approachIntro}
+              stages={service.stages}
+              approachKicker="Our approach"
+              approachIntroHeadline={service.approachIntroHeading || 'How we work'}
+              principles={service.approachPrinciples}
+            />
           )}
         </div>
       </BackgroundPattern>
 
-      {/* Sticky progress bar - rendered at page level so position:sticky works */}
-      {service.stages?.length > 0 && (
-        <ProgressBar stages={service.stages} />
-      )}
-
       {/* ==========================================
-          SECTIONS 9a-9d: INDIVIDUAL STAGES
-          ========================================== */}
-      {service.stages?.map((stage, i) => (
-        <section
-          key={stage._key || i}
-          data-stage-index={i}
-          className="section--full section-padding"
-          style={{
-            background: i % 2 === 0 ? 'var(--warm)' : 'var(--white)',
-          }}
-        >
-          <div className="stage-block" style={{ maxWidth: '1350px', margin: '0 auto' }}>
-
-            {/* TOP ROW: heading+body left, image right */}
-            <div className="stage-block__top">
-              <div className="stage-block__text scroll-in">
-                <p className="stage-number-large" style={{ color: STEP_COLOURS[i] || STEP_COLOURS[0] }}>
-                  {stage.stageNumber}
-                </p>
-                <h2 className="heading-h3" style={{ margin: '0 0 24px' }}>
-                  {stage.stageHeading}
-                </h2>
-                <div className="portable-text">
-                  <PortableText value={stage.stageBody} />
-                </div>
-                {stage.stageLinkLabel && stage.stageLinkUrl && (
-                  <p style={{ marginTop: '20px' }}>
-                    <Link href={stage.stageLinkUrl} className="inline-link">
-                      {stage.stageLinkLabel} →
-                    </Link>
-                  </p>
-                )}
-              </div>
-
-              {stage.stageImageUrl ? (
-                <div className="stage-block__image scroll-in delay-1 img-lift">
-                  <Lightbox src={stage.stageImageUrl} alt={stage.stageHeading} />
-                </div>
-              ) : (
-                <div className="stage-block__image" style={{ background: i % 2 === 0 ? '#FFFFFF' : '#FAF6F1' }}></div>
-              )}
-            </div>
-
-            {/* BOTTOM ROW: practice bullets left, outcome box right */}
-            <div className="stage-block__bottom">
-              <div className="stage-block__practices scroll-in">
-                {stage.stageInPractice?.length > 0 && (
-                  <>
-                    <p style={{
-                      fontSize: '15px',
-                      fontWeight: '400',
-                      color: 'var(--dark)',
-                      margin: '0 0 16px',
-                    }}>
-                      What this looks like in practice
-                    </p>
-                    <ul className="practice-list">
-                      {stage.stageInPractice.map((item, j) => (
-                        <li key={j}>{item}</li>
-                      ))}
-                    </ul>
-                  </>
-                )}
-              </div>
-
-              <div className="stage-block__outcome-wrap scroll-in delay-1">
-                {stage.stageOutcome && (
-                  <div className="stage-outcome-box">
-                    <p className="stage-outcome-box__label">What you get</p>
-                    <p className="stage-outcome-box__text">{stage.stageOutcome}</p>
-                  </div>
-                )}
-              </div>
-            </div>
-
-          </div>
-        </section>
-      ))}
-
-      {/* ==========================================
-          TRIPLE CTA: AFTER STAGES (dark, centred)
+          SECTION 8: CTA (triple, dark)
           ========================================== */}
       <ServiceTripleCtaDark
         serviceTitle={service.title}
         heroHeading={service.heroHeading}
         slug={slug}
-        position="after-stages"
+        position="after-approach"
       />
 
       {/* ==========================================
@@ -649,7 +680,6 @@ export default async function ServicePage({ params }) {
           ========================================== */}
       <section id="perspective" className="section--full warm-bg section-padding">
         {service.perspectiveImageUrl ? (
-          /* With image: existing two-column layout */
           <div style={{
             maxWidth: '1350px',
             margin: '0 auto',
@@ -664,7 +694,7 @@ export default async function ServicePage({ params }) {
                 {service.perspectiveHeading}
               </h2>
               <div className="portable-text">
-                <PortableText value={service.perspectiveBody} />
+                <PortableText value={perspectiveBody} />
               </div>
               {service.perspectiveLinkLabel && service.perspectiveLinkUrl && (
                 <Link
@@ -693,16 +723,13 @@ export default async function ServicePage({ params }) {
             </div>
           </div>
         ) : (
-          /* Without image: H2 full width, then text left + ecosystem right 50/50 */
           <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
-            {/* Heading full width */}
             <div className="scroll-in">
               <span className="kicker" style={{ color: 'var(--accent)', marginBottom: '16px' }}>Perspective</span>
               <h2 className="heading-h2" style={{ margin: '0 0 32px' }}>
                 {service.perspectiveHeading}
               </h2>
             </div>
-            {/* Two columns: text left, animation right - 50/50 */}
             <div style={{
               display: 'grid',
               gridTemplateColumns: '1fr 1fr',
@@ -711,7 +738,7 @@ export default async function ServicePage({ params }) {
             }}>
               <div className="scroll-in">
                 <div className="portable-text" style={{ maxWidth: '600px' }}>
-                  <PortableText value={service.perspectiveBody} />
+                  <PortableText value={perspectiveBody} />
                 </div>
                 {service.perspectiveLinkLabel && service.perspectiveLinkUrl && (
                   <Link
@@ -736,72 +763,33 @@ export default async function ServicePage({ params }) {
         )}
       </section>
 
+      {/* The standalone Outcomes section was removed (12 May 2026 brief):
+          outcomes are now expressed per-stage inside the Approach slider's
+          "What you get" boxes. Sanity content for outcomes/outcomesHeading/
+          outcomesIntro/outcomesClosing is intentionally retained for
+          possible future reuse. */}
+
       {/* ==========================================
-          SECTION 10: OUTCOMES (white)
+          SECTION 10: FAQ
           ========================================== */}
-      <section id="outcomes" className="section--full section-padding" style={{ background: 'var(--white)' }}>
-        <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
-          <div className="scroll-in">
-            <span className="kicker" style={{ color: '#FF4279', marginBottom: '16px' }}>Outcomes</span>
-            <h2 className="heading-h2" style={{ margin: '0 0 20px' }}>
-              {service.outcomesHeading}
-            </h2>
-            {service.outcomesIntro && (
-              <p className="lead-text" style={{ maxWidth: '700px', marginBottom: '2.5rem' }}>
-                {service.outcomesIntro}
-              </p>
-            )}
+      {hasFaqs && (
+        <section
+          id="faq"
+          className="section--full service-faq-section"
+          style={{ background: 'var(--white)' }}
+        >
+          <div style={{ maxWidth: '900px', margin: '0 auto' }}>
+            <ServiceFAQ
+              items={service.faqItems}
+              heading={service.faqSectionHeading || 'Common questions'}
+              kicker={service.faqSectionKicker}
+            />
           </div>
-
-          {/* Bento grid */}
-          {service.outcomes?.length > 0 && (
-            <div
-              className={`bento-grid ${
-                service.outcomes.length === 3 ? 'bento-grid--3' :
-                service.outcomes.length === 4 ? 'bento-grid--4' : 'bento-grid--5'
-              }`}
-              style={{ marginBottom: '2.5rem' }}
-            >
-              {service.outcomes.map((outcome, i) => (
-                <div
-                  key={outcome._key || i}
-                  className={`bento-box scroll-in ${i === 0 && service.outcomes.length >= 5 ? 'bento-box--featured' : ''}`}
-                  style={{
-                    background: BENTO_COLOURS[i % BENTO_COLOURS.length],
-                    transitionDelay: `${i * 0.1}s`,
-                  }}
-                >
-                  <p className={`bento-box__title ${i === 0 && service.outcomes.length >= 5 ? 'bento-box__title--large' : ''}`}>
-                    {outcome.outcomeTitle}
-                  </p>
-                  {outcome.outcomeDescription && (
-                    <p className="bento-box__desc">{outcome.outcomeDescription}</p>
-                  )}
-                </div>
-              ))}
-            </div>
-          )}
-
-          {service.outcomesClosing && (
-            <div className="scroll-in" style={{ maxWidth: '700px' }}>
-              <p style={{
-                fontSize: '18px',
-                fontWeight: '300',
-                lineHeight: '1.75',
-                color: 'rgba(0,0,0,0.55)',
-                margin: 0,
-              }}>
-                {service.outcomesClosing}
-              </p>
-            </div>
-          )}
-        </div>
-      </section>
-
-
+        </section>
+      )}
 
       {/* ==========================================
-          PAGE CALLOUTS (content-managed)
+          PAGE CALLOUTS
           ========================================== */}
       <PageCallouts pageType="services" pageId={service._id} />
 
@@ -894,7 +882,7 @@ export default async function ServicePage({ params }) {
       )}
 
       {/* ==========================================
-          SECTION 11: CTA (dark - triple)
+          BOTTOM CTA (dark, triple)
           ========================================== */}
       <ServiceTripleCtaDark
         serviceTitle={service.title}
@@ -902,7 +890,6 @@ export default async function ServicePage({ params }) {
         slug={slug}
         position="bottom"
       />
-
     </main>
   )
 }

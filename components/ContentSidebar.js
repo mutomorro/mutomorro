@@ -74,40 +74,11 @@ function SidebarCallout({ callout }) {
   )
 }
 
-function PrimaryCta({ theme, contentType, hasPdf, toolSlug }) {
-  // Tools with a PDF: download CTA, anchor to in-page form.
-  if (contentType === 'tool' && hasPdf) {
-    return (
-      <div className="sticky-service-cta">
-        <span className="sidebar-card-label">Get this tool</span>
-        <h3>Download the template</h3>
-        <a
-          href="#get-template"
-          className="sidebar-btn sidebar-btn--primary"
-        >
-          Get this template →
-        </a>
-      </div>
-    )
-  }
-
-  // Case studies always point at /contact.
-  if (contentType === 'project') {
-    return (
-      <div className="sticky-service-cta">
-        <span className="sidebar-card-label">Work with us</span>
-        <h3>Want to explore something similar?</h3>
-        <Link
-          href="/contact"
-          className="sidebar-btn sidebar-btn--primary"
-        >
-          Start a conversation →
-        </Link>
-      </div>
-    )
-  }
-
-  // Articles, courses, and tools-without-PDF: link to theme anchor.
+function PrimaryCta({ theme, contentType }) {
+  // Every content type's primary CTA points at the related service
+  // (theme.anchorUrl). Tools already surface a download CTA via the
+  // floating bottom bar; case studies fall through to the service
+  // rather than the generic /contact route.
   if (!theme?.anchorUrl) return null
 
   const heading =
@@ -138,8 +109,6 @@ export default function ContentSidebar({
   relatedCaseStudies,
   sidebarCallouts,
   relatedDimensions,
-  toolSlug,
-  hasPdf,
 }) {
   // Filter "current" out of related lists and cap counts.
   const tools = (relatedTools || [])
@@ -166,14 +135,8 @@ export default function ContentSidebar({
   const callouts = sidebarCallouts || []
   const dimensions = relatedDimensions || []
 
-  const cta = (
-    <PrimaryCta
-      theme={theme}
-      contentType={contentType}
-      hasPdf={hasPdf}
-      toolSlug={toolSlug}
-    />
-  )
+  const cta = <PrimaryCta theme={theme} contentType={contentType} />
+
 
   return (
     <div className="content-sidebar">

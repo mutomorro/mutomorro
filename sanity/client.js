@@ -31,7 +31,13 @@ export async function getProject(slug) {
   return await client.fetch(
     `*[_type == "project" && slug.current == $slug][0] {
       ...,
-      "theme": theme->{title, "slug": slug.current}
+      "theme": theme->{title, "slug": slug.current, anchorType, anchorUrl},
+      "relatedToolsViaTheme": *[_type == "tool" && theme._ref == ^.theme._ref][0..2]{
+        _id, title, "slug": slug.current, shortSummary, category
+      },
+      "relatedArticlesViaTheme": *[_type == "article" && theme._ref == ^.theme._ref && _id != ^._id][0..1]{
+        _id, title, "slug": slug.current
+      }
     }`,
     { slug },
     fetchOpts
@@ -59,9 +65,18 @@ export async function getTool(slug) {
     `*[_type == "tool" && slug.current == $slug][0] {
       ...,
       "toolkitFileUrl": toolkitFile.asset->url,
-      "theme": theme->{title, "slug": slug.current},
+      "theme": theme->{title, "slug": slug.current, anchorType, anchorUrl},
       relatedArticles[]->{ _id, title, slug, shortSummary, heroImage, category },
-      relatedTools[]->{ _id, title, slug, shortSummary, heroImage, category }
+      relatedTools[]->{ _id, title, slug, shortSummary, heroImage, category },
+      "relatedToolsViaTheme": *[_type == "tool" && theme._ref == ^.theme._ref && _id != ^._id][0..2]{
+        _id, title, "slug": slug.current, shortSummary, category
+      },
+      "relatedArticlesViaTheme": *[_type == "article" && theme._ref == ^.theme._ref][0..1]{
+        _id, title, "slug": slug.current
+      },
+      "relatedCaseStudiesViaTheme": *[_type == "project" && theme._ref == ^.theme._ref][0..1]{
+        _id, title, "slug": slug.current
+      }
     }`,
     { slug },
     fetchOpts
@@ -172,13 +187,22 @@ export async function getArticle(slug) {
   return await client.fetch(
     `*[_type == "article" && slug.current == $slug][0] {
       ...,
-      "theme": theme->{title, "slug": slug.current},
+      "theme": theme->{title, "slug": slug.current, anchorType, anchorUrl},
       relatedDimensions[]-> {
         _id,
         title,
         anchor,
         slug,
         colour
+      },
+      "relatedToolsViaTheme": *[_type == "tool" && theme._ref == ^.theme._ref][0..2]{
+        _id, title, "slug": slug.current, shortSummary, category
+      },
+      "relatedArticlesViaTheme": *[_type == "article" && theme._ref == ^.theme._ref && _id != ^._id][0..1]{
+        _id, title, "slug": slug.current
+      },
+      "relatedCaseStudiesViaTheme": *[_type == "project" && theme._ref == ^.theme._ref][0..1]{
+        _id, title, "slug": slug.current
       }
     }`,
     { slug },
@@ -208,7 +232,7 @@ export async function getCourse(slug) {
   return await client.fetch(
     `*[_type == "course" && slug.current == $slug][0] {
       ...,
-      "theme": theme->{title, "slug": slug.current},
+      "theme": theme->{title, "slug": slug.current, anchorType, anchorUrl},
       relatedDimensions[]-> {
         _id,
         title,
@@ -217,7 +241,16 @@ export async function getCourse(slug) {
         colour
       },
       relatedArticles[]->{ _id, title, slug, shortSummary, heroImage, category },
-      relatedTools[]->{ _id, title, slug, shortSummary, heroImage, category }
+      relatedTools[]->{ _id, title, slug, shortSummary, heroImage, category },
+      "relatedToolsViaTheme": *[_type == "tool" && theme._ref == ^.theme._ref][0..2]{
+        _id, title, "slug": slug.current, shortSummary, category
+      },
+      "relatedArticlesViaTheme": *[_type == "article" && theme._ref == ^.theme._ref][0..1]{
+        _id, title, "slug": slug.current
+      },
+      "relatedCaseStudiesViaTheme": *[_type == "project" && theme._ref == ^.theme._ref][0..1]{
+        _id, title, "slug": slug.current
+      }
     }`,
     { slug },
     fetchOpts

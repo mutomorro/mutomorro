@@ -9,7 +9,11 @@ import { urlFor } from '../../../sanity/image'
 import Lightbox from '../../../components/Lightbox'
 import PageCallouts from '../../../components/PageCallouts'
 import CalloutTeaser from '../../../components/CalloutTeaser'
+import ThreeColumnLayout from '../../../components/ThreeColumnLayout'
+import TableOfContents from '../../../components/TableOfContents'
+import ContentSidebar from '../../../components/ContentSidebar'
 import { headingBlocks } from '../../../lib/portable-text-headings'
+import { getSidebarCallouts } from '../../../sanity/client'
 
 export const revalidate = 3600
 
@@ -52,6 +56,8 @@ export default async function CaseStudy({ params }) {
   const { slug } = await params
   const project = await getProject(slug)
   if (!project) notFound()
+
+  const sidebarCallouts = await getSidebarCallouts('caseStudies', project._id)
 
   const heroImageUrl = project.heroImage ? urlFor(project.heroImage).width(900).url() : null
 
@@ -105,6 +111,22 @@ export default async function CaseStudy({ params }) {
     { key: 'whatChanged', label: 'What changed' },
     { key: 'keyInsight', label: 'Key insight' },
   ]
+
+  // Flatten all section bodies into one PortableText array so TableOfContents
+  // can extract headings across the whole case study. Falls back to legacy
+  // challenge/approach/outcome fields for older projects.
+  const combinedBody = (() => {
+    const blocks = []
+    for (const { key } of sections) {
+      if (Array.isArray(project[key])) blocks.push(...project[key])
+    }
+    if (blocks.length === 0) {
+      for (const k of ['challenge', 'approach', 'outcome']) {
+        if (Array.isArray(project[k])) blocks.push(...project[k])
+      }
+    }
+    return blocks
+  })()
 
   const portableTextComponents = {
     types: {
@@ -197,10 +219,21 @@ export default async function CaseStudy({ params }) {
 
       <CalloutTeaser pageType="caseStudies" pageId={project._id} />
 
-      {/* Content sections */}
+      {/* Content sections — three-column layout with ToC and sidebar */}
       <section className="section--full section-padding" style={{ background: 'var(--white)' }}>
-        <div className="wrap--narrow">
-
+        <ThreeColumnLayout
+          toc={<TableOfContents body={combinedBody} />}
+          sidebar={
+            <ContentSidebar
+              theme={project.theme}
+              contentType="project"
+              currentSlug={slug}
+              relatedTools={project.relatedToolsViaTheme}
+              relatedArticles={project.relatedArticlesViaTheme}
+              sidebarCallouts={sidebarCallouts}
+            />
+          }
+        >
           {sections.map(({ key, label }) => {
             const content = project[key]
             if (!content) return null
@@ -250,7 +283,7 @@ export default async function CaseStudy({ params }) {
               )}
             </>
           )}
-        </div>
+        </ThreeColumnLayout>
       </section>
 
       <PageCallouts pageType="caseStudies" pageId={project._id} />

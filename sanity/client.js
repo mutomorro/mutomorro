@@ -300,6 +300,10 @@ export async function getService(slug) {
       category,
       categoryLabel,
 
+      // Theme slug (for "See all" links to topic hubs) - matches the
+      // theme whose anchorUrl points back to this service page.
+      "themeSlug": *[_type == "theme" && anchorUrl match ("*/" + ^.slug.current + "*")][0].slug.current,
+
       // Hero
       heroKicker,
       heroHeading,
@@ -386,6 +390,22 @@ export async function getService(slug) {
         clientSector,
         shortSummary,
         "heroImageUrl": heroImage.asset->url,
+      },
+      relatedArticles[]-> {
+        _id,
+        title,
+        slug,
+        shortSummary,
+        category,
+        "themeSlug": theme->slug.current,
+      },
+      relatedTools[]-> {
+        _id,
+        title,
+        slug,
+        shortSummary,
+        category,
+        "themeSlug": theme->slug.current,
       },
       testimonialQuote,
       testimonialAttribution,

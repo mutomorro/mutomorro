@@ -227,13 +227,48 @@ a:hover {
 .marker-bg--sweeping { animation: markerSweep 0.5s var(--ease) forwards; }
 @keyframes markerSweep { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0% 0 0); } }
 
-/* Simple inline highlighter — pure CSS, wraps naturally across lines.
-   Use on any <span> inside a heading or paragraph. */
+/* Inline "hand-drawn" highlighter — tilted-parallelogram SVG background.
+   Use on any <span> inside a heading or paragraph. Wraps cleanly across
+   line breaks via box-decoration-break: clone. The dark-section variant
+   kicks in automatically when the highlight is inside .dark-bg, or use
+   the .marker-highlight--on-dark override to force it elsewhere. Don't
+   bump padding past ~0.15em or wrap-line edges look ragged. */
 .marker-highlight {
-  background-image: linear-gradient(transparent 62%, rgba(155, 81, 224, 0.28) 62%, rgba(155, 81, 224, 0.28) 92%, transparent 92%);
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 50' preserveAspectRatio='none'><path d='M2,12 L198,4 L196,46 L4,48 Z' fill='%239B51E0' fill-opacity='0.40'/></svg>");
+  background-repeat: no-repeat;
+  background-size: 100% 90%;
+  background-position: 0 60%;
   -webkit-box-decoration-break: clone;
-  box-decoration-break: clone;
-  padding: 0 2px;
+          box-decoration-break: clone;
+  padding: 0.04em 0.12em;
+}
+
+/* Dark-bg auto-swap: same parallelogram, purple at 0.55 opacity so it
+   stays readable against #221C2B. */
+.dark-bg .marker-highlight,
+.marker-highlight.marker-highlight--on-dark {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 50' preserveAspectRatio='none'><path d='M2,12 L198,4 L196,46 L4,48 Z' fill='%239B51E0' fill-opacity='0.55'/></svg>");
+}
+
+/* Dark-bg modifier variants. Same parallelogram, different fill.
+   Quietest, most editorial — light lilac at low opacity. */
+.marker-highlight--lilac {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 50' preserveAspectRatio='none'><path d='M2,12 L198,4 L196,46 L4,48 Z' fill='%23C9A4F0' fill-opacity='0.32'/></svg>");
+}
+/* Brand pink — punchier, use for hero / CTA highlights only. */
+.marker-highlight--pink {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 50' preserveAspectRatio='none'><path d='M2,12 L198,4 L196,46 L4,48 Z' fill='%23FF4279' fill-opacity='0.45'/></svg>");
+}
+/* Pink → purple gradient. Distinctive without being loud. */
+.marker-highlight--grad {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 50' preserveAspectRatio='none'><defs><linearGradient id='mhg' x1='0' y1='0' x2='1' y2='0'><stop offset='0' stop-color='%23FF4279' stop-opacity='0.45'/><stop offset='1' stop-color='%239B51E0' stop-opacity='0.50'/></linearGradient></defs><path d='M2,12 L198,4 L196,46 L4,48 Z' fill='url(%23mhg)'/></svg>");
+}
+/* Screen blend — purple at full opacity, blended additively so it
+   brightens the dark page underneath. Highest "real ink" feel. */
+.marker-highlight--screen {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 50' preserveAspectRatio='none'><path d='M2,12 L198,4 L196,46 L4,48 Z' fill='%239B51E0' fill-opacity='1'/></svg>");
+  background-color: transparent;
+  background-blend-mode: screen;
 }
 
 /* ============================================
@@ -1402,6 +1437,47 @@ a:hover {
 .card-a:hover .card-a__action { color: #fff; }
 .card-a:hover .card-a__action .arrow { transform: translateX(4px); }
 .card-a:hover { border-color: rgba(0,0,0,0.25); }
+
+/* --- Explore card: low-key list item for service page "Explore" section --- */
+.explore-card {
+  display: block;
+  padding: 20px 24px;
+  background: var(--white);
+  border: 1px solid rgba(0,0,0,0.10);
+  border-radius: 0;
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.25s, transform 0.25s;
+}
+.explore-card:hover {
+  border-color: rgba(0,0,0,0.35);
+  transform: translateY(-1px);
+}
+.explore-card__title {
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 17px;
+  font-weight: 400;
+  color: var(--dark);
+  margin: 0 0 6px;
+  line-height: 1.4;
+}
+.explore-card__text {
+  font-size: 14px;
+  font-weight: 400;
+  color: rgba(0,0,0,0.65);
+  margin: 0 0 10px;
+  line-height: 1.5;
+}
+.explore-card__action {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--accent);
+}
+.explore-card__action .arrow { transition: transform 0.25s; }
+.explore-card:hover .explore-card__action .arrow { transform: translateX(3px); }
 
 /* --- Card C: Full Diagonal Fill (dramatic) --- */
 .card-c {

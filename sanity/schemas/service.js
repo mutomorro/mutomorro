@@ -714,6 +714,34 @@ export default defineType({
     }),
 
     defineField({
+      name: 'relatedArticles',
+      title: 'Related Articles',
+      type: 'array',
+      description: 'Articles that relate to this service. Auto-populated from reverse relationships.',
+      group: 'examples',
+      of: [
+        {
+          type: 'reference',
+          to: [{ type: 'article' }],
+        },
+      ],
+    }),
+
+    defineField({
+      name: 'relatedTools',
+      title: 'Related Tools',
+      type: 'array',
+      description: 'Tools that relate to this service. Auto-populated from reverse relationships.',
+      group: 'examples',
+      of: [
+        {
+          type: 'reference',
+          to: [{ type: 'tool' }],
+        },
+      ],
+    }),
+
+    defineField({
       name: 'testimonialQuote',
       title: 'Testimonial Quote',
       type: 'text',

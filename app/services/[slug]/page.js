@@ -137,14 +137,14 @@ export default async function ServicePage({ params }) {
   const hasTriggers = service.triggerCards?.length > 0
   const hasFaqs = service.faqItems?.length > 0
 
-  // Auto-link "Our philosophy page" → /our-philosophy in the perspective
+  // Auto-link "Our philosophy page" → /philosophy in the perspective
   // body. Editors keep the phrase as plain prose in Sanity; the link is
   // applied at render time so per-service copy edits don't need to know
   // about portable-text markDefs.
   const perspectiveBody = linkifyPhrase(
     service.perspectiveBody,
     'Our philosophy page',
-    '/our-philosophy',
+    '/philosophy',
   )
   const hasRelatedProjects = service.relatedProjects?.length > 0
   const hasMoreProjects = (service.relatedProjects?.length || 0) > 3
@@ -674,6 +674,142 @@ export default async function ServicePage({ params }) {
         slug={slug}
         position="after-approach"
       />
+
+      {/* ==========================================
+          SECTION 8.5: EXPLORE THIS TOPIC
+          (related articles + tools - browsing/discovery)
+          ========================================== */}
+      {(service.relatedArticles?.length > 0 || service.relatedTools?.length > 0) && (() => {
+        const articles = service.relatedArticles || []
+        const tools = service.relatedTools || []
+        const articleCap = 4
+        const toolCap = 6
+        const hasMoreArticles = articles.length > articleCap
+        const hasMoreTools = tools.length > toolCap
+        // Topic-hub slug for "See all" links - prefer the service's own
+        // theme; fall back to the first item's theme if needed.
+        const topicSlug =
+          service.themeSlug ||
+          articles[0]?.themeSlug ||
+          tools[0]?.themeSlug ||
+          null
+        const titleLower = (service.title || '').toLowerCase()
+        return (
+          <section
+            className="section--full section-padding"
+            style={{ background: '#FAF6F1' }}
+          >
+            <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
+              <div className="scroll-in" style={{ marginBottom: '2.5rem' }}>
+                <span className="kicker" style={{ color: 'var(--accent)', marginBottom: '16px' }}>
+                  Go deeper
+                </span>
+                <h2 className="heading-h2" style={{ margin: 0 }}>
+                  Explore {titleLower}
+                </h2>
+              </div>
+
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns:
+                    articles.length > 0 && tools.length > 0
+                      ? 'repeat(auto-fit, minmax(320px, 1fr))'
+                      : '1fr',
+                  gap: '3rem',
+                  alignItems: 'start',
+                }}
+              >
+                {articles.length > 0 && (
+                  <div>
+                    <h3
+                      style={{
+                        fontSize: '20px',
+                        fontWeight: 400,
+                        margin: '0 0 1.25rem',
+                        color: 'var(--dark)',
+                      }}
+                    >
+                      Articles
+                    </h3>
+                    <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                      {articles.slice(0, articleCap).map((article) => (
+                        <li key={article._id}>
+                          <Link
+                            href={`/articles/${article.slug.current}`}
+                            className="explore-card"
+                          >
+                            <div className="explore-card__title">{article.title}</div>
+                            {article.shortSummary && (
+                              <p className="explore-card__text">{article.shortSummary}</p>
+                            )}
+                            <span className="explore-card__action">
+                              Read article <span className="arrow">→</span>
+                            </span>
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                    {hasMoreArticles && topicSlug && (
+                      <p style={{ margin: '1.25rem 0 0' }}>
+                        <Link
+                          href={`/topics/${topicSlug}`}
+                          className="inline-link"
+                        >
+                          See all articles →
+                        </Link>
+                      </p>
+                    )}
+                  </div>
+                )}
+
+                {tools.length > 0 && (
+                  <div>
+                    <h3
+                      style={{
+                        fontSize: '20px',
+                        fontWeight: 400,
+                        margin: '0 0 1.25rem',
+                        color: 'var(--dark)',
+                      }}
+                    >
+                      Related tools
+                    </h3>
+                    <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                      {tools.slice(0, toolCap).map((tool) => (
+                        <li key={tool._id}>
+                          <Link
+                            href={`/tools/${tool.slug.current}`}
+                            className="explore-card"
+                          >
+                            <div className="explore-card__title">{tool.title}</div>
+                            {tool.shortSummary && (
+                              <p className="explore-card__text">{tool.shortSummary}</p>
+                            )}
+                            <span className="explore-card__action">
+                              Explore tool <span className="arrow">→</span>
+                            </span>
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                    {hasMoreTools && topicSlug && (
+                      <p style={{ margin: '1.25rem 0 0' }}>
+                        <Link
+                          href={`/topics/${topicSlug}`}
+                          className="inline-link"
+                        >
+                          See all tools →
+                        </Link>
+                      </p>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+          </section>
+        )
+      })()}
 
       {/* ==========================================
           SECTION 9: PERSPECTIVE (warm)

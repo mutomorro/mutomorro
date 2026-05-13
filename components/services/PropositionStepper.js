@@ -18,6 +18,18 @@ const animationMap = {
   ChangeMgmt2: dynamic(() => import('../recognition/ChangeMgmt2')),
   ChangeMgmt3: dynamic(() => import('../recognition/ChangeMgmt3')),
   ChangeMgmt4: dynamic(() => import('../recognition/ChangeMgmt4')),
+  StrategicAlignment1: dynamic(() => import('../recognition/StrategicAlignment1')),
+  StrategicAlignment2: dynamic(() => import('../recognition/StrategicAlignment2')),
+  StrategicAlignment3: dynamic(() => import('../recognition/StrategicAlignment3')),
+  StrategicAlignment4: dynamic(() => import('../recognition/StrategicAlignment4')),
+  OrgDev1: dynamic(() => import('../recognition/OrgDev1')),
+  OrgDev2: dynamic(() => import('../recognition/OrgDev2')),
+  OrgDev3: dynamic(() => import('../recognition/OrgDev3')),
+  OrgDev4: dynamic(() => import('../recognition/OrgDev4')),
+  OrgDesign1: dynamic(() => import('../recognition/OrgDesign1')),
+  OrgDesign2: dynamic(() => import('../recognition/OrgDesign2')),
+  OrgDesign3: dynamic(() => import('../recognition/OrgDesign3')),
+  OrgDesign4: dynamic(() => import('../recognition/OrgDesign4')),
 }
 
 // Visual progression: dot → cluster → network

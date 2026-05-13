@@ -9,6 +9,7 @@ import { urlFor } from '../../../sanity/image'
 import Lightbox from '../../../components/Lightbox'
 import PageCallouts from '../../../components/PageCallouts'
 import CalloutTeaser from '../../../components/CalloutTeaser'
+import { headingBlocks } from '../../../lib/portable-text-headings'
 
 export const revalidate = 3600
 
@@ -119,6 +120,7 @@ export default async function CaseStudy({ params }) {
       ),
     },
     block: {
+      ...headingBlocks,
       blockquote: ({ children }) => (
         <blockquote className="pull-quote">{children}</blockquote>
       ),

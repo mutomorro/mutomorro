@@ -9,6 +9,7 @@ import { urlFor } from '../../../sanity/image'
 import BackgroundPattern from '../../../components/animations/BackgroundPattern'
 import RelatedContent from '../../../components/RelatedContent'
 import PageCallouts from '../../../components/PageCallouts'
+import { headingBlocks } from '../../../lib/portable-text-headings'
 
 export const revalidate = 3600
 
@@ -140,6 +141,7 @@ export default async function CoursePage({ params }) {
                   ),
                 },
                 block: {
+                  ...headingBlocks,
                   blockquote: ({ children }) => (
                     <blockquote className="pull-quote">{children}</blockquote>
                   ),

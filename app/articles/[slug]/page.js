@@ -10,6 +10,7 @@ import NewsletterSignup from '../../../components/NewsletterSignup'
 import BackgroundPattern from '../../../components/animations/BackgroundPattern'
 import PageCallouts from '../../../components/PageCallouts'
 import CalloutTeaser from '../../../components/CalloutTeaser'
+import { headingBlocks } from '../../../lib/portable-text-headings'
 
 export const revalidate = 3600
 
@@ -211,6 +212,7 @@ export default async function ArticlePage({ params }) {
                   ),
                 },
                 block: {
+                  ...headingBlocks,
                   blockquote: ({ children }) => (
                     <blockquote className="pull-quote">{children}</blockquote>
                   ),

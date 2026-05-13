@@ -166,16 +166,18 @@ export default function ContentSidebar({
   const callouts = sidebarCallouts || []
   const dimensions = relatedDimensions || []
 
+  const cta = (
+    <PrimaryCta
+      theme={theme}
+      contentType={contentType}
+      hasPdf={hasPdf}
+      toolSlug={toolSlug}
+    />
+  )
+
   return (
     <div className="content-sidebar">
-      <div className="content-sidebar__sticky">
-        <PrimaryCta
-          theme={theme}
-          contentType={contentType}
-          hasPdf={hasPdf}
-          toolSlug={toolSlug}
-        />
-      </div>
+      <div className="content-sidebar__top-cta">{cta}</div>
 
       <div className="content-sidebar__scroll">
         {callouts.map((c) => (
@@ -262,6 +264,8 @@ export default function ContentSidebar({
         )}
       </div>
 
+      <div className="content-sidebar__sticky">{cta}</div>
+      <div className="content-sidebar__spacer" aria-hidden="true" />
     </div>
   )
 }

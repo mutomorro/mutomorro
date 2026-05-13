@@ -5150,18 +5150,40 @@ a:hover {
 .toc-mobile-toggle.open .chevron { transform: rotate(-135deg); }
 
 /* ── Right sidebar ──
-   Stacks the sticky CTA at the top of the column with the scroll content
-   below. The CTA sticks just under the fixed header as soon as the user
-   scrolls. display: contents on .content-sidebar so its children's
-   containing block is the (taller) .three-col-layout__sidebar aside,
-   letting the sticky CTA travel the full height of a long article. */
-.content-sidebar { display: contents; }
-.content-sidebar__sticky {
-  position: sticky;
-  top: 96px;
+   Two copies of the primary CTA frame the column:
+   - .content-sidebar__top-cta is static, in normal flow at the top of
+     the column. It scrolls away as the reader moves down.
+   - .content-sidebar__sticky lives at the bottom of the stack (the
+     flex spacer pushes it there) and uses position: sticky pinned
+     near the viewport bottom so it stays visible throughout the read.
+   The .content-sidebar is a flex column with min-height: 100% so it
+   fills the (grid-stretched) aside; the spacer between scroll content
+   and the sticky CTA is what actually places the sticky element at
+   the column's bottom edge. */
+.content-sidebar {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  min-width: 0;
+}
+.content-sidebar__top-cta {
+  flex: 0 0 auto;
   margin-bottom: 24px;
 }
-.content-sidebar__scroll { display: block; }
+.content-sidebar__scroll { flex: 0 0 auto; }
+.content-sidebar__spacer {
+  flex: 1 1 auto;
+  min-height: 24px;
+}
+.content-sidebar__sticky {
+  flex: 0 0 auto;
+  position: sticky;
+  /* Pin the CTA's top edge near the viewport bottom (assumes the card
+     is roughly 200px tall) so users see it in the lower portion of the
+     screen for the bulk of the article. */
+  top: calc(100vh - 220px);
+  padding-bottom: 32px;
+}
 
 /* Sanity-driven sidebar callout (compact) */
 .sidebar-callout {
@@ -5334,11 +5356,9 @@ a:hover {
     align-self: auto;
     border-top: 1px solid rgba(0,0,0,0.08);
   }
-  .content-sidebar__sticky {
-    position: relative;
-    top: auto;
-    margin-bottom: 24px;
-  }
+  /* On mobile the column is short and the static top CTA covers the
+     user's need; the second sticky CTA copy would just duplicate it. */
+  .content-sidebar__sticky { display: none; }
 
   .toc-mobile-toggle { display: flex; }
   .toc-label { display: none; }

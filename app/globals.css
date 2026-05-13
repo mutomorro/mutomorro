@@ -5000,8 +5000,6 @@ a:hover {
 .three-col-layout__sidebar {
   padding: 48px 0 0;
   align-self: stretch;
-  display: flex;
-  flex-direction: column;
   min-width: 0;
 }
 
@@ -5151,24 +5149,19 @@ a:hover {
 }
 .toc-mobile-toggle.open .chevron { transform: rotate(-135deg); }
 
-/* ── Right sidebar ── */
-.content-sidebar {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  min-width: 0;
-}
-.content-sidebar__scroll { flex: 0 0 auto; }
-.content-sidebar__spacer {
-  flex: 1 1 auto;
-  min-height: 24px;
-}
+/* ── Right sidebar ──
+   Stacks the sticky CTA at the top of the column with the scroll content
+   below. The CTA sticks just under the fixed header as soon as the user
+   scrolls. display: contents on .content-sidebar so its children's
+   containing block is the (taller) .three-col-layout__sidebar aside,
+   letting the sticky CTA travel the full height of a long article. */
+.content-sidebar { display: contents; }
 .content-sidebar__sticky {
   position: sticky;
-  top: calc(100vh - 180px);
-  flex: 0 0 auto;
-  padding: 0 0 32px;
+  top: 96px;
+  margin-bottom: 24px;
 }
+.content-sidebar__scroll { display: block; }
 
 /* Sanity-driven sidebar callout (compact) */
 .sidebar-callout {
@@ -5251,7 +5244,7 @@ a:hover {
 .sidebar-newsletter p {
   font-size: 13px;
   font-weight: 350;
-  color: rgba(255,255,255,0.55);
+  color: rgba(255,255,255,0.78);
   line-height: 1.5;
   margin: 0 0 14px;
 }
@@ -5337,17 +5330,15 @@ a:hover {
   }
   .three-col-layout__content { padding: 32px 0 48px; }
   .three-col-layout__sidebar {
-    padding: 0 0 48px;
+    padding: 32px 0 48px;
     align-self: auto;
     border-top: 1px solid rgba(0,0,0,0.08);
-    padding-top: 32px;
   }
   .content-sidebar__sticky {
     position: relative;
     top: auto;
-    padding-bottom: 0;
+    margin-bottom: 24px;
   }
-  .content-sidebar__spacer { display: none; }
 
   .toc-mobile-toggle { display: flex; }
   .toc-label { display: none; }

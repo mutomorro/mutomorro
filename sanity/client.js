@@ -749,7 +749,8 @@ export async function getAllThemeSlugs() {
 // PAGE CALLOUTS
 // ============================================
 
-// Fetch active callouts targeted at the given page (by type and/or specific id).
+// Fetch active full-width (in-page) callouts targeted at the given page.
+// Excludes sidebar-only callouts; "both"-placement callouts are included.
 // pageType is one of: services, caseStudies, tools, articles, courses, develop, sectors
 export async function getPageCallouts(pageType, pageId) {
   if (!pageType || !pageId) return []
@@ -757,7 +758,9 @@ export async function getPageCallouts(pageType, pageId) {
     *[_type == "pageCallout" && isActive == true && (
       $pageType in showOnPageTypes ||
       $pageId in includePages[]._ref
-    ) && !(defined(excludePages) && $pageId in excludePages[]._ref)] | order(displayOrder asc) {
+    ) && !(defined(excludePages) && $pageId in excludePages[]._ref)
+       && (!defined(placement) || placement == "page" || placement == "both")
+    ] | order(displayOrder asc) {
       _id,
       heading,
       body,
@@ -768,6 +771,29 @@ export async function getPageCallouts(pageType, pageId) {
       displayOrder,
       showTeaser,
       teaserText
+    }
+  `, { pageType, pageId }, fetchOpts)
+}
+
+// Fetch active callouts that should render in the right sidebar of
+// article/tool/project/course pages. Includes "sidebar" and "both"
+// placement values. Same targeting rules as getPageCallouts.
+export async function getSidebarCallouts(pageType, pageId) {
+  if (!pageType || !pageId) return []
+  return client.fetch(`
+    *[_type == "pageCallout" && isActive == true && (
+      $pageType in showOnPageTypes ||
+      $pageId in includePages[]._ref
+    ) && !(defined(excludePages) && $pageId in excludePages[]._ref)
+       && (placement == "sidebar" || placement == "both")
+    ] | order(displayOrder asc) {
+      _id,
+      heading,
+      body,
+      linkUrl,
+      linkLabel,
+      accentColor,
+      displayOrder
     }
   `, { pageType, pageId }, fetchOpts)
 }

@@ -178,6 +178,23 @@ export default defineType({
     // ===========================
 
     defineField({
+      name: 'placement',
+      title: 'Placement',
+      type: 'string',
+      group: 'settings',
+      options: {
+        list: [
+          { title: 'Full-width (in page)', value: 'page' },
+          { title: 'Right sidebar', value: 'sidebar' },
+          { title: 'Both', value: 'both' },
+        ],
+        layout: 'radio',
+      },
+      initialValue: 'page',
+      description: 'Where this callout appears. "Full-width" renders as a horizontal band between sections. "Right sidebar" renders as a compact card in the content sidebar on article/tool/project/course pages. "Both" does both.',
+    }),
+
+    defineField({
       name: 'accentColor',
       title: 'Accent Colour',
       type: 'string',

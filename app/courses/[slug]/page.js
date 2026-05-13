@@ -9,7 +9,11 @@ import { urlFor } from '../../../sanity/image'
 import BackgroundPattern from '../../../components/animations/BackgroundPattern'
 import RelatedContent from '../../../components/RelatedContent'
 import PageCallouts from '../../../components/PageCallouts'
+import ThreeColumnLayout from '../../../components/ThreeColumnLayout'
+import TableOfContents from '../../../components/TableOfContents'
+import ContentSidebar from '../../../components/ContentSidebar'
 import { headingBlocks } from '../../../lib/portable-text-headings'
+import { getSidebarCallouts } from '../../../sanity/client'
 
 export const revalidate = 3600
 
@@ -52,6 +56,8 @@ export default async function CoursePage({ params }) {
   const { slug } = await params
   const course = await getCourse(slug)
   if (!course) notFound()
+
+  const sidebarCallouts = await getSidebarCallouts('courses', course._id)
 
   return (
     <main className="page-course">
@@ -114,9 +120,23 @@ export default async function CoursePage({ params }) {
         </section>
       </BackgroundPattern>
 
-      {/* Body */}
+      {/* Body — three-column layout with ToC and sidebar */}
       <section className="section--full section-padding" style={{ background: 'var(--white)' }}>
-        <div className="wrap--narrow">
+        <ThreeColumnLayout
+          toc={<TableOfContents body={course.body} />}
+          sidebar={
+            <ContentSidebar
+              theme={course.theme}
+              contentType="course"
+              currentSlug={slug}
+              relatedTools={course.relatedToolsViaTheme}
+              relatedArticles={course.relatedArticlesViaTheme}
+              relatedCaseStudies={course.relatedCaseStudiesViaTheme}
+              sidebarCallouts={sidebarCallouts}
+              relatedDimensions={course.relatedDimensions}
+            />
+          }
+        >
           <div className="portable-text">
             <PortableText
               value={course.body}
@@ -129,7 +149,7 @@ export default async function CoursePage({ params }) {
                         alt={value.alt || ''}
                         width={900}
                         height={506}
-                        sizes="(max-width: 768px) 100vw, 800px"
+                        sizes="(max-width: 768px) 100vw, 680px"
                         style={{ width: '100%', height: 'auto', display: 'block' }}
                       />
                     </div>
@@ -150,43 +170,11 @@ export default async function CoursePage({ params }) {
             />
           </div>
 
-          {/* Related dimensions */}
-          {course.relatedDimensions?.length > 0 && (
-            <div className="scroll-in" style={{
-              marginTop: '4rem',
-              paddingTop: '3rem',
-              borderTop: '1px solid rgba(0,0,0,0.08)',
-            }}>
-              <span className="kicker" style={{ color: 'var(--accent)', marginBottom: '20px' }}>
-                Related dimensions
-              </span>
-              <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-                {course.relatedDimensions.map((dimension) => (
-                  <Link
-                    key={dimension._id}
-                    href={`/emergent-framework/${dimension.slug.current}`}
-                    style={{
-                      fontSize: '14px',
-                      fontWeight: '400',
-                      color: dimension.colour,
-                      border: `1.5px solid ${dimension.colour}`,
-                      padding: '8px 16px',
-                      textDecoration: 'none',
-                      transition: 'background 0.2s, color 0.2s',
-                    }}
-                  >
-                    {dimension.anchor}
-                  </Link>
-                ))}
-              </div>
-            </div>
-          )}
-
           <RelatedContent
             relatedTools={course.relatedTools}
             relatedArticles={course.relatedArticles}
           />
-        </div>
+        </ThreeColumnLayout>
       </section>
 
       <PageCallouts pageType="courses" pageId={course._id} />

@@ -6,11 +6,14 @@ import { PortableText } from '@portabletext/react'
 import Link from 'next/link'
 import CTA from '../../../components/CTA'
 import { urlFor } from '../../../sanity/image'
-import NewsletterSignup from '../../../components/NewsletterSignup'
 import BackgroundPattern from '../../../components/animations/BackgroundPattern'
 import PageCallouts from '../../../components/PageCallouts'
 import CalloutTeaser from '../../../components/CalloutTeaser'
+import ThreeColumnLayout from '../../../components/ThreeColumnLayout'
+import TableOfContents from '../../../components/TableOfContents'
+import ContentSidebar from '../../../components/ContentSidebar'
 import { headingBlocks } from '../../../lib/portable-text-headings'
+import { getSidebarCallouts } from '../../../sanity/client'
 
 export const revalidate = 3600
 
@@ -56,6 +59,8 @@ export default async function ArticlePage({ params }) {
   const { slug } = await params
   const article = await getArticle(slug)
   if (!article) notFound()
+
+  const sidebarCallouts = await getSidebarCallouts('articles', article._id)
 
   const heroImageUrl = article.heroImage ? urlFor(article.heroImage).width(900).url() : null
 
@@ -185,9 +190,23 @@ export default async function ArticlePage({ params }) {
 
       <CalloutTeaser pageType="articles" pageId={article._id} />
 
-      {/* Body */}
+      {/* Body — three-column layout with ToC and contextual sidebar */}
       <section className="section--full section-padding" style={{ background: 'var(--white)' }}>
-        <div className="wrap--narrow">
+        <ThreeColumnLayout
+          toc={<TableOfContents body={article.body} />}
+          sidebar={
+            <ContentSidebar
+              theme={article.theme}
+              contentType="article"
+              currentSlug={slug}
+              relatedTools={article.relatedToolsViaTheme}
+              relatedArticles={article.relatedArticlesViaTheme}
+              relatedCaseStudies={article.relatedCaseStudiesViaTheme}
+              sidebarCallouts={sidebarCallouts}
+              relatedDimensions={article.relatedDimensions}
+            />
+          }
+        >
           <div className="portable-text">
             <PortableText
               value={article.body}
@@ -200,7 +219,7 @@ export default async function ArticlePage({ params }) {
                         alt={value.alt || ''}
                         width={900}
                         height={506}
-                        sizes="(max-width: 768px) 100vw, 800px"
+                        sizes="(max-width: 768px) 100vw, 680px"
                         style={{ width: '100%', height: 'auto', display: 'block' }}
                       />
                     </div>
@@ -220,37 +239,7 @@ export default async function ArticlePage({ params }) {
               }}
             />
           </div>
-
-          <NewsletterSignup variant="inline" />
-
-          {/* Related dimensions */}
-          {article.relatedDimensions?.length > 0 && (
-            <div className="scroll-in" style={{ marginTop: '4rem', paddingTop: '3rem', borderTop: '1px solid rgba(0,0,0,0.08)' }}>
-              <span className="kicker" style={{ color: 'var(--accent)', marginBottom: '20px' }}>
-                Related dimensions
-              </span>
-              <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-                {article.relatedDimensions.map((dimension) => (
-                  <Link
-                    key={dimension._id}
-                    href={`/emergent-framework/${dimension.slug.current}`}
-                    style={{
-                      fontSize: '14px',
-                      fontWeight: '400',
-                      color: dimension.colour,
-                      border: `1.5px solid ${dimension.colour}`,
-                      padding: '8px 16px',
-                      textDecoration: 'none',
-                      transition: 'background 0.2s, color 0.2s',
-                    }}
-                  >
-                    {dimension.anchor}
-                  </Link>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
+        </ThreeColumnLayout>
       </section>
 
       <PageCallouts pageType="articles" pageId={article._id} />

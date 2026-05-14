@@ -184,7 +184,7 @@ export default async function ArticlePage({ params }) {
                 <div className="img-perspective" style={{ maxWidth: '100%' }}>
                   <Image
                     src={heroImageUrl}
-                    alt={article.title || ''}
+                    alt={article.heroImage?.alt || article.title || ''}
                     width={900}
                     height={600}
                     priority

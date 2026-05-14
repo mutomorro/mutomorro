@@ -814,6 +814,14 @@ const nextConfig = {
 
       // Assessment pagination → States of Vitality (consistent with other /assessments redirects)
       { source: '/assessments/page/:num', destination: '/states-of-vitality', permanent: true },
+
+
+      // =========================================================
+      // 14 May 2026 - 404 triage
+      // =========================================================
+
+      { source: '/about-us', destination: '/about', permanent: true },
+      { source: '/ideation/change-innovation-sprint', destination: '/services/change-management-consultancy', permanent: true },
     ]
 
     // Emit both `/path` and `/path/` variants for every source so requests

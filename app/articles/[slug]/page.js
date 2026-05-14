@@ -240,9 +240,18 @@ export default async function ArticlePage({ params }) {
                   ),
                 },
                 marks: {
-                  link: ({ value, children }) => (
-                    <a href={value.href} className="inline-link">{children}</a>
-                  ),
+                  link: ({ value, children }) => {
+                    const isExternal = /^https?:\/\//i.test(value?.href || '')
+                    return (
+                      <a
+                        href={value.href}
+                        className="inline-link"
+                        {...(isExternal && { target: '_blank', rel: 'noopener noreferrer' })}
+                      >
+                        {children}
+                      </a>
+                    )
+                  },
                 },
                 block: {
                   ...headingBlocks,

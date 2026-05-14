@@ -6,6 +6,12 @@ export default defineType({
   type: 'document',
   fields: [
     defineField({
+      name: 'articleKicker',
+      title: 'Kicker (SEO Heading)',
+      type: 'string',
+      description: 'Short, search-query-shaped heading that renders as the H1. The title field becomes the H2.',
+    }),
+    defineField({
       name: 'title',
       title: 'Title',
       type: 'string',

@@ -152,12 +152,26 @@ export default async function ArticlePage({ params }) {
               ) : article.category ? (
                 <span className="kicker" style={{ marginBottom: '16px' }}>{article.category}</span>
               ) : null}
-              <h1 className="heading-h1" style={{
-                color: '#ffffff',
-                margin: '0 0 32px',
-              }}>
-                {article.title}
-              </h1>
+              {article.articleKicker ? (
+                <>
+                  <h1 className="kicker" style={{ color: 'var(--accent)', marginBottom: '16px' }}>
+                    {article.articleKicker}
+                  </h1>
+                  <h2 className="heading-h1" style={{
+                    color: '#ffffff',
+                    margin: '0 0 32px',
+                  }}>
+                    {article.title}
+                  </h2>
+                </>
+              ) : (
+                <h1 className="heading-h1" style={{
+                  color: '#ffffff',
+                  margin: '0 0 32px',
+                }}>
+                  {article.title}
+                </h1>
+              )}
               {article.shortSummary && (
                 <p className="lead-text" style={{ color: 'rgba(255,255,255,0.6)' }}>
                   {article.shortSummary}

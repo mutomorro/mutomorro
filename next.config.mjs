@@ -639,7 +639,9 @@ const nextConfig = {
       { source: '/articles/the-friction-audit', destination: '/articles/reducing-organisational-friction', permanent: true },
 
       // Batch 3 - OD core, leadership, design, measurement
-      { source: '/articles/building-anti-fragile-organisations', destination: '/articles/building-organisational-resilience', permanent: true },
+      // Note: building-anti-fragile-organisations redirect removed 15 May 2026 —
+      // the article still exists and is published with that slug; the redirect
+      // was making its listing card 308 to a different article.
       { source: '/articles/emotional-intelligence-in-leadership', destination: '/articles/emotional-intelligence-for-leaders', permanent: true },
       { source: '/articles/guide-to-adaptive-leadership', destination: '/articles/adaptive-leadership-guide', permanent: true },
       { source: '/articles/adaptive-organisational-architectures', destination: '/articles/adaptive-organisational-design', permanent: true },

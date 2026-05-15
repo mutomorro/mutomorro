@@ -823,6 +823,16 @@ const nextConfig = {
 
       { source: '/about-us', destination: '/about', permanent: true },
       { source: '/ideation/change-innovation-sprint', destination: '/services/change-management-consultancy', permanent: true },
+
+
+      // =========================================================
+      // 15 May 2026 - retired CM cluster articles
+      // Both old "storytelling" articles point to the replacement
+      // article-storytelling-and-organisational-change.
+      // =========================================================
+
+      { source: '/articles/storytelling-with-data', destination: '/articles/storytelling-and-organisational-change', permanent: true },
+      { source: '/articles/storytelling-for-social-change', destination: '/articles/storytelling-and-organisational-change', permanent: true },
     ]
 
     // Emit both `/path` and `/path/` variants for every source so requests

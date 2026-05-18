@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import CTA from '../../components/CTA'
 import BackgroundPattern from '@/components/animations/BackgroundPattern'
+import HighlightedText from '../../components/HighlightedText'
 
 export const metadata = {
   title: 'How we work with organisations',
@@ -98,7 +99,10 @@ export default function HowWeWorkPage() {
           }}>
             <div>
               <h2 className="heading-h2" style={{ margin: 0 }}>
-                Not a consultant. A capability-building partner.
+                <HighlightedText
+                  text="Not a consultant. A capability-building partner."
+                  highlight="capability-building partner"
+                />
               </h2>
             </div>
             <div className="body-text" style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
@@ -220,7 +224,10 @@ export default function HowWeWorkPage() {
               Worth knowing
             </span>
             <h2 className="heading-h2" style={{ margin: '0 0 20px' }}>
-              You don't have to start at the beginning
+              <HighlightedText
+                text="You don't have to start at the beginning"
+                highlight="start at the beginning"
+              />
             </h2>
             <p className="body-text" style={{ margin: 0 }}>
               Whilst the four stages represent a natural progression, organisations enter at different points depending on where they are. Some begin with Co-Design when they already understand their challenges. Others start with Transform when solutions exist but implementation needs support. Some come to us just for Sustain - building the internal capability to keep evolving independently.

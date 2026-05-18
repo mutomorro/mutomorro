@@ -2,6 +2,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { getAllProjects, getAllTools } from '../sanity/client'
 import HeroCanvasDesktop from '../components/HeroCanvasDesktop'
+import HighlightedText from '../components/HighlightedText'
 
 export const revalidate = 3600
 
@@ -105,7 +106,10 @@ export default async function Home() {
           {/* Positioning block */}
           <div className="scroll-fade-up" style={{ maxWidth: '800px', marginBottom: '64px' }}>
             <h2 className="heading-h2" style={{ marginBottom: '24px' }}>
-              Organisational design, development and strategic change
+              <HighlightedText
+                text="Organisational design, development and strategic change"
+                highlight="strategic change"
+              />
             </h2>
             <p className="body-text" style={{ maxWidth: '720px', color: 'rgba(0,0,0,0.7)' }}>
               We help leaders make their organisations better places to work and better at what they do. We work across purpose, strategy, structure, culture, and capability - and we start from where you are.

@@ -3,6 +3,7 @@ import Image from 'next/image'
 import CTA from '../../components/CTA'
 import LogoStrip from '../../components/LogoStrip'
 import BackgroundPattern from '@/components/animations/BackgroundPattern'
+import HighlightedText from '../../components/HighlightedText'
 
 export const metadata = {
   title: 'About Mutomorro',
@@ -77,7 +78,7 @@ export default function About() {
               Who we are
             </span>
             <h2 className="heading-h2" style={{ margin: '0 0 24px' }}>
-              A fascination with patterns
+              <HighlightedText text="A fascination with patterns" highlight="patterns" />
             </h2>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
               <p className="body-text">
@@ -167,7 +168,7 @@ export default function About() {
           <div className="scroll-in" style={{ marginBottom: '3rem', maxWidth: '720px' }}>
             <span className="kicker" style={{ marginBottom: '20px' }}>How we work</span>
             <h2 className="heading-h2" style={{ color: '#ffffff', margin: '0 0 24px' }}>
-              Partners, not consultants
+              <HighlightedText text="Partners, not consultants" highlight="Partners" />
             </h2>
             <p className="body-text" style={{ color: 'rgba(255,255,255,0.85)', margin: 0 }}>
               Most organisational challenges get treated as isolated problems - fix the culture, restructure the team, improve the process. But organisations don't work in parts. Everything connects. We work differently.

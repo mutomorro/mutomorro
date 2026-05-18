@@ -10,6 +10,7 @@ import IntentionalEcosystemsStory from '@/components/philosophy/IntentionalEcosy
 import OutcomesConstellation from '@/components/philosophy/OutcomesConstellation'
 import EmergentConstellation from '@/components/philosophy/EmergentConstellation'
 import EcosystemVisual from '@/components/EcosystemVisual'
+import HighlightedText from '@/components/HighlightedText'
 
 export const metadata = {
   title: 'Our philosophy - Intentional Ecosystems',
@@ -74,7 +75,7 @@ export default function PhilosophyPage() {
               Our thinking
             </span>
             <h2 className="heading-h2" style={{ margin: '0 0 24px', maxWidth: '700px' }}>
-              Everything is connected
+              <HighlightedText text="Everything is connected" highlight="connected" />
             </h2>
             <div className="body-text" style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
               <p>

@@ -16,30 +16,13 @@ import PropositionStepper from '../../../components/services/PropositionStepper'
 import RecognitionTriggers from '../../../components/services/RecognitionTriggers'
 import ServiceFAQ from '../../../components/services/ServiceFAQ'
 import { buildFaqJsonLd } from '../../../components/services/faqJsonLd'
+import HighlightedText from '../../../components/HighlightedText'
 
 export const revalidate = 3600
 
 export async function generateStaticParams() {
   const services = await client.fetch(`*[_type == "service"]{ "slug": slug.current }`)
   return services.map(s => ({ slug: s.slug }))
-}
-
-// Wraps a target phrase with the .marker-highlight span when it
-// appears inside `text`. Case-insensitive match; preserves the original
-// casing. Falls back to plain text if the phrase isn't found, so
-// per-service editorial changes don't break the page.
-function HighlightedText({ text, phrase }) {
-  if (!text) return null
-  if (!phrase) return text
-  const idx = text.toLowerCase().indexOf(phrase.toLowerCase())
-  if (idx === -1) return text
-  return (
-    <>
-      {text.slice(0, idx)}
-      <span className="marker-highlight">{text.slice(idx, idx + phrase.length)}</span>
-      {text.slice(idx + phrase.length)}
-    </>
-  )
 }
 
 // Walks a portable-text array and, wherever a span contains `phrase`,
@@ -295,7 +278,7 @@ export default async function ServicePage({ params }) {
           <div className="scroll-in">
             <span className="kicker" style={{ color: '#FF4279', marginBottom: '16px' }}>Context</span>
             <h2 className="heading-h2" style={{ margin: '0 0 2rem' }}>
-              <HighlightedText text={service.contextHeading} phrase="create the conditions" />
+              <HighlightedText text={service.contextHeading} highlight="create the conditions" />
             </h2>
           </div>
 
@@ -387,7 +370,7 @@ export default async function ServicePage({ params }) {
               <h2 className="heading-h2" style={{ margin: 0 }}>
                 <HighlightedText
                   text={service.propositionHeadline || service.recognitionHeading}
-                  phrase="conditions that create it"
+                  highlight="conditions that create it"
                 />
               </h2>
             </div>

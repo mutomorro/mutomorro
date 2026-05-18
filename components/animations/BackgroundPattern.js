@@ -47,7 +47,7 @@ function createNetwork(ctx, w, h) {
         const dy = nodes[i].y - nodes[j].y;
         const dist = Math.sqrt(dx * dx + dy * dy);
         if (dist < 220) {
-          const alpha = (1 - dist / 220) * 0.08;
+          const alpha = (1 - dist / 220) * 0.24;
           ctx.beginPath();
           ctx.moveTo(nodes[i].x, nodes[i].y);
           ctx.lineTo(nodes[j].x, nodes[j].y);
@@ -61,11 +61,11 @@ function createNetwork(ctx, w, h) {
       const pulse = 0.8 + Math.sin(time * 0.001 + n.phase) * 0.2;
       ctx.beginPath();
       ctx.arc(n.x, n.y, n.r * pulse, 0, Math.PI * 2);
-      ctx.fillStyle = rgba(0.05 + 0.03 * pulse);
+      ctx.fillStyle = rgba(0.16 + 0.09 * pulse);
       ctx.fill();
       ctx.beginPath();
       ctx.arc(n.x, n.y, 2.5, 0, Math.PI * 2);
-      ctx.fillStyle = rgba(0.12 + 0.1 * pulse);
+      ctx.fillStyle = rgba(0.32 + 0.18 * pulse);
       ctx.fill();
     });
   };

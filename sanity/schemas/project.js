@@ -206,13 +206,6 @@ export default {
       description: 'Meta description shown in search results. Aim for 150-160 characters.',
       validation: Rule => Rule.max(160).warning('Keep under 160 characters for best SEO results'),
     },
-    {
-      name: 'focusKeyword',
-      title: 'Focus keyword',
-      type: 'string',
-      group: 'seo',
-      description: 'Primary keyword or phrase for this case study. Comma-separated if multiple.',
-    },
   ],
 
   preview: {

@@ -294,14 +294,6 @@ defineField({
       group: 'seo',
       rows: 3,
     }),
-    defineField({
-      name: 'seoKeywords',
-      title: 'SEO Keywords',
-      type: 'array',
-      group: 'seo',
-      of: [{ type: 'string' }],
-      options: { layout: 'tags' },
-    }),
   ],
   preview: {
     select: {

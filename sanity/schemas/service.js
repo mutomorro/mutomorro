@@ -915,24 +915,6 @@ export default defineType({
     // ===========================
 
     defineField({
-      name: 'primaryKeyword',
-      title: 'Primary Keyword',
-      type: 'string',
-      description: 'The main search term this page targets - e.g. "organisational culture change". This guides the content, not shown on the page.',
-      group: 'seo',
-      validation: (rule) => rule.required(),
-    }),
-
-    defineField({
-      name: 'secondaryKeywords',
-      title: 'Secondary Keywords',
-      type: 'array',
-      description: 'Supporting search terms - e.g. "culture change consultancy", "workplace culture transformation"',
-      group: 'seo',
-      of: [{ type: 'string' }],
-    }),
-
-    defineField({
       name: 'seoTitle',
       title: 'SEO Title',
       type: 'string',

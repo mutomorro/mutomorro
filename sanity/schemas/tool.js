@@ -167,15 +167,6 @@ export default {
       description:
         'Meta description for search results. If blank, falls back to the short summary.',
     },
-    {
-      name: 'seoKeyword',
-      title: 'Focus Keyword',
-      type: 'string',
-      group: 'seo',
-      description:
-        'Primary keyword from RankMath - carried over for reference.',
-    },
-
     // ── Practitioner ──
     {
       name: 'practitionerInsight',

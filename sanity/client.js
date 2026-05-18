@@ -599,7 +599,6 @@ export async function getCapabilityService(slug) {
       // SEO
       seoTitle,
       seoDescription,
-      seoKeywords,
     }
   `, { slug }, fetchOpts)
 }

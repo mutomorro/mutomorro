@@ -15,8 +15,8 @@ export default function ArticlesGrid({ items }) {
           href={`/articles/${article.slug.current}`}
           className="card-d"
         >
-          {article.category && (
-            <div className="card-d__badge">{article.category}</div>
+          {article.theme?.title && (
+            <div className="card-d__badge">{article.theme.title}</div>
           )}
 
           {article.heroImage?.asset && (
@@ -32,7 +32,7 @@ export default function ArticlesGrid({ items }) {
             </div>
           )}
 
-          <div className="card-d__body" style={article.category && !article.heroImage ? { paddingTop: '40px' } : undefined}>
+          <div className="card-d__body" style={article.theme?.title && !article.heroImage ? { paddingTop: '40px' } : undefined}>
             <div className="card-d__title">{article.title}</div>
             {article.shortSummary && (
               <p className="card-d__text">{article.shortSummary}</p>

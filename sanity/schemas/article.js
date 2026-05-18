@@ -45,31 +45,6 @@ export default defineType({
       validation: (rule) => rule.required(),
     }),
     defineField({
-      name: 'category',
-      title: 'Category',
-      type: 'string',
-      options: {
-        list: [
-          { title: 'Change Management', value: 'change-management' },
-          { title: 'Culture Change', value: 'culture-change' },
-          { title: 'Culture', value: 'culture' },
-          { title: 'Organisational Purpose', value: 'organisational-purpose' },
-          { title: 'Organisational Health', value: 'organisational-health' },
-          { title: 'Organisational Design', value: 'organisational-design' },
-          { title: 'Organisational Development', value: 'organisational-development' },
-          { title: 'Operational Effectiveness', value: 'operational-effectiveness' },
-          { title: 'Strategic Alignment', value: 'strategic-alignment' },
-          { title: 'Strategy', value: 'strategy' },
-          { title: 'Leadership', value: 'leadership' },
-          { title: 'Capacity Building', value: 'capacity-building' },
-          { title: 'Service Design', value: 'service-design' },
-          { title: 'Systems Thinking', value: 'systems-thinking' },
-          { title: 'Change', value: 'change' },
-        ],
-      },
-      validation: Rule => Rule.required(),
-    }),
-    defineField({
       name: 'shortSummary',
       title: 'Short summary',
       type: 'text',
@@ -196,13 +171,13 @@ export default defineType({
   preview: {
     select: {
       title: 'title',
-      category: 'category',
+      themeTitle: 'theme.title',
       date: 'publishedAt',
     },
-    prepare({ title, category, date }) {
+    prepare({ title, themeTitle, date }) {
       return {
-        title: title,
-        subtitle: `${category} - ${date}`,
+        title,
+        subtitle: [themeTitle, date].filter(Boolean).join(' - '),
       }
     },
   },

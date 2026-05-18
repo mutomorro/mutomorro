@@ -66,7 +66,7 @@ export async function getTool(slug) {
       ...,
       "toolkitFileUrl": toolkitFile.asset->url,
       "theme": theme->{title, "slug": slug.current, anchorType, anchorUrl},
-      relatedArticles[]->{ _id, title, slug, shortSummary, heroImage, category },
+      relatedArticles[]->{ _id, title, slug, shortSummary, heroImage, "category": theme->title },
       relatedTools[]->{ _id, title, slug, shortSummary, heroImage, category },
       "relatedToolsViaTheme": *[_type == "tool" && theme._ref == ^.theme._ref && _id != ^._id][0..2]{
         _id, title, "slug": slug.current, shortSummary, category
@@ -176,7 +176,7 @@ export async function getAllArticles() {
     title,
     slug,
     publishedAt,
-    category,
+    "theme": theme->{title, "slug": slug.current},
     shortSummary,
     heroImage,
     "relatedServices": relatedServices[]->{_id, title, "slug": slug.current}
@@ -240,7 +240,7 @@ export async function getCourse(slug) {
         slug,
         colour
       },
-      relatedArticles[]->{ _id, title, slug, shortSummary, heroImage, category },
+      relatedArticles[]->{ _id, title, slug, shortSummary, heroImage, "category": theme->title },
       relatedTools[]->{ _id, title, slug, shortSummary, heroImage, category },
       "relatedToolsViaTheme": *[_type == "tool" && theme._ref == ^.theme._ref][0..2]{
         _id, title, "slug": slug.current, shortSummary, category
@@ -396,7 +396,7 @@ export async function getService(slug) {
         title,
         slug,
         shortSummary,
-        category,
+        "category": theme->title,
         "themeSlug": theme->slug.current,
       },
       relatedTools[]-> {

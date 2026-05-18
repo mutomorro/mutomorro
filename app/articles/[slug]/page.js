@@ -93,18 +93,15 @@ export default async function ArticlePage({ params }) {
         name: 'Thinking',
         item: 'https://mutomorro.com/articles',
       },
-      ...(article.category ? [{
+      ...(article.theme?.slug ? [{
         '@type': 'ListItem',
         position: 2,
-        name: article.category
-          .split('-')
-          .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-          .join(' '),
-        item: `https://mutomorro.com/topics/${article.category}`,
+        name: article.theme.title,
+        item: `https://mutomorro.com/topics/${article.theme.slug}`,
       }] : []),
       {
         '@type': 'ListItem',
-        position: article.category ? 3 : 2,
+        position: article.theme?.slug ? 3 : 2,
         name: article.title,
         item: `https://mutomorro.com/articles/${article.slug.current}`,
       },
@@ -130,28 +127,21 @@ export default async function ArticlePage({ params }) {
               {/* Breadcrumb */}
               <div className="breadcrumb">
                 <Link href="/articles" className="breadcrumb__link">Thinking</Link>
-                {article.theme?.title ? (
+                {article.theme?.title && (
                   <>
                     <span className="breadcrumb__sep">/</span>
                     <Link href={`/topics/${article.theme.slug}`} className="breadcrumb__link">
                       {article.theme.title}
                     </Link>
                   </>
-                ) : article.category ? (
-                  <>
-                    <span className="breadcrumb__sep">/</span>
-                    <span className="breadcrumb__current">{article.category}</span>
-                  </>
-                ) : null}
+                )}
               </div>
 
-              {article.theme?.title ? (
+              {article.theme?.title && (
                 <Link href={`/topics/${article.theme.slug}`} className="kicker kicker--link" style={{ marginBottom: '16px' }}>
                   {article.theme.title}
                 </Link>
-              ) : article.category ? (
-                <span className="kicker" style={{ marginBottom: '16px' }}>{article.category}</span>
-              ) : null}
+              )}
               {article.articleKicker ? (
                 <>
                   <h1 className="kicker" style={{ color: 'var(--accent)', marginBottom: '16px' }}>

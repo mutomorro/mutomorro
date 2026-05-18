@@ -187,9 +187,10 @@ const FADE_GRADIENTS = {
 
 // --- Component ---
 
-export default function BackgroundPattern({ variant = 'network', fade, children, className = '', style = {} }) {
-  const isDesktop = useIsDesktop();
-
+// Inner canvas-only layer. Lives in its own component so its mount effect
+// fires AFTER useIsDesktop flips and the <canvas> is actually in the DOM —
+// otherwise useCanvas's useEffect runs once with a null ref and never re-runs.
+function CanvasLayer({ variant, fade }) {
   const createFn = VARIANTS[variant];
 
   const drawFactory = useCallback(
@@ -201,18 +202,10 @@ export default function BackgroundPattern({ variant = 'network', fade, children,
   );
 
   const canvasRef = useCanvas(drawFactory);
-
   const fadeGradient = fade ? FADE_GRADIENTS[fade] : null;
 
-  if (!isDesktop) {
-    return <div className={className} style={{ position: 'relative', ...style }}>{children}</div>;
-  }
-
   return (
-    <div
-      className={className}
-      style={{ position: 'relative', ...style }}
-    >
+    <>
       <canvas
         ref={canvasRef}
         style={{
@@ -223,7 +216,6 @@ export default function BackgroundPattern({ variant = 'network', fade, children,
           pointerEvents: 'none',
         }}
       />
-
       {fadeGradient && (
         <div
           style={{
@@ -237,7 +229,16 @@ export default function BackgroundPattern({ variant = 'network', fade, children,
           }}
         />
       )}
+    </>
+  );
+}
 
+export default function BackgroundPattern({ variant = 'network', fade, children, className = '', style = {} }) {
+  const isDesktop = useIsDesktop();
+
+  return (
+    <div className={className} style={{ position: 'relative', ...style }}>
+      {isDesktop && <CanvasLayer variant={variant} fade={fade} />}
       {children}
     </div>
   );

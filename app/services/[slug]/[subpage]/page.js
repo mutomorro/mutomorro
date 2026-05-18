@@ -52,8 +52,61 @@ export default async function ServiceSubPage({ params }) {
   const parentTitle = page.parentService?.title
   const parentCategory = page.parentService?.categoryLabel
 
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Service',
+    name: page.heroHeading,
+    description: page.seoDescription || page.heroTagline,
+    provider: {
+      '@type': 'ProfessionalService',
+      name: 'Mutomorro',
+      url: 'https://mutomorro.com',
+    },
+    url: `https://mutomorro.com/services/${slug}/${subpage}`,
+    ...(parentTitle && {
+      isPartOf: {
+        '@type': 'Service',
+        name: parentTitle,
+        url: `https://mutomorro.com/services/${slug}`,
+      },
+    }),
+  }
+
+  const breadcrumbJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'How we help',
+        item: 'https://mutomorro.com/services',
+      },
+      ...(parentSlug ? [{
+        '@type': 'ListItem',
+        position: 2,
+        name: parentTitle,
+        item: `https://mutomorro.com/services/${parentSlug}`,
+      }] : []),
+      {
+        '@type': 'ListItem',
+        position: parentSlug ? 3 : 2,
+        name: page.heroHeading,
+        item: `https://mutomorro.com/services/${slug}/${subpage}`,
+      },
+    ],
+  }
+
   return (
     <main className="service-subpage">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
 
       {/* ==========================================
           HERO (dark)

@@ -88,8 +88,57 @@ export default async function CapabilityServicePage({ params }) {
   if (service.differenceItems?.length > 0) navItems.push('What\'s different')
   if (service.takeawayItems?.length > 0) navItems.push('What you take away')
 
+  const pageTitle = service.heroHeading || service.title
+  const pageDescription = service.seoDescription || service.heroTagline
+
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Service',
+    name: pageTitle,
+    description: pageDescription,
+    provider: {
+      '@type': 'ProfessionalService',
+      name: 'Mutomorro',
+      url: 'https://mutomorro.com',
+    },
+    url: `https://mutomorro.com/develop/${slug}`,
+  }
+
+  const breadcrumbJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'How we help',
+        item: 'https://mutomorro.com/services',
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: 'Building Capability',
+        item: 'https://mutomorro.com/develop',
+      },
+      {
+        '@type': 'ListItem',
+        position: 3,
+        name: pageTitle,
+        item: `https://mutomorro.com/develop/${slug}`,
+      },
+    ],
+  }
+
   return (
     <main className="page-develop">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
 
       {/* ==========================================
           HERO (dark)

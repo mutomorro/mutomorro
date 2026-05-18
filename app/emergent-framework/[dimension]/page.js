@@ -68,8 +68,60 @@ export default async function DimensionPage({ params }) {
     },
   }
 
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: dimension.seoTitle || `${dimension.title} - EMERGENT Framework`,
+    description:
+      dimension.seoDescription ||
+      dimension.shortSummary ||
+      `Explore the ${dimension.title} dimension of the EMERGENT Framework.`,
+    author: {
+      '@type': 'Person',
+      name: 'James Freeman-Gray',
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: 'Mutomorro',
+      url: 'https://mutomorro.com',
+    },
+    url: `https://mutomorro.com/emergent-framework/${dimensionSlug}`,
+    isPartOf: {
+      '@type': 'WebPage',
+      name: 'The EMERGENT Framework',
+      url: 'https://mutomorro.com/emergent-framework',
+    },
+  }
+
+  const breadcrumbJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'EMERGENT Framework',
+        item: 'https://mutomorro.com/emergent-framework',
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: dimension.title,
+        item: `https://mutomorro.com/emergent-framework/${dimensionSlug}`,
+      },
+    ],
+  }
+
   return (
     <main className="page-emergent" style={{ '--active-dim': dimColour }}>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
 
       {/* Hero - light background with coloured left stripe */}
       <div className="ew-dim-hero">

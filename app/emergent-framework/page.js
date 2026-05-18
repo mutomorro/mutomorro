@@ -17,8 +17,26 @@ export const metadata = {
 export default async function EmergentFramework() {
   const overview = await getFrameworkOverview()
 
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    name: overview?.title || 'The EMERGENT Framework',
+    description:
+      'A model for understanding what makes organisations thrive. Eight interconnected dimensions covering strategy, culture, purpose, capacity, and more.',
+    url: 'https://mutomorro.com/emergent-framework',
+    publisher: {
+      '@type': 'Organization',
+      name: 'Mutomorro',
+      url: 'https://mutomorro.com',
+    },
+  }
+
   return (
     <main>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
 
       <div className="de-page-container">
 

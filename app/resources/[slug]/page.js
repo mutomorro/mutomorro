@@ -54,8 +54,56 @@ export default async function ResourcePage({ params }) {
   const typeLabel = resource.resourceTypeLabel || TYPE_LABELS[resource.resourceType] || 'Resource'
   const hasRelated = resource.relatedServices?.length || resource.relatedTools?.length || resource.relatedArticles?.length
 
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'CreativeWork',
+    name: resource.seoTitle || resource.title,
+    description: resource.seoDescription || resource.subtitle,
+    author: {
+      '@type': 'Organization',
+      name: 'Mutomorro',
+      url: 'https://mutomorro.com',
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: 'Mutomorro',
+      url: 'https://mutomorro.com',
+    },
+    url: `https://mutomorro.com/resources/${slug}`,
+    ...(resource.previewImageUrl && { image: resource.previewImageUrl }),
+    learningResourceType: typeLabel,
+  }
+
+  const breadcrumbJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Resources',
+        item: 'https://mutomorro.com/resources',
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: resource.title,
+        item: `https://mutomorro.com/resources/${slug}`,
+      },
+    ],
+  }
+
   return (
     <main className="page-resource">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
+
       {/* Dark header with title, preview image, and form */}
       <BackgroundPattern variant="constellation" className="section--full dark-bg section-padding">
         <div style={{ maxWidth: '1350px', margin: '0 auto', position: 'relative' }}>

@@ -57,8 +57,50 @@ export default async function SectorLandingPage({ params }) {
 
   if (!page) notFound()
 
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Service',
+    name: page.heroHeading,
+    description: page.seoDescription || page.heroSubheading,
+    provider: {
+      '@type': 'ProfessionalService',
+      name: 'Mutomorro',
+      url: 'https://mutomorro.com',
+    },
+    ...(page.sectorLabel && { serviceType: page.sectorLabel }),
+    url: `https://mutomorro.com/sectors/${slug}`,
+  }
+
+  const breadcrumbJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Mutomorro',
+        item: 'https://mutomorro.com',
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: page.sectorLabel || page.heroHeading,
+        item: `https://mutomorro.com/sectors/${slug}`,
+      },
+    ],
+  }
+
   return (
     <div className="page-sector">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
+
       {/* ==========================================
           SECTION 1 - HERO (dark)
           ========================================== */}

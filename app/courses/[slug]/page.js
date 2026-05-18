@@ -59,8 +59,54 @@ export default async function CoursePage({ params }) {
 
   const sidebarCallouts = await getSidebarCallouts('courses', course._id)
 
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Course',
+    name: course.seoTitle || course.title,
+    description: course.seoDescription || course.shortSummary,
+    provider: {
+      '@type': 'Organization',
+      name: 'Mutomorro',
+      url: 'https://mutomorro.com',
+    },
+    url: `https://mutomorro.com/courses/${course.slug.current}`,
+  }
+
+  const breadcrumbJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Courses',
+        item: 'https://mutomorro.com/courses',
+      },
+      ...(course.theme?.slug ? [{
+        '@type': 'ListItem',
+        position: 2,
+        name: course.theme.title,
+        item: `https://mutomorro.com/topics/${course.theme.slug}`,
+      }] : []),
+      {
+        '@type': 'ListItem',
+        position: course.theme?.slug ? 3 : 2,
+        name: course.title,
+        item: `https://mutomorro.com/courses/${course.slug.current}`,
+      },
+    ],
+  }
+
   return (
     <main className="page-course">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
 
       {/* Hero */}
       <BackgroundPattern variant="constellation" style={{ background: 'var(--dark)' }}>

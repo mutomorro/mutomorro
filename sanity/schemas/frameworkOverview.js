@@ -35,6 +35,24 @@ export default defineType({
         { type: 'image', options: { hotspot: true } },
       ],
     }),
+    defineField({
+      name: 'seoTitle',
+      title: 'SEO title',
+      type: 'string',
+      description: 'Overrides the page title in search results (50-60 characters ideal)',
+      group: 'seo',
+    }),
+    defineField({
+      name: 'seoDescription',
+      title: 'SEO description',
+      type: 'text',
+      rows: 3,
+      description: 'Displayed in search results below the title (120-160 characters ideal)',
+      group: 'seo',
+    }),
+  ],
+  groups: [
+    { name: 'seo', title: 'SEO' },
   ],
   preview: {
     prepare() {

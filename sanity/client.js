@@ -126,7 +126,7 @@ export async function getDimension(slug) {
 
 export async function getFrameworkOverview() {
   return await client.fetch(
-    `*[_type == "frameworkOverview"][0]{ title, subtitle, intro, body }`,
+    `*[_type == "frameworkOverview"][0]{ title, subtitle, intro, body, seoTitle, seoDescription }`,
     {},
     fetchOpts
   )

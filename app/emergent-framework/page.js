@@ -2,16 +2,29 @@ import DimensionExplorer from '../../components/DimensionExplorer'
 import { getFrameworkOverview } from '../../sanity/client'
 import { PortableText } from '@portabletext/react'
 
-export const metadata = {
-  title: 'The EMERGENT Framework - eight dimensions of organisational health',
-  description: 'A model for understanding what makes organisations thrive. Eight interconnected dimensions covering strategy, culture, purpose, capacity, and more.',
-  openGraph: {
-    url: 'https://mutomorro.com/emergent-framework',
-    images: [{ url: '/og-default.png', width: 1200, height: 630 }],
-  },
-  twitter: {
-    images: [{ url: '/og-default.png', width: 1200, height: 630 }],
-  },
+const FALLBACK_TITLE = 'The EMERGENT Framework - eight dimensions of organisational health'
+const FALLBACK_DESCRIPTION =
+  'A model for understanding what makes organisations thrive. Eight interconnected dimensions covering strategy, culture, purpose, capacity, and more.'
+
+export async function generateMetadata() {
+  const overview = await getFrameworkOverview()
+  const rawTitle = overview?.seoTitle || FALLBACK_TITLE
+  const title = rawTitle?.replace(/\s*[\|\-]\s*Mutomorro\s*$/i, '') || rawTitle
+  const description = overview?.seoDescription || FALLBACK_DESCRIPTION
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      url: 'https://mutomorro.com/emergent-framework',
+      images: [{ url: '/og-default.png', width: 1200, height: 630 }],
+    },
+    twitter: {
+      images: [{ url: '/og-default.png', width: 1200, height: 630 }],
+    },
+  }
 }
 
 export default async function EmergentFramework() {

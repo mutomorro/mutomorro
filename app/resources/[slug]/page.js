@@ -5,6 +5,7 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import ResourceDownloadForm from '../../../components/ResourceDownloadForm'
 import CTA from '../../../components/CTA'
+import BackgroundPattern from '@/components/animations/BackgroundPattern'
 
 export const revalidate = 3600
 
@@ -56,8 +57,8 @@ export default async function ResourcePage({ params }) {
   return (
     <main className="page-resource">
       {/* Dark header with title, preview image, and form */}
-      <section className="section--full dark-bg section-padding">
-        <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
+      <BackgroundPattern variant="constellation" className="section--full dark-bg section-padding">
+        <div style={{ maxWidth: '1350px', margin: '0 auto', position: 'relative' }}>
           {/* Title block */}
           <span className="kicker" style={{ marginBottom: '16px' }}>{typeLabel.toUpperCase()}</span>
           <h1 className="heading-h1" style={{
@@ -140,7 +141,7 @@ export default async function ResourcePage({ params }) {
             </div>
           </div>
         </div>
-      </section>
+      </BackgroundPattern>
 
       {/* Warm content area - 50/50 two column */}
       <section className="section--full warm-bg section-padding">

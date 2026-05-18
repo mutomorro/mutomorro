@@ -13,6 +13,7 @@ import CalloutTeaser from '../../../components/CalloutTeaser'
 import ThreeColumnLayout from '../../../components/ThreeColumnLayout'
 import TableOfContents from '../../../components/TableOfContents'
 import ContentSidebar from '../../../components/ContentSidebar'
+import BackgroundPattern from '@/components/animations/BackgroundPattern'
 import { headingBlocks } from '../../../lib/portable-text-headings'
 import { getSidebarCallouts } from '../../../sanity/client'
 
@@ -124,8 +125,8 @@ export default async function ToolPage({ params }) {
       />
 
       {/* Hero */}
-      <section className="section--full dark-bg section-padding-hero">
-        <div className={`section__inner content-hero-grid${heroImageUrl ? '' : ' content-hero-grid--single'}`}>
+      <BackgroundPattern variant="constellation" className="section--full dark-bg section-padding-hero">
+        <div className={`section__inner content-hero-grid${heroImageUrl ? '' : ' content-hero-grid--single'}`} style={{ position: 'relative' }}>
           {/* Left: text content */}
           <div>
             {/* Breadcrumb */}
@@ -198,7 +199,7 @@ export default async function ToolPage({ params }) {
             </div>
           )}
         </div>
-      </section>
+      </BackgroundPattern>
 
       <CalloutTeaser pageType="tools" pageId={tool._id} />
 

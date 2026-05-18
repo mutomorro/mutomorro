@@ -12,6 +12,7 @@ import CalloutTeaser from '../../../components/CalloutTeaser'
 import ThreeColumnLayout from '../../../components/ThreeColumnLayout'
 import TableOfContents from '../../../components/TableOfContents'
 import ContentSidebar from '../../../components/ContentSidebar'
+import BackgroundPattern from '@/components/animations/BackgroundPattern'
 import { headingBlocks } from '../../../lib/portable-text-headings'
 import { getSidebarCallouts } from '../../../sanity/client'
 
@@ -161,8 +162,8 @@ export default async function CaseStudy({ params }) {
       />
 
       {/* Hero */}
-      <section className="section--full dark-bg section-padding-hero">
-        <div className={`section__inner content-hero-grid${heroImageUrl ? '' : ' content-hero-grid--single'}`}>
+      <BackgroundPattern variant="network" className="section--full dark-bg section-padding-hero">
+        <div className={`section__inner content-hero-grid${heroImageUrl ? '' : ' content-hero-grid--single'}`} style={{ position: 'relative' }}>
           <div>
             {/* Breadcrumb */}
             <div className="breadcrumb">
@@ -215,7 +216,7 @@ export default async function CaseStudy({ params }) {
             </div>
           )}
         </div>
-      </section>
+      </BackgroundPattern>
 
       <CalloutTeaser pageType="caseStudies" pageId={project._id} />
 

@@ -1,5 +1,6 @@
 import { getAllCourses } from '../../sanity/client'
 import CTA from '../../components/CTA'
+import BackgroundPattern from '@/components/animations/BackgroundPattern'
 import CoursesGrid from './CoursesGrid'
 
 export const revalidate = 3600
@@ -23,8 +24,8 @@ export default async function Courses() {
     <main>
 
       {/* Hero */}
-      <section className="section--full dark-bg section-padding-hero">
-        <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
+      <BackgroundPattern variant="constellation" className="section--full dark-bg section-padding-hero">
+        <div style={{ maxWidth: '1350px', margin: '0 auto', position: 'relative' }}>
           <span className="kicker" style={{ marginBottom: '20px' }}>Courses</span>
           <h1 className="heading-h1 heading-gradient" style={{
             margin: '0 0 32px',
@@ -36,7 +37,7 @@ export default async function Courses() {
             Ready-made courses on leadership, change, culture and how organisations work.
           </p>
         </div>
-      </section>
+      </BackgroundPattern>
 
       {/* Course cards */}
       <section className="section--full section-padding" style={{ background: 'var(--white)' }}>

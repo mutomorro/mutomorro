@@ -1,5 +1,6 @@
 import { getAllTools } from '../../sanity/client'
 import CTA from '../../components/CTA'
+import BackgroundPattern from '@/components/animations/BackgroundPattern'
 import ToolsGrid from './ToolsGrid'
 
 export const revalidate = 3600
@@ -23,8 +24,8 @@ export default async function Tools() {
     <main>
 
       {/* Hero */}
-      <section className="section--full dark-bg section-padding-hero">
-        <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
+      <BackgroundPattern variant="constellation" className="section--full dark-bg section-padding-hero">
+        <div style={{ maxWidth: '1350px', margin: '0 auto', position: 'relative' }}>
           <span className="kicker" style={{ marginBottom: '20px' }}>Tools and frameworks</span>
           <h1 className="heading-h1 heading-gradient" style={{
             margin: '0 0 32px',
@@ -36,7 +37,7 @@ export default async function Tools() {
             Practical tools to help you think clearly, work better, and lead with confidence.
           </p>
         </div>
-      </section>
+      </BackgroundPattern>
 
       {/* Tool cards */}
       <section className="section--full section-padding" style={{ background: 'var(--white)' }}>

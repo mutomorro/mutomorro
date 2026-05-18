@@ -5,6 +5,7 @@ import { PortableText } from '@portabletext/react'
 import { client, getThemeHub, getAllThemeSlugs } from '../../../sanity/client'
 import { urlFor } from '../../../sanity/image'
 import CTA from '../../../components/CTA'
+import BackgroundPattern from '@/components/animations/BackgroundPattern'
 
 export const revalidate = 3600
 
@@ -183,8 +184,8 @@ export default async function TopicHubPage({ params }) {
       />
 
       {/* Hero */}
-      <section className="section--full dark-bg section-padding-hero">
-        <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
+      <BackgroundPattern variant="constellation" className="section--full dark-bg section-padding-hero">
+        <div style={{ maxWidth: '1350px', margin: '0 auto', position: 'relative' }}>
           <div className="breadcrumb">
             <Link href="/topics" className="breadcrumb__link">Topics</Link>
             <span className="breadcrumb__sep">/</span>
@@ -218,7 +219,7 @@ export default async function TopicHubPage({ params }) {
             </p>
           )}
         </div>
-      </section>
+      </BackgroundPattern>
 
       {/* Content sections */}
       <section className="section--full section-padding" style={{ background: 'var(--warm)' }}>

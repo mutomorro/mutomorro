@@ -1,4 +1,5 @@
 import ContactForm from '../../components/ContactForm'
+import BackgroundPattern from '@/components/animations/BackgroundPattern'
 
 export const metadata = {
   title: 'Get in touch',
@@ -19,8 +20,8 @@ export default async function ContactPage({ searchParams }) {
     <main className="contact-page">
 
       {/* Hero */}
-      <section className="section--full dark-bg section-padding-hero">
-        <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
+      <BackgroundPattern variant="network" className="section--full dark-bg section-padding-hero">
+        <div style={{ maxWidth: '1350px', margin: '0 auto', position: 'relative' }}>
           <span className="kicker" style={{ marginBottom: '20px' }}>Get in touch</span>
           <h1 className="heading-display heading-gradient" style={{ maxWidth: '900px', margin: '0 0 32px' }}>
             Let's start with a conversation
@@ -30,7 +31,7 @@ export default async function ContactPage({ searchParams }) {
             and we'll explore it together.
           </p>
         </div>
-      </section>
+      </BackgroundPattern>
 
       {/* Form section */}
       <section className="section--full section-padding" style={{ background: 'var(--white)' }}>

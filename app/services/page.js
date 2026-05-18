@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { getAllServices } from '../../sanity/client'
 import CTA from '../../components/CTA'
+import BackgroundPattern from '@/components/animations/BackgroundPattern'
 
 export const revalidate = 3600
 
@@ -55,8 +56,8 @@ export default async function Services() {
     <main>
 
       {/* Hero */}
-      <section className="section--full dark-bg section-padding-hero">
-        <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
+      <BackgroundPattern variant="network" className="section--full dark-bg section-padding-hero">
+        <div style={{ maxWidth: '1350px', margin: '0 auto', position: 'relative' }}>
           <span className="kicker" style={{ marginBottom: '20px' }}>How we help</span>
           <h1 className="heading-h1 heading-gradient" style={{
             margin: '0 0 32px',
@@ -69,7 +70,7 @@ export default async function Services() {
             Real change rarely stays in just one.
           </p>
         </div>
-      </section>
+      </BackgroundPattern>
 
       {/* Category groups */}
       {categories.map((cat, catIndex) => (

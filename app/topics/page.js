@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { getAllThemesForIndex } from '../../sanity/client'
 import CTA from '../../components/CTA'
+import BackgroundPattern from '@/components/animations/BackgroundPattern'
 
 export const revalidate = 3600
 
@@ -39,8 +40,8 @@ export default async function TopicsIndex() {
   return (
     <main className="page-topics-index">
       {/* Hero */}
-      <section className="section--full dark-bg section-padding-hero">
-        <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
+      <BackgroundPattern variant="constellation" className="section--full dark-bg section-padding-hero">
+        <div style={{ maxWidth: '1350px', margin: '0 auto', position: 'relative' }}>
           <span className="kicker" style={{ marginBottom: '20px' }}>Library</span>
           <h1 className="heading-h1 heading-gradient" style={{
             margin: '0 0 32px',
@@ -52,7 +53,7 @@ export default async function TopicsIndex() {
             Everything we think about, write about, and build tools for &mdash; gathered by subject.
           </p>
         </div>
-      </section>
+      </BackgroundPattern>
 
       {/* Topic grid */}
       <section className="section--full section-padding" style={{ background: 'var(--warm)' }}>

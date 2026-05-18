@@ -27,7 +27,7 @@ export async function generateMetadata({ params }) {
   const page = await getSectorLandingPage(slug)
   if (!page) return {}
 
-  const title = page.seoTitle || `${page.heroHeading} | Mutomorro`
+  const title = (page.seoTitle || page.heroHeading || '').replace(/\s*[\|\-]\s*Mutomorro\s*$/i, '')
   const description = page.seoDescription || page.heroSubheading || ''
 
   return {
@@ -62,11 +62,11 @@ export default async function SectorLandingPage({ params }) {
       {/* ==========================================
           SECTION 1 - HERO (dark)
           ========================================== */}
-      <section className="section--full dark-bg section-padding-flush" style={{
+      <BackgroundPattern variant="network" className="section--full dark-bg section-padding-flush" style={{
         paddingTop: 'clamp(80px, 12vh, 140px)',
         paddingBottom: 'clamp(60px, 8vh, 100px)',
       }}>
-        <div style={{ maxWidth: '800px', margin: '0 auto', textAlign: 'center' }}>
+        <div style={{ maxWidth: '800px', margin: '0 auto', textAlign: 'center', position: 'relative' }}>
           <span className="kicker" style={{ color: '#FFA200' }}>{page.sectorLabel}</span>
           <h1 className="heading-display heading-gradient">
             {page.heroHeading}
@@ -82,7 +82,7 @@ export default async function SectorLandingPage({ params }) {
             {page.heroSubheading}
           </p>
         </div>
-      </section>
+      </BackgroundPattern>
 
       {/* ==========================================
           SECTION 2 - SECTOR CONTEXT (warm)

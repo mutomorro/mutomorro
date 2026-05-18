@@ -93,14 +93,6 @@ export default defineType({
       description: 'Displayed in search results below the title (120-160 characters ideal)',
       group: 'seo',
     }),
-    defineField({
-      name: 'seoKeywords',
-      title: 'SEO keywords',
-      type: 'string',
-      description: 'Comma-separated keywords for internal reference',
-      group: 'seo',
-    }),
-
     // --- Cross-references ---
     defineField({
       name: 'relatedArticles',

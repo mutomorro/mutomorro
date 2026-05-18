@@ -81,27 +81,6 @@ export default {
         'Which broad areas does this tool relate to? Used for filtering on the tools page.',
     },
     {
-      name: 'emergentDimensions',
-      title: 'EMERGENT Dimensions',
-      type: 'array',
-      group: 'taxonomy',
-      of: [{ type: 'string' }],
-      options: {
-        list: [
-          { title: 'Resonant Purpose', value: 'resonant-purpose' },
-          { title: 'Embedded Strategy', value: 'embedded-strategy' },
-          { title: 'Energy from Culture', value: 'energy-from-culture' },
-          { title: 'Momentum through Work', value: 'momentum-through-work' },
-          { title: 'Generative Capacity', value: 'generative-capacity' },
-          { title: 'Tuned to Change', value: 'tuned-to-change' },
-          { title: 'Narrative Connections', value: 'narrative-connections' },
-          { title: 'Service Innovation', value: 'service-innovation' },
-        ],
-      },
-      description:
-        'Which EMERGENT dimensions does this tool connect to?',
-    },
-    {
       name: 'relatedServices',
       title: 'Related Services',
       type: 'array',
@@ -126,17 +105,6 @@ export default {
       of: [{ type: 'reference', to: [{ type: 'tool' }] }],
       description: 'Other tools that relate to this one. Creates cross-links between tool pages.',
     },
-    {
-      name: 'topics',
-      title: 'Topics',
-      type: 'array',
-      group: 'taxonomy',
-      of: [{ type: 'string' }],
-      options: { layout: 'tags' },
-      description:
-        'Granular subject tags - e.g. Decision Making, Teamwork, Lean.',
-    },
-
     // ── Content ──
     {
       name: 'body',

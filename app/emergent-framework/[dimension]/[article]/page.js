@@ -1,4 +1,5 @@
 import { client, getDimensionArticle, getDimensionArticles } from '../../../../sanity/client'
+import { notFound } from 'next/navigation'
 import Image from 'next/image'
 import { PortableText } from '@portabletext/react'
 import Link from 'next/link'
@@ -38,6 +39,9 @@ export async function generateMetadata({ params }) {
 export default async function DimensionArticlePage({ params }) {
   const { dimension: dimensionSlug, article: articleSlug } = await params
   const article = await getDimensionArticle(dimensionSlug, articleSlug)
+
+  if (!article) notFound()
+
   const allArticles = await getDimensionArticles(dimensionSlug)
 
   const dimColour = article.dimension?.colour || 'var(--accent)'

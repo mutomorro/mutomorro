@@ -12,7 +12,7 @@ function ContentCard({ item, basePath, actionLabel }) {
           <Image
             className="card-a__image-inner"
             src={urlFor(item.heroImage).width(600).height(338).url()}
-            alt={item.heroImage.alt || item.title}
+            alt={item.heroImage.alt?.split('|')[0]?.trim() || item.title}
             width={600}
             height={338}
             sizes="(max-width: 768px) 100vw, 400px"

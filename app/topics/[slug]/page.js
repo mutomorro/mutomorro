@@ -24,7 +24,8 @@ export async function generateMetadata({ params }) {
   )
   if (!theme) return {}
 
-  const title = theme.seoTitle || `${theme.title} - Resources and Thinking | Mutomorro`
+  const rawTitle = theme.seoTitle || `${theme.title} - Resources and Thinking`
+  const title = rawTitle.replace(/\s*[\|\-]\s*Mutomorro\s*$/i, '') || rawTitle
   const description =
     theme.seoDescription ||
     `Tools, articles, courses and case studies on ${theme.title.toLowerCase()} from Mutomorro.`
@@ -119,7 +120,7 @@ function ContentList({ heading, intro, items, basePath, actionLabel }) {
                   <Image
                     className="topic-card__image-inner"
                     src={imageUrl}
-                    alt={item.heroImage?.alt || item.title || ''}
+                    alt={item.heroImage?.alt?.split('|')[0]?.trim() || item.title || ''}
                     width={600}
                     height={338}
                     sizes="(max-width: 768px) 100vw, 400px"

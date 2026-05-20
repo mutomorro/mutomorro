@@ -835,6 +835,21 @@ const nextConfig = {
 
       { source: '/articles/storytelling-with-data', destination: '/articles/storytelling-and-organisational-change', permanent: true },
       { source: '/articles/storytelling-for-social-change', destination: '/articles/storytelling-and-organisational-change', permanent: true },
+
+
+      // =========================================================
+      // 20 May 2026 - EMERGENT dimension renames
+      // Old dimension slugs → current slugs
+      // =========================================================
+
+      { source: '/emergent-framework/direction', destination: '/emergent-framework/tuned-to-change', permanent: true },
+      { source: '/emergent-framework/engagement', destination: '/emergent-framework/enacted-culture', permanent: true },
+      { source: '/emergent-framework/meaning', destination: '/emergent-framework/resonant-purpose', permanent: true },
+      { source: '/emergent-framework/environment', destination: '/emergent-framework/evolving-service', permanent: true },
+      { source: '/emergent-framework/rhythm', destination: '/emergent-framework/momentum-through-work', permanent: true },
+      { source: '/emergent-framework/growth', destination: '/emergent-framework/generative-capacity', permanent: true },
+      { source: '/emergent-framework/network', destination: '/emergent-framework/narrative-connections', permanent: true },
+      { source: '/emergent-framework/trust', destination: '/emergent-framework/embedded-strategy', permanent: true },
     ]
 
     // Emit both `/path` and `/path/` variants for every source so requests

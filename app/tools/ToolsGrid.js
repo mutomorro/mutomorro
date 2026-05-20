@@ -22,7 +22,7 @@ export default function ToolsGrid({ items }) {
               <Image
                 className="card-a__image-inner"
                 src={urlFor(tool.heroImage).width(600).height(338).url()}
-                alt={tool.heroImage.alt || tool.title}
+                alt={tool.heroImage.alt?.split('|')[0]?.trim() || tool.title}
                 width={600}
                 height={338}
                 sizes="(max-width: 768px) 100vw, 600px"

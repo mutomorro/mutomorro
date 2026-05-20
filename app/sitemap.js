@@ -3,24 +3,26 @@ import { client } from '../sanity/client'
 const BASE_URL = 'https://mutomorro.com'
 
 export default async function sitemap() {
-  // Static pages
+  // Static pages. These aren't backed by Sanity, so lastModified is anchored to
+  // the 2 May 2026 trailing-slash-fix deployment — the last change to touch them.
+  const STATIC_LASTMOD = new Date('2026-05-02')
   const staticPages = [
-    { url: `${BASE_URL}/`, changeFrequency: 'weekly', priority: 1.0 },
-    { url: `${BASE_URL}/about`, changeFrequency: 'monthly', priority: 0.7 },
-    { url: `${BASE_URL}/philosophy`, changeFrequency: 'monthly', priority: 0.6 },
-    { url: `${BASE_URL}/how-we-work`, changeFrequency: 'monthly', priority: 0.7 },
-    { url: `${BASE_URL}/contact`, changeFrequency: 'monthly', priority: 0.8 },
-    { url: `${BASE_URL}/services`, changeFrequency: 'monthly', priority: 0.9 },
-    { url: `${BASE_URL}/develop`, changeFrequency: 'monthly', priority: 0.7 },
-    { url: `${BASE_URL}/emergent-framework`, changeFrequency: 'monthly', priority: 0.7 },
-    { url: `${BASE_URL}/states-of-vitality`, changeFrequency: 'monthly', priority: 0.8 },
-    { url: `${BASE_URL}/tools`, changeFrequency: 'weekly', priority: 0.8 },
-    { url: `${BASE_URL}/articles`, changeFrequency: 'weekly', priority: 0.7 },
-    { url: `${BASE_URL}/courses`, changeFrequency: 'monthly', priority: 0.7 },
-    { url: `${BASE_URL}/projects`, changeFrequency: 'monthly', priority: 0.7 },
-    { url: `${BASE_URL}/topics`, changeFrequency: 'weekly', priority: 0.8 },
-    { url: `${BASE_URL}/privacy`, changeFrequency: 'yearly', priority: 0.3 },
-    { url: `${BASE_URL}/terms`, changeFrequency: 'yearly', priority: 0.3 },
+    { url: `${BASE_URL}/`, lastModified: STATIC_LASTMOD, changeFrequency: 'weekly', priority: 1.0 },
+    { url: `${BASE_URL}/about`, lastModified: STATIC_LASTMOD, changeFrequency: 'monthly', priority: 0.7 },
+    { url: `${BASE_URL}/philosophy`, lastModified: STATIC_LASTMOD, changeFrequency: 'monthly', priority: 0.6 },
+    { url: `${BASE_URL}/how-we-work`, lastModified: STATIC_LASTMOD, changeFrequency: 'monthly', priority: 0.7 },
+    { url: `${BASE_URL}/contact`, lastModified: STATIC_LASTMOD, changeFrequency: 'monthly', priority: 0.8 },
+    { url: `${BASE_URL}/services`, lastModified: STATIC_LASTMOD, changeFrequency: 'monthly', priority: 0.9 },
+    { url: `${BASE_URL}/develop`, lastModified: STATIC_LASTMOD, changeFrequency: 'monthly', priority: 0.7 },
+    { url: `${BASE_URL}/emergent-framework`, lastModified: STATIC_LASTMOD, changeFrequency: 'monthly', priority: 0.7 },
+    { url: `${BASE_URL}/states-of-vitality`, lastModified: STATIC_LASTMOD, changeFrequency: 'monthly', priority: 0.8 },
+    { url: `${BASE_URL}/tools`, lastModified: STATIC_LASTMOD, changeFrequency: 'weekly', priority: 0.8 },
+    { url: `${BASE_URL}/articles`, lastModified: STATIC_LASTMOD, changeFrequency: 'weekly', priority: 0.7 },
+    { url: `${BASE_URL}/courses`, lastModified: STATIC_LASTMOD, changeFrequency: 'monthly', priority: 0.7 },
+    { url: `${BASE_URL}/projects`, lastModified: STATIC_LASTMOD, changeFrequency: 'monthly', priority: 0.7 },
+    { url: `${BASE_URL}/topics`, lastModified: STATIC_LASTMOD, changeFrequency: 'weekly', priority: 0.8 },
+    { url: `${BASE_URL}/privacy`, lastModified: STATIC_LASTMOD, changeFrequency: 'yearly', priority: 0.3 },
+    { url: `${BASE_URL}/terms`, lastModified: STATIC_LASTMOD, changeFrequency: 'yearly', priority: 0.3 },
   ]
 
   // Fetch all dynamic content from Sanity.

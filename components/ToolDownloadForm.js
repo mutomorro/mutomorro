@@ -3,7 +3,15 @@
 import { useState } from 'react'
 import posthog from 'posthog-js'
 
+// Sanity asset URLs encode intrinsic dimensions as `-{width}x{height}.{ext}`.
+function getImageDimensions(url) {
+  const match = url?.match(/-(\d+)x(\d+)\./)
+  if (match) return { width: Number(match[1]), height: Number(match[2]) }
+  return { width: 900, height: 636 }
+}
+
 export default function ToolDownloadForm({ toolTitle, toolSlug, pdfUrl, heroImageUrl }) {
+  const imgDims = getImageDimensions(heroImageUrl)
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -102,6 +110,8 @@ export default function ToolDownloadForm({ toolTitle, toolSlug, pdfUrl, heroImag
               <img
                 src={heroImageUrl}
                 alt={toolTitle}
+                width={imgDims.width}
+                height={imgDims.height}
                 style={{
                   width: '100%',
                   height: 'auto',
@@ -325,6 +335,8 @@ export default function ToolDownloadForm({ toolTitle, toolSlug, pdfUrl, heroImag
           <img
             src={heroImageUrl}
             alt={toolTitle}
+            width={imgDims.width}
+            height={imgDims.height}
             style={{
               width: '100%',
               height: 'auto',

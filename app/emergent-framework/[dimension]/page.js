@@ -1,4 +1,5 @@
 import { client, getDimension, getDimensionArticles } from '../../../sanity/client'
+import { notFound } from 'next/navigation'
 import Image from 'next/image'
 import { PortableText } from '@portabletext/react'
 import Link from 'next/link'
@@ -36,6 +37,9 @@ export async function generateMetadata({ params }) {
 export default async function DimensionPage({ params }) {
   const { dimension: dimensionSlug } = await params
   const dimension = await getDimension(dimensionSlug)
+
+  if (!dimension) notFound()
+
   const articles = await getDimensionArticles(dimensionSlug)
 
   const letter = dimension.letter || DIMENSION_LETTERS[dimensionSlug] || dimension.title.charAt(0)

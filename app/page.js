@@ -66,6 +66,17 @@ export default async function Home() {
 
   return (
     <main className="homepage">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'WebSite',
+            name: 'Mutomorro',
+            url: 'https://mutomorro.com',
+          }),
+        }}
+      />
 
       {/* ─── Section 1: Hero ─── */}
       <section style={{

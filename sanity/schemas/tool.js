@@ -167,6 +167,14 @@ export default {
       description:
         'Meta description for search results. If blank, falls back to the short summary.',
     },
+    {
+      name: 'sortOrder',
+      title: 'Sort order',
+      type: 'number',
+      group: 'seo',
+      description:
+        'Controls display position on the tools listing page. Lower numbers appear first. Leave blank to sort alphabetically after ordered items.',
+    },
     // ── Practitioner ──
     {
       name: 'practitionerInsight',

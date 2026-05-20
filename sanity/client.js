@@ -49,7 +49,7 @@ export async function getProject(slug) {
 // ============================================
 
 export async function getAllTools() {
-  return await client.fetch(`*[_type == "tool"] | order(title asc) {
+  return await client.fetch(`*[_type == "tool"] | order(coalesce(sortOrder, 9999) asc, title asc) {
     _id,
     title,
     slug,
@@ -171,7 +171,7 @@ export async function getDimensionArticle(dimensionSlug, articleSlug) {
 // ============================================
 
 export async function getAllArticles() {
-  return await client.fetch(`*[_type == "article"] | order(publishedAt desc) {
+  return await client.fetch(`*[_type == "article"] | order(coalesce(sortOrder, 9999) asc, publishedAt desc) {
     _id,
     title,
     slug,

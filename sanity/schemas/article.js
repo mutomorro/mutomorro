@@ -93,6 +93,13 @@ export default defineType({
       description: 'Displayed in search results below the title (120-160 characters ideal)',
       group: 'seo',
     }),
+    defineField({
+      name: 'sortOrder',
+      title: 'Sort order',
+      type: 'number',
+      description: 'Controls display position on the articles listing page. Lower numbers appear first. Leave blank to sort by publish date after ordered items.',
+      group: 'seo',
+    }),
     // --- Cross-references ---
     defineField({
       name: 'relatedArticles',

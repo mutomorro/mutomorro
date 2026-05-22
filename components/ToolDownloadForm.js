@@ -2,7 +2,9 @@
 
 import { useState } from 'react'
 import posthog from 'posthog-js'
-import { isFreeEmailProvider, FREE_EMAIL_MESSAGE } from '@/lib/email-validation'
+import { isFreeEmailProvider, FREE_EMAIL_MESSAGE, FREE_EMAIL_EMPHASIS } from '@/lib/email-validation'
+
+const [NOTICE_BEFORE, NOTICE_AFTER] = FREE_EMAIL_MESSAGE.split(FREE_EMAIL_EMPHASIS)
 
 export default function ToolDownloadForm({ toolTitle, toolSlug, pdfUrl }) {
   const [formData, setFormData] = useState({
@@ -209,7 +211,9 @@ export default function ToolDownloadForm({ toolTitle, toolSlug, pdfUrl }) {
               lineHeight: '1.55',
               color: 'rgba(0,0,0,0.7)',
             }}>
-              {FREE_EMAIL_MESSAGE}
+              {NOTICE_BEFORE}
+              <strong style={{ fontWeight: 600 }}>{FREE_EMAIL_EMPHASIS}</strong>
+              {NOTICE_AFTER}
             </div>
           )}
         </div>

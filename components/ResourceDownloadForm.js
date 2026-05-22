@@ -2,7 +2,9 @@
 
 import { useState } from 'react'
 import posthog from 'posthog-js'
-import { isFreeEmailProvider, FREE_EMAIL_MESSAGE } from '@/lib/email-validation'
+import { isFreeEmailProvider, FREE_EMAIL_MESSAGE, FREE_EMAIL_EMPHASIS } from '@/lib/email-validation'
+
+const [NOTICE_BEFORE, NOTICE_AFTER] = FREE_EMAIL_MESSAGE.split(FREE_EMAIL_EMPHASIS)
 
 export default function ResourceDownloadForm({
   resourceTitle,
@@ -269,7 +271,9 @@ export default function ResourceDownloadForm({
               lineHeight: '1.55',
               color: 'rgba(255,255,255,0.75)',
             }}>
-              {FREE_EMAIL_MESSAGE}
+              {NOTICE_BEFORE}
+              <strong style={{ fontWeight: 600 }}>{FREE_EMAIL_EMPHASIS}</strong>
+              {NOTICE_AFTER}
             </div>
           )}
         </div>

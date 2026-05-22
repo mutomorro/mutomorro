@@ -2,6 +2,7 @@ import { createClient } from '@supabase/supabase-js'
 import { Resend } from 'resend'
 import { buildConfirmationEmail } from '../../../components/emails/confirmation-email'
 import { verifyEmail, getCachedVerification } from '../../../components/email-verification'
+import { isFreeEmailProvider, FREE_EMAIL_MESSAGE } from '@/lib/email-validation'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -32,6 +33,12 @@ export async function POST(request) {
     }
 
     const emailNormalised = email.toLowerCase().trim()
+
+    // Organisational email required for downloads — reject free providers
+    // before the ZeroBounce call and any database work.
+    if (isFreeEmailProvider(emailNormalised)) {
+      return Response.json({ error: FREE_EMAIL_MESSAGE }, { status: 400 })
+    }
 
     // 1. Check if this person already exists
     const { data: existing } = await supabase

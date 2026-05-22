@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import posthog from 'posthog-js'
+import { isFreeEmailProvider, FREE_EMAIL_MESSAGE } from '@/lib/email-validation'
 
 export default function ToolDownloadForm({ toolTitle, toolSlug, pdfUrl }) {
   const [formData, setFormData] = useState({
@@ -12,6 +13,7 @@ export default function ToolDownloadForm({ toolTitle, toolSlug, pdfUrl }) {
   })
   const [status, setStatus] = useState('idle') // idle | sending | success | error
   const [errorMessage, setErrorMessage] = useState('')
+  const [emailNotice, setEmailNotice] = useState(false)
   const [honeypot, setHoneypot] = useState('')
   const [formLoadedAt] = useState(Date.now())
 
@@ -21,10 +23,21 @@ export default function ToolDownloadForm({ toolTitle, toolSlug, pdfUrl }) {
       ...prev,
       [name]: type === 'checkbox' ? checked : value,
     }))
+    if (name === 'email') setEmailNotice(false)
+  }
+
+  function handleEmailBlur() {
+    setEmailNotice(isFreeEmailProvider(formData.email))
   }
 
   async function handleSubmit(e) {
     e.preventDefault()
+
+    if (isFreeEmailProvider(formData.email)) {
+      setEmailNotice(true)
+      return
+    }
+
     setStatus('sending')
     setErrorMessage('')
 
@@ -181,9 +194,24 @@ export default function ToolDownloadForm({ toolTitle, toolSlug, pdfUrl }) {
             required
             value={formData.email}
             onChange={handleChange}
+            onBlur={handleEmailBlur}
             placeholder="you@company.com"
             className="form-input"
           />
+          {emailNotice && (
+            <div style={{
+              marginTop: '10px',
+              padding: '12px 14px',
+              background: 'var(--warm)',
+              borderLeft: '3px solid var(--accent)',
+              fontSize: '14px',
+              fontWeight: '300',
+              lineHeight: '1.55',
+              color: 'rgba(0,0,0,0.7)',
+            }}>
+              {FREE_EMAIL_MESSAGE}
+            </div>
+          )}
         </div>
 
         {/* Newsletter opt-in - unticked by default */}

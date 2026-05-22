@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import posthog from 'posthog-js'
+import { isFreeEmailProvider, FREE_EMAIL_MESSAGE } from '@/lib/email-validation'
 
 export default function ResourceDownloadForm({
   resourceTitle,
@@ -19,6 +20,7 @@ export default function ResourceDownloadForm({
   })
   const [status, setStatus] = useState('idle') // idle | sending | success | error
   const [errorMessage, setErrorMessage] = useState('')
+  const [emailNotice, setEmailNotice] = useState(false)
 
   const typeLabels = { primer: 'Primer', whitepaper: 'Whitepaper', guide: 'Guide' }
   const typeLabel = typeLabels[resourceType] || 'Resource'
@@ -31,6 +33,11 @@ export default function ResourceDownloadForm({
       ...prev,
       [name]: type === 'checkbox' ? checked : value,
     }))
+    if (name === 'email') setEmailNotice(false)
+  }
+
+  function handleEmailBlur() {
+    setEmailNotice(isFreeEmailProvider(formData.email))
   }
 
   function isValidEmail(email) {
@@ -43,6 +50,11 @@ export default function ResourceDownloadForm({
     if (!isValidEmail(formData.email)) {
       setStatus('error')
       setErrorMessage('Please enter a valid email address')
+      return
+    }
+
+    if (isFreeEmailProvider(formData.email)) {
+      setEmailNotice(true)
       return
     }
 
@@ -242,9 +254,24 @@ export default function ResourceDownloadForm({
             required
             value={formData.email}
             onChange={handleChange}
+            onBlur={handleEmailBlur}
             placeholder="you@company.com"
             className="form-input"
           />
+          {emailNotice && (
+            <div style={{
+              marginTop: '10px',
+              padding: '12px 14px',
+              background: 'rgba(255,255,255,0.06)',
+              borderLeft: '3px solid #9B51E0',
+              fontSize: '14px',
+              fontWeight: '300',
+              lineHeight: '1.55',
+              color: 'rgba(255,255,255,0.75)',
+            }}>
+              {FREE_EMAIL_MESSAGE}
+            </div>
+          )}
         </div>
 
         {/* Organisation */}

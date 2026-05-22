@@ -16,6 +16,7 @@ export default function ToolDownloadForm({ toolTitle, toolSlug, pdfUrl }) {
   const [status, setStatus] = useState('idle') // idle | sending | success | error
   const [errorMessage, setErrorMessage] = useState('')
   const [emailNotice, setEmailNotice] = useState(false)
+  const [noticeShake, setNoticeShake] = useState(0)
   const [honeypot, setHoneypot] = useState('')
   const [formLoadedAt] = useState(Date.now())
 
@@ -25,7 +26,10 @@ export default function ToolDownloadForm({ toolTitle, toolSlug, pdfUrl }) {
       ...prev,
       [name]: type === 'checkbox' ? checked : value,
     }))
-    if (name === 'email') setEmailNotice(false)
+    if (name === 'email') {
+      setEmailNotice(false)
+      setNoticeShake(0)
+    }
   }
 
   function handleEmailBlur() {
@@ -37,6 +41,7 @@ export default function ToolDownloadForm({ toolTitle, toolSlug, pdfUrl }) {
 
     if (isFreeEmailProvider(formData.email)) {
       setEmailNotice(true)
+      setNoticeShake(n => n + 1)
       return
     }
 
@@ -202,16 +207,20 @@ export default function ToolDownloadForm({ toolTitle, toolSlug, pdfUrl }) {
             style={emailNotice ? { borderColor: 'var(--accent)' } : undefined}
           />
           {emailNotice && (
-            <div style={{
-              marginTop: '10px',
-              padding: '12px 14px',
-              background: 'var(--warm)',
-              borderLeft: '3px solid var(--accent)',
-              fontSize: '14px',
-              fontWeight: '300',
-              lineHeight: '1.55',
-              color: 'rgba(0,0,0,0.7)',
-            }}>
+            <div
+              key={noticeShake}
+              className={noticeShake > 0 ? 'free-email-notice--shake' : undefined}
+              style={{
+                marginTop: '10px',
+                padding: '12px 14px',
+                background: 'var(--warm)',
+                borderLeft: '3px solid var(--accent)',
+                fontSize: '14px',
+                fontWeight: '300',
+                lineHeight: '1.55',
+                color: 'rgba(0,0,0,0.7)',
+              }}
+            >
               {NOTICE_BEFORE}
               <strong style={{ fontWeight: 600 }}>{FREE_EMAIL_EMPHASIS}</strong>
               {NOTICE_AFTER}

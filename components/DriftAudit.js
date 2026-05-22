@@ -137,15 +137,19 @@ function RadarChart({ scores, size = 320 }) {
     return { x1: cx, y1: cy, x2: p.x, y2: p.y };
   });
 
-  const dataPoints = DIMENSIONS.map((dim, i) => {
-    const val = scores[dim.id] || 0;
-    const p = polarToCart(i * angleStep, (val / 5) * r);
-    return `${p.x},${p.y}`;
-  }).join(" ");
+  const hasData = !!scores;
+
+  const dataPoints = hasData
+    ? DIMENSIONS.map((dim, i) => {
+        const val = scores[dim.id] || 0;
+        const p = polarToCart(i * angleStep, (val / 5) * r);
+        return `${p.x},${p.y}`;
+      }).join(" ")
+    : "";
 
   const labels = DIMENSIONS.map((dim, i) => {
     const p = polarToCart(i * angleStep, r + 28);
-    return { ...p, label: dim.short, score: scores[dim.id] || 0 };
+    return { ...p, label: dim.short };
   });
 
   return (
@@ -163,18 +167,27 @@ function RadarChart({ scores, size = 320 }) {
       {axisLines.map((l, i) => (
         <line key={i} {...l} stroke="#221C2B" strokeWidth={0.5} opacity={0.15} />
       ))}
-      <polygon
-        points={dataPoints}
-        fill="#9B51E0"
-        fillOpacity={0.24}
-        stroke="#9B51E0"
-        strokeWidth={2.5}
-      />
-      {DIMENSIONS.map((dim, i) => {
-        const val = scores[dim.id] || 0;
-        const p = polarToCart(i * angleStep, (val / 5) * r);
-        return <circle key={i} cx={p.x} cy={p.y} r={4} fill={getBand(val).color} />;
-      })}
+      {hasData ? (
+        <>
+          <polygon
+            points={dataPoints}
+            fill="#9B51E0"
+            fillOpacity={0.24}
+            stroke="#9B51E0"
+            strokeWidth={2.5}
+          />
+          {DIMENSIONS.map((dim, i) => {
+            const val = scores[dim.id] || 0;
+            const p = polarToCart(i * angleStep, (val / 5) * r);
+            return <circle key={i} cx={p.x} cy={p.y} r={4} fill={getBand(val).color} />;
+          })}
+        </>
+      ) : (
+        DIMENSIONS.map((_, i) => {
+          const p = polarToCart(i * angleStep, r);
+          return <circle key={i} cx={p.x} cy={p.y} r={4.5} fill="#9B51E0" />;
+        })
+      )}
       {labels.map((l, i) => (
         <text
           key={i}
@@ -293,29 +306,47 @@ export default function DriftAudit() {
   if (phase === "intro") {
     return (
       <div style={base}>
-        <div style={container} ref={topRef}>
-          <div style={{ borderLeft: "3px solid #9B51E0", paddingLeft: 20, marginBottom: 40 }}>
-            <p style={{ fontSize: 12, fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase", color: "#9B51E0", margin: "0 0 8px" }}>
-              Mutomorro
-            </p>
-            <h1 style={{ fontSize: 34, fontWeight: 400, lineHeight: 1.2, margin: "0 0 12px" }}>
-              Organisational Drift Audit
-            </h1>
-            <p style={{ fontSize: 17, fontWeight: 400, lineHeight: 1.6, margin: 0, color: "#3d3646" }}>
-              A conversation starter for leadership teams
-            </p>
-          </div>
+        <div style={{ maxWidth: 980, margin: "0 auto", padding: "40px 24px 60px" }} ref={topRef}>
+          <div
+            style={{
+              display: "flex",
+              flexWrap: "wrap",
+              gap: 48,
+              alignItems: "center",
+              marginBottom: 8,
+            }}
+          >
+            {/* Left: introduction */}
+            <div style={{ flex: "1 1 380px" }}>
+              <div style={{ borderLeft: "3px solid #9B51E0", paddingLeft: 20, marginBottom: 40 }}>
+                <p style={{ fontSize: 12, fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase", color: "#9B51E0", margin: "0 0 8px" }}>
+                  Mutomorro
+                </p>
+                <h1 style={{ fontSize: 34, fontWeight: 400, lineHeight: 1.2, margin: "0 0 12px" }}>
+                  Organisational Drift Audit
+                </h1>
+                <p style={{ fontSize: 17, fontWeight: 400, lineHeight: 1.6, margin: 0, color: "#3d3646" }}>
+                  A conversation starter for leadership teams
+                </p>
+              </div>
 
-          <div style={{ fontSize: 17, fontWeight: 400, lineHeight: 1.8, marginBottom: 32 }}>
-            <p>
-              Drift is the slow, imperceptible movement of an organisation away from what it set out to be - not through failure, but through a thousand small, reasonable accommodations to pressure.
-            </p>
-            <p>
-              This short assessment explores six dimensions where drift commonly shows up. It takes about five minutes and produces a picture of where your organisation might have quietly shifted - and where the most useful conversations might begin.
-            </p>
-            <p style={{ fontSize: 15, color: "#645b70", marginTop: 24 }}>
-              This isn't a diagnosis. It's a prompt for honest reflection. The value is in the thinking it provokes, not the score it produces.
-            </p>
+              <div style={{ fontSize: 17, fontWeight: 400, lineHeight: 1.8, marginBottom: 32 }}>
+                <p>
+                  Drift is the slow, imperceptible movement of an organisation away from what it set out to be - not through failure, but through a thousand small, reasonable accommodations to pressure.
+                </p>
+                <p>
+                  This short assessment explores six dimensions where drift commonly shows up. It takes about five minutes and produces a picture of where your organisation might have quietly shifted - and where the most useful conversations might begin.
+                </p>
+                <p style={{ fontSize: 15, color: "#645b70", marginTop: 24 }}>
+                  This isn't a diagnosis. It's a prompt for honest reflection. The value is in the thinking it provokes, not the score it produces.
+                </p>
+              </div>
+            </div>
+
+            {/* Right: radar preview of the six dimensions */}
+            <div style={{ flex: "1 1 300px", display: "flex", justifyContent: "center" }}>
+              <RadarChart size={320} />
+            </div>
           </div>
 
           <button

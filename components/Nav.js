@@ -18,6 +18,7 @@ export default function Nav() {
   const [mobileAccordion, setMobileAccordion] = useState(null)
   const scrollPosRef = useRef(0)
   const closeTimer = useRef(null)
+  const openTimer = useRef(null)
   const navRef = useRef(null)
   const prevPanelRef = useRef(null)
 
@@ -42,6 +43,13 @@ export default function Nav() {
     }
   }
 
+  const clearOpen = () => {
+    if (openTimer.current) {
+      clearTimeout(openTimer.current)
+      openTimer.current = null
+    }
+  }
+
   const scheduleClose = useCallback(() => {
     clearClose()
     closeTimer.current = setTimeout(() => {
@@ -51,6 +59,7 @@ export default function Nav() {
 
   const closePanel = () => {
     clearClose()
+    clearOpen()
     setOpenPanel(null)
   }
 
@@ -86,9 +95,12 @@ export default function Nav() {
     return () => window.removeEventListener('keydown', handleKey)
   }, [])
 
-  // Clean up timer on unmount
+  // Clean up timers on unmount
   useEffect(() => {
-    return () => clearClose()
+    return () => {
+      clearClose()
+      clearOpen()
+    }
   }, [])
 
   // Body scroll lock for mobile overlay
@@ -140,11 +152,21 @@ export default function Nav() {
   const handleLinkEnter = (panel) => {
     if (isCoarse) return
     clearClose()
-    setOpenPanel(panel)
+    clearOpen()
+    if (openPanel) {
+      // Switching between nav items - open the new panel immediately
+      setOpenPanel(panel)
+    } else {
+      // No panel open - wait for hover intent before opening
+      openTimer.current = setTimeout(() => {
+        setOpenPanel(panel)
+      }, 200)
+    }
   }
 
   const handleLinkLeave = () => {
     if (isCoarse) return
+    clearOpen()
     scheduleClose()
   }
 

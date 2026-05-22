@@ -70,16 +70,22 @@ const portableTextComponents = {
 function ServiceLink({ anchorType, anchorUrl, themeTitle }) {
   if (!anchorUrl) return null
 
+  // Site uses trailingSlash: false — strip any trailing slash on internal
+  // links so they don't trigger an unnecessary 308 redirect. anchorUrl is
+  // CMS-authored, so normalise here rather than relying on clean data.
+  const internalHref =
+    anchorUrl.length > 1 ? anchorUrl.replace(/\/$/, '') : anchorUrl
+
   if (anchorType === 'service') {
     return (
-      <Link href={anchorUrl} className="inline-link">
+      <Link href={internalHref} className="inline-link">
         Explore our {themeTitle.toLowerCase()} consultancy →
       </Link>
     )
   }
   if (anchorType === 'develop') {
     return (
-      <Link href={anchorUrl} className="inline-link">
+      <Link href={internalHref} className="inline-link">
         Explore our development programmes →
       </Link>
     )
@@ -166,13 +172,13 @@ export default async function TopicHubPage({ params }) {
         '@type': 'ListItem',
         position: 1,
         name: 'Topics',
-        item: 'https://mutomorro.com/topics/',
+        item: 'https://mutomorro.com/topics',
       },
       {
         '@type': 'ListItem',
         position: 2,
         name: theme.title,
-        item: `https://mutomorro.com/topics/${theme.slug}/`,
+        item: `https://mutomorro.com/topics/${theme.slug}`,
       },
     ],
   }

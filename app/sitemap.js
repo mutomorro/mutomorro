@@ -40,6 +40,7 @@ export default async function sitemap() {
     client.fetch(`*[_type == "tool" && !(_id in path("drafts.**"))]{
       "slug": slug.current,
       _updatedAt,
+      hasToolkit,
       "heroImageUrl": heroImage.asset->url,
       "bodyImages": body[_type == "image"].asset->url
     }`),
@@ -102,6 +103,13 @@ export default async function sitemap() {
       changeFrequency: 'monthly',
       priority: 0.7,
       images: collectImages(t.heroImageUrl, t.bodyImages),
+    })),
+    ...tools.filter(t => t.hasToolkit).map(t => ({
+      url: `${BASE_URL}/tools/${t.slug}/template`,
+      lastModified: t._updatedAt,
+      changeFrequency: 'monthly',
+      priority: 0.6,
+      images: collectImages(t.heroImageUrl),
     })),
     ...articles.map(a => ({
       url: `${BASE_URL}/articles/${a.slug}`,

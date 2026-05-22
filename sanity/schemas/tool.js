@@ -6,7 +6,7 @@ export default {
     { name: 'core', title: 'Core', default: true },
     { name: 'taxonomy', title: 'Taxonomy' },
     { name: 'content', title: 'Content' },
-    { name: 'toolkit', title: 'Toolkit' },
+    { name: 'toolkitPage', title: 'Toolkit Page' },
     { name: 'seo', title: 'SEO' },
     { name: 'practitioner', title: 'Practitioner' },
   ],
@@ -132,20 +132,79 @@ export default {
       ],
     },
 
-    // ── Toolkit ──
+    // ── Toolkit Page ──
     {
       name: 'hasToolkit',
       title: 'Has downloadable toolkit?',
       type: 'boolean',
-      group: 'toolkit',
+      group: 'toolkitPage',
       initialValue: false,
     },
     {
       name: 'toolkitFile',
       title: 'Toolkit PDF',
       type: 'file',
-      group: 'toolkit',
+      group: 'toolkitPage',
       description: 'Upload the PDF if this tool has a downloadable version.',
+      hidden: ({ document }) => !document?.hasToolkit,
+    },
+    {
+      name: 'toolkitDescription',
+      title: 'Toolkit Page Description',
+      type: 'text',
+      rows: 3,
+      group: 'toolkitPage',
+      description:
+        'Brief description of the template for the template download page intro. 2-3 sentences: what it contains, what it helps you do. Falls back to Short Summary if empty.',
+      hidden: ({ document }) => !document?.hasToolkit,
+    },
+    {
+      name: 'toolkitWhatsInside',
+      title: "What's In This Template",
+      type: 'array',
+      of: [{ type: 'block' }],
+      group: 'toolkitPage',
+      description:
+        "Left column content: describe what the PDF contains, what sections it includes, when you'd reach for it. 100-150 words.",
+      hidden: ({ document }) => !document?.hasToolkit,
+    },
+    {
+      name: 'toolkitTips',
+      title: 'Tips For Using It',
+      type: 'array',
+      of: [{ type: 'block' }],
+      group: 'toolkitPage',
+      description:
+        'Right column content: practical advice for workshops, preparation tips, common approaches. 100-150 words.',
+      hidden: ({ document }) => !document?.hasToolkit,
+    },
+    {
+      name: 'toolkitServiceCallout',
+      title: 'Service Connection Text',
+      type: 'text',
+      rows: 3,
+      group: 'toolkitPage',
+      description:
+        'Optional 2-3 sentences connecting this tool to the primary related service. If empty, a generic fallback is used.',
+      hidden: ({ document }) => !document?.hasToolkit,
+    },
+    {
+      name: 'toolkitSeoTitle',
+      title: 'Template SEO Title',
+      type: 'string',
+      group: 'toolkitPage',
+      description:
+        'Custom page title for the template page. Falls back to "{Tool Title} Template - Free PDF Download | Mutomorro" if empty.',
+      hidden: ({ document }) => !document?.hasToolkit,
+    },
+    {
+      name: 'toolkitSeoDescription',
+      title: 'Template SEO Description',
+      type: 'text',
+      rows: 3,
+      group: 'toolkitPage',
+      description:
+        'Meta description for the template page. Falls back to generating from the template description if empty.',
       hidden: ({ document }) => !document?.hasToolkit,
     },
 

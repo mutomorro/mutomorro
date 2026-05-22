@@ -83,6 +83,53 @@ export async function getTool(slug) {
   )
 }
 
+// Single query for a tool's dedicated template download page. Returns null
+// when the tool doesn't exist or doesn't have a downloadable toolkit.
+export async function getToolTemplate(slug) {
+  return await client.fetch(
+    `*[_type == "tool" && slug.current == $slug && hasToolkit == true][0]{
+      _id,
+      title,
+      "slug": slug.current,
+      shortSummary,
+      heroImage,
+      "toolkitFileUrl": toolkitFile.asset->url,
+      toolkitDescription,
+      toolkitWhatsInside,
+      toolkitTips,
+      toolkitServiceCallout,
+      toolkitSeoTitle,
+      toolkitSeoDescription,
+      "primaryService": relatedServices[0]->{
+        title,
+        "slug": slug.current,
+        shortSummary
+      },
+      "relatedCaseStudy": *[
+        _type == "project"
+        && count(relatedServices[@._ref in ^.^.relatedServices[]._ref]) > 0
+      ][0]{
+        title,
+        "slug": slug.current,
+        shortSummary,
+        heroImage
+      },
+      "relatedTemplates": *[
+        _type == "tool"
+        && hasToolkit == true
+        && slug.current != $slug
+        && count(relatedServices[@._ref in ^.^.relatedServices[]._ref]) > 0
+      ] | order(title asc) [0...4]{
+        title,
+        "slug": slug.current,
+        heroImage
+      }
+    }`,
+    { slug },
+    fetchOpts
+  )
+}
+
 
 // ============================================
 // EMERGENT DIMENSIONS

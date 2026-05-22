@@ -3,7 +3,6 @@ import { notFound } from 'next/navigation'
 import Image from 'next/image'
 import { PortableText } from '@portabletext/react'
 import CTA from '../../../components/CTA'
-import ToolDownloadForm from '../../../components/ToolDownloadForm'
 import ToolFloatingBar from '../../../components/ToolFloatingBar'
 import Link from 'next/link'
 import { urlFor } from '../../../sanity/image'
@@ -67,8 +66,8 @@ export default async function ToolPage({ params }) {
 
   const sidebarCallouts = await getSidebarCallouts('tools', tool._id)
 
-  const pdfUrl = tool.toolkitFileUrl || null
   const heroImageUrl = tool.heroImage ? urlFor(tool.heroImage).width(900).url() : null
+  const templateHref = `/tools/${slug}/template`
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -165,16 +164,16 @@ export default async function ToolPage({ params }) {
               </p>
             )}
 
-            {/* Quick download button - scrolls to form */}
-            {pdfUrl && (
-              <a
+            {/* Quick download link - goes to the dedicated template page */}
+            {tool.hasToolkit && (
+              <Link
                 id="tool-hero-cta"
-                href="#get-template"
+                href={templateHref}
                 className="btn-primary btn-primary--dark"
                 style={{ marginTop: '2rem', display: 'inline-flex' }}
               >
-                Get this template
-              </a>
+                Get the free template <span aria-hidden="true" style={{ marginLeft: '0.4em' }}>→</span>
+              </Link>
             )}
           </div>
 
@@ -308,24 +307,29 @@ export default async function ToolPage({ params }) {
         </section>
       )}
 
-      {/* Download form */}
-      {pdfUrl && (
+      {/* Template download CTA */}
+      {tool.hasToolkit && (
         <section
-          id="get-template"
+          id="template-cta"
           className="section--full warm-bg scroll-in section-padding"
         >
-          <div className="wrap--narrow">
-            <ToolDownloadForm
-              toolTitle={tool.title}
-              toolSlug={slug}
-              pdfUrl={pdfUrl}
-              heroImageUrl={heroImageUrl}
-            />
+          <div className="wrap--narrow" style={{ textAlign: 'center' }}>
+            <h2 className="heading-h2" style={{ margin: '0 0 16px' }}>
+              Ready to use {tool.title}?
+            </h2>
+            <p className="lead-text" style={{ margin: '0 auto 28px', maxWidth: '520px' }}>
+              Download the free template - includes practical guidance for workshops and team sessions.
+            </p>
+            <Link href={templateHref} className="btn-primary">
+              Get the free template <span aria-hidden="true" style={{ marginLeft: '0.4em' }}>→</span>
+            </Link>
           </div>
         </section>
       )}
 
-      {pdfUrl && <ToolFloatingBar toolTitle={tool.title} />}
+      {tool.hasToolkit && (
+        <ToolFloatingBar toolTitle={tool.title} templateHref={templateHref} />
+      )}
 
       <CTA label="Work with us" heading="Want to put these ideas into practice?" />
 

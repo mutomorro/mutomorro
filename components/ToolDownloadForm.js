@@ -3,20 +3,12 @@
 import { useState } from 'react'
 import posthog from 'posthog-js'
 
-// Sanity asset URLs encode intrinsic dimensions as `-{width}x{height}.{ext}`.
-function getImageDimensions(url) {
-  const match = url?.match(/-(\d+)x(\d+)\./)
-  if (match) return { width: Number(match[1]), height: Number(match[2]) }
-  return { width: 900, height: 636 }
-}
-
-export default function ToolDownloadForm({ toolTitle, toolSlug, pdfUrl, heroImageUrl }) {
-  const imgDims = getImageDimensions(heroImageUrl)
+export default function ToolDownloadForm({ toolTitle, toolSlug, pdfUrl }) {
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
     email: '',
-    newsletterOptIn: true,
+    newsletterOptIn: false,
   })
   const [status, setStatus] = useState('idle') // idle | sending | success | error
   const [errorMessage, setErrorMessage] = useState('')
@@ -68,137 +60,57 @@ export default function ToolDownloadForm({ toolTitle, toolSlug, pdfUrl, heroImag
     }
   }
 
-  // ── After successful submission: show thumbnail + download ──
+  // ── After successful submission: success message + download button ──
   if (status === 'success') {
     return (
-      <div>
-        {/* Success message */}
-        <div className="feedback-success" style={{ marginBottom: '2rem' }}>
-          <p style={{
-            fontSize: '18px',
-            fontWeight: '400',
-            lineHeight: '1.5',
-            color: 'var(--dark)',
-            margin: '0 0 4px',
-          }}>
-            Here's your {toolTitle} template
-          </p>
-          <p style={{
-            fontSize: '15px',
-            fontWeight: '300',
-            lineHeight: '1.5',
-            color: 'rgba(0,0,0,0.55)',
-            margin: 0,
-          }}>
-            Click below to download your copy.
-          </p>
-        </div>
-
-        {/* Thumbnail + download button */}
-        <div style={{
-          display: 'flex',
-          gap: '2rem',
-          alignItems: 'center',
+      <div className="feedback-success">
+        <p style={{
+          fontSize: '20px',
+          fontWeight: '400',
+          lineHeight: '1.4',
+          color: 'var(--dark)',
+          margin: '0 0 1.5rem',
         }}>
-          {heroImageUrl && (
-            <div style={{
-              width: '220px',
-              flexShrink: 0,
-              border: '1px solid rgba(0,0,0,0.12)',
-              background: '#fff',
-            }}>
-              <img
-                src={heroImageUrl}
-                alt={toolTitle}
-                width={imgDims.width}
-                height={imgDims.height}
-                style={{
-                  width: '100%',
-                  height: 'auto',
-                  display: 'block',
-                }}
-              />
-            </div>
-          )}
-          <div>
-            <p style={{
-              fontSize: '17px',
-              fontWeight: '400',
-              margin: '0 0 1rem',
-              color: 'var(--dark)',
-            }}>
-              {toolTitle}
-            </p>
+          Here&apos;s your {toolTitle} template
+        </p>
+        {pdfUrl ? (
+          <>
             <a
               href={pdfUrl + '?dl='}
               download
               className="btn-primary"
+              style={{ fontSize: '17px', padding: '16px 32px' }}
             >
               Download PDF
             </a>
-          </div>
-        </div>
-
-        {/* LinkedIn follow band */}
-        <div className="linkedin-band" style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '14px',
-          padding: '16px 20px',
-          background: 'var(--warm, #FAF6F1)',
-          borderTop: '1px solid rgba(0,0,0,0.06)',
-          marginTop: '20px',
-        }}>
-          <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ flexShrink: 0 }}>
-            <rect width="28" height="28" rx="4" fill="#0A66C2"/>
-            <path d="M8.5 11.5H11V19.5H8.5V11.5ZM9.75 10.5C8.92 10.5 8.25 9.83 8.25 9C8.25 8.17 8.92 7.5 9.75 7.5C10.58 7.5 11.25 8.17 11.25 9C11.25 9.83 10.58 10.5 9.75 10.5ZM20.5 19.5H18V15.6C18 14.57 17.98 13.25 16.56 13.25C15.12 13.25 14.9 14.37 14.9 15.53V19.5H12.4V11.5H14.8V12.7H14.83C15.17 12.03 16.04 11.32 17.33 11.32C19.86 11.32 20.5 12.97 20.5 15.1V19.5Z" fill="white"/>
-          </svg>
-          <p style={{
-            flex: 1,
-            fontSize: '14px',
-            margin: 0,
-            color: 'var(--black, #1a1a1a)',
-          }}>
-            We share thinking like this regularly on LinkedIn
+            <p style={{
+              fontSize: '15px',
+              fontWeight: '300',
+              lineHeight: '1.5',
+              color: 'rgba(0,0,0,0.55)',
+              margin: '1rem 0 0',
+            }}>
+              Click the button to save your copy.
+            </p>
+          </>
+        ) : (
+          <p className="body-text" style={{ margin: 0 }}>
+            The PDF is being prepared - please check back shortly.
           </p>
-          <a
-            href="https://www.linkedin.com/company/mutomorro"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '6px',
-              padding: '8px 16px',
-              background: '#0A66C2',
-              color: 'white',
-              fontSize: '13px',
-              fontWeight: 500,
-              textDecoration: 'none',
-              borderRadius: 0,
-              whiteSpace: 'nowrap',
-              border: 'none',
-            }}
-          >
-            Follow us
-            <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-              <path d="M3 9L9 3M9 3H4M9 3V8" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          </a>
-        </div>
+        )}
       </div>
     )
   }
 
   // ── The form ──
-  const formContent = (
+  return (
     <div>
-      <div style={{ marginBottom: '2rem' }}>
-        <h3 className="heading-h4" style={{ margin: '0 0 12px' }}>
-          Get this template
-        </h3>
-        <p className="lead-text" style={{ margin: 0, maxWidth: '480px', fontSize: '16px' }}>
-          Fill in your details and the PDF will appear right here - no email, no waiting.
+      <div style={{ marginBottom: '1.75rem' }}>
+        <h2 className="heading-h4" style={{ margin: '0 0 10px' }}>
+          Get this PDF template
+        </h2>
+        <p className="body-text" style={{ margin: 0 }}>
+          Fill in your details and download the PDF straight away.
         </p>
       </div>
 
@@ -208,7 +120,7 @@ export default function ToolDownloadForm({ toolTitle, toolSlug, pdfUrl, heroImag
         </div>
       )}
 
-      <form onSubmit={handleSubmit} style={{ maxWidth: '480px' }}>
+      <form onSubmit={handleSubmit}>
 
         {/* Honeypot - hidden from real users */}
         <div style={{ position: 'absolute', left: '-9999px', opacity: 0, height: 0, overflow: 'hidden' }} aria-hidden="true" tabIndex={-1}>
@@ -229,7 +141,7 @@ export default function ToolDownloadForm({ toolTitle, toolSlug, pdfUrl, heroImag
           display: 'grid',
           gridTemplateColumns: '1fr 1fr',
           gap: '1rem',
-          marginBottom: '24px',
+          marginBottom: '20px',
         }}>
           <div>
             <label htmlFor="firstName" className="form-label">First name</label>
@@ -250,6 +162,7 @@ export default function ToolDownloadForm({ toolTitle, toolSlug, pdfUrl, heroImag
               type="text"
               id="lastName"
               name="lastName"
+              required
               value={formData.lastName}
               onChange={handleChange}
               placeholder="Last name"
@@ -273,8 +186,8 @@ export default function ToolDownloadForm({ toolTitle, toolSlug, pdfUrl, heroImag
           />
         </div>
 
-        {/* Newsletter opt-in */}
-        <div style={{ marginBottom: '2rem' }}>
+        {/* Newsletter opt-in - unticked by default */}
+        <div style={{ margin: '1.25rem 0 1.75rem' }}>
           <label
             htmlFor="newsletterOptIn"
             style={{
@@ -305,7 +218,7 @@ export default function ToolDownloadForm({ toolTitle, toolSlug, pdfUrl, heroImag
               lineHeight: '1.5',
               color: 'rgba(0,0,0,0.6)',
             }}>
-              Send me occasional insights on organisational development and change - no spam, easy unsubscribe.
+              Keep me updated with practical tools and thinking for leaders
             </span>
           </label>
         </div>
@@ -320,34 +233,6 @@ export default function ToolDownloadForm({ toolTitle, toolSlug, pdfUrl, heroImag
           {status === 'sending' ? 'Getting your template...' : 'Get this template'}
         </button>
       </form>
-    </div>
-  )
-
-  if (!heroImageUrl) return formContent
-
-  return (
-    <div className="tool-form-grid">
-      <div className="tool-form-grid__preview">
-        <div style={{
-          border: '1px solid rgba(0,0,0,0.12)',
-          background: '#fff',
-        }}>
-          <img
-            src={heroImageUrl}
-            alt={toolTitle}
-            width={imgDims.width}
-            height={imgDims.height}
-            style={{
-              width: '100%',
-              height: 'auto',
-              display: 'block',
-            }}
-          />
-        </div>
-      </div>
-      <div className="tool-form-grid__form">
-        {formContent}
-      </div>
     </div>
   )
 }

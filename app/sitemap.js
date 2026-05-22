@@ -21,6 +21,8 @@ export default async function sitemap() {
     { url: `${BASE_URL}/courses`, lastModified: STATIC_LASTMOD, changeFrequency: 'monthly', priority: 0.7 },
     { url: `${BASE_URL}/projects`, lastModified: STATIC_LASTMOD, changeFrequency: 'monthly', priority: 0.7 },
     { url: `${BASE_URL}/topics`, lastModified: STATIC_LASTMOD, changeFrequency: 'weekly', priority: 0.8 },
+    { url: `${BASE_URL}/diagnostics`, lastModified: new Date('2026-05-22'), changeFrequency: 'monthly', priority: 0.7 },
+    { url: `${BASE_URL}/diagnostics/drift-audit`, lastModified: new Date('2026-05-22'), changeFrequency: 'monthly', priority: 0.8 },
     { url: `${BASE_URL}/privacy`, lastModified: STATIC_LASTMOD, changeFrequency: 'yearly', priority: 0.3 },
     { url: `${BASE_URL}/terms`, lastModified: STATIC_LASTMOD, changeFrequency: 'yearly', priority: 0.3 },
   ]

@@ -35,7 +35,9 @@ export async function GET() {
       status: row.status,
       subject: row.subject || '',
       preview_text: row.preview_text || '',
-      hasContent: Array.isArray(row.content_json?.sections) && row.content_json.sections.length > 0,
+      hasContent:
+        (typeof row.content_json?.observationBody === 'string' && row.content_json.observationBody.trim() !== '') ||
+        (Array.isArray(row.content_json?.sections) && row.content_json.sections.length > 0),
     }))
 
     return NextResponse.json({ items })

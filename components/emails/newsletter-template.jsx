@@ -14,7 +14,14 @@ import {
   Hr,
 } from '@react-email/components'
 
-const fontFamily = "'Source Sans 3', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif"
+// Source Sans 3 is the web font (loaded via the <link> below). Source Sans Pro
+// is its older name and has wider native coverage in email clients; Arial /
+// Helvetica close out the chain for clients that load no web font at all.
+const fontFamily = "'Source Sans 3', 'Source Sans Pro', Arial, Helvetica, sans-serif"
+
+const PURPLE = '#9B51E0'
+const INK = '#221C2B'
+const HAIRLINE = '#e0dbd5'
 
 function isMutomorroUrl(url) {
   if (typeof url !== 'string') return false
@@ -38,6 +45,21 @@ function wrapLinks(html, recipientId) {
   )
 }
 
+// Tracking wrapper for hrefs passed as plain values (index items, content
+// block links). Anchor links (#observation) are left untouched.
+function trackUrl(url, recipientId) {
+  if (typeof url !== 'string' || !url) return url
+  if (url.startsWith('#')) return url
+  if (recipientId && isMutomorroUrl(url)) {
+    return `https://mutomorro.com/api/newsletter/track?rid=${recipientId}&url=${encodeURIComponent(url)}`
+  }
+  return url
+}
+
+// ─── Legacy editorial sections ──────────────────────────────────────
+// Retained for the warm-up campaign, which renders content_json in the
+// older { sections: [...] } shape. New editions use the edition layout.
+
 function RenderSection({ section, index, recipientId }) {
   switch (section.type) {
     case 'paragraph':
@@ -48,7 +70,7 @@ function RenderSection({ section, index, recipientId }) {
             fontFamily,
             fontSize: '20px',
             fontWeight: 300,
-            color: '#221C2B',
+            color: INK,
             lineHeight: '1.75',
             margin: '0 0 24px 0',
           }}
@@ -64,7 +86,7 @@ function RenderSection({ section, index, recipientId }) {
             fontFamily,
             fontSize: '30px',
             fontWeight: 400,
-            color: '#221C2B',
+            color: INK,
             lineHeight: '1.12',
             letterSpacing: '-0.02em',
             margin: '0 0 28px 0',
@@ -79,7 +101,7 @@ function RenderSection({ section, index, recipientId }) {
         <Section
           key={index}
           style={{
-            borderLeft: '3px solid #9B51E0',
+            borderLeft: `3px solid ${PURPLE}`,
             paddingLeft: '28px',
             margin: '0 0 44px 0',
           }}
@@ -89,7 +111,7 @@ function RenderSection({ section, index, recipientId }) {
               fontFamily,
               fontSize: '26px',
               fontWeight: 300,
-              color: '#221C2B',
+              color: INK,
               fontStyle: 'italic',
               lineHeight: '1.4',
               letterSpacing: '-0.01em',
@@ -118,7 +140,7 @@ function RenderSection({ section, index, recipientId }) {
                     fontFamily,
                     fontSize: '20px',
                     fontWeight: 400,
-                    color: '#9B51E0',
+                    color: PURPLE,
                     width: '30px',
                     verticalAlign: 'top',
                     paddingBottom: i < section.items.length - 1 ? '22px' : '0',
@@ -132,7 +154,7 @@ function RenderSection({ section, index, recipientId }) {
                     fontFamily,
                     fontSize: '20px',
                     fontWeight: 300,
-                    color: '#221C2B',
+                    color: INK,
                     lineHeight: '1.75',
                     verticalAlign: 'top',
                     paddingBottom: i < section.items.length - 1 ? '22px' : '0',
@@ -176,7 +198,7 @@ function RenderSection({ section, index, recipientId }) {
               : section.buttonUrl}
             style={{
               fontFamily,
-              backgroundColor: '#9B51E0',
+              backgroundColor: PURPLE,
               color: '#FFFFFF',
               fontSize: '15px',
               fontWeight: 400,
@@ -240,7 +262,502 @@ function RenderSection({ section, index, recipientId }) {
   }
 }
 
-export default function NewsletterTemplate({
+// ─── Shared chrome ──────────────────────────────────────────────────
+
+function GradientBar() {
+  return (
+    <Section style={{
+      background: 'linear-gradient(90deg, #80388F, #FF4279, #FFA200)',
+      height: '8px',
+      width: '100%',
+      fontSize: '1px',
+      lineHeight: '1px',
+    }}>
+      &nbsp;
+    </Section>
+  )
+}
+
+function ForwardedLine() {
+  return (
+    <Section style={{ padding: '18px 44px 0', textAlign: 'center' }}>
+      <Text style={{
+        fontFamily,
+        fontSize: '12px',
+        fontWeight: 300,
+        color: 'rgba(0,0,0,0.3)',
+        margin: '0',
+      }}>
+        Forwarded this email?{' '}
+        <Link
+          href="https://mutomorro.com"
+          style={{ color: PURPLE, fontWeight: 400, textDecoration: 'underline' }}
+        >
+          Subscribe here
+        </Link>
+        {' '}for more
+      </Text>
+    </Section>
+  )
+}
+
+function Masthead({ date }) {
+  return (
+    <Section style={{ padding: '24px 44px 20px' }}>
+      <Row>
+        <Column style={{ verticalAlign: 'middle' }}>
+          <Img
+            src="https://mutomorro.com/images/mutomorro-logo.png"
+            alt="Mutomorro"
+            width="132"
+            style={{ display: 'block' }}
+          />
+        </Column>
+        <Column style={{ verticalAlign: 'middle', textAlign: 'right' }}>
+          <Text style={{
+            fontFamily,
+            fontSize: '12px',
+            fontWeight: 400,
+            color: 'rgba(0,0,0,0.3)',
+            letterSpacing: '0.08em',
+            textTransform: 'uppercase',
+            margin: '0',
+          }}>
+            {date}
+          </Text>
+        </Column>
+      </Row>
+    </Section>
+  )
+}
+
+function Footer({ unsubscribeUrl, viewInBrowserUrl }) {
+  return (
+    <Section style={{
+      backgroundColor: '#FAF6F1',
+      marginTop: '16px',
+      padding: '36px 44px',
+    }}>
+      <Img
+        src="https://mutomorro.com/images/mutomorro-logo.png"
+        alt="Mutomorro"
+        width="88"
+        style={{ display: 'block', marginBottom: '16px', opacity: 0.5 }}
+      />
+      <Text style={{
+        fontFamily,
+        fontSize: '12px',
+        fontWeight: 300,
+        color: 'rgba(0,0,0,0.35)',
+        margin: '0 0 4px 0',
+      }}>
+        Helping organisations become intentional ecosystems
+      </Text>
+      <Text style={{
+        fontFamily,
+        fontSize: '12px',
+        fontWeight: 300,
+        color: 'rgba(0,0,0,0.35)',
+        margin: '0 0 20px 0',
+      }}>
+        86-90 Paul Street, London EC2A 4NE
+      </Text>
+
+      <Hr style={{
+        borderTop: `1px solid ${HAIRLINE}`,
+        borderBottom: 'none',
+        borderLeft: 'none',
+        borderRight: 'none',
+        margin: '0 0 16px 0',
+      }} />
+
+      <Text style={{
+        fontFamily,
+        fontSize: '12px',
+        fontWeight: 300,
+        color: 'rgba(0,0,0,0.3)',
+        margin: '0',
+        lineHeight: '1.6',
+      }}>
+        {unsubscribeUrl && (
+          <>
+            <Link href={unsubscribeUrl} style={{ color: 'rgba(0,0,0,0.3)', textDecoration: 'underline' }}>
+              Unsubscribe
+            </Link>
+            <span style={{ color: 'rgba(0,0,0,0.15)' }}> · </span>
+          </>
+        )}
+        {viewInBrowserUrl && (
+          <>
+            <Link href={viewInBrowserUrl} style={{ color: 'rgba(0,0,0,0.3)', textDecoration: 'underline' }}>
+              View in browser
+            </Link>
+            <span style={{ color: 'rgba(0,0,0,0.15)' }}> · </span>
+          </>
+        )}
+        <Link href="https://www.linkedin.com/company/mutomorro" style={{ color: 'rgba(0,0,0,0.3)', textDecoration: 'underline' }}>
+          LinkedIn
+        </Link>
+        <span style={{ color: 'rgba(0,0,0,0.15)' }}> · </span>
+        <Link href="https://mutomorro.com" style={{ color: 'rgba(0,0,0,0.3)', textDecoration: 'underline' }}>
+          mutomorro.com
+        </Link>
+      </Text>
+    </Section>
+  )
+}
+
+function TrackingPixel({ recipientId }) {
+  if (!recipientId) return null
+  return (
+    <Img
+      src={`https://mutomorro.com/api/newsletter/track?rid=${recipientId}`}
+      width="1"
+      height="1"
+      alt=""
+      style={{ display: 'block', width: '1px', height: '1px', border: '0', opacity: 0 }}
+    />
+  )
+}
+
+function HeadBlock({ previewText }) {
+  return (
+    <>
+      <Head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;600&display=swap" rel="stylesheet" />
+        <style>{`
+          strong { font-weight: 600 !important; }
+          a { color: ${PURPLE}; }
+          @media only screen and (max-width: 620px) {
+            .email-container { width: 100% !important; }
+            .email-padding { padding-left: 24px !important; padding-right: 24px !important; }
+          }
+        `}</style>
+      </Head>
+      <Preview>{previewText}</Preview>
+    </>
+  )
+}
+
+// ─── Edition layout ─────────────────────────────────────────────────
+
+function Kicker({ children, fontSize = '11px', marginBottom = '0' }) {
+  return (
+    <div style={{
+      fontFamily,
+      fontSize,
+      lineHeight: '1',
+      letterSpacing: '0.1em',
+      textTransform: 'uppercase',
+      color: PURPLE,
+      fontWeight: 600,
+      marginBottom,
+    }}>
+      {children}
+    </div>
+  )
+}
+
+// 2px purple rule. Rendered as a one-cell table so Outlook honours the height.
+function PurpleRule() {
+  return (
+    <table cellPadding="0" cellSpacing="0" border="0" role="presentation" style={{ width: '100%', borderCollapse: 'collapse', margin: '0 0 8px 0' }}>
+      <tbody>
+        <tr>
+          <td style={{ height: '2px', backgroundColor: PURPLE, fontSize: '1px', lineHeight: '1px' }}>&nbsp;</td>
+        </tr>
+      </tbody>
+    </table>
+  )
+}
+
+// Kicker + purple rule + title. Identical between the index and every section.
+function SectionHeader({ kicker, title }) {
+  return (
+    <>
+      <Kicker marginBottom="3px">{kicker}</Kicker>
+      <PurpleRule />
+      <Text style={{
+        fontFamily,
+        fontSize: '20px',
+        fontWeight: 400,
+        lineHeight: '1.3',
+        margin: '0 0 16px 0',
+        color: INK,
+      }}>
+        {title}
+      </Text>
+    </>
+  )
+}
+
+function EditionDivider() {
+  return (
+    <Hr style={{
+      borderTop: `1px solid ${HAIRLINE}`,
+      borderBottom: 'none',
+      borderLeft: 'none',
+      borderRight: 'none',
+      margin: '0 44px',
+      width: 'auto',
+    }} />
+  )
+}
+
+function renderObservationBody(body, recipientId) {
+  if (!body) return null
+  const paragraphs = String(body)
+    .split(/\n\s*\n/)
+    .map((p) => p.trim())
+    .filter(Boolean)
+  return paragraphs.map((p, i) => (
+    <Text
+      key={i}
+      style={{
+        fontFamily,
+        fontSize: '15px',
+        fontWeight: 400,
+        color: INK,
+        lineHeight: '1.8',
+        margin: '0 0 20px 0',
+      }}
+      dangerouslySetInnerHTML={{ __html: wrapLinks(p, recipientId) }}
+    />
+  ))
+}
+
+function NewsletterEdition({
+  monthYear = '',
+  subjectLine = '',
+  previewText = '',
+  heroImageUrl = '',
+  heroImageAlt = '',
+  introText = '',
+  indexItems = [],
+  observationKicker = 'Observation',
+  observationTitle = '',
+  observationBody = '',
+  signOff = 'James',
+  ps = '',
+  contentBlocks = [],
+  unsubscribeUrl = '',
+  viewInBrowserUrl = '',
+  recipientId = '',
+}) {
+  const items = Array.isArray(indexItems) ? indexItems : []
+  const blocks = Array.isArray(contentBlocks) ? contentBlocks : []
+
+  return (
+    <Html lang="en">
+      <HeadBlock previewText={previewText} />
+      <Body style={{ backgroundColor: '#FAF6F1', margin: '0', padding: '0 0 40px 0' }}>
+        <Container style={{ maxWidth: '580px', margin: '0 auto', backgroundColor: '#FFFFFF' }}>
+
+          <GradientBar />
+          <ForwardedLine />
+          <Masthead date={monthYear} />
+
+          <Hr style={{
+            borderTop: `1px solid ${HAIRLINE}`,
+            borderBottom: 'none',
+            borderLeft: 'none',
+            borderRight: 'none',
+            margin: '0 44px',
+            width: 'auto',
+          }} />
+
+          {/* Subject heading */}
+          <Section style={{ padding: '36px 44px 28px' }}>
+            <Text style={{
+              fontFamily,
+              fontSize: '24px',
+              fontWeight: 400,
+              color: INK,
+              lineHeight: '1.25',
+              letterSpacing: '-0.01em',
+              margin: '0',
+            }}>
+              {subjectLine}
+            </Text>
+          </Section>
+
+          {/* Hero image (optional) */}
+          {heroImageUrl && (
+            <Section style={{ padding: '0' }}>
+              <Img
+                src={heroImageUrl}
+                alt={heroImageAlt}
+                width="580"
+                style={{
+                  display: 'block',
+                  width: '100%',
+                  maxWidth: '580px',
+                  height: 'auto',
+                  border: '0',
+                }}
+              />
+            </Section>
+          )}
+
+          {/* Index */}
+          <Section style={{ padding: '32px 44px 32px' }}>
+            {introText && (
+              <Text style={{
+                fontFamily,
+                fontSize: '15px',
+                fontWeight: 300,
+                color: INK,
+                lineHeight: '1.7',
+                margin: '0 0 28px 0',
+              }}>
+                {introText}
+              </Text>
+            )}
+
+            {items.length > 0 && (
+              <>
+                <Kicker marginBottom="14px">In this edition</Kicker>
+                <table
+                  cellPadding="0"
+                  cellSpacing="0"
+                  border="0"
+                  role="presentation"
+                  style={{ width: '100%', borderCollapse: 'collapse' }}
+                >
+                  <tbody>
+                    {items.map((it, i) => (
+                      <tr key={i}>
+                        <td style={{
+                          fontFamily,
+                          fontSize: '14px',
+                          fontWeight: 600,
+                          color: PURPLE,
+                          width: '18px',
+                          verticalAlign: 'top',
+                          padding: '5px 12px 5px 0',
+                          lineHeight: '1.4',
+                        }}>
+                          {i + 1}
+                        </td>
+                        <td style={{ verticalAlign: 'top', padding: '5px 0' }}>
+                          <Kicker fontSize="11px" marginBottom="4px">{it.kicker}</Kicker>
+                          {it.href ? (
+                            <a
+                              href={trackUrl(it.href, recipientId)}
+                              style={{
+                                fontFamily,
+                                fontSize: '14px',
+                                fontWeight: 400,
+                                color: INK,
+                                textDecoration: 'none',
+                                lineHeight: '1.4',
+                              }}
+                            >
+                              {it.title}
+                            </a>
+                          ) : (
+                            <span style={{
+                              fontFamily,
+                              fontSize: '14px',
+                              fontWeight: 400,
+                              color: INK,
+                              lineHeight: '1.4',
+                            }}>
+                              {it.title}
+                            </span>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </>
+            )}
+          </Section>
+
+          <EditionDivider />
+
+          {/* Observation */}
+          <div id="observation" style={{ fontSize: '0', lineHeight: '0', height: '0' }}>&nbsp;</div>
+          <Section style={{ padding: '32px 44px 32px' }}>
+            <SectionHeader kicker={observationKicker} title={observationTitle} />
+            {renderObservationBody(observationBody, recipientId)}
+            {signOff && (
+              <Text style={{
+                fontFamily,
+                fontSize: '15px',
+                fontWeight: 400,
+                color: INK,
+                lineHeight: '1.6',
+                margin: '0',
+              }}>
+                {signOff}
+              </Text>
+            )}
+            {ps && (
+              <Text style={{
+                fontFamily,
+                fontSize: '14px',
+                fontWeight: 300,
+                fontStyle: 'italic',
+                color: 'rgba(0,0,0,0.6)',
+                lineHeight: '1.65',
+                margin: '24px 0 0 0',
+              }}>
+                {ps}
+              </Text>
+            )}
+          </Section>
+
+          {/* Content blocks (article, diagnostic, …) */}
+          {blocks.map((block, i) => (
+            <React.Fragment key={i}>
+              <EditionDivider />
+              <Section style={{ padding: '32px 44px 32px' }}>
+                <SectionHeader kicker={block.kicker} title={block.title} />
+                {block.description && (
+                  <Text style={{
+                    fontFamily,
+                    fontSize: '14px',
+                    fontWeight: 300,
+                    color: 'rgba(0,0,0,0.6)',
+                    lineHeight: '1.7',
+                    margin: '0 0 14px 0',
+                  }}>
+                    {block.description}
+                  </Text>
+                )}
+                {block.linkText && block.linkHref && (
+                  <a
+                    href={trackUrl(block.linkHref, recipientId)}
+                    style={{
+                      fontFamily,
+                      fontSize: '14px',
+                      fontWeight: 600,
+                      color: PURPLE,
+                      textDecoration: 'underline',
+                    }}
+                  >
+                    {block.linkText}
+                  </a>
+                )}
+              </Section>
+            </React.Fragment>
+          ))}
+
+          <TrackingPixel recipientId={recipientId} />
+          <Footer unsubscribeUrl={unsubscribeUrl} viewInBrowserUrl={viewInBrowserUrl} />
+
+        </Container>
+      </Body>
+    </Html>
+  )
+}
+
+// ─── Legacy layout (warm-up campaign) ───────────────────────────────
+
+function LegacyNewsletterTemplate({
   subject = '',
   title = '',
   previewText = '',
@@ -318,32 +835,6 @@ export default function NewsletterTemplate({
                   width="132"
                   style={{ display: 'block' }}
                 />
-                {/* Fallback if logo image is unavailable:
-                <table cellPadding="0" cellSpacing="0" border="0">
-                  <tbody>
-                    <tr>
-                      <td style={{ verticalAlign: 'middle', paddingRight: '10px' }}>
-                        <div style={{
-                          width: '24px',
-                          height: '24px',
-                          borderRadius: '50%',
-                          backgroundColor: '#9B51E0',
-                        }} />
-                      </td>
-                      <td style={{ verticalAlign: 'middle' }}>
-                        <span style={{
-                          fontFamily,
-                          fontSize: '15px',
-                          fontWeight: 400,
-                          color: '#221C2B',
-                        }}>
-                          Mutomorro
-                        </span>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-                */}
               </Column>
               <Column style={{ verticalAlign: 'middle', textAlign: 'right' }}>
                 <Text style={{
@@ -487,33 +978,6 @@ export default function NewsletterTemplate({
               width="88"
               style={{ display: 'block', marginBottom: '16px', opacity: 0.5 }}
             />
-            {/* Fallback if logo image is unavailable:
-            <table cellPadding="0" cellSpacing="0" border="0" style={{ marginBottom: '16px' }}>
-              <tbody>
-                <tr>
-                  <td style={{ verticalAlign: 'middle', paddingRight: '8px' }}>
-                    <div style={{
-                      width: '20px',
-                      height: '20px',
-                      borderRadius: '50%',
-                      backgroundColor: '#9B51E0',
-                      opacity: 0.5,
-                    }} />
-                  </td>
-                  <td style={{ verticalAlign: 'middle' }}>
-                    <span style={{
-                      fontFamily,
-                      fontSize: '14px',
-                      fontWeight: 400,
-                      color: 'rgba(0,0,0,0.5)',
-                    }}>
-                      Mutomorro
-                    </span>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-            */}
             <Text style={{
               fontFamily,
               fontSize: '14px',
@@ -573,30 +1037,62 @@ export default function NewsletterTemplate({
   )
 }
 
+// ─── Entry point ────────────────────────────────────────────────────
+// Renders the edition layout when edition content is present, otherwise
+// falls back to the legacy { sections } layout used by the warm-up campaign.
+
+export default function NewsletterTemplate(props = {}) {
+  const isEdition = typeof props.observationBody === 'string' && props.observationBody.trim() !== ''
+  return isEdition
+    ? <NewsletterEdition {...props} />
+    : <LegacyNewsletterTemplate {...props} />
+}
+
 export const sampleProps = {
-  subject: "The invisible architecture of your organisation",
-  previewText: "Every organisation has two structures...",
-  date: "March 2026",
-  leadText: "What really determines how work gets done - and how to see it.",
-  sections: [
-    { type: 'paragraph', text: 'Every organisation has two structures. The one on the org chart, and the one that actually determines how work gets done.' },
-    { type: 'paragraph', text: 'The first is visible. It lives in strategy documents and town halls. The second is invisible - it\'s the set of habits, relationships, and unwritten rules that shape what people actually do on a Tuesday morning.' },
-    { type: 'paragraph', text: 'Most change programmes focus entirely on the visible structure. They redesign the org chart, rewrite the strategy, launch new processes. And then they\'re surprised when nothing changes.' },
-    { type: 'paragraph', text: 'The invisible architecture is where the real work is. And it can be shaped - but only if you know it\'s there.' },
-    { type: 'blockquote', text: 'The way people actually work together is never written down anywhere.' },
-    { type: 'image', src: 'https://placehold.co/492x280/F5F0EB/cccccc?text=580+x+320', alt: 'Organisational patterns', caption: 'The patterns that shape how work really gets done are rarely the ones on the org chart.' },
-    { type: 'divider' },
-    { type: 'heading', text: 'Three things to try this month' },
-    { type: 'list', items: [
-      { text: '<strong>Ask the question nobody asks.</strong> In your next team meeting, ask: "What\'s something everyone knows but nobody says out loud?" The answers tell you about the invisible structure.' },
-      { text: '<strong>Watch the workarounds.</strong> Every workaround is a signal that the official process doesn\'t match reality. Map three workarounds in your team this week.' },
-      { text: '<strong>Follow the decisions.</strong> Track one decision from announcement to action. Notice where it gets reinterpreted, delayed, or quietly dropped. That\'s the invisible architecture at work.' },
-    ]},
-    { type: 'cta', text: 'A tool to help you map the real structure', buttonText: 'Download the toolkit', buttonUrl: 'https://mutomorro.com/tools' },
+  monthYear: 'May 2026',
+  subjectLine: 'Slow enough to miss',
+  previewText: 'Nobody decided this',
+  heroImageUrl: 'https://hzgnlxxnpvidnntiilcf.supabase.co/storage/v1/object/public/newsletter-assets/drift/organisational-drift-hero-approved-base.png',
+  heroImageAlt: 'Abstract illustration showing ordered shapes gradually drifting out of alignment',
+  introText: "This month I've been exploring something most organisations experience but rarely name - the slow, quiet way things change without anyone deciding to change them.",
+  indexItems: [
+    { kicker: 'Observation', title: 'The changes no one planned for', href: '#observation' },
+    { kicker: 'Deeper dive', title: 'The organisation that changed without anyone deciding to change it', href: 'https://mutomorro.com/article/organisational-drift' },
+    { kicker: 'Free diagnostic', title: 'Organisational Drift Audit', href: 'https://mutomorro.com/diagnostics/drift-audit' },
   ],
-  signoff: "Until next month,",
-  unsubscribeUrl: "https://mutomorro.com/api/unsubscribe?email=test@example.com&token=abc123",
-  viewInBrowserUrl: "https://mutomorro.com/newsletter/sample-id",
+  observationKicker: 'Observation',
+  observationTitle: 'The changes no one planned for',
+  observationBody: [
+    "There's a particular kind of change in organisations that fascinates me. Not the dramatic kind - not the restructure, the merger, the new CEO with a hundred-day plan. Those are visible. You can point at them. You know when they started.",
+    "This is the other kind. The kind where you look up one day and something is different - and you can't say when it changed.",
+    "Nobody called a meeting. Nobody made a deliberate choice to move in this direction. And yet, standing here now, the distance between what an organisation set out to be and how it works has quietly widened. Not through any single decision - but through a thousand small, completely reasonable ones.",
+    "I often notice this across the organisations I work with. A leadership team that started as genuinely collaborative and slowly - through completely understandable pressures - became a group of people managing their own areas, occasionally updating each other. A decision-making process that accumulated one extra approval stage every year until nobody could remember what speed felt like. A relationship with the people the organisation exists to serve that gradually became more distant, more mediated, more managed - without anyone choosing that.",
+    "The thing that makes this pattern so interesting is that it contains no villains. Every single accommodation along the way made sense at the time. Faced with the same pressures, you or I would probably have made the same calls. That's not a failure of judgement. It's something more structural - and more human - than that.",
+    "In systems thinking, there's a word for this: <strong>drift</strong>. The slow, imperceptible movement of a system away from what it was designed to do - not through failure, but through a series of small, rational adjustments to pressure. Each one invisible. The accumulation, transformative.",
+    "What I find myself wondering is how many of these quiet shifts are happening in any organisation at any given moment. Not because anyone is doing anything wrong. But because drift is what complex systems do when nobody is actively tending to the distance between where things are and where they were meant to be.",
+    'Once you see it, the question changes. It stops being "who let this happen?" and becomes something quieter and more honest: "What did we set out to be - and how far have we travelled from it?"',
+    'That second question, I think, is where some of the most important work in organisations begins.',
+  ].join('\n\n'),
+  signOff: 'James',
+  ps: "P.S. If you recognise any of this - in your organisation, your sector, your own experience - I'd genuinely love to hear what you're seeing. Just reply to this email.",
+  contentBlocks: [
+    {
+      kicker: 'Deeper dive',
+      title: 'The organisation that changed without anyone deciding to change it',
+      description: 'I went down a research rabbit hole into why drift happens - drawing on some fascinating work from safety science, sociology, and systems thinking. This is the longer piece, where the idea really opens up.',
+      linkText: 'Read the article',
+      linkHref: 'https://mutomorro.com/article/organisational-drift',
+    },
+    {
+      kicker: 'Free diagnostic',
+      title: 'Organisational Drift Audit',
+      description: 'A short self-assessment that helps you map where drift might be showing up across your organisation - and which gaps are worth your attention first.',
+      linkText: 'Take the diagnostic',
+      linkHref: 'https://mutomorro.com/diagnostics/drift-audit',
+    },
+  ],
+  unsubscribeUrl: 'https://mutomorro.com/api/unsubscribe?email=test@example.com&token=abc123',
+  viewInBrowserUrl: 'https://mutomorro.com/newsletter/sample-id',
 }
 
 NewsletterTemplate.PreviewProps = sampleProps

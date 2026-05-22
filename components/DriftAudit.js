@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import { usePostHog } from "posthog-js/react";
 
 const DIMENSIONS = [
   { id: "culture", label: "Cultural Coherence", short: "Culture" },
@@ -108,6 +109,27 @@ const BANDS = [
 
 function getBand(score) {
   return BANDS.find((b) => score <= b.max) || BANDS[BANDS.length - 1];
+}
+
+// Answers encode as a 12-character string of 1-5 digits, carried in the
+// ?r= query param so results can be saved, bookmarked or forwarded.
+function encodeAnswers(answers) {
+  let encoded = "";
+  for (let i = 0; i < QUESTIONS.length; i++) {
+    const v = answers[i];
+    if (!Number.isInteger(v) || v < 1 || v > 5) return "";
+    encoded += String(v);
+  }
+  return encoded;
+}
+
+function decodeAnswers(value) {
+  if (typeof value !== "string" || !/^[1-5]{12}$/.test(value)) return null;
+  const answers = {};
+  value.split("").forEach((char, i) => {
+    answers[i] = Number(char);
+  });
+  return answers;
 }
 
 function RadarChart({ scores, size = 320 }) {
@@ -246,13 +268,26 @@ export default function DriftAudit() {
   const [current, setCurrent] = useState(0);
   const [answers, setAnswers] = useState({});
   const [animateIn, setAnimateIn] = useState(true);
+  const [copied, setCopied] = useState(false);
   const topRef = useRef(null);
+  const posthog = usePostHog();
 
   useEffect(() => {
     setAnimateIn(false);
     const t = setTimeout(() => setAnimateIn(true), 30);
     return () => clearTimeout(t);
   }, [current, phase]);
+
+  // Restore results from a shared link (?r=<12 answers>).
+  useEffect(() => {
+    const shared = new URLSearchParams(window.location.search).get("r");
+    const decoded = decodeAnswers(shared);
+    if (decoded) {
+      setAnswers(decoded);
+      setPhase("results");
+      posthog?.capture("drift_audit_opened_from_share");
+    }
+  }, [posthog]);
 
   function handleAnswer(val) {
     setAnswers({ ...answers, [current]: val });
@@ -263,6 +298,15 @@ export default function DriftAudit() {
       setCurrent(current + 1);
       topRef.current?.scrollIntoView({ behavior: "smooth" });
     } else {
+      const overall = getOverall();
+      const encoded = encodeAnswers(answers);
+      if (encoded) {
+        window.history.replaceState(null, "", `?r=${encoded}`);
+      }
+      posthog?.capture("drift_audit_completed", {
+        overall_score: Number(overall.toFixed(1)),
+        band: getBand(overall).label,
+      });
       setPhase("results");
       topRef.current?.scrollIntoView({ behavior: "smooth" });
     }
@@ -286,6 +330,30 @@ export default function DriftAudit() {
     const scores = getScores();
     const vals = Object.values(scores).filter((v) => v > 0);
     return vals.length > 0 ? vals.reduce((a, b) => a + b, 0) / vals.length : 0;
+  }
+
+  function copyResultsLink() {
+    const encoded = encodeAnswers(answers);
+    const url =
+      window.location.origin +
+      window.location.pathname +
+      (encoded ? `?r=${encoded}` : "");
+    navigator.clipboard?.writeText(url).then(
+      () => {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2200);
+      },
+      () => {},
+    );
+    posthog?.capture("drift_audit_link_copied");
+  }
+
+  function restart() {
+    setPhase("intro");
+    setCurrent(0);
+    setAnswers({});
+    setCopied(false);
+    window.history.replaceState(null, "", window.location.pathname);
   }
 
   const base = {
@@ -350,7 +418,10 @@ export default function DriftAudit() {
           </div>
 
           <button
-            onClick={() => setPhase("questions")}
+            onClick={() => {
+              posthog?.capture("drift_audit_started");
+              setPhase("questions");
+            }}
             style={{
               background: "#221C2B",
               color: "#FAF6F1",
@@ -597,10 +668,35 @@ export default function DriftAudit() {
           </p>
         </div>
 
-        {/* Restart */}
-        <div style={{ textAlign: "center", marginTop: 32 }}>
+        {/* Share + restart */}
+        <div
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
+            justifyContent: "center",
+            gap: 12,
+            marginTop: 32,
+          }}
+        >
           <button
-            onClick={() => { setPhase("intro"); setCurrent(0); setAnswers({}); }}
+            onClick={copyResultsLink}
+            style={{
+              background: copied ? "#9B51E0" : "#221C2B",
+              color: "#FAF6F1",
+              border: "none",
+              padding: "12px 32px",
+              fontSize: 14,
+              fontFamily: "'Source Sans 3', sans-serif",
+              fontWeight: 400,
+              cursor: "pointer",
+              borderRadius: 0,
+              transition: "background 0.15s ease",
+            }}
+          >
+            {copied ? "Link copied" : "Copy results link"}
+          </button>
+          <button
+            onClick={restart}
             style={{
               background: "none",
               border: "1px solid #cabfd6",

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -12,13 +12,10 @@ export default function Nav() {
 
   const [openPanel, setOpenPanel] = useState(null)
   const [isSwitching, setIsSwitching] = useState(false)
-  const [isCoarse, setIsCoarse] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
   const [mobileAccordion, setMobileAccordion] = useState(null)
   const scrollPosRef = useRef(0)
-  const closeTimer = useRef(null)
-  const openTimer = useRef(null)
   const navRef = useRef(null)
   const prevPanelRef = useRef(null)
 
@@ -36,37 +33,9 @@ export default function Nav() {
     prevPanelRef.current = openPanel
   }, [openPanel])
 
-  const clearClose = () => {
-    if (closeTimer.current) {
-      clearTimeout(closeTimer.current)
-      closeTimer.current = null
-    }
-  }
-
-  const clearOpen = () => {
-    if (openTimer.current) {
-      clearTimeout(openTimer.current)
-      openTimer.current = null
-    }
-  }
-
-  const scheduleClose = useCallback(() => {
-    clearClose()
-    closeTimer.current = setTimeout(() => {
-      setOpenPanel(null)
-    }, 250)
-  }, [])
-
   const closePanel = () => {
-    clearClose()
-    clearOpen()
     setOpenPanel(null)
   }
-
-  // Detect coarse pointer (touch devices)
-  useEffect(() => {
-    setIsCoarse(window.matchMedia('(pointer: coarse)').matches)
-  }, [])
 
   // Scroll listener for transparent nav on homepage
   useEffect(() => {
@@ -93,14 +62,6 @@ export default function Nav() {
     }
     window.addEventListener('keydown', handleKey)
     return () => window.removeEventListener('keydown', handleKey)
-  }, [])
-
-  // Clean up timers on unmount
-  useEffect(() => {
-    return () => {
-      clearClose()
-      clearOpen()
-    }
   }, [])
 
   // Body scroll lock for mobile overlay
@@ -147,37 +108,6 @@ export default function Nav() {
 
   const toggleAccordion = (key) => {
     setMobileAccordion(prev => prev === key ? null : key)
-  }
-
-  const handleLinkEnter = (panel) => {
-    if (isCoarse) return
-    clearClose()
-    clearOpen()
-    if (openPanel) {
-      // Switching between nav items - open the new panel immediately
-      setOpenPanel(panel)
-    } else {
-      // No panel open - wait for hover intent before opening
-      openTimer.current = setTimeout(() => {
-        setOpenPanel(panel)
-      }, 200)
-    }
-  }
-
-  const handleLinkLeave = () => {
-    if (isCoarse) return
-    clearOpen()
-    scheduleClose()
-  }
-
-  const handlePanelEnter = () => {
-    if (isCoarse) return
-    clearClose()
-  }
-
-  const handlePanelLeave = () => {
-    if (isCoarse) return
-    scheduleClose()
   }
 
   const handleClick = (panel) => {
@@ -240,8 +170,6 @@ export default function Nav() {
                 <button
                   key={key}
                   onClick={() => handleClick(key)}
-                  onMouseEnter={() => handleLinkEnter(key)}
-                  onMouseLeave={handleLinkLeave}
                   className={`nav-link${isActive ? ' nav-link--active' : ''}${isTransparent ? ' nav-link--transparent' : ''}`}
                 >
                   {item}
@@ -295,8 +223,6 @@ export default function Nav() {
         isOpen={openPanel === 'about'}
         instantClose={isSwitching}
         onClose={closePanel}
-        onMouseEnter={handlePanelEnter}
-        onMouseLeave={handlePanelLeave}
       >
         <div>
           {[
@@ -326,8 +252,6 @@ export default function Nav() {
         isOpen={openPanel === 'how-we-help'}
         instantClose={isSwitching}
         onClose={closePanel}
-        onMouseEnter={handlePanelEnter}
-        onMouseLeave={handlePanelLeave}
       >
         <div>
           {/* Four service categories */}
@@ -473,8 +397,6 @@ export default function Nav() {
         isOpen={openPanel === 'explore'}
         instantClose={isSwitching}
         onClose={closePanel}
-        onMouseEnter={handlePanelEnter}
-        onMouseLeave={handlePanelLeave}
       >
         <div className="explore-panel">
           {/* Left column - destinations */}

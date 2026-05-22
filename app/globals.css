@@ -2474,6 +2474,12 @@ a:hover {
   background: linear-gradient(90deg, #9B51E0, #FF4279);
 }
 
+/* Articles tend to carry longer titles than other page types,
+   so the hero heading runs smaller here than the global .heading-h1. */
+.page-article .heading-h1 {
+  font-size: clamp(44px, 5vw, 64px);
+}
+
 /* --- Editorial pages: Diamond Markers ---
    Articles, projects (case studies), sectors, develop, resources,
    emergent-framework dimension/article. Tailwind preflight strips

@@ -69,7 +69,7 @@ export default function NewsletterSignup({ variant = 'inline' }) {
           color: (isFooter || isHomepage) ? 'rgba(255,255,255,0.9)' : 'var(--dark)',
           margin: 0,
         }}>
-          You're in. We'll be in touch.
+          Thanks! Check your inbox to confirm.
         </p>
       </div>
     )

@@ -138,11 +138,14 @@ export async function POST(request) {
       }
     }
 
-    // 6. Fire-and-forget: send confirmation email if needed
+    // 6. Send the confirmation email before responding — a serverless function
+    // is frozen after the response, so an un-awaited send is not guaranteed to run.
     if (shouldSendConfirmation && contactId) {
-      sendConfirmationEmail(contactId, firstName, emailNormalised).catch(err => {
+      try {
+        await sendConfirmationEmail(contactId, firstName, emailNormalised)
+      } catch (err) {
         console.error('Failed to send confirmation email:', err)
-      })
+      }
     }
 
     return Response.json({ success: true })

@@ -27,8 +27,14 @@ export async function GET(request) {
     .eq('confirmation_token', token)
     .single()
 
+  // A missing token almost always means it was already used: the person
+  // double-clicked, or — common for institutional inboxes — an email security
+  // scanner (SafeLinks, Mimecast, Proofpoint) pre-fetched the link and consumed
+  // the token. The contact is already confirmed in that case, so show success
+  // rather than a scary error. A fabricated token also lands here; redirecting
+  // to success is harmless since no contact is looked up or mutated.
   if (!contact) {
-    return Response.redirect(new URL('/confirm?status=error', request.url))
+    return Response.redirect(new URL('/confirm?status=success', request.url))
   }
 
   // Determine if this is an org email worth enriching
@@ -55,18 +61,20 @@ export async function GET(request) {
     return Response.redirect(new URL('/confirm?status=error', request.url))
   }
 
-  // Fire-and-forget: send welcome email with a short delay
-  sendWelcomeEmailDelayed(contact.first_name, contact.signup_email).catch(err => {
+  // Send the welcome email before responding. A serverless function is frozen
+  // once the response is returned, so an un-awaited delayed send never runs.
+  // A failure here must not block confirmation — the confirmation itself
+  // already succeeded above.
+  try {
+    await sendWelcomeEmail(contact.first_name, contact.signup_email)
+  } catch (err) {
     console.error('Failed to send welcome email:', err)
-  })
+  }
 
   return Response.redirect(new URL('/confirm?status=success', request.url))
 }
 
-async function sendWelcomeEmailDelayed(firstName, email) {
-  // 2-minute delay so it feels less automated
-  await new Promise(resolve => setTimeout(resolve, 2 * 60 * 1000))
-
+async function sendWelcomeEmail(firstName, email) {
   const unsubscribeToken = crypto
     .createHmac('sha256', process.env.UNSUBSCRIBE_SECRET)
     .update(email)

@@ -166,9 +166,9 @@ function RadarChart({ scores, size = 320 }) {
       <polygon
         points={dataPoints}
         fill="#9B51E0"
-        fillOpacity={0.15}
+        fillOpacity={0.24}
         stroke="#9B51E0"
-        strokeWidth={2}
+        strokeWidth={2.5}
       />
       {DIMENSIONS.map((dim, i) => {
         const val = scores[dim.id] || 0;
@@ -182,9 +182,9 @@ function RadarChart({ scores, size = 320 }) {
           y={l.y}
           textAnchor="middle"
           dominantBaseline="middle"
-          fontSize={11}
+          fontSize={12}
           fontFamily="'Source Sans 3', sans-serif"
-          fontWeight={400}
+          fontWeight={600}
           fill="#221C2B"
         >
           {l.label}
@@ -197,7 +197,7 @@ function RadarChart({ scores, size = 320 }) {
 function ScoreSelector({ value, onChange, low, high }) {
   return (
     <div style={{ margin: "20px 0 8px" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 10, fontSize: 13, color: "#666", fontFamily: "'Source Sans 3', sans-serif" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 10, fontSize: 14, color: "#3d3646", fontFamily: "'Source Sans 3', sans-serif" }}>
         <span>{low}</span>
         <span>{high}</span>
       </div>
@@ -209,12 +209,12 @@ function ScoreSelector({ value, onChange, low, high }) {
             style={{
               flex: 1,
               height: 48,
-              border: value === n ? "2px solid #9B51E0" : "1px solid #ddd",
+              border: value === n ? "2px solid #9B51E0" : "1px solid #cabfd6",
               background: value === n ? "#9B51E0" : "#fff",
               color: value === n ? "#fff" : "#221C2B",
-              fontSize: 18,
+              fontSize: 20,
               fontFamily: "'Source Sans 3', sans-serif",
-              fontWeight: value === n ? 600 : 300,
+              fontWeight: value === n ? 600 : 400,
               cursor: "pointer",
               borderRadius: 0,
               transition: "all 0.15s ease",
@@ -298,22 +298,22 @@ export default function DriftAudit() {
             <p style={{ fontSize: 12, fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase", color: "#9B51E0", margin: "0 0 8px" }}>
               Mutomorro
             </p>
-            <h1 style={{ fontSize: 32, fontWeight: 400, lineHeight: 1.2, margin: "0 0 12px" }}>
+            <h1 style={{ fontSize: 34, fontWeight: 400, lineHeight: 1.2, margin: "0 0 12px" }}>
               Organisational Drift Audit
             </h1>
-            <p style={{ fontSize: 17, fontWeight: 300, lineHeight: 1.6, margin: 0, color: "#555" }}>
+            <p style={{ fontSize: 17, fontWeight: 400, lineHeight: 1.6, margin: 0, color: "#3d3646" }}>
               A conversation starter for leadership teams
             </p>
           </div>
 
-          <div style={{ fontSize: 16, fontWeight: 300, lineHeight: 1.8, marginBottom: 32 }}>
+          <div style={{ fontSize: 17, fontWeight: 400, lineHeight: 1.8, marginBottom: 32 }}>
             <p>
               Drift is the slow, imperceptible movement of an organisation away from what it set out to be - not through failure, but through a thousand small, reasonable accommodations to pressure.
             </p>
             <p>
               This short assessment explores six dimensions where drift commonly shows up. It takes about five minutes and produces a picture of where your organisation might have quietly shifted - and where the most useful conversations might begin.
             </p>
-            <p style={{ fontSize: 14, color: "#888", marginTop: 24 }}>
+            <p style={{ fontSize: 15, color: "#645b70", marginTop: 24 }}>
               This isn't a diagnosis. It's a prompt for honest reflection. The value is in the thinking it provokes, not the score it produces.
             </p>
           </div>
@@ -349,10 +349,10 @@ export default function DriftAudit() {
       <div style={base}>
         <div style={container} ref={topRef}>
           {/* Progress bar */}
-          <div style={{ height: 2, background: "#e0dbd5", marginBottom: 32 }}>
+          <div style={{ height: 3, background: "#e0dbd5", marginBottom: 32 }}>
             <div
               style={{
-                height: 2,
+                height: 3,
                 background: "#9B51E0",
                 width: `${progress}%`,
                 transition: "width 0.4s ease",
@@ -366,7 +366,7 @@ export default function DriftAudit() {
           </p>
 
           {/* Question counter */}
-          <p style={{ fontSize: 13, color: "#999", margin: "0 0 24px", fontWeight: 300 }}>
+          <p style={{ fontSize: 14, color: "#645b70", margin: "0 0 24px", fontWeight: 400 }}>
             Question {current + 1} of {QUESTIONS.length}
           </p>
 
@@ -378,7 +378,7 @@ export default function DriftAudit() {
               transition: "all 0.3s ease",
             }}
           >
-            <h2 style={{ fontSize: 22, fontWeight: 400, lineHeight: 1.5, margin: "0 0 4px" }}>
+            <h2 style={{ fontSize: 24, fontWeight: 400, lineHeight: 1.5, margin: "0 0 4px" }}>
               {q.text}
             </h2>
 
@@ -395,12 +395,12 @@ export default function DriftAudit() {
                 style={{
                   marginTop: 24,
                   padding: "16px 20px",
-                  background: "#f0ede8",
+                  background: "#ebe3d8",
                   borderLeft: "3px solid #9B51E0",
-                  fontSize: 14,
-                  fontWeight: 300,
+                  fontSize: 15,
+                  fontWeight: 400,
                   lineHeight: 1.7,
-                  color: "#555",
+                  color: "#3d3646",
                 }}
               >
                 {q.insight}
@@ -415,7 +415,7 @@ export default function DriftAudit() {
               disabled={current === 0}
               style={{
                 background: "none",
-                border: "1px solid #ddd",
+                border: "1px solid #cabfd6",
                 padding: "12px 24px",
                 fontSize: 14,
                 fontFamily: "'Source Sans 3', sans-serif",
@@ -464,7 +464,7 @@ export default function DriftAudit() {
           <p style={{ fontSize: 12, fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase", color: "#9B51E0", margin: "0 0 8px" }}>
             Your results
           </p>
-          <h1 style={{ fontSize: 32, fontWeight: 400, lineHeight: 1.2, margin: "0 0 12px" }}>
+          <h1 style={{ fontSize: 34, fontWeight: 400, lineHeight: 1.2, margin: "0 0 12px" }}>
             Organisational Drift Audit
           </h1>
         </div>
@@ -476,19 +476,19 @@ export default function DriftAudit() {
 
         {/* Overall score */}
         <div style={{ textAlign: "center", marginBottom: 40 }}>
-          <p style={{ fontSize: 48, fontWeight: 300, margin: "0 0 4px", color: overallBand.color }}>
+          <p style={{ fontSize: 56, fontWeight: 400, margin: "0 0 4px", color: overallBand.color }}>
             {overall.toFixed(1)}
           </p>
-          <p style={{ fontSize: 14, fontWeight: 600, letterSpacing: "0.05em", textTransform: "uppercase", color: overallBand.color, margin: 0 }}>
+          <p style={{ fontSize: 15, fontWeight: 600, letterSpacing: "0.05em", textTransform: "uppercase", color: overallBand.color, margin: 0 }}>
             {overallBand.label}
           </p>
-          <p style={{ fontSize: 13, color: "#999", fontWeight: 300, marginTop: 4 }}>
+          <p style={{ fontSize: 14, color: "#645b70", fontWeight: 400, marginTop: 4 }}>
             Overall score out of 5.0
           </p>
         </div>
 
         {/* Dimension breakdown */}
-        <h2 style={{ fontSize: 18, fontWeight: 400, marginBottom: 20, paddingBottom: 8, borderBottom: "1px solid #e0dbd5" }}>
+        <h2 style={{ fontSize: 20, fontWeight: 400, marginBottom: 20, paddingBottom: 8, borderBottom: "1px solid #e0dbd5" }}>
           Dimension by dimension
         </h2>
 
@@ -500,10 +500,10 @@ export default function DriftAudit() {
           return (
             <div key={dim.id} style={{ marginBottom: 28, paddingBottom: 20, borderBottom: "1px solid #f0ede8" }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 8 }}>
-                <h3 style={{ fontSize: 16, fontWeight: 400, margin: 0 }}>
+                <h3 style={{ fontSize: 17, fontWeight: 600, margin: 0 }}>
                   {dim.label}
                 </h3>
-                <span style={{ fontSize: 20, fontWeight: 300, color: band.color }}>
+                <span style={{ fontSize: 22, fontWeight: 600, color: band.color }}>
                   {score.toFixed(1)}
                 </span>
               </div>
@@ -520,7 +520,7 @@ export default function DriftAudit() {
                 />
               </div>
 
-              <p style={{ fontSize: 13, fontWeight: 300, color: "#888", margin: 0 }}>
+              <p style={{ fontSize: 14, fontWeight: 400, color: "#645b70", margin: 0 }}>
                 {band.label}
               </p>
 
@@ -530,13 +530,13 @@ export default function DriftAudit() {
                   <p
                     key={qi}
                     style={{
-                      fontSize: 13,
-                      fontWeight: 300,
+                      fontSize: 14,
+                      fontWeight: 400,
                       lineHeight: 1.6,
-                      color: "#666",
+                      color: "#3d3646",
                       margin: "6px 0",
                       paddingLeft: 12,
-                      borderLeft: "2px solid #e0dbd5",
+                      borderLeft: "2px solid #d4c6e6",
                     }}
                   >
                     {QUESTIONS[qi].insight}
@@ -548,7 +548,7 @@ export default function DriftAudit() {
         })}
 
         {/* Closing */}
-        <div style={{ marginTop: 40, padding: "24px", background: "#f0ede8", fontSize: 15, fontWeight: 300, lineHeight: 1.8 }}>
+        <div style={{ marginTop: 40, padding: "24px", background: "#ebe3d8", fontSize: 16, fontWeight: 400, lineHeight: 1.8 }}>
           <p style={{ margin: "0 0 12px", fontWeight: 400 }}>
             What to do with this
           </p>
@@ -558,7 +558,7 @@ export default function DriftAudit() {
           <p style={{ margin: "0 0 12px" }}>
             The dimensions where you scored lowest aren't necessarily the places to start. They're the places to look - with curiosity rather than alarm. Drift contains no villains. It's structural, not personal.
           </p>
-          <p style={{ margin: 0, fontSize: 13, color: "#888" }}>
+          <p style={{ margin: 0, fontSize: 14, color: "#645b70" }}>
             Based on research by Diane Vaughan, Jens Rasmussen, Scott Snook, Peter Senge, Sidney Dekker, and Dan Davies. Read more in our article:{" "}
             <Link href="/articles/organisational-drift" style={{ color: "#9B51E0" }}>
               <em>The Organisation That Changed Without Anyone Deciding to Change It.</em>
@@ -572,7 +572,7 @@ export default function DriftAudit() {
             onClick={() => { setPhase("intro"); setCurrent(0); setAnswers({}); }}
             style={{
               background: "none",
-              border: "1px solid #ddd",
+              border: "1px solid #cabfd6",
               padding: "12px 32px",
               fontSize: 14,
               fontFamily: "'Source Sans 3', sans-serif",

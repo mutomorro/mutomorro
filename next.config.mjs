@@ -11,6 +11,12 @@ const nextConfig = {
     const baseRedirects = [
 
       // =========================================================
+      // TOOL SLUG RENAME — "the-star-method" → "star-method"
+      // =========================================================
+      { source: '/tools/the-star-method', destination: '/tools/star-method', permanent: true },
+      { source: '/tools/the-star-method/template', destination: '/tools/star-method/template', permanent: true },
+
+      // =========================================================
       // INTERNAL SERVICE URL FLATTENING (existing)
       // /services/[category]/[slug] → /services/[slug]
       // These must come BEFORE the catch-all patterns below

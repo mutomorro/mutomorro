@@ -278,29 +278,6 @@ function GradientBar() {
   )
 }
 
-function ForwardedLine() {
-  return (
-    <Section style={{ padding: '18px 44px 0', textAlign: 'center' }}>
-      <Text style={{
-        fontFamily,
-        fontSize: '12px',
-        fontWeight: 300,
-        color: 'rgba(0,0,0,0.3)',
-        margin: '0',
-      }}>
-        Forwarded this email?{' '}
-        <Link
-          href="https://mutomorro.com"
-          style={{ color: PURPLE, fontWeight: 400, textDecoration: 'underline' }}
-        >
-          Subscribe here
-        </Link>
-        {' '}for more
-      </Text>
-    </Section>
-  )
-}
-
 function Masthead({ date }) {
   return (
     <Section style={{ padding: '24px 44px 20px' }}>
@@ -358,9 +335,21 @@ function Footer({ unsubscribeUrl, viewInBrowserUrl }) {
         fontSize: '12px',
         fontWeight: 300,
         color: 'rgba(0,0,0,0.35)',
-        margin: '0 0 20px 0',
+        margin: '0 0 12px 0',
       }}>
         86-90 Paul Street, London EC2A 4NE
+      </Text>
+      <Text style={{
+        fontFamily,
+        fontSize: '12px',
+        fontWeight: 300,
+        color: 'rgba(0,0,0,0.35)',
+        margin: '0 0 20px 0',
+      }}>
+        Forwarded this email?{' '}
+        <Link href="https://mutomorro.com" style={{ color: PURPLE, textDecoration: 'underline' }}>
+          Subscribe here
+        </Link>
       </Text>
 
       <Hr style={{
@@ -480,7 +469,7 @@ function SectionHeader({ kicker, title }) {
       <PurpleRule />
       <Text style={{
         fontFamily,
-        fontSize: '20px',
+        fontSize: '24px',
         fontWeight: 400,
         lineHeight: '1.3',
         margin: '0 0 16px 0',
@@ -555,7 +544,6 @@ function NewsletterEdition({
         <Container style={{ maxWidth: '580px', margin: '0 auto', backgroundColor: '#FFFFFF' }}>
 
           <GradientBar />
-          <ForwardedLine />
           <Masthead date={monthYear} />
 
           <Hr style={{
@@ -567,19 +555,31 @@ function NewsletterEdition({
             width: 'auto',
           }} />
 
-          {/* Subject heading */}
-          <Section style={{ padding: '36px 44px 28px' }}>
+          {/* Subject heading + intro */}
+          <Section style={{ padding: '36px 44px 32px' }}>
             <Text style={{
               fontFamily,
-              fontSize: '24px',
+              fontSize: '30px',
               fontWeight: 400,
               color: INK,
               lineHeight: '1.25',
-              letterSpacing: '-0.01em',
+              letterSpacing: '-0.02em',
               margin: '0',
             }}>
               {subjectLine}
             </Text>
+            {introText && (
+              <Text style={{
+                fontFamily,
+                fontSize: '15px',
+                fontWeight: 300,
+                color: INK,
+                lineHeight: '1.7',
+                margin: '20px 0 0 0',
+              }}>
+                {introText}
+              </Text>
+            )}
           </Section>
 
           {/* Hero image (optional) */}
@@ -600,81 +600,66 @@ function NewsletterEdition({
             </Section>
           )}
 
-          {/* Index */}
-          <Section style={{ padding: '32px 44px 32px' }}>
-            {introText && (
-              <Text style={{
-                fontFamily,
-                fontSize: '15px',
-                fontWeight: 300,
-                color: INK,
-                lineHeight: '1.7',
-                margin: '0 0 28px 0',
-              }}>
-                {introText}
-              </Text>
-            )}
-
-            {items.length > 0 && (
-              <>
-                <Kicker marginBottom="14px">In this edition</Kicker>
-                <table
-                  cellPadding="0"
-                  cellSpacing="0"
-                  border="0"
-                  role="presentation"
-                  style={{ width: '100%', borderCollapse: 'collapse' }}
-                >
-                  <tbody>
-                    {items.map((it, i) => (
-                      <tr key={i}>
-                        <td style={{
-                          fontFamily,
-                          fontSize: '14px',
-                          fontWeight: 600,
-                          color: PURPLE,
-                          width: '18px',
-                          verticalAlign: 'top',
-                          padding: '5px 12px 5px 0',
-                          lineHeight: '1.4',
-                        }}>
-                          {i + 1}
-                        </td>
-                        <td style={{ verticalAlign: 'top', padding: '5px 0' }}>
-                          <Kicker fontSize="11px" marginBottom="4px">{it.kicker}</Kicker>
-                          {it.href ? (
-                            <a
-                              href={trackUrl(it.href, recipientId)}
-                              style={{
-                                fontFamily,
-                                fontSize: '14px',
-                                fontWeight: 400,
-                                color: INK,
-                                textDecoration: 'none',
-                                lineHeight: '1.4',
-                              }}
-                            >
-                              {it.title}
-                            </a>
-                          ) : (
-                            <span style={{
+          {/* Index / table of contents */}
+          {items.length > 0 && (
+            <Section style={{ padding: '32px 44px 32px' }}>
+              <Kicker marginBottom="14px">In this edition</Kicker>
+              <table
+                cellPadding="0"
+                cellSpacing="0"
+                border="0"
+                role="presentation"
+                style={{ width: '100%', borderCollapse: 'collapse' }}
+              >
+                <tbody>
+                  {items.map((it, i) => (
+                    <tr key={i}>
+                      <td style={{
+                        fontFamily,
+                        fontSize: '14px',
+                        fontWeight: 600,
+                        color: PURPLE,
+                        width: '18px',
+                        verticalAlign: 'top',
+                        padding: '5px 12px 5px 0',
+                        lineHeight: '1.4',
+                      }}>
+                        {i + 1}
+                      </td>
+                      <td style={{ verticalAlign: 'top', padding: '5px 0' }}>
+                        <Kicker fontSize="11px" marginBottom="4px">{it.kicker}</Kicker>
+                        {it.href ? (
+                          <a
+                            href={trackUrl(it.href, recipientId)}
+                            style={{
                               fontFamily,
                               fontSize: '14px',
-                              fontWeight: 400,
+                              fontWeight: 600,
                               color: INK,
+                              textDecoration: 'none',
                               lineHeight: '1.4',
-                            }}>
-                              {it.title}
-                            </span>
-                          )}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </>
-            )}
-          </Section>
+                            }}
+                          >
+                            {it.title}
+                          </a>
+                        ) : (
+                          <span style={{
+                            fontFamily,
+                            fontSize: '14px',
+                            fontWeight: 600,
+                            color: INK,
+                            lineHeight: '1.4',
+                          }}>
+                            {it.title}
+                          </span>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </Section>
+          )}
 
           <EditionDivider />
 
@@ -1051,16 +1036,16 @@ export default function NewsletterTemplate(props = {}) {
 export const sampleProps = {
   monthYear: 'May 2026',
   subjectLine: 'Slow enough to miss',
-  previewText: 'Nobody decided this',
-  heroImageUrl: 'https://hzgnlxxnpvidnntiilcf.supabase.co/storage/v1/object/public/newsletter-assets/drift/organisational-drift-hero-approved-base.png',
+  previewText: 'How organisations change without anyone deciding to change them.',
+  heroImageUrl: 'https://hzgnlxxnpvidnntiilcf.supabase.co/storage/v1/object/public/newsletter-assets/drift/organisational-drift-hero.png',
   heroImageAlt: 'Abstract illustration showing ordered shapes gradually drifting out of alignment',
   introText: "This month I've been exploring something most organisations experience but rarely name - the slow, quiet way things change without anyone deciding to change them.",
   indexItems: [
-    { kicker: 'Observation', title: 'The changes no one planned for', href: '#observation' },
-    { kicker: 'Deeper dive', title: 'The organisation that changed without anyone deciding to change it', href: 'https://mutomorro.com/article/organisational-drift' },
-    { kicker: 'Free diagnostic', title: 'Organisational Drift Audit', href: 'https://mutomorro.com/diagnostics/drift-audit' },
+    { kicker: 'Field notes', title: 'The changes no one planned for', href: '#observation' },
+    { kicker: 'Long read', title: 'The organisation that changed without anyone deciding to change it', href: 'https://mutomorro.com/article/organisational-drift' },
+    { kicker: 'A tool to try', title: 'Organisational Drift Audit', href: 'https://mutomorro.com/diagnostics/drift-audit' },
   ],
-  observationKicker: 'Observation',
+  observationKicker: 'Field notes',
   observationTitle: 'The changes no one planned for',
   observationBody: [
     "There's a particular kind of change in organisations that fascinates me. Not the dramatic kind - not the restructure, the merger, the new CEO with a hundred-day plan. Those are visible. You can point at them. You know when they started.",
@@ -1068,7 +1053,7 @@ export const sampleProps = {
     "Nobody called a meeting. Nobody made a deliberate choice to move in this direction. And yet, standing here now, the distance between what an organisation set out to be and how it works has quietly widened. Not through any single decision - but through a thousand small, completely reasonable ones.",
     "I often notice this across the organisations I work with. A leadership team that started as genuinely collaborative and slowly - through completely understandable pressures - became a group of people managing their own areas, occasionally updating each other. A decision-making process that accumulated one extra approval stage every year until nobody could remember what speed felt like. A relationship with the people the organisation exists to serve that gradually became more distant, more mediated, more managed - without anyone choosing that.",
     "The thing that makes this pattern so interesting is that it contains no villains. Every single accommodation along the way made sense at the time. Faced with the same pressures, you or I would probably have made the same calls. That's not a failure of judgement. It's something more structural - and more human - than that.",
-    "In systems thinking, there's a word for this: <strong>drift</strong>. The slow, imperceptible movement of a system away from what it was designed to do - not through failure, but through a series of small, rational adjustments to pressure. Each one invisible. The accumulation, transformative.",
+    'In systems thinking, there\'s a word for this: <a href="https://fieldmarks.org/concept/drift/"><strong>drift</strong></a>. The slow, imperceptible movement of a system away from what it was designed to do - not through failure, but through a series of small, rational adjustments to pressure. Each one invisible. The accumulation, transformative.',
     "What I find myself wondering is how many of these quiet shifts are happening in any organisation at any given moment. Not because anyone is doing anything wrong. But because drift is what complex systems do when nobody is actively tending to the distance between where things are and where they were meant to be.",
     'Once you see it, the question changes. It stops being "who let this happen?" and becomes something quieter and more honest: "What did we set out to be - and how far have we travelled from it?"',
     'That second question, I think, is where some of the most important work in organisations begins.',
@@ -1077,14 +1062,14 @@ export const sampleProps = {
   ps: "P.S. If you recognise any of this - in your organisation, your sector, your own experience - I'd genuinely love to hear what you're seeing. Just reply to this email.",
   contentBlocks: [
     {
-      kicker: 'Deeper dive',
+      kicker: 'Long read',
       title: 'The organisation that changed without anyone deciding to change it',
       description: 'I went down a research rabbit hole into why drift happens - drawing on some fascinating work from safety science, sociology, and systems thinking. This is the longer piece, where the idea really opens up.',
       linkText: 'Read the article',
       linkHref: 'https://mutomorro.com/article/organisational-drift',
     },
     {
-      kicker: 'Free diagnostic',
+      kicker: 'A tool to try',
       title: 'Organisational Drift Audit',
       description: 'A short self-assessment that helps you map where drift might be showing up across your organisation - and which gaps are worth your attention first.',
       linkText: 'Take the diagnostic',

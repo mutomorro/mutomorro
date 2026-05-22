@@ -199,6 +199,7 @@ export default function ToolDownloadForm({ toolTitle, toolSlug, pdfUrl }) {
             onBlur={handleEmailBlur}
             placeholder="you@company.com"
             className="form-input"
+            style={emailNotice ? { borderColor: 'var(--accent)' } : undefined}
           />
           {emailNotice && (
             <div style={{

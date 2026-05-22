@@ -259,6 +259,7 @@ export default function ResourceDownloadForm({
             onBlur={handleEmailBlur}
             placeholder="you@company.com"
             className="form-input"
+            style={emailNotice ? { borderColor: '#9B51E0' } : undefined}
           />
           {emailNotice && (
             <div style={{

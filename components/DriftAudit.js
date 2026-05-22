@@ -15,7 +15,7 @@ const DIMENSIONS = [
 const QUESTIONS = [
   {
     dim: "culture",
-    text: "If you described your organisation's culture five years ago and described it today, how similar would those two descriptions be?",
+    text: "If a former colleague came back after five years away, how much of the culture would they recognise?",
     low: "Barely recognisable",
     high: "Essentially the same",
     insight: "Diane Vaughan found that cultural shifts happen through repetition, not decision. Each small accommodation redefines what's normal.",

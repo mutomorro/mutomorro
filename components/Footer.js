@@ -157,6 +157,20 @@ export default function Footer() {
 
             </div>
 
+            {/* Open Resources row */}
+            <div className="footer-open-resources">
+                <p className="footer-heading">Open Resources</p>
+                <div className="footer-open-resources-links">
+                    <a href="https://fieldmarks.org" target="_blank" rel="noopener noreferrer" className="footer-link">Fieldmarks</a>
+                    <span className="footer-open-resources-sep" aria-hidden="true">·</span>
+                    <a href="https://moresapien.org" target="_blank" rel="noopener noreferrer" className="footer-link">Moresapien</a>
+                    <span className="footer-open-resources-sep" aria-hidden="true">·</span>
+                    <a href="https://competence-conduct.org" target="_blank" rel="noopener noreferrer" className="footer-link">Competence &amp; Conduct Toolkit</a>
+                    <span className="footer-open-resources-sep" aria-hidden="true">·</span>
+                    <a href="https://toctoolkit.org" target="_blank" rel="noopener noreferrer" className="footer-link">Theory of Change Toolkit</a>
+                </div>
+            </div>
+
             {/* Bottom bar */}
             <div className="footer-bottom">
                 <p style={{ margin: 0 }}>© {new Date().getFullYear()} Mutomorro. All rights reserved.</p>

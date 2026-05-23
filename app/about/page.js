@@ -73,23 +73,70 @@ export default function About() {
       {/* Section 4: A fascination with patterns */}
       <section className="section--full section-padding" style={{ background: 'var(--white)' }}>
         <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
-          <div className="scroll-in" style={{ maxWidth: '760px' }}>
-            <span className="kicker" style={{ color: 'var(--accent)', marginBottom: '20px' }}>
-              Who we are
-            </span>
-            <h2 className="heading-h2" style={{ margin: '0 0 24px' }}>
-              <HighlightedText text="A fascination with patterns" highlight="patterns" />
-            </h2>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-              <p className="body-text">
-                Real change rarely comes from fixing the thing that's most visible. It comes from seeing what's happening between the structures, across the specialisms, in the spaces that don't belong to any single team or initiative. The connections that nobody owns but everybody feels.
-              </p>
-              <p className="body-text">
-                That fascination - with the patterns beneath the surface - is what Mutomorro is built around. It's why we work across the whole system rather than picking a lane. And it's as true for an organisation of 12 people as it is for one of 80,000.
-              </p>
-              <p className="body-text">
-                The name comes from the Latin <em>mutare</em> - to change, to transform. Combined with <em>morro</em> - tomorrow. Change tomorrow. Transform tomorrow.
-              </p>
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: '1fr 320px',
+            gap: '4rem',
+            alignItems: 'start',
+          }}>
+            <div className="scroll-in">
+              <span className="kicker" style={{ color: 'var(--accent)', marginBottom: '20px' }}>
+                Who we are
+              </span>
+              <h2 className="heading-h2" style={{ margin: '0 0 24px' }}>
+                <HighlightedText text="A fascination with patterns" highlight="patterns" />
+              </h2>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                <p className="body-text">
+                  Real change rarely comes from fixing the thing that's most visible. It comes from seeing what's happening between the structures, across the specialisms, in the spaces that don't belong to any single team or initiative. The connections that nobody owns but everybody feels.
+                </p>
+                <p className="body-text">
+                  That fascination - with the patterns beneath the surface - is what Mutomorro is built around. It's why we work across the whole system rather than picking a lane. And it's as true for an organisation of 12 people as it is for one of 80,000.
+                </p>
+                <p className="body-text">
+                  The name comes from the Latin <em>mutare</em> - to change, to transform. Combined with <em>morro</em> - tomorrow. Change tomorrow. Transform tomorrow.
+                </p>
+              </div>
+            </div>
+
+            {/* Photo + bio card */}
+            <div className="scroll-in delay-1">
+              <Image
+                src="https://cdn.sanity.io/images/c6pg4t4h/production/ff6e02cb52c63ce401da07f4d81eb74fe0e1f1eb-1944x1944.jpg?w=640&h=720&fit=crop"
+                alt="James Freeman-Gray"
+                width={640}
+                height={720}
+                style={{ width: '100%', maxWidth: '320px', height: 'auto', display: 'block' }}
+              />
+              <div style={{ marginTop: '14px', maxWidth: '320px' }}>
+                <p style={{
+                  fontSize: '15px',
+                  fontWeight: '400',
+                  color: 'var(--dark)',
+                  margin: '0 0 2px',
+                }}>
+                  James Freeman-Gray
+                </p>
+                <p style={{
+                  fontSize: '13px',
+                  fontWeight: '300',
+                  color: 'rgba(0,0,0,0.55)',
+                  margin: '0 0 10px',
+                }}>
+                  Founder. Over 20 years finding the patterns that help organisations thrive — across every sector.
+                </p>
+                <a
+                  href="https://www.linkedin.com/in/jamesbfg/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="James Freeman-Gray on LinkedIn"
+                  style={{ display: 'inline-block', opacity: 0.6 }}
+                >
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" style={{ color: 'var(--dark)' }}>
+                    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                  </svg>
+                </a>
+              </div>
             </div>
           </div>
         </div>

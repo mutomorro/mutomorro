@@ -19,13 +19,17 @@ export default function NavPanel({ isOpen, onClose, onMouseEnter, onMouseLeave, 
           const panel = panelRef.current
           if (panel) {
             panel.classList.add('nav-panel--open')
-            // Enable scrolling only after max-height transition ends
+            // Enable scrolling only after the panel's own max-height transition ends.
+            // Don't use { once: true } here — a child element's transition (e.g. a
+            // focused input's background fade) bubbles up and would consume the
+            // listener before max-height resolves, leaving the panel un-scrollable.
             const handleTransitionEnd = (e) => {
-              if (e.propertyName === 'max-height' && panel) {
+              if (e.target === panel && e.propertyName === 'max-height') {
                 panel.style.overflowY = 'auto'
+                panel.removeEventListener('transitionend', handleTransitionEnd)
               }
             }
-            panel.addEventListener('transitionend', handleTransitionEnd, { once: true })
+            panel.addEventListener('transitionend', handleTransitionEnd)
           }
           // Stagger child items
           if (innerRef.current) {

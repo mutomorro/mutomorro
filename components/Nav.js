@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
 import NavPanel from './NavPanel'
+import SearchPanel from './SearchPanel'
 
 export default function Nav() {
   const pathname = usePathname()
@@ -184,6 +185,16 @@ export default function Nav() {
             gap: '12px',
             marginLeft: 'auto',
           }}>
+            <button
+              onClick={() => handleClick('search')}
+              aria-label="Search the site"
+              className={`nav-search-btn${openPanel === 'search' ? ' nav-search-btn--active' : ''}${isTransparent ? ' nav-search-btn--transparent' : ''}`}
+            >
+              <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
+                <circle cx="9" cy="9" r="6" />
+                <line x1="13.5" y1="13.5" x2="17" y2="17" strokeLinecap="round" />
+              </svg>
+            </button>
             <Link
               href="/states-of-vitality"
               onClick={closePanel}
@@ -217,6 +228,13 @@ export default function Nav() {
 
       {/* Spacer to offset fixed nav on non-homepage pages */}
       {!isHomepage && <div style={{ height: '70px' }} />}
+
+      {/* Search Panel */}
+      <SearchPanel
+        isOpen={openPanel === 'search'}
+        instantClose={isSwitching}
+        onClose={closePanel}
+      />
 
       {/* About Panel */}
       <NavPanel

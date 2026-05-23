@@ -52,6 +52,9 @@ const nextConfig = {
       // Articles: specific slug changes (must precede catch-all)
       { source: '/article/psychological-safety-guide', destination: '/articles/psychological-safety-in-organisations', permanent: true },
       { source: '/article/the-economics-of-authentic-purpose', destination: '/articles/organisational-purpose-business-case', permanent: true },
+      // No current article exists for this slug — route to index to avoid the
+      // catch-all chaining /article/charity-technology-guide → /articles/charity-technology-guide (404).
+      { source: '/article/charity-technology-guide', destination: '/articles', permanent: true },
 
       // Articles: /article → /articles (old singular URLs)
       { source: '/article/:slug', destination: '/articles/:slug', permanent: true },
@@ -676,6 +679,7 @@ const nextConfig = {
       { source: '/contact-us.html', destination: '/contact', permanent: true },
       { source: '/contact.html', destination: '/contact', permanent: true },
       { source: '/contacte', destination: '/contact', permanent: true },
+      { source: '/make-enquiry', destination: '/contact', permanent: true },
 
       // Old service paths
       { source: '/services/leading-change', destination: '/services/change-management-consultancy', permanent: true },

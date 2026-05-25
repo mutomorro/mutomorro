@@ -1020,6 +1020,30 @@ const nextConfig = {
       { source: '/emergent-framework/growth', destination: '/emergent-framework/generative-capacity', permanent: true },
       { source: '/emergent-framework/network', destination: '/emergent-framework/narrative-connections', permanent: true },
       { source: '/emergent-framework/trust', destination: '/emergent-framework/embedded-strategy', permanent: true },
+
+
+      // =========================================================
+      // 24 May 2026 - 404 triage
+      // =========================================================
+
+      // Old philosophy URL
+      { source: '/our-philosophy', destination: '/philosophy', permanent: true },
+
+      // Missing /tools/ prefix - user typed root-level path
+      { source: '/pdca-cycle-plan-do-check-act', destination: '/tools/pdca-cycle', permanent: true },
+
+      // Wrong slug - page exists as /tools/iceberg-model
+      { source: '/tools/cultural-iceberg-model', destination: '/tools/iceberg-model', permanent: true },
+
+      // Wrong article slug - article exists as /articles/change-readiness-assessment
+      { source: '/articles/how-to-assess-change-readiness', destination: '/articles/change-readiness-assessment', permanent: true },
+
+      // Deleted article - no matching content, send to tools landing
+      { source: '/articles/charity-technology-guide', destination: '/tools', permanent: true },
+
+      // Old WordPress PDF download URLs - content no longer served at these paths
+      { source: '/downloads/Connecting%20strategic%20intent%20to%20organisational%20reality%20-%20Mutomorro.pdf', destination: '/tools', permanent: true },
+      { source: '/downloads/Helping%20your%20organisation%20get%20better%20at%20getting%20better%20-%20Mutomorro.pdf', destination: '/tools', permanent: true },
     ]
 
     // Emit both `/path` and `/path/` variants for every source so requests

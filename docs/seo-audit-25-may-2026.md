@@ -19,7 +19,7 @@
 | 2 | **EMERGENT article pages have no JSON-LD at all** — 40 pages missing structured data | CRITICAL | [app/emergent-framework/[dimension]/[article]/page.js](app/emergent-framework/[dimension]/[article]/page.js) |
 | 3 | **Footer service links use `/services/#fragment` (trailing slash before anchor)** — every click 308-redirects and silently strips the anchor, breaking the in-page jump | CRITICAL | [components/Footer.js:67-70](components/Footer.js:67) |
 | 4 | **Sector landing page links to `/article/${slug}` (legacy singular path)** — every related-article click from /sectors/housing triggers an internal 308 chain | CRITICAL | [app/sectors/[slug]/page.js:307](app/sectors/[slug]/page.js:307) |
-| 5 | **robots.txt blocks only `/studio`** — does not block `/admin`, `/api`, or `/_next/static/` as the brief specified | IMPORTANT | [public/robots.txt](public/robots.txt) |
+| 5 | **robots.txt blocks only `/studio`** — does not block `/admin` or `/api`. (The audit also flagged `/_next/static/` here; that turned out to be a brief error — see §3.6 correction note. The block was deliberately removed on 23 May 2026 and stays removed.) | IMPORTANT | [public/robots.txt](public/robots.txt) |
 
 ---
 
@@ -93,7 +93,7 @@
   export const metadata = { robots: 'noindex, nofollow' }
   ```
 
-### 3.6 robots.txt only blocks `/studio` — does not block `/admin`, `/api`, or `/_next/static/`
+### 3.6 robots.txt only blocks `/studio` — does not block `/admin` or `/api`
 - **File:** [public/robots.txt](public/robots.txt)
 - **Current contents:**
   ```
@@ -105,7 +105,7 @@
   # Block Sanity Studio
   Disallow: /studio
   ```
-- **Plain English:** The brief specifies four Disallow rules. Three are missing. The 253-chunk `/_next/static/` block in particular is the change that the brief lists as already shipped — it isn't.
+- **Plain English:** Two Disallow rules are missing — `/admin` and `/api`. The `/admin` namespace is already `noindex` via its layout, but blocking the crawl is still cleaner. `/api` routes should never be crawled; some bots try.
 - **Fix:**
   ```
   User-agent: *
@@ -113,11 +113,11 @@
   Disallow: /studio
   Disallow: /admin
   Disallow: /api
-  Disallow: /_next/static/
 
   Sitemap: https://mutomorro.com/sitemap.xml
   ```
-  Note: `/admin` is already `noindex` via its layout, but blocking the crawl is still cleaner. `/api` should never be crawled; some bots try.
+
+**Correction note (25 May 2026, post-deploy):** The original version of this audit recommended adding `Disallow: /_next/static/`. That was wrong. Google's official guidance is that blocking JS/CSS chunks harms rendering and indexing quality; Vercel's own site doesn't block them; the chunk URLs showing as "Crawled — currently not indexed" in GSC are harmless. The block was deliberately removed on 23 May 2026 for exactly this reason — a fact the original audit missed by trusting earlier session notes that called the block "already shipped." The 25 May deploy briefly re-added the line, and we removed it again the same day. The robots.txt now stays with three Disallow rules only (`/studio`, `/admin`, `/api`). See the SEO incident log for the 23 May entry.
 
 ### 3.7 Three pages exist but are missing from the sitemap
 - **File:** [app/sitemap.js](app/sitemap.js)

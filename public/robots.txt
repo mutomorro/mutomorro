@@ -3,6 +3,11 @@ Allow: /
 Disallow: /studio
 Disallow: /admin
 Disallow: /api
-Disallow: /_next/static/
+
+# Do NOT block /_next/static/. Google's official guidance is that blocking
+# JS/CSS chunks harms rendering and indexing quality. The chunk URLs showing
+# as "Crawled — currently not indexed" in GSC are harmless. This block was
+# deliberately removed on 23 May 2026; re-added in the 25 May SEO audit by
+# mistake, then removed again the same day. See SEO incident log.
 
 Sitemap: https://mutomorro.com/sitemap.xml

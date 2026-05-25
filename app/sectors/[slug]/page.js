@@ -304,7 +304,7 @@ export default async function SectorLandingPage({ params }) {
                   <ul className="sector-resource-list">
                     {page.featuredArticles.map((article, i) => (
                       <li key={i} className="sector-resource-list__item">
-                        <Link href={`/article/${article.slug}`} className="inline-link">
+                        <Link href={`/articles/${article.slug}`} className="inline-link">
                           {article.title}
                         </Link>
                       </li>

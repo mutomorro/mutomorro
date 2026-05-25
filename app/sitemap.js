@@ -7,7 +7,7 @@ export default async function sitemap() {
   // the 2 May 2026 trailing-slash-fix deployment — the last change to touch them.
   const STATIC_LASTMOD = new Date('2026-05-02')
   const staticPages = [
-    { url: `${BASE_URL}/`, lastModified: STATIC_LASTMOD, changeFrequency: 'weekly', priority: 1.0 },
+    { url: BASE_URL, lastModified: STATIC_LASTMOD, changeFrequency: 'weekly', priority: 1.0 },
     { url: `${BASE_URL}/about`, lastModified: STATIC_LASTMOD, changeFrequency: 'monthly', priority: 0.7 },
     { url: `${BASE_URL}/philosophy`, lastModified: STATIC_LASTMOD, changeFrequency: 'monthly', priority: 0.6 },
     { url: `${BASE_URL}/how-we-work`, lastModified: STATIC_LASTMOD, changeFrequency: 'monthly', priority: 0.7 },
@@ -31,7 +31,20 @@ export default async function sitemap() {
   // Image URLs (hero + inline body images) are included so they surface
   // as <image:image> tags in the sitemap, speeding up Google's transition
   // away from the old wp-content image URLs.
-  const [services, tools, articles, projects, courses, capabilities, dimensions, dimensionArticles, themes] = await Promise.all([
+  const [
+    services,
+    tools,
+    articles,
+    projects,
+    courses,
+    capabilities,
+    dimensions,
+    dimensionArticles,
+    themes,
+    serviceSubPages,
+    sectorLandingPages,
+    resources,
+  ] = await Promise.all([
     client.fetch(`*[_type == "service" && !(_id in path("drafts.**"))]{
       "slug": slug.current,
       _updatedAt,
@@ -81,6 +94,19 @@ export default async function sitemap() {
       "bodyImages": body[_type == "image"].asset->url
     }`),
     client.fetch(`*[_type == "theme" && !(_id in path("drafts.**")) && slug.current != "scaling-operations"]{
+      "slug": slug.current,
+      _updatedAt
+    }`),
+    client.fetch(`*[_type == "serviceSubPage" && !(_id in path("drafts.**"))]{
+      "slug": slug.current,
+      "parentSlug": parentService->slug.current,
+      _updatedAt
+    }`),
+    client.fetch(`*[_type == "sectorLandingPage" && !(_id in path("drafts.**"))]{
+      "slug": slug.current,
+      _updatedAt
+    }`),
+    client.fetch(`*[_type == "resource" && !(_id in path("drafts.**"))]{
       "slug": slug.current,
       _updatedAt
     }`),
@@ -165,6 +191,26 @@ export default async function sitemap() {
       url: `${BASE_URL}/topics/${t.slug}`,
       lastModified: t._updatedAt,
       changeFrequency: 'weekly',
+      priority: 0.7,
+    })),
+    ...serviceSubPages
+      .filter(s => s.parentSlug && s.slug)
+      .map(s => ({
+        url: `${BASE_URL}/services/${s.parentSlug}/${s.slug}`,
+        lastModified: s._updatedAt,
+        changeFrequency: 'monthly',
+        priority: 0.7,
+      })),
+    ...sectorLandingPages.map(s => ({
+      url: `${BASE_URL}/sectors/${s.slug}`,
+      lastModified: s._updatedAt,
+      changeFrequency: 'monthly',
+      priority: 0.7,
+    })),
+    ...resources.map(r => ({
+      url: `${BASE_URL}/resources/${r.slug}`,
+      lastModified: r._updatedAt,
+      changeFrequency: 'monthly',
       priority: 0.7,
     })),
   ]

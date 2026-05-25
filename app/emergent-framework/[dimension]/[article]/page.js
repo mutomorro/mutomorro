@@ -53,8 +53,64 @@ export default async function DimensionArticlePage({ params }) {
   const prevArticle = currentIndex > 0 ? allArticles[currentIndex - 1] : null
   const nextArticle = currentIndex < allArticles.length - 1 ? allArticles[currentIndex + 1] : null
 
+  const articleUrl = `https://mutomorro.com/emergent-framework/${dimensionSlug}/${articleSlug}`
+  const dimensionUrl = `https://mutomorro.com/emergent-framework/${dimensionSlug}`
+
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: article.title,
+    description: article.seoDescription || article.shortSummary || `${article.title} - part of the ${dimTitle} dimension.`,
+    url: articleUrl,
+    author: {
+      '@type': 'Organization',
+      name: 'Mutomorro',
+      url: 'https://mutomorro.com',
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: 'Mutomorro',
+      url: 'https://mutomorro.com',
+    },
+    ...(article._createdAt && { datePublished: article._createdAt }),
+    ...(article._updatedAt && { dateModified: article._updatedAt }),
+  }
+
+  const breadcrumbJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'EMERGENT Framework',
+        item: 'https://mutomorro.com/emergent-framework',
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: dimTitle,
+        item: dimensionUrl,
+      },
+      {
+        '@type': 'ListItem',
+        position: 3,
+        name: article.title,
+        item: articleUrl,
+      },
+    ],
+  }
+
   return (
     <main className="page-emergent" style={{ '--active-dim': dimColour }}>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
 
       {/* Hero - light background with coloured left stripe */}
       <div className="ew-dim-hero">

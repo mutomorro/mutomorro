@@ -1,7 +1,8 @@
 User-agent: *
 Allow: /
+Disallow: /studio
+Disallow: /admin
+Disallow: /api
+Disallow: /_next/static/
 
 Sitemap: https://mutomorro.com/sitemap.xml
-
-# Block Sanity Studio
-Disallow: /studio

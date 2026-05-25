@@ -10,8 +10,9 @@ async function sha256(message) {
 
 export async function middleware(request) {
   // Normalise trailing slash once so all downstream comparisons work
-  // for both /path and /path/ (next.config trailingSlash: true means
-  // real requests arrive with the slash, but redirects can race it off).
+  // for both /path and /path/. next.config has trailingSlash: false, so
+  // canonical requests arrive without a slash, but legacy/Vercel-edge
+  // requests can still hit here with one — strip it before matching.
   const pathname = (request.nextUrl.pathname || '/').replace(/\/+$/, '') || '/'
 
   // Admin routes: check auth and set header

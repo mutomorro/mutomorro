@@ -15,6 +15,28 @@
   padding: 0.75rem 1.7rem;
 }
 
+/* Skip-to-content link — visible only when keyboard-focused */
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: 0;
+  z-index: 9999;
+  padding: 0.75rem 1.5rem;
+  background: #221C2B;
+  color: #FAF6F1;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.skip-link:focus {
+  top: 0;
+}
+
+/* Main-content focus target — invisible outline when reached via skip link */
+#main-content:focus {
+  outline: none;
+}
+
 /* ============================================
    1. CSS CUSTOM PROPERTIES
    ============================================ */

@@ -64,10 +64,10 @@ export default function Footer() {
                 <div>
                     <p className="footer-heading">How We Help</p>
                     <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                        <li><Link href="/services/#purpose-direction" className="footer-link">Purpose & Direction</Link></li>
-                        <li><Link href="/services/#structure-operations" className="footer-link">Structure & Operations</Link></li>
-                        <li><Link href="/services/#people-capability" className="footer-link">People & Capability</Link></li>
-                        <li><Link href="/services/#service-experience" className="footer-link">Service & Experience</Link></li>
+                        <li><Link href="/services#purpose-direction" className="footer-link">Purpose & Direction</Link></li>
+                        <li><Link href="/services#structure-operations" className="footer-link">Structure & Operations</Link></li>
+                        <li><Link href="/services#people-capability" className="footer-link">People & Capability</Link></li>
+                        <li><Link href="/services#service-experience" className="footer-link">Service & Experience</Link></li>
                         <li><Link href="/projects" className="footer-link">Projects and experience</Link></li>
                     </ul>
                 </div>

@@ -35,6 +35,7 @@ export async function generateMetadata({ params }) {
     openGraph: {
       title,
       description,
+      url: `https://mutomorro.com/resources/${slug}`,
       type: 'article',
       ...(resource.previewImageUrl && { images: [{ url: resource.previewImageUrl }] }),
     },

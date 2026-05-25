@@ -43,7 +43,7 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
+    <html lang="en-GB">
       <body className={`${sourceSans.variable} ${sourceSans.className}`}>
         <LayoutShell>{children}</LayoutShell>
       </body>

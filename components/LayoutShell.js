@@ -67,14 +67,13 @@ export default function LayoutShell({ children }) {
       <PostHogProvider>
         <PostHogPageView />
         <ConsentProvider>
+          <a href="#main-content" className="skip-link">Skip to content</a>
           <Nav />
           <ScrollObserver />
-          {children}
+          <div id="main-content" tabIndex={-1}>{children}</div>
           <Footer />
           <CookieBanner />
           <TrackingScripts />
-          <Analytics />
-          <SpeedInsights />
         </ConsentProvider>
       </PostHogProvider>
     </>

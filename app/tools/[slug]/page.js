@@ -85,6 +85,8 @@ export default async function ToolPage({ params }) {
     },
     url: `https://mutomorro.com/tools/${tool.slug.current}`,
     ...(heroImageUrl && { image: heroImageUrl }),
+    ...(tool._createdAt && { datePublished: tool._createdAt }),
+    ...(tool._updatedAt && { dateModified: tool._updatedAt }),
   }
 
   const breadcrumbJsonLd = {

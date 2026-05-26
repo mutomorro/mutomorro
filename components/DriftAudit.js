@@ -16,9 +16,9 @@ const DIMENSIONS = [
 const QUESTIONS = [
   {
     dim: "culture",
-    text: "If a former colleague came back after five years away, how much of the culture would they recognise?",
-    low: "Barely recognisable",
-    high: "Essentially the same",
+    text: "If you listed the ways your organisation has shifted in recent years, how many were deliberate decisions?",
+    low: "Very few",
+    high: "Almost all",
     insight: "Diane Vaughan found that cultural shifts happen through repetition, not decision. Each small accommodation redefines what's normal.",
   },
   {

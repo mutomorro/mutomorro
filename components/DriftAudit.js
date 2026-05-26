@@ -562,13 +562,42 @@ export default function DriftAudit() {
   return (
     <div style={base}>
       <div style={container} ref={topRef}>
-        <div style={{ borderLeft: "3px solid #9B51E0", paddingLeft: 20, marginBottom: 40 }}>
-          <p style={{ fontSize: 12, fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase", color: "#9B51E0", margin: "0 0 8px" }}>
-            Your results
-          </p>
-          <h1 style={{ fontSize: 34, fontWeight: 400, lineHeight: 1.2, margin: "0 0 12px" }}>
-            Organisational Drift Audit
-          </h1>
+        <div
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 20,
+            marginBottom: 40,
+          }}
+        >
+          <div style={{ borderLeft: "3px solid #9B51E0", paddingLeft: 20 }}>
+            <p style={{ fontSize: 12, fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase", color: "#9B51E0", margin: "0 0 8px" }}>
+              Your results
+            </p>
+            <h1 style={{ fontSize: 34, fontWeight: 400, lineHeight: 1.2, margin: 0 }}>
+              Organisational Drift Audit
+            </h1>
+          </div>
+          <button
+            onClick={copyResultsLink}
+            style={{
+              background: copied ? "#9B51E0" : "#221C2B",
+              color: "#FAF6F1",
+              border: "none",
+              padding: "12px 24px",
+              fontSize: 14,
+              fontFamily: "'Source Sans 3', sans-serif",
+              fontWeight: 400,
+              cursor: "pointer",
+              borderRadius: 0,
+              transition: "background 0.15s ease",
+              flexShrink: 0,
+            }}
+          >
+            {copied ? "Link copied" : "Copy results link"}
+          </button>
         </div>
 
         {/* Radar chart */}
@@ -668,33 +697,8 @@ export default function DriftAudit() {
           </p>
         </div>
 
-        {/* Share + restart */}
-        <div
-          style={{
-            display: "flex",
-            flexWrap: "wrap",
-            justifyContent: "center",
-            gap: 12,
-            marginTop: 32,
-          }}
-        >
-          <button
-            onClick={copyResultsLink}
-            style={{
-              background: copied ? "#9B51E0" : "#221C2B",
-              color: "#FAF6F1",
-              border: "none",
-              padding: "12px 32px",
-              fontSize: 14,
-              fontFamily: "'Source Sans 3', sans-serif",
-              fontWeight: 400,
-              cursor: "pointer",
-              borderRadius: 0,
-              transition: "background 0.15s ease",
-            }}
-          >
-            {copied ? "Link copied" : "Copy results link"}
-          </button>
+        {/* Restart */}
+        <div style={{ textAlign: "center", marginTop: 32 }}>
           <button
             onClick={restart}
             style={{

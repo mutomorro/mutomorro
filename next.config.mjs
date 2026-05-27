@@ -1044,6 +1044,26 @@ const nextConfig = {
       // Old WordPress PDF download URLs - content no longer served at these paths
       { source: '/downloads/Connecting%20strategic%20intent%20to%20organisational%20reality%20-%20Mutomorro.pdf', destination: '/tools', permanent: true },
       { source: '/downloads/Helping%20your%20organisation%20get%20better%20at%20getting%20better%20-%20Mutomorro.pdf', destination: '/tools', permanent: true },
+
+
+      // =========================================================
+      // 27 May 2026 - GSC 404 triage
+      // =========================================================
+
+      // Missing topic page - no /topics/scaling-operations exists; nearest match is operational-effectiveness
+      { source: '/topics/scaling-operations', destination: '/topics/operational-effectiveness', permanent: true },
+
+      // Old PDF download URLs (lead-gen PDFs no longer served at these paths)
+      { source: '/downloads/:path*', destination: '/tools', permanent: true },
+
+      // WordPress stub URL (just "/wp-" with nothing after it - not caught by /wp-content/:path*)
+      { source: '/wp-', destination: '/', permanent: true },
+
+      // Old WordPress RSS feed URLs appended to tool and project pages
+      // (/project/:slug/feed is already covered by the 31 March 2026 block above)
+      { source: '/tools/:slug/feed', destination: '/tools/:slug', permanent: true },
+      { source: '/tools/feed', destination: '/tools', permanent: true },
+
     ]
 
     // Emit both `/path` and `/path/` variants for every source so requests

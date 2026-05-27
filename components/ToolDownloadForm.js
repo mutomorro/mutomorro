@@ -1,10 +1,44 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import posthog from 'posthog-js'
 import { isFreeEmailProvider, FREE_EMAIL_MESSAGE, FREE_EMAIL_EMPHASIS } from '@/lib/email-validation'
 
 const [NOTICE_BEFORE, NOTICE_AFTER] = FREE_EMAIL_MESSAGE.split(FREE_EMAIL_EMPHASIS)
+
+const LINKEDIN_URL = 'https://www.linkedin.com/company/mutomorro'
+
+const PdfIcon = () => (
+  <svg
+    width="18"
+    height="18"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+  >
+    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+    <polyline points="14 2 14 8 20 8" />
+    <line x1="16" y1="13" x2="8" y2="13" />
+    <line x1="16" y1="17" x2="8" y2="17" />
+    <polyline points="10 9 9 9 8 9" />
+  </svg>
+)
+
+const LinkedInIcon = () => (
+  <svg
+    width="16"
+    height="16"
+    viewBox="0 0 24 24"
+    fill="currentColor"
+    aria-hidden="true"
+  >
+    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.063 2.063 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+  </svg>
+)
 
 export default function ToolDownloadForm({ toolTitle, toolSlug, pdfUrl }) {
   const [formData, setFormData] = useState({
@@ -19,6 +53,14 @@ export default function ToolDownloadForm({ toolTitle, toolSlug, pdfUrl }) {
   const [noticeShake, setNoticeShake] = useState(0)
   const [honeypot, setHoneypot] = useState('')
   const [formLoadedAt] = useState(Date.now())
+  const [previewVariant, setPreviewVariant] = useState(null) // null | 'optIn' | 'noOptIn' — dev-only
+
+  useEffect(() => {
+    if (process.env.NODE_ENV !== 'development') return
+    const params = new URLSearchParams(window.location.search)
+    if (params.get('preview') !== 'success') return
+    setPreviewVariant(params.get('optedIn') === 'true' ? 'optIn' : 'noOptIn')
+  }, [])
 
   function handleChange(e) {
     const { name, value, type, checked } = e.target
@@ -81,7 +123,12 @@ export default function ToolDownloadForm({ toolTitle, toolSlug, pdfUrl }) {
   }
 
   // ── After successful submission: success message + download button ──
-  if (status === 'success') {
+  const showSuccess = status === 'success' || previewVariant !== null
+  if (showSuccess) {
+    const isOptedIn = previewVariant !== null
+      ? previewVariant === 'optIn'
+      : formData.newsletterOptIn
+
     return (
       <div className="feedback-success">
         <p style={{
@@ -99,8 +146,9 @@ export default function ToolDownloadForm({ toolTitle, toolSlug, pdfUrl }) {
               href={pdfUrl + '?dl='}
               download
               className="btn-primary"
-              style={{ fontSize: '17px', padding: '16px 32px' }}
+              style={{ fontSize: '17px', padding: '16px 32px', gap: '10px', minWidth: '260px' }}
             >
+              <PdfIcon />
               Download PDF
             </a>
             <p style={{
@@ -118,6 +166,35 @@ export default function ToolDownloadForm({ toolTitle, toolSlug, pdfUrl }) {
             The PDF is being prepared - please check back shortly.
           </p>
         )}
+
+        {/* Secondary: stay-connected nudge, varies by newsletter opt-in */}
+        <div style={{
+          marginTop: '2rem',
+          paddingTop: '1.5rem',
+          borderTop: '1px solid rgba(0,0,0,0.1)',
+        }}>
+          <a
+            href={LINKEDIN_URL}
+            target="_blank"
+            rel="noreferrer"
+            className="btn-linkedin"
+            style={{ fontSize: '17px', minWidth: '260px' }}
+          >
+            <LinkedInIcon />
+            Join us on LinkedIn
+          </a>
+          <p style={{
+            fontSize: '15px',
+            fontWeight: '300',
+            lineHeight: '1.55',
+            color: 'rgba(0,0,0,0.7)',
+            margin: '1rem 0 0',
+          }}>
+            {isOptedIn
+              ? "You're on the list. Join us on LinkedIn for more tools, thinking and ideas for leaders."
+              : 'Join us on LinkedIn for more tools, thinking and ideas for leaders.'}
+          </p>
+        </div>
       </div>
     )
   }

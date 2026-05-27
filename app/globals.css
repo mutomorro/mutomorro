@@ -355,6 +355,26 @@ a:hover {
 .btn-primary--dark::before { background: var(--accent); }
 .btn-primary--dark:hover { color: #fff; }
 
+.btn-linkedin {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-family: var(--font);
+  font-weight: 400;
+  font-size: 15px;
+  letter-spacing: 0.06em;
+  text-decoration: none;
+  cursor: pointer;
+  border: none;
+  padding: 10px 32px;
+  border-radius: 0;
+  color: #fff;
+  background: #0967C2;
+  transition: background 0.3s;
+}
+.btn-linkedin:hover { background: #075aa8; }
+
 .btn-sec {
   display: inline-flex;
   align-items: center;

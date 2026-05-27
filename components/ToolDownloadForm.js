@@ -167,12 +167,32 @@ export default function ToolDownloadForm({ toolTitle, toolSlug, pdfUrl }) {
           </p>
         )}
 
-        {/* Secondary: stay-connected nudge, varies by newsletter opt-in */}
+        {/* Secondary: confirmation callout (opt-in only) + LinkedIn nudge */}
         <div style={{
           marginTop: '2rem',
           paddingTop: '1.5rem',
           borderTop: '1px solid rgba(0,0,0,0.1)',
         }}>
+          {isOptedIn && (
+            <div style={{
+              padding: '14px 16px',
+              background: 'var(--warm)',
+              borderLeft: '3px solid var(--accent)',
+              marginBottom: '1.75rem',
+            }}>
+              <p style={{
+                fontSize: '15px',
+                lineHeight: '1.55',
+                margin: 0,
+                color: 'rgba(0,0,0,0.85)',
+              }}>
+                We&apos;ve sent you a confirmation email — click the link to finish signing up.{' '}
+                <strong style={{ fontWeight: 600 }}>Check your spam folder</strong>
+                {' '}if you don&apos;t see it in a minute.
+              </p>
+            </div>
+          )}
+
           <a
             href={LINKEDIN_URL}
             target="_blank"
@@ -190,9 +210,7 @@ export default function ToolDownloadForm({ toolTitle, toolSlug, pdfUrl }) {
             color: 'rgba(0,0,0,0.7)',
             margin: '1rem 0 0',
           }}>
-            {isOptedIn
-              ? "You're on the list. Join us on LinkedIn for more tools, thinking and ideas for leaders."
-              : 'Join us on LinkedIn for more tools, thinking and ideas for leaders.'}
+            Join us on LinkedIn for more tools, thinking and ideas for leaders.
           </p>
         </div>
       </div>

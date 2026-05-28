@@ -7,13 +7,19 @@
  *
  * Safety rails — every one of these must remain in place:
  *   - Pagination (fetchAllPaginated) for any contact / recipient query
- *   - Dedup by issue_key
+ *   - Dedup by issue_key (only 'delivered'-bucket statuses count as sent;
+ *     'queued' rows from a stuck/timed-out previous send remain retryable)
  *   - Independent dedup-assertion query before delivery starts
- *   - ZeroBounce verification on stale or unknown contacts
+ *   - Auto-recovery of stuck 'sending' rows older than 15 minutes
+ *   - 10%-stale gate: refuse the send if too much of the audience has
+ *     stale or missing zb_verified_at (the daily ZB cron is the source of
+ *     truth — inline ZB was removed after the Drift-v1 timeout incident)
  *   - Domain exclusions (when newsletter_config.domain_exclusions_enabled)
  *   - Per-recipient rendering with unique signed unsubscribe URLs
  *   - issue_key uniqueness validated up front
- *   - Resend batches of 50 with 2-second pauses
+ *   - Resend batches of RESEND_BATCH_SIZE with a short inter-batch pause
+ *   - Bulk RPC per batch (mark_newsletter_recipients_sent) — one DB round
+ *     trip per batch instead of one per recipient
  *   - Calendar item marked as 'published' after successful editorial send
  *   - Summary email to james@mutomorro.com
  */
@@ -34,15 +40,21 @@ import {
   fetchAudienceContacts,
 } from '../../../../../lib/newsletter-audiences.js'
 import { fetchAllPaginated } from '../../../../../lib/supabase-paginate.js'
-import { verifyEmail } from '../../../../../components/email-verification.js'
 
 export const maxDuration = 800
 
 const BLOCKED_STATUSES = new Set(['invalid', 'spamtrap', 'abuse', 'do_not_mail'])
 const STALE_DAYS = 30
-const RESEND_BATCH_SIZE = 50
-const RESEND_BATCH_PAUSE_MS = 2000
+// Resend's batch endpoint accepts up to 100 messages per call.
+const RESEND_BATCH_SIZE = 100
+// Brief inter-batch breather. Was 2000ms — Resend handles 100/req without
+// rate-limit issues so this was over-conservative.
+const RESEND_BATCH_PAUSE_MS = 500
 const SUMMARY_RECIPIENT = 'james@mutomorro.com'
+// Recipient statuses that mean an email actually went out. Anything else
+// (notably 'queued') means the send never completed for that contact and they
+// must be eligible for retry.
+const DELIVERED_STATUSES = ['sent', 'delivered', 'opened', 'clicked', 'bounced']
 
 const EXCLUDED_DOMAIN_PATTERNS = [
   /\.edu$/i,
@@ -68,6 +80,25 @@ function client() {
 export async function POST(request) {
   const supabase = client()
   const resend = new Resend(process.env.RESEND_API_KEY)
+
+  // Auto-recover stuck sends: any newsletter_sends row in 'sending' for
+  // more than 15 minutes is marked failed before we start a new send.
+  // Function timeouts orphan rows here; the dedup check would otherwise
+  // block retries against them.
+  const stuckThreshold = new Date(Date.now() - 15 * 60 * 1000).toISOString()
+  const { data: stuckRows } = await supabase
+    .from('newsletter_sends')
+    .update({
+      status: 'failed',
+      completed_at: new Date().toISOString(),
+      failure_reason: 'Auto-failed: stuck in sending for >15min (likely function timeout).',
+    })
+    .eq('status', 'sending')
+    .lt('created_at', stuckThreshold)
+    .select('id')
+  if (stuckRows && stuckRows.length > 0) {
+    console.log(`Newsletter send: auto-recovered ${stuckRows.length} stuck send(s)`)
+  }
 
   let body
   try {
@@ -196,10 +227,14 @@ export async function POST(request) {
   const matchingSendIds = (matchingSends || []).map(s => s.id)
   let alreadySentIds = new Set()
   if (matchingSendIds.length > 0) {
+    // Only treat rows that actually went out as "already sent". 'queued' rows
+    // come from a send that started but never completed (e.g. function
+    // timeout) — those contacts never received an email and must be retried.
     const alreadySent = await fetchAllPaginated((from, to) => supabase
       .from('newsletter_recipients')
       .select('contact_id')
       .in('send_id', matchingSendIds)
+      .in('status', DELIVERED_STATUSES)
       .range(from, to)
     )
     alreadySentIds = new Set(alreadySent.map(r => r.contact_id))
@@ -226,6 +261,28 @@ export async function POST(request) {
       alreadySent: alreadySentIds.size,
       domainExcluded: domainExcludedCount,
     }, { status: 400 })
+  }
+
+  // ─── 7b. Stale-verification gate ─────────────────────────────────
+  // The daily ZB cron is the source of truth for zb_status. If more than 10%
+  // of the audience is stale or unverified, refuse the send. We deliberately
+  // do not fall back to inline ZeroBounce here — that's the path that caused
+  // the Drift-v1 function timeout. Operator should trigger the cron first.
+  const staleThresholdMs = Date.now() - STALE_DAYS * 24 * 60 * 60 * 1000
+  let staleCount = 0
+  for (const c of eligible) {
+    const t = c.zb_verified_at ? new Date(c.zb_verified_at).getTime() : 0
+    if (!t || t < staleThresholdMs) staleCount++
+  }
+  const stalePct = (staleCount / eligible.length) * 100
+  if (stalePct > 10) {
+    return NextResponse.json({
+      error: `${stalePct.toFixed(1)}% of the audience (${staleCount}/${eligible.length}) has stale or missing ZeroBounce verification. Trigger the daily ZB cron before sending.`,
+      staleCount,
+      eligibleCount: eligible.length,
+      stalePct: Number(stalePct.toFixed(1)),
+      cronPath: '/api/cron/zerobounce-verify',
+    }, { status: 409 })
   }
 
   // ─── 8. Pre-create the newsletter_sends row (status='sending') ────
@@ -277,6 +334,7 @@ export async function POST(request) {
         .update({
           status: 'failed',
           completed_at: new Date().toISOString(),
+          failure_reason: `Unhandled exception in runSend: ${err?.message || err}`,
         })
         .eq('id', sendId)
     }
@@ -307,41 +365,14 @@ async function runSend({
   audienceName,
   domainExcludedCount,
 }) {
-  // ─── 9. ZeroBounce verification on stale / unknown contacts ─────
-  const thirtyDaysAgo = new Date()
-  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - STALE_DAYS)
-
-  const verified = []
+  // ─── 9. Trust the pre-verified zb_status from the daily cron ─────
+  // The inline ZeroBounce phase used to live here. It timed out on Drift-v1.
+  // The /api/cron/zerobounce-verify cron now keeps every active contact's
+  // zb_status fresh, and POST's 10%-stale gate refuses sends that would
+  // otherwise need inline catch-up. Step 7's BLOCKED_STATUSES filter has
+  // already excluded any contact with a known-bad status.
+  const verified = eligible
   const zbExcluded = []
-  let reVerified = 0
-
-  for (const contact of eligible) {
-    const isStale = !contact.zb_verified_at || new Date(contact.zb_verified_at) < thirtyDaysAgo
-    const needsVerification = !contact.zb_status || contact.zb_status === 'unknown' || isStale
-    let status = contact.zb_status
-
-    if (needsVerification) {
-      if (reVerified > 0) await new Promise(r => setTimeout(r, 200))
-      const result = await verifyEmail(contact.signup_email)
-      status = result.status
-      reVerified++
-
-      await supabase
-        .from('contacts')
-        .update({ zb_status: status, zb_verified_at: new Date().toISOString() })
-        .eq('id', contact.id)
-    }
-
-    if (BLOCKED_STATUSES.has(status)) {
-      zbExcluded.push({ id: contact.id, email: contact.signup_email, reason: status })
-      await supabase
-        .from('contacts')
-        .update({ newsletter_status: 'bounced' })
-        .eq('id', contact.id)
-    } else {
-      verified.push(contact)
-    }
-  }
 
   if (verified.length === 0) {
     await supabase
@@ -371,6 +402,7 @@ async function runSend({
       .select('contact_id')
       .in('contact_id', verifiedIds)
       .in('send_id', matchingSendIds)
+      .in('status', DELIVERED_STATUSES)
       .range(0, 9999)
 
     if (overlap && overlap.length > 0) {
@@ -383,6 +415,7 @@ async function runSend({
         .update({
           status: 'failed',
           completed_at: new Date().toISOString(),
+          failure_reason: reason,
         })
         .eq('id', sendId)
 
@@ -413,7 +446,11 @@ async function runSend({
     console.error('Failed to insert recipients:', insertError)
     await supabase
       .from('newsletter_sends')
-      .update({ status: 'failed', completed_at: new Date().toISOString() })
+      .update({
+        status: 'failed',
+        completed_at: new Date().toISOString(),
+        failure_reason: `newsletter_recipients insert failed: ${insertError.message || insertError}`,
+      })
       .eq('id', sendId)
     return
   }
@@ -447,7 +484,7 @@ async function runSend({
     }
   }))
 
-  // ─── 12. Send via Resend in batches of 50 ───────────────────────
+  // ─── 12. Send via Resend in batches of RESEND_BATCH_SIZE ────────
   let totalSent = 0
   for (let chunk = 0; chunk < emails.length; chunk += RESEND_BATCH_SIZE) {
     const batch = emails.slice(chunk, chunk + RESEND_BATCH_SIZE)
@@ -476,15 +513,27 @@ async function runSend({
       console.error(`Newsletter send: Resend batch error (chunk ${chunk / RESEND_BATCH_SIZE + 1}):`, resendError)
     } else {
       const results = resendData?.data || resendData || []
+      // Collect recipient/Resend id pairs from this batch; apply them in a
+      // single bulk RPC instead of one round trip per recipient.
+      const recipientIds = []
+      const resendIds = []
       for (let i = 0; i < batch.length; i++) {
         const resendResult = Array.isArray(results) ? results[i] : null
         const resendId = resendResult?.id || null
         if (resendId) {
           totalSent++
-          await supabase
-            .from('newsletter_recipients')
-            .update({ resend_id: resendId, status: 'sent', sent_at: now })
-            .eq('id', batch[i].recipientId)
+          recipientIds.push(batch[i].recipientId)
+          resendIds.push(resendId)
+        }
+      }
+      if (recipientIds.length > 0) {
+        const { error: rpcErr } = await supabase.rpc('mark_newsletter_recipients_sent', {
+          p_recipient_ids: recipientIds,
+          p_resend_ids: resendIds,
+          p_sent_at: now,
+        })
+        if (rpcErr) {
+          console.error(`Newsletter send: bulk recipient update failed (chunk ${chunk / RESEND_BATCH_SIZE + 1}):`, rpcErr)
         }
       }
     }

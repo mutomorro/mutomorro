@@ -48,7 +48,10 @@ export async function POST(request) {
       .single()
 
     // 2. Verify email - use cached result if available, otherwise call ZeroBounce
-    const verification = getCachedVerification(existing) || await verifyEmail(emailNormalised)
+    const cachedVerification = getCachedVerification(existing)
+    const verification = cachedVerification ?? await verifyEmail(emailNormalised)
+    // Only stamp zb_verified_at when we actually called ZeroBounce.
+    const zbVerifiedAt = cachedVerification ? null : new Date().toISOString()
 
     // 3. If blocked: return success (silent rejection) but don't create contact or send email
     if (verification.shouldBlock) {
@@ -75,6 +78,7 @@ export async function POST(request) {
         download_count: mergedDownloads.length,
         last_download_date: new Date().toISOString(),
         zb_status: verification.status,
+        ...(zbVerifiedAt && { zb_verified_at: zbVerifiedAt }),
       }
 
       // Double opt-in: only trigger for contacts not already confirmed/active/unsubscribed
@@ -114,6 +118,7 @@ export async function POST(request) {
         download_count: 1,
         last_download_date: new Date().toISOString(),
         zb_status: verification.status,
+        zb_verified_at: new Date().toISOString(),
       }
 
       if (newsletterOptIn) {

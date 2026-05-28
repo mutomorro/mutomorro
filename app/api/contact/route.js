@@ -49,7 +49,12 @@ export async function POST(request) {
       .eq('signup_email', emailNormalised)
       .single()
 
-    const verification = getCachedVerification(existing) || await verifyEmail(emailNormalised)
+    const cachedVerification = getCachedVerification(existing)
+    const verification = cachedVerification ?? await verifyEmail(emailNormalised)
+    // Only write zb_verified_at when this run actually called ZeroBounce.
+    // Cache-hits return the stored zb_status unchanged; bumping the timestamp
+    // there would mask staleness and starve the daily verification cron.
+    const zbVerifiedAt = cachedVerification ? null : new Date().toISOString()
 
     // Run notification email, submission storage, and contact upsert independently
     // so one failure doesn't block the others
@@ -173,6 +178,7 @@ export async function POST(request) {
             sources: mergedSources,
             tags: mergedTags,
             zb_status: verification.status,
+            ...(zbVerifiedAt && { zb_verified_at: zbVerifiedAt }),
           })
           .eq('id', existing.id)
 
@@ -194,6 +200,7 @@ export async function POST(request) {
             first_source: 'contact-form',
             tags: ['inbound-enquiry'],
             zb_status: verification.status,
+            zb_verified_at: new Date().toISOString(),
           })
           .select('id')
           .single()

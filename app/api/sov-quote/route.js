@@ -50,7 +50,10 @@ export async function POST(request) {
       .eq('signup_email', emailNormalised)
       .single()
 
-    const verification = getCachedVerification(existing) || await verifyEmail(emailNormalised)
+    const cachedVerification = getCachedVerification(existing)
+    const verification = cachedVerification ?? await verifyEmail(emailNormalised)
+    // Only stamp zb_verified_at when we actually called ZeroBounce.
+    const zbVerifiedAt = cachedVerification ? null : new Date().toISOString()
 
     // 1. Notification email to SoV inbox
     try {
@@ -170,6 +173,7 @@ export async function POST(request) {
             sources: mergedSources,
             tags: mergedTags,
             zb_status: verification.status,
+            ...(zbVerifiedAt && { zb_verified_at: zbVerifiedAt }),
           })
           .eq('id', existing.id)
         if (updateError) console.error('Supabase contact update error:', updateError)
@@ -187,6 +191,7 @@ export async function POST(request) {
             tags: ['sov-quote', 'inbound-enquiry'],
             tier: 'Tier 1',
             zb_status: verification.status,
+            zb_verified_at: new Date().toISOString(),
           })
           .select('id')
           .single()

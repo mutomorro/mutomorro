@@ -52,7 +52,10 @@ export async function POST(request) {
       .single()
 
     // 2. Verify email
-    const verification = getCachedVerification(existing) || await verifyEmail(emailNormalised)
+    const cachedVerification = getCachedVerification(existing)
+    const verification = cachedVerification ?? await verifyEmail(emailNormalised)
+    // Only stamp zb_verified_at when we actually called ZeroBounce.
+    const zbVerifiedAt = cachedVerification ? null : new Date().toISOString()
 
     // 3. If blocked: silent success, no contact, no email
     if (verification.shouldBlock) {
@@ -79,6 +82,7 @@ export async function POST(request) {
         download_count: mergedDownloads.length,
         last_download_date: new Date().toISOString(),
         zb_status: verification.status,
+        ...(zbVerifiedAt && { zb_verified_at: zbVerifiedAt }),
       }
 
       if (newsletterOptIn && !['confirmed', 'active', 'unsubscribed'].includes(existing.newsletter_status)) {
@@ -114,6 +118,7 @@ export async function POST(request) {
         last_download_date: new Date().toISOString(),
         tier: 'Tier 2',
         zb_status: verification.status,
+        zb_verified_at: new Date().toISOString(),
       }
 
       if (newsletterOptIn) {

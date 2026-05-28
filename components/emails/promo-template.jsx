@@ -102,12 +102,14 @@ export default function PromoTemplate({
 
           {/* Masthead */}
           <Section style={{ padding: '24px 44px 20px' }}>
-            <Img
-              src="https://mutomorro.com/images/mutomorro-logo.png"
-              alt="Mutomorro"
-              width="132"
-              style={{ display: 'block' }}
-            />
+            <Link href="https://mutomorro.com" style={{ textDecoration: 'none', display: 'inline-block' }}>
+              <Img
+                src="https://mutomorro.com/images/mutomorro-logo.png"
+                alt="Mutomorro"
+                width="132"
+                style={{ display: 'block' }}
+              />
+            </Link>
           </Section>
 
           {/* Optional hero image */}
@@ -212,12 +214,14 @@ export default function PromoTemplate({
             marginTop: '48px',
             padding: '36px 44px',
           }}>
-            <Img
-              src="https://mutomorro.com/images/mutomorro-logo.png"
-              alt="Mutomorro"
-              width="88"
-              style={{ display: 'block', marginBottom: '16px', opacity: 0.5 }}
-            />
+            <Link href="https://mutomorro.com" style={{ textDecoration: 'none', display: 'inline-block', marginBottom: '16px' }}>
+              <Img
+                src="https://mutomorro.com/images/mutomorro-logo.png"
+                alt="Mutomorro"
+                width="88"
+                style={{ display: 'block', opacity: 0.5 }}
+              />
+            </Link>
             <Text style={{
               fontFamily,
               fontSize: '14px',

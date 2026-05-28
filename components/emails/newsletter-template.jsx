@@ -283,12 +283,14 @@ function Masthead({ date }) {
     <Section style={{ padding: '24px 44px 20px' }}>
       <Row>
         <Column style={{ verticalAlign: 'middle' }}>
-          <Img
-            src="https://mutomorro.com/images/mutomorro-logo.png"
-            alt="Mutomorro"
-            width="132"
-            style={{ display: 'block' }}
-          />
+          <Link href="https://mutomorro.com" style={{ textDecoration: 'none', display: 'inline-block' }}>
+            <Img
+              src="https://mutomorro.com/images/mutomorro-logo.png"
+              alt="Mutomorro"
+              width="132"
+              style={{ display: 'block' }}
+            />
+          </Link>
         </Column>
         <Column style={{ verticalAlign: 'middle', textAlign: 'right' }}>
           <Text style={{
@@ -315,12 +317,14 @@ function Footer({ unsubscribeUrl, viewInBrowserUrl }) {
       marginTop: '16px',
       padding: '36px 44px',
     }}>
-      <Img
-        src="https://mutomorro.com/images/mutomorro-logo.png"
-        alt="Mutomorro"
-        width="88"
-        style={{ display: 'block', marginBottom: '16px', opacity: 0.5 }}
-      />
+      <Link href="https://mutomorro.com" style={{ textDecoration: 'none', display: 'inline-block', marginBottom: '16px' }}>
+        <Img
+          src="https://mutomorro.com/images/mutomorro-logo.png"
+          alt="Mutomorro"
+          width="88"
+          style={{ display: 'block', opacity: 0.5 }}
+        />
+      </Link>
       <Text style={{
         fontFamily,
         fontSize: '12px',
@@ -814,12 +818,14 @@ function LegacyNewsletterTemplate({
           <Section style={{ padding: '24px 44px 20px' }}>
             <Row>
               <Column style={{ verticalAlign: 'middle' }}>
-                <Img
-                  src="https://mutomorro.com/images/mutomorro-logo.png"
-                  alt="Mutomorro"
-                  width="132"
-                  style={{ display: 'block' }}
-                />
+                <Link href="https://mutomorro.com" style={{ textDecoration: 'none', display: 'inline-block' }}>
+                  <Img
+                    src="https://mutomorro.com/images/mutomorro-logo.png"
+                    alt="Mutomorro"
+                    width="132"
+                    style={{ display: 'block' }}
+                  />
+                </Link>
               </Column>
               <Column style={{ verticalAlign: 'middle', textAlign: 'right' }}>
                 <Text style={{
@@ -957,12 +963,14 @@ function LegacyNewsletterTemplate({
             marginTop: '48px',
             padding: '36px 44px',
           }}>
-            <Img
-              src="https://mutomorro.com/images/mutomorro-logo.png"
-              alt="Mutomorro"
-              width="88"
-              style={{ display: 'block', marginBottom: '16px', opacity: 0.5 }}
-            />
+            <Link href="https://mutomorro.com" style={{ textDecoration: 'none', display: 'inline-block', marginBottom: '16px' }}>
+              <Img
+                src="https://mutomorro.com/images/mutomorro-logo.png"
+                alt="Mutomorro"
+                width="88"
+                style={{ display: 'block', opacity: 0.5 }}
+              />
+            </Link>
             <Text style={{
               fontFamily,
               fontSize: '14px',

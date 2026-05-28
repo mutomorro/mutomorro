@@ -83,7 +83,9 @@ export async function GET(request) {
     })
   }
 
-  const results = { valid: 0, invalid: 0, abuse: 0, spamtrap: 0, do_not_mail: 0, catch_all: 0, unknown: 0, other: 0, blocked: 0 }
+  // Keys match what ZeroBounce actually returns in `status`. Note that ZB
+  // mixes hyphenated (`catch-all`) and underscored (`do_not_mail`) statuses.
+  const results = { valid: 0, invalid: 0, abuse: 0, spamtrap: 0, do_not_mail: 0, 'catch-all': 0, unknown: 0, other: 0, blocked: 0 }
   let processed = 0
   let timedOut = false
   let creditsExhausted = false
@@ -211,7 +213,7 @@ async function sendSummaryEmail(resend, to, { runStartedAt, runFinishedAt, proce
     row('Remaining (next run)', remaining, remaining > 0 ? '#FFA200' : '#221C2B'),
     row('Valid', results.valid),
     row('Invalid', results.invalid),
-    row('Catch-all', results.catch_all),
+    row('Catch-all', results['catch-all']),
     row('Unknown', results.unknown),
     results.spamtrap > 0 ? row('Spamtrap', results.spamtrap, '#FF4279') : '',
     results.abuse > 0 ? row('Abuse', results.abuse, '#FF4279') : '',

@@ -83,8 +83,11 @@ export function buildWelcomeEmail({ firstName, unsubscribeUrl = '' }) {
               <p style="margin:0 0 20px;font-family:'Source Sans 3','Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;font-size:18px;font-weight:300;line-height:1.75;color:#221C2B;">
                 That's what these emails are about. The patterns we notice across the leaders we work with. The quiet connections between things that look unrelated. What shifts when you start paying attention to the spaces between the parts, not just the parts themselves.
               </p>
-              <p style="margin:0 0 28px;font-family:'Source Sans 3','Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;font-size:18px;font-weight:300;line-height:1.75;color:#221C2B;">
+              <p style="margin:0 0 20px;font-family:'Source Sans 3','Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;font-size:18px;font-weight:300;line-height:1.75;color:#221C2B;">
                 If LinkedIn is your thing, that's where we share the most: <a href="https://www.linkedin.com/company/mutomorro/" target="_blank" style="color:#9B51E0;text-decoration:none;">linkedin.com/mutomorro</a>
+              </p>
+              <p style="margin:0 0 28px;font-family:'Source Sans 3','Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;font-size:18px;font-weight:300;line-height:1.75;color:#221C2B;">
+                And if you'd like to read past editions: <a href="https://mutomorro.com/newsletter" target="_blank" style="color:#9B51E0;text-decoration:none;">mutomorro.com/newsletter</a>
               </p>
             </td>
           </tr>

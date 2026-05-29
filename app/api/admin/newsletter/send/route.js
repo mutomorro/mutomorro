@@ -458,7 +458,7 @@ async function runSend({
   const recipientMap = new Map()
   for (const r of insertedRecipients) recipientMap.set(r.contact_id, r)
 
-  const viewInBrowserUrl = `https://mutomorro.com/newsletter/${sendId}`
+  const viewInBrowserUrl = `https://mutomorro.com/newsletter/${issueKey}`
 
   const emails = await Promise.all(verified.map(async (contact) => {
     const recipient = recipientMap.get(contact.id)

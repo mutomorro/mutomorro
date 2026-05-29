@@ -1,3 +1,4 @@
+import { createClient } from '@supabase/supabase-js'
 import { client } from '../sanity/client'
 
 const BASE_URL = 'https://mutomorro.com'
@@ -23,6 +24,7 @@ export default async function sitemap() {
     { url: `${BASE_URL}/topics`, lastModified: STATIC_LASTMOD, changeFrequency: 'weekly', priority: 0.8 },
     { url: `${BASE_URL}/diagnostics`, lastModified: new Date('2026-05-22'), changeFrequency: 'monthly', priority: 0.7 },
     { url: `${BASE_URL}/diagnostics/drift-audit`, lastModified: new Date('2026-05-22'), changeFrequency: 'monthly', priority: 0.8 },
+    { url: `${BASE_URL}/newsletter`, lastModified: new Date('2026-05-29'), changeFrequency: 'weekly', priority: 0.7 },
     { url: `${BASE_URL}/privacy`, lastModified: STATIC_LASTMOD, changeFrequency: 'yearly', priority: 0.3 },
     { url: `${BASE_URL}/terms`, lastModified: STATIC_LASTMOD, changeFrequency: 'yearly', priority: 0.3 },
   ]
@@ -111,6 +113,20 @@ export default async function sitemap() {
       _updatedAt
     }`),
   ])
+
+  // Public newsletter editions. Volume is tiny — .range(0, 999) is fine for
+  // years and won't hit the Supabase 1,000-row default.
+  const supabaseAdmin = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL,
+    process.env.SUPABASE_SERVICE_ROLE_KEY
+  )
+  const { data: publicNewsletters } = await supabaseAdmin
+    .from('newsletter_sends')
+    .select('issue_key, completed_at')
+    .eq('is_public', true)
+    .eq('status', 'complete')
+    .order('completed_at', { ascending: false })
+    .range(0, 999)
 
   // Build a deduped, null-stripped images array from any number of inputs.
   const collectImages = (...sources) => [
@@ -212,6 +228,12 @@ export default async function sitemap() {
       lastModified: r._updatedAt,
       changeFrequency: 'monthly',
       priority: 0.7,
+    })),
+    ...(publicNewsletters || []).map(n => ({
+      url: `${BASE_URL}/newsletter/${n.issue_key}`,
+      lastModified: n.completed_at ? new Date(n.completed_at) : undefined,
+      changeFrequency: 'monthly',
+      priority: 0.6,
     })),
   ]
 

@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js'
 import { notFound, permanentRedirect } from 'next/navigation'
+import { renderEditorial } from '../../../lib/newsletter-render.js'
 import NewsletterBrowserView from './NewsletterBrowserView'
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
@@ -85,7 +86,19 @@ export default async function NewsletterIssuePage({ params }) {
     permanentRedirect(`/newsletter/${row.issue_key}`)
   }
 
-  const htmlBody = (row.html_body || '')
+  // Admin sends don't persist html_body — render on the fly from content_json.
+  // Warm-up rows already have html_body so this fallback only fires for
+  // editorial/admin sends and any future row with the same shape.
+  let rawHtml = row.html_body || ''
+  if (!rawHtml && row.content_json) {
+    try {
+      rawHtml = await renderEditorial(row.content_json, {})
+    } catch (err) {
+      console.error(`Failed to render archive view for ${row.issue_key}:`, err)
+    }
+  }
+
+  const htmlBody = rawHtml
     .replace(/href="[^"]*\/api\/unsubscribe[^"]*"/g, 'href="https://mutomorro.com"')
     .replace(/>Unsubscribe</g, '>Subscribe<')
 

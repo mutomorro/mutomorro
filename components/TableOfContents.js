@@ -1,37 +1,14 @@
 'use client'
 
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { slugifyHeading } from '../lib/slugify'
+import { buildHeadingIndex } from '../lib/slugify'
 
 const HEADER_OFFSET = 96
 
-// Convert PortableText children spans to a plain string.
-function blockToText(block) {
-  if (!block?.children) return ''
-  return block.children
-    .filter((c) => c?._type === 'span' || typeof c?.text === 'string')
-    .map((c) => c.text || '')
-    .join('')
-}
-
-function extractHeadings(body) {
-  if (!Array.isArray(body)) return []
-  const out = []
-  for (const block of body) {
-    if (block?._type !== 'block') continue
-    const style = block.style
-    if (style !== 'h2' && style !== 'h3') continue
-    const text = blockToText(block).trim()
-    if (!text) continue
-    const id = slugifyHeading(text)
-    if (!id) continue
-    out.push({ id, text, level: style === 'h2' ? 2 : 3 })
-  }
-  return out
-}
-
 export default function TableOfContents({ body }) {
-  const headings = useMemo(() => extractHeadings(body), [body])
+  // Shares buildHeadingIndex with the heading renderer, so the ids here are the
+  // same unique, de-duplicated anchors the headings actually carry in the DOM.
+  const headings = useMemo(() => buildHeadingIndex(body).headings, [body])
   const [activeId, setActiveId] = useState(null)
   const [progress, setProgress] = useState(0)
   const [mobileOpen, setMobileOpen] = useState(false)

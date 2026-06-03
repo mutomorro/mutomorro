@@ -10,6 +10,13 @@ import { PortableText } from '@portabletext/react'
  *
  * This is a server component (no 'use client'): the table is emitted in the
  * server-rendered HTML so crawlers and AI answer engines see a genuine <table>.
+ *
+ * React keys are derived from position (`r`, `${r}-${c}`), NOT cell `_key`s.
+ * Nested cell `_key`s aren't guaranteed unique among siblings (table data can be
+ * authored/imported by paths that reuse keys), and duplicate keys let React drop
+ * or duplicate cells on render. Position is unique per render and the table is
+ * static (no client reordering), so this is both safe and correct — don't switch
+ * back to `_key`.
  */
 
 const cellComponents = {
@@ -56,7 +63,7 @@ export default function ContentTable({ value }) {
           <thead>
             <tr>
               {(headerRow.cells || []).map((cell, i) => (
-                <th key={cell?._key || i} scope="col">
+                <th key={i} scope="col">
                   <Cell cell={cell} />
                 </th>
               ))}
@@ -65,9 +72,9 @@ export default function ContentTable({ value }) {
         ) : null}
         <tbody>
           {bodyRows.map((row, r) => (
-            <tr key={row?._key || r}>
+            <tr key={r}>
               {(row?.cells || []).map((cell, c) => (
-                <td key={cell?._key || c}>
+                <td key={`${r}-${c}`}>
                   <Cell cell={cell} />
                 </td>
               ))}

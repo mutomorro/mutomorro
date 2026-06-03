@@ -14,7 +14,8 @@ import ThreeColumnLayout from '../../../components/ThreeColumnLayout'
 import TableOfContents from '../../../components/TableOfContents'
 import ContentSidebar from '../../../components/ContentSidebar'
 import BackgroundPattern from '@/components/animations/BackgroundPattern'
-import { headingBlocks } from '../../../lib/portable-text-headings'
+import { makeHeadingBlocks } from '../../../lib/portable-text-headings'
+import { buildHeadingIndex } from '../../../lib/slugify'
 import { getSidebarCallouts } from '../../../sanity/client'
 
 export const revalidate = 3600
@@ -247,7 +248,7 @@ export default async function ToolPage({ params }) {
                     ),
                   },
                   block: {
-                    ...headingBlocks,
+                    ...makeHeadingBlocks(buildHeadingIndex(tool.body).idByKey),
                     blockquote: ({ children }) => (
                       <blockquote className="pull-quote">{children}</blockquote>
                     ),

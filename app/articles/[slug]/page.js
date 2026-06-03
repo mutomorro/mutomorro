@@ -13,7 +13,8 @@ import ThreeColumnLayout from '../../../components/ThreeColumnLayout'
 import TableOfContents from '../../../components/TableOfContents'
 import ContentSidebar from '../../../components/ContentSidebar'
 import ContentTable from '../../../components/ContentTable'
-import { headingBlocks } from '../../../lib/portable-text-headings'
+import { makeHeadingBlocks } from '../../../lib/portable-text-headings'
+import { buildHeadingIndex } from '../../../lib/slugify'
 import { getSidebarCallouts } from '../../../sanity/client'
 
 export const revalidate = 3600
@@ -246,7 +247,7 @@ export default async function ArticlePage({ params }) {
                   },
                 },
                 block: {
-                  ...headingBlocks,
+                  ...makeHeadingBlocks(buildHeadingIndex(article.body).idByKey),
                   blockquote: ({ children }) => (
                     <blockquote className="pull-quote">{children}</blockquote>
                   ),

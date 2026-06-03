@@ -479,7 +479,7 @@ export default function Nav() {
               <div className="explore-featured__image">
                 <div className="explore-featured__image-inner">
                   <img
-                    src="https://cdn.sanity.io/images/c6pg4t4h/production/a1183aad79022f1aa0200d6be7b3f0897223f157-2480x3508.png"
+                    src="https://cdn.sanity.io/images/c6pg4t4h/production/a1183aad79022f1aa0200d6be7b3f0897223f157-2480x3508.png?w=720&auto=format&q=82&fit=max"
                     alt="Thinking in Ecosystems primer"
                     style={{ width: '100%', height: 'auto', display: 'block' }}
                   />

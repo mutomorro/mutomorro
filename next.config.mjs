@@ -2,6 +2,12 @@
 const nextConfig = {
   trailingSlash: false,
   images: {
+    // Optimise Sanity images at the Sanity CDN directly (single pass, full
+    // retina resolution) instead of routing them through /_next/image, which
+    // double-encoded already-shrunk sources and made everything look blurry.
+    // See sanity/imageLoader.js. Non-Sanity images (local SVGs) pass through.
+    loader: 'custom',
+    loaderFile: './sanity/imageLoader.js',
     remotePatterns: [
       { protocol: 'https', hostname: 'cdn.sanity.io' },
     ],

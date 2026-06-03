@@ -133,7 +133,7 @@ export default async function CaseStudy({ params }) {
     types: {
       image: ({ value }) => (
         <div className="img-mat" style={{ margin: '2.5rem 0' }}>
-          <Lightbox src={urlFor(value).width(900).url()} alt={value.alt || ''} cover={false} />
+          <Lightbox src={urlFor(value).url()} alt={value.alt || ''} cover={false} />
         </div>
       ),
     },

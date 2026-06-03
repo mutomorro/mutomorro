@@ -72,6 +72,7 @@ export default defineType({
       type: 'array',
       of: [
         { type: 'block' },
+        { type: 'table' },
         { type: 'image', options: { hotspot: true } },
       ],
       validation: Rule => Rule.required(),

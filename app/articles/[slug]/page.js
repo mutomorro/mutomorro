@@ -12,6 +12,7 @@ import CalloutTeaser from '../../../components/CalloutTeaser'
 import ThreeColumnLayout from '../../../components/ThreeColumnLayout'
 import TableOfContents from '../../../components/TableOfContents'
 import ContentSidebar from '../../../components/ContentSidebar'
+import ContentTable from '../../../components/ContentTable'
 import { headingBlocks } from '../../../lib/portable-text-headings'
 import { getSidebarCallouts } from '../../../sanity/client'
 
@@ -228,6 +229,7 @@ export default async function ArticlePage({ params }) {
                       />
                     </div>
                   ),
+                  table: ({ value }) => <ContentTable value={value} />,
                 },
                 marks: {
                   link: ({ value, children }) => {

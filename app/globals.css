@@ -2350,6 +2350,101 @@ a:hover {
   color: var(--accent);
 }
 
+/* ============================================
+   PORTABLE-TEXT TABLES (semantic, rich cells)
+   Rendered by components/ContentTable.js. Cells contain Portable Text, so
+   in-cell <p>/<strong> are restyled to sit inside table cells rather than
+   inherit the body's 18px paragraph / 400-weight strong treatment.
+   ============================================ */
+
+/* Horizontal-scroll container — stops a wide table breaking the narrow
+   single-column mobile layout. Focusable + labelled so keyboard and
+   screen-reader users can reach and scroll it. */
+.content-table-wrap {
+  margin: 2rem 0;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.content-table-wrap:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+.content-table {
+  width: 100%;
+  min-width: 540px; /* fits the ~568px desktop content column at 1280; scrolls horizontally on phones */
+  border-collapse: collapse;
+  font-family: var(--font);
+  font-size: 16px;
+  line-height: 1.55;
+  color: var(--dark);
+}
+
+.content-table__caption {
+  caption-side: top;
+  text-align: left;
+  font-size: 14px;
+  font-style: italic;
+  color: rgba(34, 28, 43, 0.6);
+  margin-bottom: 0.75rem;
+}
+
+/* Header row: clearly weighted, anchored with a warm-purple tint and a brand
+   accent underline. Solid dark text at 600 — deliberately not washed out. */
+.content-table thead th {
+  text-align: left;
+  vertical-align: bottom;
+  font-weight: 600;
+  color: var(--dark);
+  background: rgba(155, 81, 224, 0.06);
+  border-bottom: 2px solid var(--accent);
+  padding: 14px 18px;
+}
+
+.content-table tbody td {
+  vertical-align: top;
+  padding: 14px 18px;
+  border-bottom: 1px solid rgba(34, 28, 43, 0.1);
+}
+.content-table tbody tr:last-child td {
+  border-bottom: none;
+}
+.content-table tbody tr:hover td {
+  background: rgba(250, 246, 241, 0.7);
+}
+
+/* Cells render through Portable Text, which emits <p>. Strip the body's
+   paragraph sizing/margins inside cells, and make in-cell bold genuinely
+   bold (the body sets .portable-text strong to weight 400). Higher
+   specificity than the .portable-text p / strong rules above. */
+.content-table td p,
+.content-table th p {
+  margin: 0;
+  font-size: inherit;
+  line-height: inherit;
+  color: inherit;
+}
+.content-table td p + p,
+.content-table th p + p {
+  margin-top: 0.5em;
+}
+.content-table td strong,
+.content-table th strong {
+  font-weight: 600;
+  color: var(--dark);
+}
+
+@media (max-width: 767px) {
+  .content-table {
+    font-size: 15px;
+  }
+  .content-table thead th,
+  .content-table tbody td {
+    padding: 10px 12px;
+  }
+}
+
 /* ================================================
    CONTENT HERO GRID (tools, articles, case studies)
    ================================================ */

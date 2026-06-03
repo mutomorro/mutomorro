@@ -15,6 +15,7 @@ import resource from './sanity/schemas/resource'
 import sectorLandingPage from './sanity/schemas/sectorLandingPage'
 import pageCallout from './sanity/schemas/pageCallout'
 import theme from './sanity/schemas/theme'
+import table from './sanity/schemas/table'
 
 export default defineConfig({
   name: 'mutomorro',
@@ -24,6 +25,6 @@ export default defineConfig({
   dataset: 'production',
   plugins: [structureTool(), media()],
   schema: {
-    types: [project, tool, dimension, dimensionArticle, article, course, service, serviceSubPage, frameworkOverview, capabilityService, resource, sectorLandingPage, pageCallout, theme],
+    types: [project, tool, dimension, dimensionArticle, article, course, service, serviceSubPage, frameworkOverview, capabilityService, resource, sectorLandingPage, pageCallout, theme, table],
   },
 })

@@ -113,7 +113,7 @@ export default function SovOverviewForm() {
       )}
 
       <form onSubmit={handleSubmit} noValidate>
-        <input type="text" name="fax_number" tabIndex={-1} autoComplete="off"
+        <input type="text" name="fax_number" tabIndex={-1} autoComplete="nope"
           style={{ position: 'absolute', left: '-9999px', width: 1, height: 1 }} aria-hidden="true" />
 
         <div className="form-group">

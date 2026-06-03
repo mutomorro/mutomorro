@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useId } from 'react'
 import posthog from 'posthog-js'
 import { isFreeEmailProvider, FREE_EMAIL_MESSAGE, FREE_EMAIL_EMPHASIS } from '@/lib/email-validation'
 
@@ -55,6 +55,11 @@ export default function ToolDownloadForm({ toolTitle, toolSlug, pdfUrl }) {
   const [formLoadedAt] = useState(Date.now())
   const [previewVariant, setPreviewVariant] = useState(null) // null | 'optIn' | 'noOptIn' — dev-only
 
+  // Namespace all field ids per instance so two forms on one page can't collide
+  // (label htmlFor only binds to the first matching id). Submission/anti-spam
+  // keys off the name attributes, not these ids.
+  const fid = useId()
+
   useEffect(() => {
     if (process.env.NODE_ENV !== 'development') return
     const params = new URLSearchParams(window.location.search)
@@ -101,7 +106,7 @@ export default function ToolDownloadForm({ toolTitle, toolSlug, pdfUrl }) {
           toolTitle,
           toolSlug,
           newsletterOptIn: formData.newsletterOptIn,
-          company_website: honeypot,
+          fax_number: honeypot,
           _t: formLoadedAt,
         }),
       })
@@ -237,16 +242,17 @@ export default function ToolDownloadForm({ toolTitle, toolSlug, pdfUrl }) {
 
       <form onSubmit={handleSubmit}>
 
-        {/* Honeypot - hidden from real users */}
+        {/* Honeypot - hidden from real users; named "fax" (not "company website")
+            so browser autofill won't fill it and false-flag a real person as a bot */}
         <div style={{ position: 'absolute', left: '-9999px', opacity: 0, height: 0, overflow: 'hidden' }} aria-hidden="true" tabIndex={-1}>
-          <label htmlFor="company_website">Company Website</label>
+          <label htmlFor={`${fid}-fax_number`}>Fax</label>
           <input
             type="text"
-            id="company_website"
-            name="company_website"
+            id={`${fid}-fax_number`}
+            name="fax_number"
             value={honeypot}
             onChange={(e) => setHoneypot(e.target.value)}
-            autoComplete="off"
+            autoComplete="nope"
             tabIndex={-1}
           />
         </div>
@@ -259,10 +265,10 @@ export default function ToolDownloadForm({ toolTitle, toolSlug, pdfUrl }) {
           marginBottom: '20px',
         }}>
           <div>
-            <label htmlFor="firstName" className="form-label">First name</label>
+            <label htmlFor={`${fid}-firstName`} className="form-label">First name</label>
             <input
               type="text"
-              id="firstName"
+              id={`${fid}-firstName`}
               name="firstName"
               required
               value={formData.firstName}
@@ -272,10 +278,10 @@ export default function ToolDownloadForm({ toolTitle, toolSlug, pdfUrl }) {
             />
           </div>
           <div>
-            <label htmlFor="lastName" className="form-label">Last name</label>
+            <label htmlFor={`${fid}-lastName`} className="form-label">Last name</label>
             <input
               type="text"
-              id="lastName"
+              id={`${fid}-lastName`}
               name="lastName"
               required
               value={formData.lastName}
@@ -288,10 +294,10 @@ export default function ToolDownloadForm({ toolTitle, toolSlug, pdfUrl }) {
 
         {/* Email */}
         <div className="form-group">
-          <label htmlFor="email" className="form-label">Work email</label>
+          <label htmlFor={`${fid}-email`} className="form-label">Work email</label>
           <input
             type="email"
-            id="email"
+            id={`${fid}-email`}
             name="email"
             required
             value={formData.email}
@@ -326,7 +332,7 @@ export default function ToolDownloadForm({ toolTitle, toolSlug, pdfUrl }) {
         {/* Newsletter opt-in - unticked by default */}
         <div style={{ margin: '1.25rem 0 1.75rem' }}>
           <label
-            htmlFor="newsletterOptIn"
+            htmlFor={`${fid}-newsletterOptIn`}
             style={{
               display: 'flex',
               alignItems: 'flex-start',
@@ -336,7 +342,7 @@ export default function ToolDownloadForm({ toolTitle, toolSlug, pdfUrl }) {
           >
             <input
               type="checkbox"
-              id="newsletterOptIn"
+              id={`${fid}-newsletterOptIn`}
               name="newsletterOptIn"
               checked={formData.newsletterOptIn}
               onChange={handleChange}

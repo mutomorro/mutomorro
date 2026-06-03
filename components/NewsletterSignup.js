@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useId } from 'react'
 import posthog from 'posthog-js'
 
 export default function NewsletterSignup({ variant = 'inline' }) {
@@ -13,18 +13,26 @@ export default function NewsletterSignup({ variant = 'inline' }) {
   const isFooterRow = variant === 'footer-row'
   const isHomepage = variant === 'homepage'
 
-  const honeypotId = `company_website_${variant}`
+  // Unique per instance: the same variant can render more than once on a page
+  // (e.g. ContentSidebar + Footer both use variant="footer-row"), so a
+  // variant-derived id produced duplicate DOM ids. The honeypot's anti-spam
+  // function relies on name="fax_number", not this id.
+  //
+  // Named/labelled "fax" (not "company website") so browser autofill and
+  // password managers won't populate this hidden field for real visitors —
+  // an autofilled honeypot looks like a bot and silently drops the submission.
+  const honeypotId = `fax_number${useId()}`
 
   const honeypotField = (
     <div style={{ position: 'absolute', left: '-9999px', opacity: 0, height: 0, overflow: 'hidden' }} aria-hidden="true" tabIndex={-1}>
-      <label htmlFor={honeypotId}>Company Website</label>
+      <label htmlFor={honeypotId}>Fax</label>
       <input
         type="text"
         id={honeypotId}
-        name="company_website"
+        name="fax_number"
         value={honeypot}
         onChange={(e) => setHoneypot(e.target.value)}
-        autoComplete="off"
+        autoComplete="nope"
         tabIndex={-1}
       />
     </div>
@@ -42,7 +50,7 @@ export default function NewsletterSignup({ variant = 'inline' }) {
       const res = await fetch('/api/newsletter', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...formData, company_website: honeypot, _t: formLoadedAt }),
+        body: JSON.stringify({ ...formData, fax_number: honeypot, _t: formLoadedAt }),
       })
 
       if (!res.ok) throw new Error()

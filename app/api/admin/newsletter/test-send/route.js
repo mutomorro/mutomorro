@@ -65,7 +65,7 @@ export async function POST(request) {
 
       subject = `[TEST] ${content.subject}`
       previewText = content.previewText
-      html = await renderPromo(content, { unsubscribeUrl })
+      html = await renderPromo(content, { firstName, unsubscribeUrl })
     } else {
       return NextResponse.json({ error: 'Unknown template' }, { status: 400 })
     }

@@ -12,7 +12,10 @@ import {
   Hr,
 } from '@react-email/components'
 
-const fontFamily = "'Source Sans 3', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif"
+// Source Sans 3 is the web font (loaded via the <link> below). Source Sans Pro
+// is its older name and has wider native coverage in email clients; Arial /
+// Helvetica close out the chain. Kept in sync with newsletter-template.jsx.
+const fontFamily = "'Source Sans 3', 'Source Sans Pro', Arial, Helvetica, sans-serif"
 
 function isMutomorroUrl(url) {
   if (typeof url !== 'string') return false
@@ -43,11 +46,11 @@ function renderBody(body, recipientId) {
       key={i}
       style={{
         fontFamily,
-        fontSize: '20px',
-        fontWeight: 300,
+        fontSize: '15px',
+        fontWeight: 400,
         color: '#221C2B',
-        lineHeight: '1.75',
-        margin: i === paragraphs.length - 1 ? '0' : '0 0 24px 0',
+        lineHeight: '1.8',
+        margin: i === paragraphs.length - 1 ? '0' : '0 0 20px 0',
       }}
       dangerouslySetInnerHTML={{ __html: wrapLinks(p, recipientId) }}
     />
@@ -71,13 +74,22 @@ export default function PromoTemplate({
     ? `https://mutomorro.com/api/newsletter/track?rid=${recipientId}&url=${encodeURIComponent(ctaUrl)}`
     : ctaUrl
 
+  const heroImage = (
+    <Img
+      src={heroImageUrl}
+      alt={headline}
+      width="580"
+      style={{ width: '100%', maxWidth: '580px', display: 'block', border: '0' }}
+    />
+  )
+
   return (
     <Html lang="en">
       <Head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;600&display=swap" rel="stylesheet" />
         <style>{`
-          strong { font-weight: 400 !important; }
+          strong { font-weight: 600 !important; }
           a { color: #9B51E0; }
           @media only screen and (max-width: 620px) {
             .email-container { width: 100% !important; }
@@ -112,20 +124,14 @@ export default function PromoTemplate({
             </Link>
           </Section>
 
-          {/* Optional hero image */}
+          {/* Optional hero image — links to the CTA destination when one is set */}
           {heroImageUrl && (
             <Section style={{ padding: '0' }}>
-              <Img
-                src={heroImageUrl}
-                alt={headline}
-                width="580"
-                style={{
-                  width: '100%',
-                  maxWidth: '580px',
-                  display: 'block',
-                  border: '0',
-                }}
-              />
+              {ctaUrl ? (
+                <Link href={trackedCtaUrl} style={{ display: 'block' }}>{heroImage}</Link>
+              ) : (
+                heroImage
+              )}
             </Section>
           )}
 

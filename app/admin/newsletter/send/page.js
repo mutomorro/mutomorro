@@ -698,13 +698,13 @@ function PromoContent({ theme, promo, setPromo }) {
       <Field theme={theme} label="Headline" required full>
         <input type="text" value={promo.headline} onChange={onChange('headline')} style={getInputStyle(theme)} />
       </Field>
-      <Field theme={theme} label="Body" required full>
+      <Field theme={theme} label="Body" required full hint={'[first name] fills in the recipient’s name (“there” if we don’t have it). Blank lines start new paragraphs. For bold or links use raw HTML — <strong>…</strong>, <a href="…">…</a> — Markdown isn’t parsed.'}>
         <textarea
           value={promo.body}
           onChange={onChange('body')}
           rows={5}
           style={{ ...getInputStyle(theme), fontFamily: 'inherit', resize: 'vertical' }}
-          placeholder="Markdown supported. Blank lines split into paragraphs."
+          placeholder="Blank lines split into paragraphs. Use [first name] to personalise."
         />
       </Field>
       <Field theme={theme} label="CTA text" required>

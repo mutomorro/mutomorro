@@ -473,7 +473,7 @@ async function runSend({
           viewInBrowserUrl,
           recipientId,
         })
-      : await renderPromo(promoContent, { unsubscribeUrl, recipientId })
+      : await renderPromo(promoContent, { firstName, unsubscribeUrl, recipientId })
 
     return {
       email: contact.signup_email,

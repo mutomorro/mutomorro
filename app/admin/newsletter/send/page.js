@@ -692,8 +692,8 @@ function PromoContent({ theme, promo, setPromo }) {
       <Field theme={theme} label="Preview text" required>
         <input type="text" value={promo.previewText} onChange={onChange('previewText')} style={getInputStyle(theme)} />
       </Field>
-      <Field theme={theme} label="Hero image URL" full>
-        <input type="text" value={promo.heroImageUrl} onChange={onChange('heroImageUrl')} style={getInputStyle(theme)} placeholder="https://… (optional)" />
+      <Field theme={theme} label="Hero image URL" full hint="Optional. Renders full-width above the headline. Export 1160px wide (2× for retina), landscape (2:1 or 16:9), JPG/PNG under ~300KB. Upload to the Supabase newsletter-assets bucket and paste its public URL here.">
+        <input type="text" value={promo.heroImageUrl} onChange={onChange('heroImageUrl')} style={getInputStyle(theme)} placeholder="https://… public URL (optional)" />
       </Field>
       <Field theme={theme} label="Headline" required full>
         <input type="text" value={promo.headline} onChange={onChange('headline')} style={getInputStyle(theme)} />
@@ -725,13 +725,14 @@ function PromoContent({ theme, promo, setPromo }) {
   )
 }
 
-function Field({ theme, label, required, full, children }) {
+function Field({ theme, label, required, full, hint, children }) {
   return (
     <div style={full ? { gridColumn: '1 / -1' } : {}}>
       <label style={getLabelStyle(theme)}>
         {label}{required && <span style={{ color: theme.danger }}> *</span>}
       </label>
       {children}
+      {hint && <p style={{ fontSize: '12px', color: theme.textMuted, margin: '6px 0 0 0', lineHeight: 1.5 }}>{hint}</p>}
     </div>
   )
 }

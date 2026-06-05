@@ -14,6 +14,15 @@ const PROMO_DEFAULTS = {
   secondaryText: '',
 }
 
+// Promo drafts are autosaved to localStorage (this browser only) so a refresh
+// or a later visit doesn't lose work. Editorial content already lives in the
+// calendar, so only the promo form needs this.
+const PROMO_DRAFT_KEY = 'newsletter-promo-draft'
+
+function isPromoEmpty(p) {
+  return Object.keys(PROMO_DEFAULTS).every((k) => !String(p[k] || '').trim())
+}
+
 export default function NewsletterSendPage() {
   const { theme } = useAdminTheme()
 
@@ -134,6 +143,27 @@ export default function NewsletterSendPage() {
     }
   }, [template, promo.subject, promo.previewText])
 
+  // Restore a saved promo draft once on mount (this browser only).
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(PROMO_DRAFT_KEY)
+      if (raw) {
+        const saved = JSON.parse(raw)
+        if (saved && typeof saved === 'object') setPromo((p) => ({ ...p, ...saved }))
+      }
+    } catch {}
+  }, [])
+
+  // Autosave the promo draft as it changes. Never auto-deletes — the empty
+  // state is left alone, and the key is removed explicitly on Clear draft or a
+  // successful send — so the mount-time restore is never clobbered.
+  useEffect(() => {
+    if (isPromoEmpty(promo)) return
+    try {
+      localStorage.setItem(PROMO_DRAFT_KEY, JSON.stringify(promo))
+    } catch {}
+  }, [promo])
+
   // Debounced preview rendering
   const previewBodyRef = useRef('')
   useEffect(() => {
@@ -238,6 +268,11 @@ export default function NewsletterSendPage() {
       if (!res.ok) throw new Error(d.error || 'Send failed')
       setSendProgress({ sendId: d.sendId, status: 'sending', sent: 0, total: d.total })
       setConfirmOpen(false)
+
+      // Promo is on its way — drop the saved draft so it won't resurface later.
+      if (template === 'promo') {
+        try { localStorage.removeItem(PROMO_DRAFT_KEY) } catch {}
+      }
 
       // Start polling
       pollRef.current = setInterval(() => pollSendStatus(d.sendId), 3000)
@@ -716,6 +751,25 @@ function PromoContent({ theme, promo, setPromo }) {
       <Field theme={theme} label="Secondary text" full>
         <textarea value={promo.secondaryText} onChange={onChange('secondaryText')} rows={3} style={{ ...getInputStyle(theme), fontFamily: 'inherit', resize: 'vertical' }} placeholder="Optional paragraph below the CTA" />
       </Field>
+      <div style={{ gridColumn: '1 / -1', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', marginTop: '2px' }}>
+        <span style={{ fontSize: '12px', color: theme.textMuted }}>
+          Draft saves automatically in this browser.
+        </span>
+        {!isPromoEmpty(promo) && (
+          <button
+            type="button"
+            onClick={() => {
+              if (window.confirm('Clear this promo draft? This can’t be undone.')) {
+                try { localStorage.removeItem(PROMO_DRAFT_KEY) } catch {}
+                setPromo(PROMO_DEFAULTS)
+              }
+            }}
+            style={{ fontSize: '12px', color: theme.textSecondary, background: 'transparent', border: `1px solid ${theme.cardBorder}`, borderRadius: '4px', padding: '5px 10px', cursor: 'pointer' }}
+          >
+            Clear draft
+          </button>
+        )}
+      </div>
       <style>{`
         @media (max-width: 768px) {
           .newsletter-promo-grid { grid-template-columns: 1fr !important; }

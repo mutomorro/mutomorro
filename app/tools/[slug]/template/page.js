@@ -11,6 +11,26 @@ export const revalidate = 3600
 // Strip a trailing "| Mutomorro" so the layout's title template doesn't double it up.
 const stripSuffix = (s) => s?.replace(/\s*[|\-]\s*Mutomorro\s*$/i, '') || s
 
+// Trim a description to a max length at a word boundary, dropping any dangling
+// connector word so it ends cleanly. Google appends its own ellipsis when it truncates.
+const STOP_WORDS = new Set([
+  'a', 'an', 'the', 'and', 'or', 'but', 'to', 'of', 'in', 'on', 'by', 'for',
+  'with', 'from', 'into', 'through', 'that', 'as', 'at', 'is', 'its', 'it',
+])
+const capDescription = (str, max) => {
+  if (!str || str.length <= max) return str
+  let cut = str.slice(0, max).replace(/\s+\S*$/, '') // back off to a whole word
+  cut = cut.replace(/[\s,;:\-–]+$/, '')              // tidy trailing punctuation
+  const words = cut.split(/\s+/)
+  while (
+    words.length > 1 &&
+    STOP_WORDS.has(words[words.length - 1].toLowerCase().replace(/[^\w']/g, ''))
+  ) {
+    words.pop()
+  }
+  return words.join(' ').replace(/[\s,;:\-–]+$/, '')
+}
+
 export async function generateStaticParams() {
   const tools = await client.fetch(
     `*[_type == "tool" && hasToolkit == true]{ "slug": slug.current }`
@@ -42,9 +62,8 @@ export async function generateMetadata({ params }) {
         ? firstSentence
         : `${firstSentence}.`
       : ''
-    description = `Download our free ${tool.title} template PDF.${
-      sentence ? ` ${sentence}` : ''
-    } Practical guidance for workshops and team sessions included.`
+    const lead = `Free ${tool.title} template (PDF).`
+    description = capDescription(sentence ? `${lead} ${sentence}` : lead, 155)
   }
 
   const url = `https://mutomorro.com/tools/${slug}/template`

@@ -4,7 +4,9 @@ import { usePostHog } from 'posthog-js/react'
 
 export default function ServiceTripleCta({ prompt, serviceTitle, heroHeading, slug, position }) {
   const posthog = usePostHog()
-  const pdfFilename = heroHeading || `${serviceTitle} Consultancy`
+  // PDF assets in public/downloads are named by service title, not heroHeading
+  // (which is a marketing headline). Using heroHeading here 404'd every download.
+  const pdfFilename = `${serviceTitle} Consultancy`
   const pdfPath = `/downloads/${encodeURIComponent(`${pdfFilename} - Mutomorro.pdf`)}`
 
   function track(action) {
@@ -54,7 +56,9 @@ export default function ServiceTripleCta({ prompt, serviceTitle, heroHeading, sl
 
 export function ServiceTripleCtaDark({ serviceTitle, heroHeading, slug, position }) {
   const posthog = usePostHog()
-  const pdfFilename = heroHeading || `${serviceTitle} Consultancy`
+  // PDF assets in public/downloads are named by service title, not heroHeading
+  // (which is a marketing headline). Using heroHeading here 404'd every download.
+  const pdfFilename = `${serviceTitle} Consultancy`
   const pdfPath = `/downloads/${encodeURIComponent(`${pdfFilename} - Mutomorro.pdf`)}`
 
   function track(action) {

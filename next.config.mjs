@@ -357,6 +357,10 @@ const nextConfig = {
       { source: '/services/learning-evaluation-insight/:path*', destination: '/services/operational-effectiveness-consultancy', permanent: true },
       { source: '/services/service-improvement', destination: '/services/operational-effectiveness-consultancy', permanent: true },
       { source: '/services/purpose-driven-change', destination: '/services/organisational-purpose-consultancy', permanent: true },
+      // Service Design lives at /services/service-design-consultancy; these shorter
+      // forms were still being hit (service-design recurring through Jun 2026).
+      { source: '/services/service-design', destination: '/services/service-design-consultancy', permanent: true },
+      { source: '/services/service-design-and-experience', destination: '/services/service-design-consultancy', permanent: true },
 
       // Top-level old service paths
       { source: '/service-design', destination: '/services/service-design-consultancy', permanent: true },
@@ -507,6 +511,11 @@ const nextConfig = {
       // The pattern redirect handles /article/ → /articles/ prefix
       // These handle where the slug itself changed
       // =========================================================
+
+      // Drift-v1 newsletter ("Slow enough to miss", sent 28 May 2026) shipped a
+      // broken link with a stray "3" appended to the slug — 21 hits. Real article
+      // is /articles/organisational-drift.
+      { source: '/articles/organisational-drift3', destination: '/articles/organisational-drift', permanent: true },
 
       { source: '/articles/change-readiness', destination: '/articles/change-readiness-assessment', permanent: true },
       { source: '/articles/the-change-readiness-imperative', destination: '/articles/change-fatigue-in-the-workplace', permanent: true },
@@ -865,6 +874,7 @@ const nextConfig = {
 
       // Resources/toolkit/workshops - old WordPress sections
       { source: '/resources', destination: '/tools', permanent: true },
+      { source: '/newsletters', destination: '/newsletter', permanent: true },
       { source: '/toolkit', destination: '/tools', permanent: true },
       { source: '/workshops', destination: '/courses', permanent: true },
       { source: '/sitemap', destination: '/sitemap.xml', permanent: true },

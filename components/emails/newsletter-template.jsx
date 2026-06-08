@@ -1050,7 +1050,7 @@ export const sampleProps = {
   introText: "This month I've been exploring something most organisations experience but rarely name - the slow, quiet way things change without anyone deciding to change them.",
   indexItems: [
     { kicker: 'Field notes', title: 'The changes no one planned for', href: '#observation' },
-    { kicker: 'Long read', title: 'The organisation that changed without anyone deciding to change it', href: 'https://mutomorro.com/article/organisational-drift' },
+    { kicker: 'Long read', title: 'The organisation that changed without anyone deciding to change it', href: 'https://mutomorro.com/articles/organisational-drift' },
     { kicker: 'A tool to try', title: 'Organisational Drift Audit', href: 'https://mutomorro.com/diagnostics/drift-audit' },
   ],
   observationKicker: 'Field notes',
@@ -1074,7 +1074,7 @@ export const sampleProps = {
       title: 'The organisation that changed without anyone deciding to change it',
       description: 'I went down a research rabbit hole into why drift happens - drawing on some fascinating work from safety science, sociology, and systems thinking. This is the longer piece, where the idea really opens up.',
       linkText: 'Read the article',
-      linkHref: 'https://mutomorro.com/article/organisational-drift',
+      linkHref: 'https://mutomorro.com/articles/organisational-drift',
     },
     {
       kicker: 'A tool to try',

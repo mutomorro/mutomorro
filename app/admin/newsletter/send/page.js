@@ -53,6 +53,10 @@ export default function NewsletterSendPage() {
   const [previewLoading, setPreviewLoading] = useState(false)
   const [previewError, setPreviewError] = useState('')
   const [previewWidth, setPreviewWidth] = useState('desktop')
+  // Step 4 — pre-send link check (on demand; not part of the live preview)
+  const [linkReport, setLinkReport] = useState(null)
+  const [linkChecking, setLinkChecking] = useState(false)
+  const [linkError, setLinkError] = useState('')
 
   // Step 5 — actions
   const [testSending, setTestSending] = useState(false)
@@ -182,6 +186,7 @@ export default function NewsletterSendPage() {
     const body = JSON.stringify(buildPreviewPayload({ template, selectedIssueId, subject, previewText, promo }))
     if (body === previewBodyRef.current) return
     previewBodyRef.current = body
+    setLinkReport(null) // content changed — last link check is stale
 
     const t = setTimeout(() => {
       setPreviewLoading(true)
@@ -209,6 +214,26 @@ export default function NewsletterSendPage() {
   )
 
   const canSend = canTestSend && selectedAudienceId && audienceCount && audienceCount > 0 && issueKey
+
+  async function checkLinks() {
+    setLinkChecking(true)
+    setLinkError('')
+    setLinkReport(null)
+    try {
+      const res = await fetch('/api/admin/newsletter/check-links', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(buildPreviewPayload({ template, selectedIssueId, subject, previewText, promo })),
+      })
+      const d = await res.json()
+      if (!res.ok) throw new Error(d.error || 'Link check failed')
+      setLinkReport(d)
+    } catch (e) {
+      setLinkError(e.message)
+    } finally {
+      setLinkChecking(false)
+    }
+  }
 
   async function handleTestSend() {
     setTestSending(true)
@@ -455,6 +480,75 @@ export default function NewsletterSendPage() {
               </p>
             </div>
           )}
+
+          {/* Pre-send link check (on demand) */}
+          {previewHtml && (
+            <div style={{ marginTop: '16px', borderTop: `1px solid ${theme.cardBorder}`, paddingTop: '16px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+                <button
+                  onClick={checkLinks}
+                  disabled={linkChecking}
+                  style={{
+                    padding: '8px 16px',
+                    borderRadius: '6px',
+                    border: `1px solid ${theme.cardBorder}`,
+                    background: theme.cardBg,
+                    color: linkChecking ? theme.textMuted : theme.textPrimary,
+                    fontSize: '13px',
+                    fontFamily: 'inherit',
+                    cursor: linkChecking ? 'wait' : 'pointer',
+                  }}
+                >
+                  {linkChecking ? 'Checking links…' : 'Check links'}
+                </button>
+                {linkReport ? (
+                  <span style={{ fontSize: '12px', color: theme.textSecondary }}>
+                    {linkReport.summary.ok} OK
+                    {linkReport.summary.broken > 0 && (
+                      <span style={{ color: theme.danger, fontWeight: 600 }}> · {linkReport.summary.broken} broken</span>
+                    )}
+                    {linkReport.summary.unverified > 0 && (
+                      <span style={{ color: theme.warning }}> · {linkReport.summary.unverified} unverified</span>
+                    )}
+                    {linkReport.summary.skipped > 0 && (
+                      <span style={{ color: theme.textMuted }}> · {linkReport.summary.skipped} skipped</span>
+                    )}
+                  </span>
+                ) : (
+                  !linkChecking && (
+                    <span style={{ fontSize: '12px', color: theme.textMuted }}>
+                      Confirms every link resolves before you send.
+                    </span>
+                  )
+                )}
+              </div>
+
+              {linkError && (
+                <div style={{ marginTop: '10px', padding: '10px 12px', background: 'rgba(220,38,38,0.08)', borderLeft: `3px solid ${theme.danger}`, borderRadius: '4px', fontSize: '12px', color: theme.danger }}>
+                  {linkError}
+                </div>
+              )}
+
+              {linkReport && linkReport.links.length > 0 && (
+                <ul style={{ listStyle: 'none', margin: '12px 0 0', padding: 0, display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                  {linkReport.links.map((l, i) => {
+                    const meta = VERDICT_META[l.verdict] || VERDICT_META.skipped
+                    const color = theme[meta.tone] || theme.textMuted
+                    const detail = [l.status, l.note].filter(Boolean).join(' · ')
+                    return (
+                      <li key={i} style={{ display: 'flex', alignItems: 'baseline', gap: '10px', fontSize: '12px', lineHeight: 1.5 }}>
+                        <span style={{ color, fontWeight: 700, width: '12px', flexShrink: 0, textAlign: 'center' }}>{meta.icon}</span>
+                        <span style={{ color: theme.textSecondary, wordBreak: 'break-all', flex: 1, minWidth: 0 }}>{l.url}</span>
+                        {detail && (
+                          <span style={{ color: theme.textMuted, flexShrink: 0, whiteSpace: 'nowrap' }}>{detail}</span>
+                        )}
+                      </li>
+                    )
+                  })}
+                </ul>
+              )}
+            </div>
+          )}
         </Step>
       )}
 
@@ -580,6 +674,14 @@ function slugify(text) {
 }
 
 // ─── Components ────────────────────────────────────────────────────
+
+// Icon + theme colour token for each link-check verdict.
+const VERDICT_META = {
+  ok: { icon: '✓', tone: 'success' },
+  broken: { icon: '✗', tone: 'danger' },
+  unverified: { icon: '!', tone: 'warning' },
+  skipped: { icon: '–', tone: 'textMuted' },
+}
 
 function Step({ number, title, theme, children }) {
   return (

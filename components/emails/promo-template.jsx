@@ -11,27 +11,19 @@ import {
   Img,
   Hr,
 } from '@react-email/components'
+import { isTrackableUrl } from '@/lib/newsletter-tracking'
 
 // Source Sans 3 is the web font (loaded via the <link> below). Source Sans Pro
 // is its older name and has wider native coverage in email clients; Arial /
 // Helvetica close out the chain. Kept in sync with newsletter-template.jsx.
 const fontFamily = "'Source Sans 3', 'Source Sans Pro', Arial, Helvetica, sans-serif"
 
-function isMutomorroUrl(url) {
-  if (typeof url !== 'string') return false
-  try {
-    return new URL(url).hostname === 'mutomorro.com'
-  } catch {
-    return false
-  }
-}
-
 function wrapLinks(html, recipientId) {
   if (!recipientId || !html) return html
   return html.replace(
     /href="(https?:\/\/[^"]*)"/g,
     (match, url) => {
-      if (!isMutomorroUrl(url)) return match
+      if (!isTrackableUrl(url)) return match
       return `href="https://mutomorro.com/api/newsletter/track?rid=${recipientId}&url=${encodeURIComponent(url)}"`
     }
   )
@@ -70,7 +62,7 @@ export default function PromoTemplate({
   recipientId = '',
   issueKey = '',
 }) {
-  const trackedCtaUrl = recipientId && isMutomorroUrl(ctaUrl)
+  const trackedCtaUrl = recipientId && isTrackableUrl(ctaUrl)
     ? `https://mutomorro.com/api/newsletter/track?rid=${recipientId}&url=${encodeURIComponent(ctaUrl)}`
     : ctaUrl
 

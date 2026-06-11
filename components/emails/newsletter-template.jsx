@@ -13,6 +13,7 @@ import {
   Img,
   Hr,
 } from '@react-email/components'
+import { isTrackableUrl } from '@/lib/newsletter-tracking'
 
 // Source Sans 3 is the web font (loaded via the <link> below). Source Sans Pro
 // is its older name and has wider native coverage in email clients; Arial /
@@ -23,15 +24,6 @@ const PURPLE = '#9B51E0'
 const INK = '#221C2B'
 const HAIRLINE = '#e0dbd5'
 
-function isMutomorroUrl(url) {
-  if (typeof url !== 'string') return false
-  try {
-    return new URL(url).hostname === 'mutomorro.com'
-  } catch {
-    return false
-  }
-}
-
 function wrapLinks(html, recipientId) {
   if (!recipientId || !html) return html
   // Wrap mutomorro.com hrefs with the tracking redirect. Hostname is checked
@@ -39,7 +31,7 @@ function wrapLinks(html, recipientId) {
   return html.replace(
     /href="(https?:\/\/[^"]*)"/g,
     (match, url) => {
-      if (!isMutomorroUrl(url)) return match
+      if (!isTrackableUrl(url)) return match
       return `href="https://mutomorro.com/api/newsletter/track?rid=${recipientId}&url=${encodeURIComponent(url)}"`
     }
   )
@@ -50,7 +42,7 @@ function wrapLinks(html, recipientId) {
 function trackUrl(url, recipientId) {
   if (typeof url !== 'string' || !url) return url
   if (url.startsWith('#')) return url
-  if (recipientId && isMutomorroUrl(url)) {
+  if (recipientId && isTrackableUrl(url)) {
     return `https://mutomorro.com/api/newsletter/track?rid=${recipientId}&url=${encodeURIComponent(url)}`
   }
   return url
@@ -193,7 +185,7 @@ function RenderSection({ section, index, recipientId }) {
             </Text>
           )}
           <a
-            href={recipientId && isMutomorroUrl(section.buttonUrl)
+            href={recipientId && isTrackableUrl(section.buttonUrl)
               ? `https://mutomorro.com/api/newsletter/track?rid=${recipientId}&url=${encodeURIComponent(section.buttonUrl)}`
               : section.buttonUrl}
             style={{

@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js'
+import { TRACKABLE_HOSTS } from '@/lib/newsletter-tracking'
 
 // 1x1 transparent GIF
 const PIXEL = Buffer.from(
@@ -20,7 +21,7 @@ export async function GET(request) {
     } catch {
       return Response.redirect('https://mutomorro.com', 302)
     }
-    if (parsed.hostname !== 'mutomorro.com' || (parsed.protocol !== 'https:' && parsed.protocol !== 'http:')) {
+    if (!TRACKABLE_HOSTS.has(parsed.hostname) || (parsed.protocol !== 'https:' && parsed.protocol !== 'http:')) {
       return Response.redirect('https://mutomorro.com', 302)
     }
   }

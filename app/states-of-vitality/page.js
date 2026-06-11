@@ -139,17 +139,6 @@ export default function StatesOfVitalityPage() {
             <div style={{ marginTop: '40px' }}>
               <SovExploreCta align="left" />
             </div>
-            <p style={{ margin: '24px 0 0', fontSize: '15px', color: 'rgba(255,255,255,0.55)' }}>
-              Explore the full product at{' '}
-              <a
-                href={PRODUCT_SITE_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="sov-product-link sov-product-link--dark"
-              >
-                statesofvitality.com →
-              </a>
-            </p>
           </HeroReveal>
 
           {/* Dashboard screenshot - mount animation with 200ms delay */}

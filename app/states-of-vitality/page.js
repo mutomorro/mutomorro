@@ -3,7 +3,7 @@ import LogoStrip from '../../components/LogoStrip'
 import UseCaseCards from '../../components/states-of-vitality/UseCaseCards'
 import HeroReveal from '../../components/states-of-vitality/HeroReveal'
 import HeroScreenshotReveal from '../../components/states-of-vitality/HeroScreenshotReveal'
-import SovCtaButtons from '../../components/states-of-vitality/SovCtaButtons'
+import SovExploreCta from '../../components/states-of-vitality/SovExploreCta'
 
 // ============================================
 // SEO METADATA
@@ -11,10 +11,10 @@ import SovCtaButtons from '../../components/states-of-vitality/SovCtaButtons'
 
 export const metadata = {
   title: 'States of Vitality - organisational health diagnostic',
-  description: 'A diagnostic tool that measures organisational health across eight dimensions. See where your organisation thrives and where it needs attention.',
+  description: 'States of Vitality is a managed organisational health diagnostic across eight dimensions. See the whole picture, the story beneath the scores, and where to focus.',
   openGraph: {
     title: 'States of Vitality - organisational health diagnostic',
-    description: 'A diagnostic tool that measures organisational health across eight dimensions. See where your organisation thrives and where it needs attention.',
+    description: 'States of Vitality is a managed organisational health diagnostic across eight dimensions. See the whole picture, the story beneath the scores, and where to focus.',
     url: 'https://mutomorro.com/states-of-vitality',
     type: 'website',
     images: [{ url: '/og-default.png', width: 1200, height: 630 }],
@@ -29,21 +29,21 @@ export const metadata = {
 // ============================================
 
 const DIMENSIONS = [
-  { name: 'Strategy', colour: '#FF707C', description: 'How clear our direction is' },
-  { name: 'Flow', colour: '#FFAC51', description: 'How easily we get work done' },
-  { name: 'Service', colour: '#FFC23B', description: 'How we create and deliver value' },
-  { name: 'Purpose', colour: '#A7D957', description: 'What drives us and guides our work' },
-  { name: 'Development', colour: '#3AD377', description: 'How we grow people and build capability' },
+  { name: 'Strategy', colour: '#FF707C', description: 'How clear your direction is' },
+  { name: 'Flow', colour: '#FFAC51', description: 'How easily you get work done' },
+  { name: 'Service', colour: '#FFC23B', description: 'How you create and deliver value' },
+  { name: 'Purpose', colour: '#A7D957', description: 'What drives you and guides your work' },
+  { name: 'Development', colour: '#3AD377', description: 'How you grow people and build capability' },
   { name: 'Culture', colour: '#00C3D8', description: 'How it feels to work here' },
   { name: 'Connection', colour: '#5A70C2', description: 'How stories and meaning flow' },
-  { name: 'Change', colour: '#755E7F', description: 'How we adapt and evolve' },
+  { name: 'Change', colour: '#755E7F', description: 'How you adapt and evolve' },
 ]
 
 const STAGES = [
   { number: '01', title: 'Setup and launch', description: 'We configure the survey for your structure and ensure questions fit different levels.', timeline: 'Week 1' },
-  { number: '02', title: 'Organisation-wide survey', description: 'Everyone completes the assessment - designed to be finished in one sitting.', timeline: 'Weeks 2-3' },
+  { number: '02', title: 'Organisation-wide survey', description: 'Everyone completes the assessment - it takes around 10-15 minutes, and is designed to be finished in one sitting.', timeline: 'Weeks 2-3' },
   { number: '03', title: 'Analysis and reporting', description: 'Results land in your interactive dashboard - patterns, perception gaps and freeform responses ready to explore.', timeline: 'Week 4' },
-  { number: '04', title: 'Workshop and planning', description: 'Walk through findings together and agree where to focus next. Optional consultancy support.', timeline: 'Week 5' },
+  { number: '04', title: 'Session and planning', description: 'Walk through findings together and agree where to focus next. Optional consultancy support.', timeline: 'Week 5' },
 ]
 
 const STEP_COLOURS = ['#80388F', '#9B51E0', '#FF4279', '#E08F00']
@@ -51,13 +51,13 @@ const STEP_COLOURS = ['#80388F', '#9B51E0', '#FF4279', '#E08F00']
 const INCLUDED_DELIVERABLES = [
   { title: 'Configured survey', description: 'Tailored to your organisation structure - role levels, departments, locations and length of service.' },
   { title: 'Interactive results dashboard', description: 'Secure access for your team. Explore results by dimension, demographic group, or single question. A tool your leadership will actually use.' },
-  { title: 'Freeform response capture', description: 'Hear what people say in their own words, alongside the numbers. Word-level sentiment and themes surface automatically.' },
+  { title: 'Freeform response capture', description: 'Hear what people say in their own words, alongside the numbers. Shown as written, not scored or sorted into themes.' },
   { title: 'Demographic analysis', description: 'See how experience differs across role level, department, length of service and location - patterns aggregate scores hide.' },
 ]
 
 const OPTIONAL_DELIVERABLES = [
   { title: 'In-depth written report', description: 'A detailed analysis across all eight dimensions with plain-language interpretation and prioritised recommendations.' },
-  { title: 'Facilitated leadership workshop', description: 'A working session to explore findings, build shared understanding, and agree priorities.' },
+  { title: 'Facilitated leadership session', description: 'A working session to explore findings, build shared understanding, and agree priorities.' },
   { title: 'Development and action plan', description: 'Where effort will create the greatest impact - sequenced, sized and ready to commission.' },
 ]
 
@@ -134,10 +134,10 @@ export default function StatesOfVitalityPage() {
               See your whole organisation clearly
             </h1>
             <p className="lead-text" style={{ color: 'rgba(255,255,255,0.6)', maxWidth: '680px' }}>
-              Our organisational assessment gives you the full picture - deep, connected insight across the key areas of organisational health. See where you're thriving, where energy is getting stuck, and where a small shift will make the biggest difference.
+              States of Vitality is our managed organisational health diagnostic. It reads the key dimensions of how your organisation works - the whole picture, the story beneath the scores, and where to focus - so you can see clearly, and shape what comes next.
             </p>
             <div style={{ marginTop: '40px' }}>
-              <SovCtaButtons variant="dark" align="left" />
+              <SovExploreCta align="left" />
             </div>
             <p style={{ margin: '24px 0 0', fontSize: '15px', color: 'rgba(255,255,255,0.55)' }}>
               Explore the full product at{' '}
@@ -191,17 +191,19 @@ export default function StatesOfVitalityPage() {
           {/* Text - fade up */}
           <div className="scroll-in">
             <h2 className="heading-h2 heading-gradient" style={{ margin: '0 0 24px' }}>
-              From isolated data to meaningful clarity
+              From isolated scores to the stories underneath
             </h2>
             <div style={{ fontSize: '18px', fontWeight: '300', lineHeight: '1.75', color: 'rgba(0,0,0,0.7)', maxWidth: '600px' }}>
               <p style={{ margin: '0 0 20px' }}>
-                Most assessments measure isolated topics - engagement, satisfaction, culture. You get numbers, but not understanding.
+                Organisations we work with are often already collecting data from their people.
               </p>
-              <p style={{ margin: '0 0 32px' }}>
-                The real insight isn't in individual scores. It's in how things connect: how purpose shapes culture, how strategy enables operations, how change flows (or doesn't) through your organisation.
+              <p style={{ margin: '0 0 20px' }}>
+                What these numbers rarely tell you is how they connect - or the picture they add up to. A score gives you a snapshot. It rarely tells you the whole story: the shape of how your organisation is doing, and where to put your attention.
+              </p>
+              <p style={{ margin: 0 }}>
+                That&apos;s where States of Vitality begins.
               </p>
             </div>
-            <SovCtaButtons variant="light" align="left" />
           </div>
 
           {/* Before/after contrast visual - fade up with slight delay */}
@@ -410,7 +412,7 @@ export default function StatesOfVitalityPage() {
                   </svg>
                 ),
                 title: 'Built on systems thinking',
-                body: 'Organisations are ecosystems where everything connects. A problem in one area often has roots in another. We examine how dimensions influence each other - revealing patterns that siloed surveys simply can\'t see.',
+                body: 'Organisations are ecosystems where everything connects - a strain in one area often shows up in another. The assessment reads all eight dimensions together, so you see the whole picture rather than eight disconnected scores.',
               },
               {
                 icon: (
@@ -420,7 +422,7 @@ export default function StatesOfVitalityPage() {
                   </svg>
                 ),
                 title: 'Know where to focus',
-                body: 'Data alone doesn\'t drive change - clarity does. The assessment identifies your strengths, highlights growth areas, and pinpoints the leverage points where focused effort will create the greatest ripple effect across your organisation.',
+                body: 'Data alone doesn\'t drive change - clarity does. The assessment surfaces your strengths and the areas that need attention - so you can see clearly where to put your focus.',
               },
             ].map((card, i) => (
               <div key={i} className="scroll-in" style={{
@@ -482,7 +484,7 @@ export default function StatesOfVitalityPage() {
           <div className="scroll-in">
             <span className="kicker" style={{ marginBottom: '16px' }}>The aha moment</span>
             <h2 className="heading-h2 heading-gradient" style={{ margin: '0 0 20px' }}>
-              Reveal what leadership can't see
+              Reveal what leadership can&apos;t see
             </h2>
             <p style={{
               fontSize: '18px',
@@ -498,11 +500,34 @@ export default function StatesOfVitalityPage() {
               fontWeight: '300',
               lineHeight: '1.75',
               color: 'rgba(255,255,255,0.6)',
-              margin: '0 0 32px',
+              margin: '0 0 28px',
             }}>
               When we measure across role levels, departments, locations and length of service, patterns emerge that aggregate scores hide. Leadership might see confidence in a given area. The front line might experience uncertainty. The gap between them tells you something important.
             </p>
-            <SovCtaButtons variant="dark" align="left" />
+            <div style={{
+              borderLeft: '3px solid var(--accent)',
+              paddingLeft: '20px',
+              margin: '0 0 32px',
+            }}>
+              <p style={{
+                fontSize: '17px',
+                fontWeight: '400',
+                lineHeight: '1.6',
+                color: 'rgba(255,255,255,0.8)',
+                margin: '0 0 6px',
+              }}>
+                <strong style={{ color: '#fff', fontWeight: 600 }}>82%</strong> of executives rate their culture good or excellent, against <strong style={{ color: '#fff', fontWeight: 600 }}>47%</strong> of individual contributors.
+              </p>
+              <p style={{
+                fontSize: '13px',
+                fontWeight: '400',
+                color: 'rgba(255,255,255,0.4)',
+                margin: 0,
+              }}>
+                SHRM, <em>The State of Global Workplace Culture in 2024</em>
+              </p>
+            </div>
+            <SovExploreCta align="left" />
           </div>
 
           {/* Dashboard screenshot - perspective float-in */}
@@ -511,25 +536,6 @@ export default function StatesOfVitalityPage() {
               src="/images/dashboard/sov-real/sov-by-level.png"
               alt="By Role Level view comparing how senior, middle and front-line groups experience each dimension side by side"
             />
-          </div>
-        </div>
-      </section>
-
-      {/* ==========================================
-          SECTION 6: RECOGNITION (warm) - fade up
-          ========================================== */}
-      <section className="section--full sov-section" style={{ background: 'var(--warm)' }}>
-        <div className="scroll-in" style={{ maxWidth: '750px', margin: '0 auto' }}>
-          <h2 className="heading-h2 heading-gradient" style={{ margin: '0 0 24px' }}>
-            You might recognise this
-          </h2>
-          <div style={{ fontSize: '18px', fontWeight: '300', lineHeight: '1.75', color: 'rgba(0,0,0,0.6)' }}>
-            <p style={{ margin: '0 0 20px' }}>
-              You sense something isn't quite working, but you can't pinpoint exactly what. Individual teams perform well, yet somehow the whole feels less than the sum of its parts. Changes you've made haven't stuck the way you hoped. Or perhaps you're preparing for something significant - a transformation, a growth phase, a new strategy - and you want to truly understand what you're working with before you begin.
-            </p>
-            <p style={{ margin: 0 }}>
-              The States of Vitality assessment is for leaders who want to see beneath the surface. Who suspect that the real story of how their organisation works isn't captured in engagement scores or performance dashboards. Who want insight that connects the dots rather than adding more dots to connect.
-            </p>
           </div>
         </div>
       </section>
@@ -798,9 +804,9 @@ export default function StatesOfVitalityPage() {
             fontWeight: '300',
             margin: '0 0 2.5rem',
           }}>
-            Download the overview, or send us a few details and we&apos;ll come back with a tailored quote.
+            The full product - the one-minute film, the interactive dashboard, and an indicative quote - lives at statesofvitality.com.
           </p>
-          <SovCtaButtons variant="dark" align="center" />
+          <SovExploreCta align="center" />
           <p style={{ margin: '24px 0 0', fontSize: '14px', color: 'rgba(255,255,255,0.45)' }}>
             More on the product at{' '}
             <a

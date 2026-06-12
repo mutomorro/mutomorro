@@ -5660,7 +5660,9 @@ a:hover {
 .sidebar-related-list li { border-bottom: 1px solid rgba(0,0,0,0.08); }
 .sidebar-related-list li:last-child { border-bottom: none; }
 .sidebar-related-list a {
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: 10px;
   padding: 10px 0;
   font-size: 14px;
   font-weight: 400;
@@ -5670,6 +5672,19 @@ a:hover {
   transition: color 0.2s ease;
 }
 .sidebar-related-list a:hover { color: var(--accent); }
+/* Optional tiny thumbnail in related lists (experiment) */
+.sidebar-related-thumb {
+  flex: 0 0 auto;
+  width: 44px;
+  height: 44px;
+  border-radius: 6px;
+  overflow: hidden;
+  background: var(--warm);
+}
+.sidebar-related-item__text {
+  flex: 1 1 auto;
+  min-width: 0;
+}
 .sidebar-related-list .related-meta {
   font-size: 11px;
   font-weight: 400;

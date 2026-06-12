@@ -30,6 +30,25 @@ function MaybeExternalLink({ href, className, style, children }) {
   )
 }
 
+// Tiny square thumbnail for related-list items. Renders nothing when the
+// item has no image, so lists on pages whose query doesn't fetch one are
+// unaffected.
+function RelatedThumb({ image }) {
+  if (!image?.asset) return null
+  return (
+    <span className="sidebar-related-thumb">
+      <Image
+        src={urlFor(image).width(96).height(96).url()}
+        alt=""
+        width={44}
+        height={44}
+        sizes="44px"
+        style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+      />
+    </span>
+  )
+}
+
 function SidebarCallout({ callout }) {
   const accent = callout.accentColor || 'var(--accent)'
   const showLink = Boolean(callout.linkUrl && callout.linkLabel)
@@ -188,10 +207,13 @@ export default function ContentSidebar({
                 return (
                   <li key={t._id || slug}>
                     <Link href={`/tools/${slug}`}>
-                      {t.title}
-                      {t.category && (
-                        <span className="related-meta">{t.category}</span>
-                      )}
+                      <RelatedThumb image={t.heroImage} />
+                      <span className="sidebar-related-item__text">
+                        {t.title}
+                        {t.category && (
+                          <span className="related-meta">{t.category}</span>
+                        )}
+                      </span>
                     </Link>
                   </li>
                 )
@@ -210,7 +232,10 @@ export default function ContentSidebar({
                 const slug = a?.slug?.current || a?.slug
                 return (
                   <li key={a._id || slug}>
-                    <Link href={`/articles/${slug}`}>{a.title}</Link>
+                    <Link href={`/articles/${slug}`}>
+                      <RelatedThumb image={a.heroImage} />
+                      <span className="sidebar-related-item__text">{a.title}</span>
+                    </Link>
                   </li>
                 )
               })}

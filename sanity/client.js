@@ -33,10 +33,10 @@ export async function getProject(slug) {
       ...,
       "theme": theme->{title, "slug": slug.current, anchorType, anchorUrl},
       "relatedToolsViaTheme": *[_type == "tool" && theme._ref == ^.theme._ref][0..2]{
-        _id, title, "slug": slug.current, shortSummary, category
+        _id, title, "slug": slug.current, shortSummary, category, heroImage
       },
       "relatedArticlesViaTheme": *[_type == "article" && theme._ref == ^.theme._ref && _id != ^._id][0..1]{
-        _id, title, "slug": slug.current
+        _id, title, "slug": slug.current, heroImage
       }
     }`,
     { slug },
@@ -69,10 +69,10 @@ export async function getTool(slug) {
       relatedArticles[]->{ _id, title, slug, shortSummary, heroImage, "category": theme->title },
       relatedTools[]->{ _id, title, slug, shortSummary, heroImage, category },
       "relatedToolsViaTheme": *[_type == "tool" && theme._ref == ^.theme._ref && _id != ^._id][0..2]{
-        _id, title, "slug": slug.current, shortSummary, category
+        _id, title, "slug": slug.current, shortSummary, category, heroImage
       },
       "relatedArticlesViaTheme": *[_type == "article" && theme._ref == ^.theme._ref][0..1]{
-        _id, title, "slug": slug.current
+        _id, title, "slug": slug.current, heroImage
       },
       "relatedCaseStudiesViaTheme": *[_type == "project" && theme._ref == ^.theme._ref][0..1]{
         _id, title, "slug": slug.current
@@ -243,10 +243,10 @@ export async function getArticle(slug) {
         colour
       },
       "relatedToolsViaTheme": *[_type == "tool" && theme._ref == ^.theme._ref][0..2]{
-        _id, title, "slug": slug.current, shortSummary, category
+        _id, title, "slug": slug.current, shortSummary, category, heroImage
       },
       "relatedArticlesViaTheme": *[_type == "article" && theme._ref == ^.theme._ref && _id != ^._id][0..1]{
-        _id, title, "slug": slug.current
+        _id, title, "slug": slug.current, heroImage
       },
       "relatedCaseStudiesViaTheme": *[_type == "project" && theme._ref == ^.theme._ref][0..1]{
         _id, title, "slug": slug.current
@@ -290,10 +290,10 @@ export async function getCourse(slug) {
       relatedArticles[]->{ _id, title, slug, shortSummary, heroImage, "category": theme->title },
       relatedTools[]->{ _id, title, slug, shortSummary, heroImage, category },
       "relatedToolsViaTheme": *[_type == "tool" && theme._ref == ^.theme._ref][0..2]{
-        _id, title, "slug": slug.current, shortSummary, category
+        _id, title, "slug": slug.current, shortSummary, category, heroImage
       },
       "relatedArticlesViaTheme": *[_type == "article" && theme._ref == ^.theme._ref][0..1]{
-        _id, title, "slug": slug.current
+        _id, title, "slug": slug.current, heroImage
       },
       "relatedCaseStudiesViaTheme": *[_type == "project" && theme._ref == ^.theme._ref][0..1]{
         _id, title, "slug": slug.current

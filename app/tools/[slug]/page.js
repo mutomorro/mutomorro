@@ -220,6 +220,7 @@ export default async function ToolPage({ params }) {
               relatedArticles={tool.relatedArticlesViaTheme}
               relatedCaseStudies={tool.relatedCaseStudiesViaTheme}
               sidebarCallouts={sidebarCallouts}
+              hasFloatingBar={tool.hasToolkit}
             />
           }
         >

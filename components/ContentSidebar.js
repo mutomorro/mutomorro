@@ -1,6 +1,9 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { PortableText } from '@portabletext/react'
+import { urlFor } from '../sanity/image'
 import NewsletterSignup from './NewsletterSignup'
+import SidebarStickyStack from './SidebarStickyStack'
 
 // Render a Sanity link URL: use Next/Link for relative paths, plain anchor
 // (with target=_blank) for absolute http(s) URLs.
@@ -30,11 +33,25 @@ function MaybeExternalLink({ href, className, style, children }) {
 function SidebarCallout({ callout }) {
   const accent = callout.accentColor || 'var(--accent)'
   const showLink = Boolean(callout.linkUrl && callout.linkLabel)
+  const hasImage = Boolean(callout.image?.asset) && callout.showImageInSidebar === true
+  const imageUrl = hasImage ? urlFor(callout.image).width(720).url() : null
   return (
     <div
       className="sidebar-callout"
       style={{ borderLeftColor: accent }}
     >
+      {hasImage && (
+        <div className="sidebar-callout__image">
+          <Image
+            src={imageUrl}
+            alt={callout.image.alt || callout.heading || ''}
+            width={720}
+            height={480}
+            sizes="(max-width: 1100px) 92vw, 220px"
+            style={{ width: '100%', height: 'auto', display: 'block' }}
+          />
+        </div>
+      )}
       {callout.heading && <h3>{callout.heading}</h3>}
       {callout.body && (
         <div className="sidebar-callout__body">
@@ -109,6 +126,7 @@ export default function ContentSidebar({
   relatedCaseStudies,
   sidebarCallouts,
   relatedDimensions,
+  hasFloatingBar = false,
 }) {
   // Filter "current" out of related lists and cap counts.
   const tools = (relatedTools || [])
@@ -133,6 +151,11 @@ export default function ContentSidebar({
     .slice(0, 2)
 
   const callouts = sidebarCallouts || []
+  // The first (lowest displayOrder) callout rides in the sticky bottom
+  // stack alongside the service CTA so it stays visible while scrolling.
+  // Any extras fall back into the scroll flow as before.
+  const stickyCallout = callouts[0]
+  const scrollCallouts = callouts.slice(1)
   const dimensions = relatedDimensions || []
 
   const cta = <PrimaryCta theme={theme} contentType={contentType} />
@@ -143,7 +166,16 @@ export default function ContentSidebar({
       <div className="content-sidebar__top-cta">{cta}</div>
 
       <div className="content-sidebar__scroll">
-        {callouts.map((c) => (
+        {/* On mobile the sticky stack is hidden, so the priority callout
+            rides here in-flow (matching the prior mobile layout). On
+            desktop this copy is hidden — the callout lives in the sticky
+            stack below. */}
+        {stickyCallout && (
+          <div className="sidebar-callout-mobile-only">
+            <SidebarCallout callout={stickyCallout} />
+          </div>
+        )}
+        {scrollCallouts.map((c) => (
           <SidebarCallout key={c._id} callout={c} />
         ))}
 
@@ -227,8 +259,10 @@ export default function ContentSidebar({
         )}
       </div>
 
-      <div className="content-sidebar__sticky">{cta}</div>
-      <div className="content-sidebar__spacer" aria-hidden="true" />
+      <SidebarStickyStack gap={hasFloatingBar ? 80 : 32}>
+        {stickyCallout && <SidebarCallout callout={stickyCallout} />}
+        {cta}
+      </SidebarStickyStack>
     </div>
   )
 }

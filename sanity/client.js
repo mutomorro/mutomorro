@@ -856,6 +856,8 @@ export async function getSidebarCallouts(pageType, pageId) {
       _id,
       heading,
       body,
+      image { asset->, hotspot, crop, alt },
+      showImageInSidebar,
       linkUrl,
       linkLabel,
       accentColor,

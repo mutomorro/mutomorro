@@ -2714,6 +2714,18 @@ a:hover {
     justify-content: center;
   }
 }
+/* ── Align the floating bar with the three-column page content ──
+   The bar is position:fixed and escapes the section's 48px horizontal
+   padding, so below the layout's max-width its button sat ~68px right of
+   the sidebar CTA button. Re-apply that 48px here so the bar's content
+   box matches the page content at any width, then pull the button in by
+   the CTA card's 20px inner padding so the two buttons share a right edge.
+   Scoped to the 3-column view; the stacked mobile bar keeps its own
+   centred layout. */
+@media (min-width: 1101px) {
+  .tool-floating-bar { padding-left: 48px; padding-right: 48px; }
+  .tool-floating-bar__btn { margin-right: 20px; }
+}
 
 /* ================================================
    TEMPLATE DOWNLOAD PAGE
@@ -5563,16 +5575,15 @@ a:hover {
 .toc-mobile-toggle.open .chevron { transform: rotate(-135deg); }
 
 /* ── Right sidebar ──
-   Two copies of the primary CTA frame the column:
-   - .content-sidebar__top-cta is static, in normal flow at the top of
-     the column. It scrolls away as the reader moves down.
-   - .content-sidebar__sticky lives at the bottom of the stack (the
-     flex spacer pushes it there) and uses position: sticky pinned
-     near the viewport bottom so it stays visible throughout the read.
-   The .content-sidebar is a flex column with min-height: 100% so it
-   fills the (grid-stretched) aside; the spacer between scroll content
-   and the sticky CTA is what actually places the sticky element at
-   the column's bottom edge. */
+   The .content-sidebar is a flex column with min-height: 100% so it fills
+   the (grid-stretched) aside, giving the sticky stack a tall containing
+   block to travel within.
+   - .content-sidebar__top-cta is static, in normal flow at the top of the
+     column. It scrolls away as the reader moves down.
+   - .content-sidebar__sticky (rendered by SidebarStickyStack) sits at the
+     end of the sidebar content and scrolls in with it, then pins just above
+     the viewport bottom — its top inset is computed from the stack's own
+     height (see the component) so the full stack stays visible. */
 .content-sidebar {
   display: flex;
   flex-direction: column;
@@ -5584,18 +5595,14 @@ a:hover {
   margin-bottom: 24px;
 }
 .content-sidebar__scroll { flex: 0 0 auto; }
-.content-sidebar__spacer {
-  flex: 1 1 auto;
-  min-height: 24px;
-}
 .content-sidebar__sticky {
   flex: 0 0 auto;
   position: sticky;
-  /* Pin the CTA's top edge near the viewport bottom (assumes the card
-     is roughly 200px tall) so users see it in the lower portion of the
-     screen for the bulk of the article. */
-  top: calc(100vh - 220px);
-  padding-bottom: 32px;
+  /* Top inset is set inline by SidebarStickyStack to
+     calc(100vh − stack height − gap): the stack scrolls in with the sidebar
+     content and only pins once reached, resting just above the viewport
+     bottom with its full height visible. The gap is larger on tool pages
+     (passed via the component) to clear the 56px floating download bar. */
 }
 
 /* Sanity-driven sidebar callout (compact) */
@@ -5604,6 +5611,12 @@ a:hover {
   margin-bottom: 20px;
   border-left: 4px solid var(--accent);
   background: var(--warm);
+}
+/* Optional image header: full-bleed across the card top (negative margins
+   cancel the card padding), leaving the accent stripe visible on the left. */
+.sidebar-callout__image {
+  margin: -20px -20px 16px;
+  overflow: hidden;
 }
 .sidebar-callout h3 {
   font-size: 15px;
@@ -5624,6 +5637,9 @@ a:hover {
   font-weight: 400;
   text-decoration: none;
 }
+/* The priority callout normally lives in the sticky stack (desktop). This
+   in-flow copy is shown only on mobile, where the sticky stack is hidden. */
+.sidebar-callout-mobile-only { display: none; }
 
 /* Related lists */
 .sidebar-related { margin-bottom: 20px; }
@@ -5769,9 +5785,11 @@ a:hover {
     align-self: auto;
     border-top: 1px solid rgba(0,0,0,0.08);
   }
-  /* On mobile the column is short and the static top CTA covers the
-     user's need; the second sticky CTA copy would just duplicate it. */
+  /* On mobile the column is short: the static top CTA already covers the
+     service CTA, and the priority callout is shown in-flow via
+     .sidebar-callout-mobile-only — so the whole sticky stack is hidden. */
   .content-sidebar__sticky { display: none; }
+  .sidebar-callout-mobile-only { display: block; }
 
   .toc-mobile-toggle { display: flex; }
   .toc-label { display: none; }

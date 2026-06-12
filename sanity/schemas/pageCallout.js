@@ -96,7 +96,7 @@ export default defineType({
       name: 'image',
       title: 'Image',
       type: 'image',
-      description: 'Optional image displayed alongside the text.',
+      description: 'Optional image. Shows in full-width callouts; use "Show image in sidebar card" below to also show it in the compact sidebar card.',
       group: 'content',
       options: { hotspot: true },
       fields: [
@@ -107,6 +107,16 @@ export default defineType({
           description: 'Describe the image for screen readers and search engines.',
         },
       ],
+    }),
+
+    defineField({
+      name: 'showImageInSidebar',
+      title: 'Show image in sidebar card',
+      type: 'boolean',
+      description: 'When on, the image above also appears in the compact right-sidebar card. Off by default to keep sidebar cards tight. (Full-width callouts always show the image.)',
+      group: 'content',
+      initialValue: false,
+      hidden: ({ parent }) => !parent?.image?.asset || parent?.placement === 'page',
     }),
 
     defineField({

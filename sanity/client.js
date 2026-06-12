@@ -865,3 +865,26 @@ export async function getSidebarCallouts(pageType, pageId) {
     }
   `, { pageType, pageId }, fetchOpts)
 }
+
+// Fetch the single callout (if any) to feature in a tool's template download
+// success message. Targets the tool the same way page callouts do — by the
+// "tools" page type or an explicit includePages reference to the tool — but is
+// gated on the showInDownloadSuccess flag and independent of placement (the
+// success message is its own surface). Returns the highest-priority match or null.
+export async function getDownloadSuccessCallout(toolId) {
+  if (!toolId) return null
+  return client.fetch(`
+    *[_type == "pageCallout" && isActive == true && showInDownloadSuccess == true && (
+      "tools" in showOnPageTypes ||
+      $toolId in includePages[]._ref
+    ) && !(defined(excludePages) && $toolId in excludePages[]._ref)
+    ] | order(displayOrder asc) [0] {
+      _id,
+      heading,
+      body,
+      linkUrl,
+      linkLabel,
+      accentColor
+    }
+  `, { toolId }, fetchOpts)
+}

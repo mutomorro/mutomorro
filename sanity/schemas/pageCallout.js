@@ -205,6 +205,15 @@ export default defineType({
     }),
 
     defineField({
+      name: 'showInDownloadSuccess',
+      title: 'Feature in download success',
+      type: 'boolean',
+      description: 'When on, this callout is also featured in the success message after someone downloads a tool\'s template. Only shows for tools this callout targets (via the "Tools" page type or a specific tool in "Also show on these specific pages"). Independent of Placement — a good spot for a "now go deeper" nudge.',
+      group: 'settings',
+      initialValue: false,
+    }),
+
+    defineField({
       name: 'accentColor',
       title: 'Accent Colour',
       type: 'string',

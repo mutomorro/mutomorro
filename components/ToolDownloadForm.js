@@ -40,7 +40,7 @@ const LinkedInIcon = () => (
   </svg>
 )
 
-export default function ToolDownloadForm({ toolTitle, toolSlug, pdfUrl }) {
+export default function ToolDownloadForm({ toolTitle, toolSlug, pdfUrl, successCallout }) {
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -197,6 +197,8 @@ export default function ToolDownloadForm({ toolTitle, toolSlug, pdfUrl }) {
               </p>
             </div>
           )}
+
+          {successCallout}
 
           <a
             href={LINKEDIN_URL}

@@ -1,10 +1,11 @@
-import { client, getToolTemplate } from '@/sanity/client'
+import { client, getToolTemplate, getDownloadSuccessCallout } from '@/sanity/client'
 import { notFound } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
 import { PortableText } from '@portabletext/react'
 import { urlFor } from '@/sanity/image'
 import ToolDownloadForm from '@/components/ToolDownloadForm'
+import DownloadSuccessCallout from '@/components/DownloadSuccessCallout'
 
 export const revalidate = 3600
 
@@ -102,6 +103,8 @@ export default async function ToolTemplatePage({ params }) {
   const tool = await getToolTemplate(slug)
 
   if (!tool) notFound()
+
+  const successCallout = await getDownloadSuccessCallout(tool._id)
 
   const pdfUrl = tool.toolkitFileUrl || null
   const heroImageUrl = tool.heroImage ? urlFor(tool.heroImage).width(900).url() : null
@@ -209,7 +212,12 @@ export default async function ToolTemplatePage({ params }) {
               )}
             </div>
             <div className="template-form-card">
-              <ToolDownloadForm toolTitle={tool.title} toolSlug={slug} pdfUrl={pdfUrl} />
+              <ToolDownloadForm
+                toolTitle={tool.title}
+                toolSlug={slug}
+                pdfUrl={pdfUrl}
+                successCallout={successCallout ? <DownloadSuccessCallout callout={successCallout} /> : null}
+              />
             </div>
           </div>
         </div>

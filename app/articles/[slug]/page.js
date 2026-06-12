@@ -14,6 +14,7 @@ import TableOfContents from '../../../components/TableOfContents'
 import ContentSidebar from '../../../components/ContentSidebar'
 import ContentTable from '../../../components/ContentTable'
 import ContentAccordion from '../../../components/ContentAccordion'
+import ContentTabs from '../../../components/ContentTabs'
 import { makeHeadingBlocks } from '../../../lib/portable-text-headings'
 import { buildHeadingIndex } from '../../../lib/slugify'
 import { getSidebarCallouts } from '../../../sanity/client'
@@ -233,6 +234,7 @@ export default async function ArticlePage({ params }) {
                   ),
                   table: ({ value }) => <ContentTable value={value} />,
                   accordion: ({ value }) => <ContentAccordion value={value} />,
+                  tabs: ({ value }) => <ContentTabs value={value} />,
                 },
                 marks: {
                   link: ({ value, children }) => {

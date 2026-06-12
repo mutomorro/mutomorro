@@ -115,6 +115,7 @@ export default {
         { type: 'block' },
         { type: 'table' },
         { type: 'accordion' },
+        { type: 'tabs' },
         {
           type: 'image',
           options: { hotspot: true },

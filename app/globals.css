@@ -2364,6 +2364,20 @@ a:hover {
   margin: 2rem 0;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
+  /* Scrolling shadows (Lea Verou's technique): a soft cue on whichever edge has
+     more table off-screen. Pure CSS, no JS — the warm "cover" gradients use
+     background-attachment: local so they scroll with the content and uncover the
+     fixed edge shadows, which means the cue auto-hides at the start/end and is
+     absent entirely when the table fits (desktop). Layer order: left cover, right
+     cover, left shadow, right shadow. */
+  background:
+    linear-gradient(to right, var(--warm), rgba(250, 246, 241, 0)) left center,
+    linear-gradient(to left, var(--warm), rgba(250, 246, 241, 0)) right center,
+    radial-gradient(farthest-side at 0 50%, rgba(34, 28, 43, 0.22), rgba(34, 28, 43, 0)) left center,
+    radial-gradient(farthest-side at 100% 50%, rgba(34, 28, 43, 0.22), rgba(34, 28, 43, 0)) right center;
+  background-repeat: no-repeat;
+  background-size: 44px 100%, 44px 100%, 18px 100%, 18px 100%;
+  background-attachment: local, local, scroll, scroll;
 }
 .content-table-wrap:focus-visible {
   outline: 2px solid var(--accent);
@@ -2385,8 +2399,8 @@ a:hover {
   caption-side: top;
   text-align: left;
   font-size: 14px;
-  font-style: italic;
-  color: rgba(34, 28, 43, 0.6);
+  font-weight: 600;
+  color: var(--accent-deep);
   margin-bottom: 0.75rem;
 }
 
@@ -2410,8 +2424,18 @@ a:hover {
 .content-table tbody tr:last-child td {
   border-bottom: none;
 }
+/* Zebra striping at a faint accent tint — easier to scan across a wide
+   comparison. Declared before :hover so the hover tint still wins on an even row. */
+.content-table tbody tr:nth-child(even) td {
+  background: rgba(155, 81, 224, 0.035);
+}
+/* First column is the row label in a comparison table — weight it so the eye
+   anchors there. */
+.content-table tbody td:first-child {
+  font-weight: 600;
+}
 .content-table tbody tr:hover td {
-  background: rgba(250, 246, 241, 0.7);
+  background: rgba(155, 81, 224, 0.08);
 }
 
 /* Cells render through Portable Text, which emits <p>. Strip the body's
@@ -2460,6 +2484,23 @@ a:hover {
   border-radius: 0; /* house rule: sharp corners */
 }
 
+/* Consecutive accordions read as one tidy list: drop the gap and the doubled
+   divider so adjacent blocks share a single 1px rule. A lone accordion separated
+   by other content is untouched — the adjacent-sibling selector only fires when
+   two accordions sit back to back. */
+.toc-accordion + .toc-accordion {
+  margin-top: 0;
+  border-top: none;
+}
+
+/* Open state: a faint accent wash and a 3px accent rule down the left edge so an
+   expanded panel is obvious at a glance. The summary/body horizontal padding
+   keeps text clear of the rule. */
+.toc-accordion[open] {
+  background: rgba(155, 81, 224, 0.045);
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+
 /* The clickable control. Native disclosure triangle removed (both engines) in
    favour of our own +/- indicator. Solid ink at 600 — deliberately not washed
    out — so it reads as a control, not body prose. */
@@ -2469,7 +2510,7 @@ a:hover {
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  padding: 1rem 0;
+  padding: 1rem;
   cursor: pointer;
   font-family: var(--font);
   font-size: 18px;
@@ -2503,12 +2544,94 @@ a:hover {
 }
 
 .toc-accordion__body {
-  padding: 0.25rem 0 1.25rem;
+  padding: 0.25rem 1rem 1.25rem;
 }
 /* Body renders through Portable Text (.portable-text prose). Drop the trailing
    paragraph/list margin so it doesn't double up with the block's bottom padding. */
 .toc-accordion__body > :last-child {
   margin-bottom: 0;
+}
+
+/* ============================================
+   PORTABLE-TEXT TABS (tabbed panels)
+   Rendered by components/ContentTabs.js as an ARIA tablist. Every panel is in
+   the SSR HTML; inactive panels carry the `hidden` attribute (not unmounted),
+   so crawlers and AI answer engines see all panels. The active-tab underline
+   mirrors the table header's accent rule.
+   ============================================ */
+
+.content-tabs {
+  margin: 2rem 0;
+}
+
+.content-tabs__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  border-bottom: 1px solid rgba(34, 28, 43, 0.15);
+}
+
+/* Tab buttons. Solid ink at 600 when active — deliberately not washed out — with
+   a brand accent underline sitting on the list's bottom rule. Inactive tabs are
+   dimmed but still legible, and lift to accent-deep on hover/focus. */
+.content-tabs__tab {
+  appearance: none;
+  border: 0;
+  background: none;
+  font-family: var(--font);
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--dark);
+  opacity: 0.6;
+  padding: 10px 14px;
+  margin-bottom: -1px; /* overlap the list rule so the active underline replaces it */
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  border-radius: 0; /* house rule: sharp corners */
+  transition: color 0.15s var(--ease), opacity 0.15s var(--ease);
+}
+.content-tabs__tab:hover {
+  opacity: 1;
+  color: var(--accent-deep);
+}
+.content-tabs__tab[aria-selected='true'] {
+  opacity: 1;
+  color: var(--accent-deep);
+  border-bottom-color: var(--accent);
+}
+.content-tabs__tab:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* The active panel renders through Portable Text (.portable-text prose). Inactive
+   panels are [hidden] — present in the HTML, removed from layout. */
+.content-tabs__panel {
+  padding-top: 1.25rem;
+}
+.content-tabs__panel[hidden] {
+  display: none;
+}
+.content-tabs__panel:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+.content-tabs__panel > :last-child {
+  margin-bottom: 0;
+}
+
+/* A half-authored block with a single usable tab renders as plain prose. */
+.content-tabs--single {
+  margin: 2rem 0;
+}
+
+@media (max-width: 767px) {
+  .content-tabs__tab {
+    font-size: 16px;
+    padding: 9px 11px;
+  }
 }
 
 /* ================================================

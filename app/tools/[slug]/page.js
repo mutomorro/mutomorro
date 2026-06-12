@@ -9,6 +9,7 @@ import { urlFor } from '../../../sanity/image'
 import RelatedContent from '../../../components/RelatedContent'
 import ContentTable from '../../../components/ContentTable'
 import ContentAccordion from '../../../components/ContentAccordion'
+import ContentTabs from '../../../components/ContentTabs'
 import PageCallouts from '../../../components/PageCallouts'
 import CalloutTeaser from '../../../components/CalloutTeaser'
 import ThreeColumnLayout from '../../../components/ThreeColumnLayout'
@@ -244,6 +245,7 @@ export default async function ToolPage({ params }) {
                     ),
                     table: ({ value }) => <ContentTable value={value} />,
                     accordion: ({ value }) => <ContentAccordion value={value} />,
+                    tabs: ({ value }) => <ContentTabs value={value} />,
                   },
                   marks: {
                     link: ({ value, children }) => (

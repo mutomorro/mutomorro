@@ -73,6 +73,7 @@ export default defineType({
       of: [
         { type: 'block' },
         { type: 'table' },
+        { type: 'accordion' },
         { type: 'image', options: { hotspot: true } },
       ],
       validation: Rule => Rule.required(),

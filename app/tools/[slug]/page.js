@@ -8,6 +8,7 @@ import Link from 'next/link'
 import { urlFor } from '../../../sanity/image'
 import RelatedContent from '../../../components/RelatedContent'
 import ContentTable from '../../../components/ContentTable'
+import ContentAccordion from '../../../components/ContentAccordion'
 import PageCallouts from '../../../components/PageCallouts'
 import CalloutTeaser from '../../../components/CalloutTeaser'
 import ThreeColumnLayout from '../../../components/ThreeColumnLayout'
@@ -241,6 +242,7 @@ export default async function ToolPage({ params }) {
                       </div>
                     ),
                     table: ({ value }) => <ContentTable value={value} />,
+                    accordion: ({ value }) => <ContentAccordion value={value} />,
                   },
                   marks: {
                     link: ({ value, children }) => (

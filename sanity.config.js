@@ -16,6 +16,7 @@ import sectorLandingPage from './sanity/schemas/sectorLandingPage'
 import pageCallout from './sanity/schemas/pageCallout'
 import theme from './sanity/schemas/theme'
 import table from './sanity/schemas/table'
+import accordion from './sanity/schemas/accordion'
 
 export default defineConfig({
   name: 'mutomorro',
@@ -25,6 +26,6 @@ export default defineConfig({
   dataset: 'production',
   plugins: [structureTool(), media()],
   schema: {
-    types: [project, tool, dimension, dimensionArticle, article, course, service, serviceSubPage, frameworkOverview, capabilityService, resource, sectorLandingPage, pageCallout, theme, table],
+    types: [project, tool, dimension, dimensionArticle, article, course, service, serviceSubPage, frameworkOverview, capabilityService, resource, sectorLandingPage, pageCallout, theme, table, accordion],
   },
 })

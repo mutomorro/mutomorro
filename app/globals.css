@@ -2445,6 +2445,72 @@ a:hover {
   }
 }
 
+/* ============================================
+   PORTABLE-TEXT ACCORDION (expandable detail)
+   Rendered by components/ContentAccordion.js as a native <details>/<summary>.
+   The body is in the SSR HTML whether open or closed (no JS), so the collapse is
+   presentational only. Body content renders through Portable Text and inherits
+   the .portable-text prose treatment (paragraphs, lists, links).
+   ============================================ */
+
+.toc-accordion {
+  margin: 2rem 0;
+  border-top: 1px solid rgba(34, 28, 43, 0.15);
+  border-bottom: 1px solid rgba(34, 28, 43, 0.15);
+  border-radius: 0; /* house rule: sharp corners */
+}
+
+/* The clickable control. Native disclosure triangle removed (both engines) in
+   favour of our own +/- indicator. Solid ink at 600 — deliberately not washed
+   out — so it reads as a control, not body prose. */
+.toc-accordion__summary {
+  list-style: none; /* Firefox marker */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 0;
+  cursor: pointer;
+  font-family: var(--font);
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--dark);
+  transition: color 0.15s var(--ease);
+}
+.toc-accordion__summary::-webkit-details-marker {
+  display: none; /* Safari / Chrome marker */
+}
+.toc-accordion__summary:hover {
+  color: var(--accent-deep);
+}
+.toc-accordion__summary:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Custom indicator: + when collapsed, - when expanded. */
+.toc-accordion__summary::after {
+  content: '+';
+  flex: none;
+  font-size: 1.5rem;
+  font-weight: 400;
+  line-height: 1;
+  color: var(--accent);
+}
+.toc-accordion[open] .toc-accordion__summary::after {
+  content: '\2212'; /* minus sign */
+}
+
+.toc-accordion__body {
+  padding: 0.25rem 0 1.25rem;
+}
+/* Body renders through Portable Text (.portable-text prose). Drop the trailing
+   paragraph/list margin so it doesn't double up with the block's bottom padding. */
+.toc-accordion__body > :last-child {
+  margin-bottom: 0;
+}
+
 /* ================================================
    CONTENT HERO GRID (tools, articles, case studies)
    ================================================ */

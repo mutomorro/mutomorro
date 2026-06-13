@@ -74,35 +74,34 @@ const SECTION_HEADING_STYLE = {
   maxWidth: '600px',
 }
 
-function TrainingCard({ href, title, desc, bg }) {
+// Site-standard nav card (.card-a): subtle border + accent corner, with a
+// footer "action" that fills with accent and slides the arrow on hover —
+// matching /tools, /projects and /diagnostics. The .card-a image area is
+// deliberately omitted for now (the front-door items carry no hero yet); it
+// slots straight in once we add them — the card handles with/without an image.
+function TrainingCard({ href, title, desc, action = 'Explore' }) {
   return (
-    <Link
-      href={href}
-      className="develop-card"
-      style={{
-        display: 'block',
-        padding: '32px',
-        background: bg,
-        textDecoration: 'none',
-        color: 'inherit',
-        transition: 'transform 0.2s var(--ease), box-shadow 0.2s var(--ease)',
-      }}
-    >
-      <h3 style={{ fontSize: '20px', fontWeight: 600, marginBottom: '12px', color: 'var(--dark)', lineHeight: 1.3 }}>
-        {title}
-      </h3>
-      <p style={{ fontSize: '16px', lineHeight: 1.6, color: 'rgba(0,0,0,0.75)', fontWeight: 300, margin: 0 }}>
-        {desc}
-      </p>
+    <Link href={href} className="card-a">
+      <div className="card-a__corner" />
+      <div className="card-a__body">
+        <div className="card-a__title">{title}</div>
+        <p className="card-a__text">{desc}</p>
+      </div>
+      <div className="card-a__footer">
+        <div className="card-a__footer-bg" />
+        <div className="card-a__action">
+          {action} <span className="arrow">→</span>
+        </div>
+      </div>
     </Link>
   )
 }
 
-function CardGrid({ items, cardBg }) {
+function CardGrid({ items, action }) {
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '24px' }}>
+    <div className="card-grid">
       {items.map((it) => (
-        <TrainingCard key={it.href} {...it} bg={cardBg} />
+        <TrainingCard key={it.href} {...it} action={action} />
       ))}
     </div>
   )
@@ -150,7 +149,7 @@ export default function TrainingFrontDoor() {
             The ongoing territories we work across - the deeper areas, where we run a range of
             courses for your managers, teams and leaders.
           </p>
-          <CardGrid items={PILLARS} cardBg="var(--white)" />
+          <CardGrid items={PILLARS} action="Explore the courses" />
         </div>
       </section>
 
@@ -164,7 +163,7 @@ export default function TrainingFrontDoor() {
             Focused days where your team learns to run a specific method - by using it on
             something real of your own.
           </p>
-          <CardGrid items={WORKSHOPS} cardBg="var(--warm)" />
+          <CardGrid items={WORKSHOPS} action="Explore the workshop" />
         </div>
       </section>
 
@@ -177,7 +176,7 @@ export default function TrainingFrontDoor() {
           <p className="body-text" style={{ margin: '0 0 48px', maxWidth: '620px', color: 'rgba(0,0,0,0.65)' }}>
             Two more areas we work across - lighter than the pillars, the same approach.
           </p>
-          <CardGrid items={MORE_AREAS} cardBg="var(--white)" />
+          <CardGrid items={MORE_AREAS} action="Explore the courses" />
         </div>
       </section>
 

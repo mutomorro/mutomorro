@@ -6093,6 +6093,65 @@ a:hover {
   }
 }
 
+/* Enquiry-primary pages (training): the enquiry callout is the focal CTA, so
+   it gets a heavier heading and a touch more room to read as the star — now
+   that the service card beside it has stepped down to a link. */
+.sidebar-callout--feature {
+  padding: 24px;
+}
+.sidebar-callout--feature h3 {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+/* Draw the eye to the focal enquiry button: a slow, low-amplitude arrow nudge
+   and a soft accent glow that breathe every few seconds — a periodic cue, not a
+   constant fidget. The glow rides on a ::after ring so it never fights the
+   button's own hover lift/shadow. Motion only for users who haven't asked to
+   reduce it, and it settles the moment they hover (they've found it). */
+@media (prefers-reduced-motion: no-preference) {
+  .sidebar-callout--feature .sidebar-btn--primary {
+    position: relative;
+    overflow: visible;
+  }
+  .sidebar-callout--feature .sidebar-btn--primary::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    animation: enquiry-glow 3.4s ease-in-out infinite;
+  }
+  .sidebar-callout--feature .sidebar-btn--primary span {
+    display: inline-block;
+    animation: enquiry-nudge 3.4s ease-in-out infinite;
+  }
+  .sidebar-callout--feature .sidebar-btn--primary:hover::after,
+  .sidebar-callout--feature .sidebar-btn--primary:hover span {
+    animation-play-state: paused;
+  }
+}
+@keyframes enquiry-glow {
+  0%, 70%, 100% { box-shadow: 0 0 0 0 rgba(155, 81, 224, 0); }
+  35% { box-shadow: 0 0 0 5px rgba(155, 81, 224, 0.15); }
+}
+@keyframes enquiry-nudge {
+  0%, 62%, 100% { transform: translateX(0); }
+  80% { transform: translateX(4px); }
+}
+
+/* The service CTA as a quiet inline link, sitting under the enquiry star
+   instead of competing as a second (dark) card. */
+.sidebar-service-link {
+  display: inline-block;
+  margin-top: 16px;
+  font-size: 13px;
+  font-weight: 400;
+  color: rgba(34, 28, 43, 0.6);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+.sidebar-service-link:hover { color: var(--accent); }
+
 /* Mobile collapse: stack to single column below 1100px */
 @media (max-width: 1100px) {
   .three-col-layout {

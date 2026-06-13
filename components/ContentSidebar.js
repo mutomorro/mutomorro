@@ -49,14 +49,14 @@ function RelatedThumb({ image }) {
   )
 }
 
-function SidebarCallout({ callout, asButton = false }) {
+function SidebarCallout({ callout, asButton = false, feature = false }) {
   const accent = callout.accentColor || 'var(--accent)'
   const showLink = Boolean(callout.linkUrl && callout.linkLabel)
   const hasImage = Boolean(callout.image?.asset) && callout.showImageInSidebar === true
   const imageUrl = hasImage ? urlFor(callout.image).width(720).url() : null
   return (
     <div
-      className="sidebar-callout"
+      className={`sidebar-callout${feature ? ' sidebar-callout--feature' : ''}`}
       style={{ borderLeftColor: accent }}
     >
       {hasImage && (
@@ -117,12 +117,23 @@ function SidebarCallout({ callout, asButton = false }) {
   )
 }
 
-function PrimaryCta({ theme, contentType, variant = 'primary' }) {
+function PrimaryCta({ theme, contentType, variant = 'primary', asLink = false }) {
   // Every content type's primary CTA points at the related service
   // (theme.anchorUrl). Tools already surface a download CTA via the
   // floating bottom bar; case studies fall through to the service
   // rather than the generic /contact route.
   if (!theme?.anchorUrl) return null
+
+  // Enquiry-primary pages (training): the enquiry callout is the star, so the
+  // service steps down to a quiet inline link rather than a second card
+  // competing beneath it.
+  if (asLink) {
+    return (
+      <MaybeExternalLink href={theme.anchorUrl} className="sidebar-service-link">
+        Explore more ways we can help in {theme.title} <span aria-hidden="true">→</span>
+      </MaybeExternalLink>
+    )
+  }
 
   const heading =
     contentType === 'course'
@@ -185,12 +196,16 @@ export default function ContentSidebar({
   const scrollCallouts = callouts.slice(1)
   const dimensions = relatedDimensions || []
 
-  const cta = <PrimaryCta theme={theme} contentType={contentType} variant={enquiryPrimary ? 'secondary' : 'primary'} />
-
+  // Enquiry-primary pages render the service as a quiet link (the enquiry
+  // callout is the star); everywhere else it's the dark service card as before.
+  const service = <PrimaryCta theme={theme} contentType={contentType} asLink={enquiryPrimary} />
 
   return (
     <div className="content-sidebar">
-      <div className="content-sidebar__top-cta">{cta}</div>
+      {/* The scroll-away top CTA is the dark service card on non-enquiry pages.
+          On enquiry pages the service is only a link, so it rides under the
+          enquiry callout below rather than sitting alone up here. */}
+      <div className="content-sidebar__top-cta">{enquiryPrimary ? null : service}</div>
 
       <div className="content-sidebar__scroll">
         {/* On mobile the sticky stack is hidden, so the priority callout
@@ -199,7 +214,8 @@ export default function ContentSidebar({
             stack below. */}
         {stickyCallout && (
           <div className="sidebar-callout-mobile-only">
-            <SidebarCallout callout={stickyCallout} asButton={enquiryPrimary} />
+            <SidebarCallout callout={stickyCallout} asButton={enquiryPrimary} feature={enquiryPrimary} />
+            {enquiryPrimary && service}
           </div>
         )}
         {scrollCallouts.map((c) => (
@@ -293,8 +309,8 @@ export default function ContentSidebar({
       </div>
 
       <SidebarStickyStack gap={hasFloatingBar ? 80 : 32}>
-        {stickyCallout && <SidebarCallout callout={stickyCallout} asButton={enquiryPrimary} />}
-        {cta}
+        {stickyCallout && <SidebarCallout callout={stickyCallout} asButton={enquiryPrimary} feature={enquiryPrimary} />}
+        {service}
       </SidebarStickyStack>
     </div>
   )

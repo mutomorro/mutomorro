@@ -2493,6 +2493,14 @@ a:hover {
   border-top: none;
 }
 
+/* ...and the matching bottom: an accordion *followed by* another drops its bottom
+   margin too, so a run sits flush as one tidy list (single 1px dividers, no internal
+   gaps). The original rule only zeroed margin-top, leaving every item's 2rem
+   margin-bottom in place — which left the first item reading as a detached box. */
+.toc-accordion:has(+ .toc-accordion) {
+  margin-bottom: 0;
+}
+
 /* Open state: a faint accent wash and a 3px accent rule down the left edge so an
    expanded panel is obvious at a glance. The summary/body horizontal padding
    keeps text clear of the rule. */
@@ -5923,6 +5931,31 @@ a:hover {
   width: 100%;
 }
 .sidebar-btn--primary:hover { background: #8a44c8; color: #fff; }
+
+/* Secondary (outline) variant — used on the dark consultancy card when the
+   enquiry CTA takes the filled-primary role (training pages). */
+.sidebar-btn--secondary {
+  background: transparent;
+  color: #fff;
+  width: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+}
+.sidebar-btn--secondary:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+/* Subtle hover lift + shadow on sidebar buttons; motion only for users who
+   haven't asked to reduce it. */
+@media (prefers-reduced-motion: no-preference) {
+  .sidebar-btn {
+    transition: background 0.25s ease, color 0.25s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .sidebar-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(34, 28, 43, 0.18);
+  }
+}
 
 /* Mobile collapse: stack to single column below 1100px */
 @media (max-width: 1100px) {

@@ -118,7 +118,7 @@ export default function TrainingFrontDoor() {
         <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
           <span className="kicker" style={{ marginBottom: '16px' }}>In-house training</span>
           <h1 className="heading-gradient heading-display" style={{ margin: '0 0 32px', maxWidth: '720px' }}>
-            Training
+            In-house training, designed around your people
           </h1>
           <p className="lead-text" style={{ color: 'rgba(255,255,255,0.6)', maxWidth: '680px' }}>
             Practical, in-house training designed around your people - your real challenges,

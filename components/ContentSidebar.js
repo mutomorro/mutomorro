@@ -49,7 +49,7 @@ function RelatedThumb({ image }) {
   )
 }
 
-function SidebarCallout({ callout }) {
+function SidebarCallout({ callout, asButton = false }) {
   const accent = callout.accentColor || 'var(--accent)'
   const showLink = Boolean(callout.linkUrl && callout.linkLabel)
   const hasImage = Boolean(callout.image?.asset) && callout.showImageInSidebar === true
@@ -94,7 +94,14 @@ function SidebarCallout({ callout }) {
           />
         </div>
       )}
-      {showLink && (
+      {showLink && (asButton ? (
+        <MaybeExternalLink
+          href={callout.linkUrl}
+          className="sidebar-btn sidebar-btn--primary"
+        >
+          {callout.linkLabel} <span aria-hidden="true">→</span>
+        </MaybeExternalLink>
+      ) : (
         <MaybeExternalLink
           href={callout.linkUrl}
           className="callout-link inline-link"
@@ -105,12 +112,12 @@ function SidebarCallout({ callout }) {
         >
           {callout.linkLabel} <span aria-hidden="true">→</span>
         </MaybeExternalLink>
-      )}
+      ))}
     </div>
   )
 }
 
-function PrimaryCta({ theme, contentType }) {
+function PrimaryCta({ theme, contentType, variant = 'primary' }) {
   // Every content type's primary CTA points at the related service
   // (theme.anchorUrl). Tools already surface a download CTA via the
   // floating bottom bar; case studies fall through to the service
@@ -128,7 +135,7 @@ function PrimaryCta({ theme, contentType }) {
       <h3>{heading}</h3>
       <MaybeExternalLink
         href={theme.anchorUrl}
-        className="sidebar-btn sidebar-btn--primary"
+        className={`sidebar-btn sidebar-btn--${variant}`}
       >
         Explore this service →
       </MaybeExternalLink>
@@ -146,6 +153,7 @@ export default function ContentSidebar({
   sidebarCallouts,
   relatedDimensions,
   hasFloatingBar = false,
+  enquiryPrimary = false,
 }) {
   // Filter "current" out of related lists and cap counts.
   const tools = (relatedTools || [])
@@ -177,7 +185,7 @@ export default function ContentSidebar({
   const scrollCallouts = callouts.slice(1)
   const dimensions = relatedDimensions || []
 
-  const cta = <PrimaryCta theme={theme} contentType={contentType} />
+  const cta = <PrimaryCta theme={theme} contentType={contentType} variant={enquiryPrimary ? 'secondary' : 'primary'} />
 
 
   return (
@@ -191,11 +199,11 @@ export default function ContentSidebar({
             stack below. */}
         {stickyCallout && (
           <div className="sidebar-callout-mobile-only">
-            <SidebarCallout callout={stickyCallout} />
+            <SidebarCallout callout={stickyCallout} asButton={enquiryPrimary} />
           </div>
         )}
         {scrollCallouts.map((c) => (
-          <SidebarCallout key={c._id} callout={c} />
+          <SidebarCallout key={c._id} callout={c} asButton={enquiryPrimary} />
         ))}
 
         {tools.length > 0 && (
@@ -285,7 +293,7 @@ export default function ContentSidebar({
       </div>
 
       <SidebarStickyStack gap={hasFloatingBar ? 80 : 32}>
-        {stickyCallout && <SidebarCallout callout={stickyCallout} />}
+        {stickyCallout && <SidebarCallout callout={stickyCallout} asButton={enquiryPrimary} />}
         {cta}
       </SidebarStickyStack>
     </div>

@@ -18,6 +18,20 @@ import { urlFor } from '../../../sanity/image'
 import { makeHeadingBlocks } from '../../../lib/portable-text-headings'
 import { buildHeadingIndex } from '../../../lib/slugify'
 
+// Per-page closing-CTA wording (the button still goes to /contact via the CTA
+// component default — wording only, no routing change). Hook → heading, invitation
+// → body. Falls back to the generic line for any unmapped slug.
+const CLOSING_CTA = {
+  'change-management': { heading: 'Got change coming, and people who’ll be leading it?', body: 'Tell us what’s changing and we’ll help you work out the right support for them.' },
+  'systems-thinking': { heading: 'Wrestling with problems that keep coming back?', body: 'Tell us what you’re seeing and we’ll help you find the right way in.' },
+  'team-effectiveness': { heading: 'Know your teams could be firing better?', body: 'Tell us where they’re stuck and we’ll help you shape the right day.' },
+  'theory-of-change-workshop': { heading: 'Need to show your thinking - to a funder, a board, yourselves?', body: 'Tell us about your programme and we’ll help you plan the workshop.' },
+  'process-mapping-workshop': { heading: 'Got a process that’s tangled up?', body: 'Tell us which one and we’ll help you scope a day around it.' },
+  'scenario-planning-workshop': { heading: 'Planning through real uncertainty?', body: 'Tell us what’s on the horizon and we’ll help you shape the session.' },
+  'customer-experience': { heading: 'Want your services seen through your customers’ eyes?', body: 'Tell us where the friction is and we’ll help you find the right starting point.' },
+  'continuous-improvement': { heading: 'Want improvement to be a habit, not a one-off push?', body: 'Tell us about your work and we’ll help you shape the right training.' },
+}
+
 export const revalidate = 3600
 
 export async function generateStaticParams() {
@@ -172,6 +186,7 @@ export default async function TrainingPage({ params }) {
               relatedTools={course.relatedTools}
               relatedCaseStudies={course.relatedCaseStudiesViaTheme}
               sidebarCallouts={sidebarCallouts}
+              enquiryPrimary
             />
           }
         >
@@ -232,7 +247,11 @@ export default async function TrainingPage({ params }) {
 
       <PageCallouts pageType="courses" pageId={course._id} />
 
-      <CTA label="Work with us" heading="Want to put these ideas into practice?" />
+      <CTA
+        label="Work with us"
+        heading={(CLOSING_CTA[slug] || {}).heading || 'Want to put these ideas into practice?'}
+        body={(CLOSING_CTA[slug] || {}).body}
+      />
     </main>
   )
 }

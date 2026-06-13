@@ -35,83 +35,83 @@ const nextConfig = {
       // Courses renamed during the rewrite project — direct redirects from
       // /sessions/<old-slug> and /training/<old-slug> to /courses/<new-slug>.
       // Batch 1
-      { source: '/sessions/change-management-fundamentals', destination: '/courses/change-management-training', permanent: true },
-      { source: '/training/change-management-fundamentals', destination: '/courses/change-management-training', permanent: true },
-      { source: '/sessions/leading-your-team-through-change', destination: '/courses/leading-a-team-through-change', permanent: true },
-      { source: '/training/leading-your-team-through-change', destination: '/courses/leading-a-team-through-change', permanent: true },
+      { source: '/sessions/change-management-fundamentals', destination: '/training/change-management', permanent: true },
+      { source: '/training/change-management-fundamentals', destination: '/training/change-management', permanent: true },
+      { source: '/sessions/leading-your-team-through-change', destination: '/training/change-management', permanent: true },
+      { source: '/training/leading-your-team-through-change', destination: '/training/change-management', permanent: true },
       // Batch 2
-      { source: '/sessions/story-foundations-for-leaders', destination: '/courses/storytelling-for-leaders-training', permanent: true },
-      { source: '/training/story-foundations-for-leaders', destination: '/courses/storytelling-for-leaders-training', permanent: true },
-      { source: '/sessions/data-driven-storytelling', destination: '/courses/data-storytelling-training', permanent: true },
-      { source: '/training/data-driven-storytelling', destination: '/courses/data-storytelling-training', permanent: true },
-      { source: '/sessions/building-and-managing-high-performing-teams', destination: '/courses/high-performing-teams-training', permanent: true },
-      { source: '/training/building-and-managing-high-performing-teams', destination: '/courses/high-performing-teams-training', permanent: true },
-      { source: '/sessions/effective-collaboration-in-the-workplace', destination: '/courses/workplace-collaboration-training', permanent: true },
-      { source: '/training/effective-collaboration-in-the-workplace', destination: '/courses/workplace-collaboration-training', permanent: true },
+      { source: '/sessions/story-foundations-for-leaders', destination: '/training/change-management', permanent: true },
+      { source: '/training/story-foundations-for-leaders', destination: '/training/change-management', permanent: true },
+      { source: '/sessions/data-driven-storytelling', destination: '/training/change-management', permanent: true },
+      { source: '/training/data-driven-storytelling', destination: '/training/change-management', permanent: true },
+      { source: '/sessions/building-and-managing-high-performing-teams', destination: '/training/team-effectiveness', permanent: true },
+      { source: '/training/building-and-managing-high-performing-teams', destination: '/training/team-effectiveness', permanent: true },
+      { source: '/sessions/effective-collaboration-in-the-workplace', destination: '/training/team-effectiveness', permanent: true },
+      { source: '/training/effective-collaboration-in-the-workplace', destination: '/training/team-effectiveness', permanent: true },
       // Batch 3
-      { source: '/sessions/best-practice-in-organisational-culture-change', destination: '/courses/organisational-culture-change-training', permanent: true },
-      { source: '/training/best-practice-in-organisational-culture-change', destination: '/courses/organisational-culture-change-training', permanent: true },
-      { source: '/sessions/combatting-burnout-culture', destination: '/courses/preventing-burnout-at-work', permanent: true },
-      { source: '/training/combatting-burnout-culture', destination: '/courses/preventing-burnout-at-work', permanent: true },
-      { source: '/sessions/culture-of-collaboration', destination: '/courses/building-a-collaborative-culture', permanent: true },
-      { source: '/training/culture-of-collaboration', destination: '/courses/building-a-collaborative-culture', permanent: true },
-      { source: '/sessions/creating-a-culture-of-recognition-and-appreciation', destination: '/courses/employee-recognition-training', permanent: true },
-      { source: '/training/creating-a-culture-of-recognition-and-appreciation', destination: '/courses/employee-recognition-training', permanent: true },
-      { source: '/sessions/enhancing-employee-well-being-and-work-life-balance', destination: '/courses/employee-wellbeing-training', permanent: true },
-      { source: '/training/enhancing-employee-well-being-and-work-life-balance', destination: '/courses/employee-wellbeing-training', permanent: true },
+      { source: '/sessions/best-practice-in-organisational-culture-change', destination: '/training/change-management', permanent: true },
+      { source: '/training/best-practice-in-organisational-culture-change', destination: '/training/change-management', permanent: true },
+      { source: '/sessions/combatting-burnout-culture', destination: '/services/employee-experience-consultancy', permanent: true },
+      { source: '/training/combatting-burnout-culture', destination: '/services/employee-experience-consultancy', permanent: true },
+      { source: '/sessions/culture-of-collaboration', destination: '/training/team-effectiveness', permanent: true },
+      { source: '/training/culture-of-collaboration', destination: '/training/team-effectiveness', permanent: true },
+      { source: '/sessions/creating-a-culture-of-recognition-and-appreciation', destination: '/services/employee-experience-consultancy', permanent: true },
+      { source: '/training/creating-a-culture-of-recognition-and-appreciation', destination: '/services/employee-experience-consultancy', permanent: true },
+      { source: '/sessions/enhancing-employee-well-being-and-work-life-balance', destination: '/services/employee-experience-consultancy', permanent: true },
+      { source: '/training/enhancing-employee-well-being-and-work-life-balance', destination: '/services/employee-experience-consultancy', permanent: true },
       // Batch 4
-      { source: '/sessions/introduction-to-process-mapping-workshop', destination: '/courses/process-mapping-training', permanent: true },
-      { source: '/training/introduction-to-process-mapping-workshop', destination: '/courses/process-mapping-training', permanent: true },
-      { source: '/sessions/simple-lean-process-design-workshop', destination: '/courses/lean-process-design-training', permanent: true },
-      { source: '/training/simple-lean-process-design-workshop', destination: '/courses/lean-process-design-training', permanent: true },
-      { source: '/sessions/workflow-optimisation-workshop', destination: '/courses/workflow-optimisation-training', permanent: true },
-      { source: '/training/workflow-optimisation-workshop', destination: '/courses/workflow-optimisation-training', permanent: true },
-      { source: '/sessions/continuous-improvement-training-for-teams', destination: '/courses/continuous-improvement-training', permanent: true },
-      { source: '/training/continuous-improvement-training-for-teams', destination: '/courses/continuous-improvement-training', permanent: true },
-      { source: '/sessions/introduction-to-design-thinking-workshop', destination: '/courses/design-thinking-training', permanent: true },
-      { source: '/training/introduction-to-design-thinking-workshop', destination: '/courses/design-thinking-training', permanent: true },
+      { source: '/sessions/introduction-to-process-mapping-workshop', destination: '/training/process-mapping-workshop', permanent: true },
+      { source: '/training/introduction-to-process-mapping-workshop', destination: '/training/process-mapping-workshop', permanent: true },
+      { source: '/sessions/simple-lean-process-design-workshop', destination: '/training/continuous-improvement', permanent: true },
+      { source: '/training/simple-lean-process-design-workshop', destination: '/training/continuous-improvement', permanent: true },
+      { source: '/sessions/workflow-optimisation-workshop', destination: '/training/continuous-improvement', permanent: true },
+      { source: '/training/workflow-optimisation-workshop', destination: '/training/continuous-improvement', permanent: true },
+      { source: '/sessions/continuous-improvement-training-for-teams', destination: '/training/continuous-improvement', permanent: true },
+      { source: '/training/continuous-improvement-training-for-teams', destination: '/training/continuous-improvement', permanent: true },
+      { source: '/sessions/introduction-to-design-thinking-workshop', destination: '/training/customer-experience', permanent: true },
+      { source: '/training/introduction-to-design-thinking-workshop', destination: '/training/customer-experience', permanent: true },
       // Batch 5
-      { source: '/sessions/user-journey-mapping-workshop', destination: '/courses/user-journey-mapping-training', permanent: true },
-      { source: '/training/user-journey-mapping-workshop', destination: '/courses/user-journey-mapping-training', permanent: true },
-      { source: '/sessions/reducing-customer-effort-workshop', destination: '/courses/reducing-customer-effort', permanent: true },
-      { source: '/training/reducing-customer-effort-workshop', destination: '/courses/reducing-customer-effort', permanent: true },
-      { source: '/sessions/aligning-organisational-purpose', destination: '/courses/defining-organisational-purpose', permanent: true },
-      { source: '/training/aligning-organisational-purpose', destination: '/courses/defining-organisational-purpose', permanent: true },
-      { source: '/sessions/building-shared-purpose-teams', destination: '/courses/building-shared-purpose-in-teams', permanent: true },
-      { source: '/training/building-shared-purpose-teams', destination: '/courses/building-shared-purpose-in-teams', permanent: true },
-      { source: '/sessions/defining-leveraging-value-workshop', destination: '/courses/defining-value-in-service-delivery', permanent: true },
-      { source: '/training/defining-leveraging-value-workshop', destination: '/courses/defining-value-in-service-delivery', permanent: true },
+      { source: '/sessions/user-journey-mapping-workshop', destination: '/training/customer-experience', permanent: true },
+      { source: '/training/user-journey-mapping-workshop', destination: '/training/customer-experience', permanent: true },
+      { source: '/sessions/reducing-customer-effort-workshop', destination: '/training/customer-experience', permanent: true },
+      { source: '/training/reducing-customer-effort-workshop', destination: '/training/customer-experience', permanent: true },
+      { source: '/sessions/aligning-organisational-purpose', destination: '/develop/leadership-facilitation', permanent: true },
+      { source: '/training/aligning-organisational-purpose', destination: '/develop/leadership-facilitation', permanent: true },
+      { source: '/sessions/building-shared-purpose-teams', destination: '/develop/team-sessions', permanent: true },
+      { source: '/training/building-shared-purpose-teams', destination: '/develop/team-sessions', permanent: true },
+      { source: '/sessions/defining-leveraging-value-workshop', destination: '/training/customer-experience', permanent: true },
+      { source: '/training/defining-leveraging-value-workshop', destination: '/training/customer-experience', permanent: true },
       // Batch 6
-      { source: '/sessions/introduction-to-systems-thinking-workshop', destination: '/courses/systems-thinking-training', permanent: true },
-      { source: '/training/introduction-to-systems-thinking-workshop', destination: '/courses/systems-thinking-training', permanent: true },
-      { source: '/sessions/introduction-to-system-archetypes-workshop', destination: '/courses/system-archetypes-training', permanent: true },
-      { source: '/training/introduction-to-system-archetypes-workshop', destination: '/courses/system-archetypes-training', permanent: true },
+      { source: '/sessions/introduction-to-systems-thinking-workshop', destination: '/training/systems-thinking', permanent: true },
+      { source: '/training/introduction-to-systems-thinking-workshop', destination: '/training/systems-thinking', permanent: true },
+      { source: '/sessions/introduction-to-system-archetypes-workshop', destination: '/training/systems-thinking', permanent: true },
+      { source: '/training/introduction-to-system-archetypes-workshop', destination: '/training/systems-thinking', permanent: true },
       // Older session-to-session paths (final destination after rename)
-      { source: '/sessions/process-analysis-techniques-workshop', destination: '/courses/workflow-optimisation-training', permanent: true },
-      { source: '/training/process-analysis-techniques-workshop', destination: '/courses/workflow-optimisation-training', permanent: true },
-      { source: '/sessions/project-oxygen-manager-training', destination: '/courses/high-performing-teams-training', permanent: true },
-      { source: '/training/project-oxygen-manager-training', destination: '/courses/high-performing-teams-training', permanent: true },
-      { source: '/sessions/introduction-to-service-design-workshop', destination: '/courses/design-thinking-training', permanent: true },
-      { source: '/training/introduction-to-service-design-workshop', destination: '/courses/design-thinking-training', permanent: true },
-      { source: '/sessions/meaningful-work-motivating-teams-with-purpose', destination: '/courses/building-shared-purpose-in-teams', permanent: true },
-      { source: '/training/meaningful-work-motivating-teams-with-purpose', destination: '/courses/building-shared-purpose-in-teams', permanent: true },
-      { source: '/sessions/agile-user-journey-mapping-workshop', destination: '/courses/user-journey-mapping-training', permanent: true },
-      { source: '/training/agile-user-journey-mapping-workshop', destination: '/courses/user-journey-mapping-training', permanent: true },
-      { source: '/sessions/agile-customer-journey-mapping-workshop', destination: '/courses/user-journey-mapping-training', permanent: true },
-      { source: '/training/agile-customer-journey-mapping-workshop', destination: '/courses/user-journey-mapping-training', permanent: true },
-      { source: '/sessions/shared-organisational-purpose', destination: '/courses/defining-organisational-purpose', permanent: true },
-      { source: '/training/shared-organisational-purpose', destination: '/courses/defining-organisational-purpose', permanent: true },
-      { source: '/sessions/customer-value-to-drive-improvement', destination: '/courses/defining-value-in-service-delivery', permanent: true },
-      { source: '/training/customer-value-to-drive-improvement', destination: '/courses/defining-value-in-service-delivery', permanent: true },
-      { source: '/sessions/reconnect-with-a-shared-organisational-purpose', destination: '/courses/defining-organisational-purpose', permanent: true },
-      { source: '/training/reconnect-with-a-shared-organisational-purpose', destination: '/courses/defining-organisational-purpose', permanent: true },
-      { source: '/sessions/using-customer-value-to-drive-improvement-workshop', destination: '/courses/defining-value-in-service-delivery', permanent: true },
-      { source: '/training/using-customer-value-to-drive-improvement-workshop', destination: '/courses/defining-value-in-service-delivery', permanent: true },
-      { source: '/sessions/creating-a-culture-of-collaboration', destination: '/courses/building-a-collaborative-culture', permanent: true },
-      { source: '/training/creating-a-culture-of-collaboration', destination: '/courses/building-a-collaborative-culture', permanent: true },
+      { source: '/sessions/process-analysis-techniques-workshop', destination: '/training/continuous-improvement', permanent: true },
+      { source: '/training/process-analysis-techniques-workshop', destination: '/training/continuous-improvement', permanent: true },
+      { source: '/sessions/project-oxygen-manager-training', destination: '/training/team-effectiveness', permanent: true },
+      { source: '/training/project-oxygen-manager-training', destination: '/training/team-effectiveness', permanent: true },
+      { source: '/sessions/introduction-to-service-design-workshop', destination: '/training/customer-experience', permanent: true },
+      { source: '/training/introduction-to-service-design-workshop', destination: '/training/customer-experience', permanent: true },
+      { source: '/sessions/meaningful-work-motivating-teams-with-purpose', destination: '/develop/team-sessions', permanent: true },
+      { source: '/training/meaningful-work-motivating-teams-with-purpose', destination: '/develop/team-sessions', permanent: true },
+      { source: '/sessions/agile-user-journey-mapping-workshop', destination: '/training/customer-experience', permanent: true },
+      { source: '/training/agile-user-journey-mapping-workshop', destination: '/training/customer-experience', permanent: true },
+      { source: '/sessions/agile-customer-journey-mapping-workshop', destination: '/training/customer-experience', permanent: true },
+      { source: '/training/agile-customer-journey-mapping-workshop', destination: '/training/customer-experience', permanent: true },
+      { source: '/sessions/shared-organisational-purpose', destination: '/develop/leadership-facilitation', permanent: true },
+      { source: '/training/shared-organisational-purpose', destination: '/develop/leadership-facilitation', permanent: true },
+      { source: '/sessions/customer-value-to-drive-improvement', destination: '/training/customer-experience', permanent: true },
+      { source: '/training/customer-value-to-drive-improvement', destination: '/training/customer-experience', permanent: true },
+      { source: '/sessions/reconnect-with-a-shared-organisational-purpose', destination: '/develop/leadership-facilitation', permanent: true },
+      { source: '/training/reconnect-with-a-shared-organisational-purpose', destination: '/develop/leadership-facilitation', permanent: true },
+      { source: '/sessions/using-customer-value-to-drive-improvement-workshop', destination: '/training/customer-experience', permanent: true },
+      { source: '/training/using-customer-value-to-drive-improvement-workshop', destination: '/training/customer-experience', permanent: true },
+      { source: '/sessions/creating-a-culture-of-collaboration', destination: '/training/team-effectiveness', permanent: true },
+      { source: '/training/creating-a-culture-of-collaboration', destination: '/training/team-effectiveness', permanent: true },
       // 500-error fixes (existing /courses/<old> rules at lines below) — also reach via legacy
-      { source: '/sessions/being-an-effective-change-sponsor', destination: '/courses/effective-change-sponsor', permanent: true },
-      { source: '/training/being-an-effective-change-sponsor', destination: '/courses/effective-change-sponsor', permanent: true },
+      { source: '/sessions/being-an-effective-change-sponsor', destination: '/training/change-management', permanent: true },
+      { source: '/training/being-an-effective-change-sponsor', destination: '/training/change-management', permanent: true },
 
       // Articles renamed during the rewrite — direct redirects from
       // /article/<old-slug> and /guides/<old-slug> to /articles/<new-slug>.
@@ -202,8 +202,8 @@ const nextConfig = {
       // 500-error fixes - 6 April 2026
       // =========================================================
 
-      { source: '/courses/being-an-effective-change-sponsor', destination: '/courses/effective-change-sponsor', permanent: true },
-      { source: '/courses/foundations-for-positive-change', destination: '/courses', permanent: true },
+      { source: '/courses/being-an-effective-change-sponsor', destination: '/training/change-management', permanent: true },
+      { source: '/courses/foundations-for-positive-change', destination: '/training', permanent: true },
       { source: '/projects/culture-change-in-housing', destination: '/projects/culture-change-in-social-housing', permanent: true },
       { source: '/projects/improving-regulation-framework', destination: '/projects/public-sector-service-design-case-study', permanent: true },
       { source: '/articles/leadership-vulnerability-in-storytelling', destination: '/articles', permanent: true },
@@ -230,13 +230,14 @@ const nextConfig = {
       { source: '/project/:slug', destination: '/projects/:slug', permanent: true },
       { source: '/project', destination: '/projects', permanent: true },
 
-      // Sessions → Courses: /sessions/[slug] → /courses/[slug]
-      { source: '/sessions/:slug', destination: '/courses/:slug', permanent: true },
-      { source: '/sessions', destination: '/courses', permanent: true },
+      // Sessions → Training: legacy /sessions/* now lands on the Training index.
+      // (Specific /sessions/<old-slug> rules above repoint straight to their territory.)
+      { source: '/sessions/:slug', destination: '/training', permanent: true },
+      { source: '/sessions', destination: '/training', permanent: true },
 
-      // Training → Courses: /training/[slug] → /courses/[slug]
-      { source: '/training/:slug', destination: '/courses/:slug', permanent: true },
-      { source: '/training', destination: '/courses', permanent: true },
+      // NOTE: the former /training/:slug → /courses/:slug and /training → /courses
+      // catch-alls were removed in the /courses → /training migration (12 Jun 2026) —
+      // they would have intercepted and looped every new live /training page.
 
       // Guides: specific slug redirect (must precede catch-all)
       { source: '/guides/psychological-safety-guide', destination: '/articles/psychological-safety-in-organisations', permanent: true },
@@ -263,7 +264,9 @@ const nextConfig = {
       { source: '/customer-experience', destination: '/services/customer-experience-consultancy', permanent: true },
       { source: '/checkout', destination: '/contact', permanent: true },
       { source: '/checkout-2', destination: '/contact', permanent: true },
-      { source: '/enquiry', destination: '/contact', permanent: true },
+      // '/enquiry' is now a real page (the bespoke-training enquiry hub) — the old
+      // '/enquiry' → '/contact' redirect was removed in the /courses → /training
+      // migration so it no longer shadows the page. '/contact/enquiry' stays.
       { source: '/contact/enquiry', destination: '/contact', permanent: true },
 
 
@@ -546,52 +549,113 @@ const nextConfig = {
       // =========================================================
 
       // Batch 1
-      { source: '/courses/change-management-fundamentals', destination: '/courses/change-management-training', permanent: true },
-      { source: '/courses/leading-your-team-through-change', destination: '/courses/leading-a-team-through-change', permanent: true },
+      { source: '/courses/change-management-fundamentals', destination: '/training/change-management', permanent: true },
+      { source: '/courses/leading-your-team-through-change', destination: '/training/change-management', permanent: true },
 
       // Batch 2
-      { source: '/courses/story-foundations-for-leaders', destination: '/courses/storytelling-for-leaders-training', permanent: true },
-      { source: '/courses/data-driven-storytelling', destination: '/courses/data-storytelling-training', permanent: true },
-      { source: '/courses/building-and-managing-high-performing-teams', destination: '/courses/high-performing-teams-training', permanent: true },
-      { source: '/courses/effective-collaboration-in-the-workplace', destination: '/courses/workplace-collaboration-training', permanent: true },
+      { source: '/courses/story-foundations-for-leaders', destination: '/training/change-management', permanent: true },
+      { source: '/courses/data-driven-storytelling', destination: '/training/change-management', permanent: true },
+      { source: '/courses/building-and-managing-high-performing-teams', destination: '/training/team-effectiveness', permanent: true },
+      { source: '/courses/effective-collaboration-in-the-workplace', destination: '/training/team-effectiveness', permanent: true },
 
       // Batch 3
-      { source: '/courses/best-practice-in-organisational-culture-change', destination: '/courses/organisational-culture-change-training', permanent: true },
-      { source: '/courses/combatting-burnout-culture', destination: '/courses/preventing-burnout-at-work', permanent: true },
-      { source: '/courses/culture-of-collaboration', destination: '/courses/building-a-collaborative-culture', permanent: true },
-      { source: '/courses/creating-a-culture-of-recognition-and-appreciation', destination: '/courses/employee-recognition-training', permanent: true },
-      { source: '/courses/enhancing-employee-well-being-and-work-life-balance', destination: '/courses/employee-wellbeing-training', permanent: true },
+      { source: '/courses/best-practice-in-organisational-culture-change', destination: '/training/change-management', permanent: true },
+      { source: '/courses/combatting-burnout-culture', destination: '/services/employee-experience-consultancy', permanent: true },
+      { source: '/courses/culture-of-collaboration', destination: '/training/team-effectiveness', permanent: true },
+      { source: '/courses/creating-a-culture-of-recognition-and-appreciation', destination: '/services/employee-experience-consultancy', permanent: true },
+      { source: '/courses/enhancing-employee-well-being-and-work-life-balance', destination: '/services/employee-experience-consultancy', permanent: true },
 
       // Batch 4
-      { source: '/courses/introduction-to-process-mapping-workshop', destination: '/courses/process-mapping-training', permanent: true },
-      { source: '/courses/simple-lean-process-design-workshop', destination: '/courses/lean-process-design-training', permanent: true },
-      { source: '/courses/workflow-optimisation-workshop', destination: '/courses/workflow-optimisation-training', permanent: true },
-      { source: '/courses/continuous-improvement-training-for-teams', destination: '/courses/continuous-improvement-training', permanent: true },
-      { source: '/courses/introduction-to-design-thinking-workshop', destination: '/courses/design-thinking-training', permanent: true },
+      { source: '/courses/introduction-to-process-mapping-workshop', destination: '/training/process-mapping-workshop', permanent: true },
+      { source: '/courses/simple-lean-process-design-workshop', destination: '/training/continuous-improvement', permanent: true },
+      { source: '/courses/workflow-optimisation-workshop', destination: '/training/continuous-improvement', permanent: true },
+      { source: '/courses/continuous-improvement-training-for-teams', destination: '/training/continuous-improvement', permanent: true },
+      { source: '/courses/introduction-to-design-thinking-workshop', destination: '/training/customer-experience', permanent: true },
 
       // Batch 5
-      { source: '/courses/user-journey-mapping-workshop', destination: '/courses/user-journey-mapping-training', permanent: true },
-      { source: '/courses/reducing-customer-effort-workshop', destination: '/courses/reducing-customer-effort', permanent: true },
-      { source: '/courses/aligning-organisational-purpose', destination: '/courses/defining-organisational-purpose', permanent: true },
-      { source: '/courses/building-shared-purpose-teams', destination: '/courses/building-shared-purpose-in-teams', permanent: true },
-      { source: '/courses/defining-leveraging-value-workshop', destination: '/courses/defining-value-in-service-delivery', permanent: true },
+      { source: '/courses/user-journey-mapping-workshop', destination: '/training/customer-experience', permanent: true },
+      { source: '/courses/reducing-customer-effort-workshop', destination: '/training/customer-experience', permanent: true },
+      { source: '/courses/aligning-organisational-purpose', destination: '/develop/leadership-facilitation', permanent: true },
+      { source: '/courses/building-shared-purpose-teams', destination: '/develop/team-sessions', permanent: true },
+      { source: '/courses/defining-leveraging-value-workshop', destination: '/training/customer-experience', permanent: true },
 
       // Batch 6
-      { source: '/courses/introduction-to-systems-thinking-workshop', destination: '/courses/systems-thinking-training', permanent: true },
-      { source: '/courses/introduction-to-system-archetypes-workshop', destination: '/courses/system-archetypes-training', permanent: true },
+      { source: '/courses/introduction-to-systems-thinking-workshop', destination: '/training/systems-thinking', permanent: true },
+      { source: '/courses/introduction-to-system-archetypes-workshop', destination: '/training/systems-thinking', permanent: true },
 
       // Old session-to-session redirects (already existed in WP)
-      { source: '/courses/process-analysis-techniques-workshop', destination: '/courses/workflow-optimisation-training', permanent: true },
-      { source: '/courses/project-oxygen-manager-training', destination: '/courses/high-performing-teams-training', permanent: true },
-      { source: '/courses/introduction-to-service-design-workshop', destination: '/courses/design-thinking-training', permanent: true },
-      { source: '/courses/meaningful-work-motivating-teams-with-purpose', destination: '/courses/building-shared-purpose-in-teams', permanent: true },
-      { source: '/courses/agile-user-journey-mapping-workshop', destination: '/courses/user-journey-mapping-training', permanent: true },
-      { source: '/courses/agile-customer-journey-mapping-workshop', destination: '/courses/user-journey-mapping-training', permanent: true },
-      { source: '/courses/shared-organisational-purpose', destination: '/courses/defining-organisational-purpose', permanent: true },
-      { source: '/courses/customer-value-to-drive-improvement', destination: '/courses/defining-value-in-service-delivery', permanent: true },
-      { source: '/courses/reconnect-with-a-shared-organisational-purpose', destination: '/courses/defining-organisational-purpose', permanent: true },
-      { source: '/courses/using-customer-value-to-drive-improvement-workshop', destination: '/courses/defining-value-in-service-delivery', permanent: true },
-      { source: '/courses/creating-a-culture-of-collaboration', destination: '/courses/building-a-collaborative-culture', permanent: true },
+      { source: '/courses/process-analysis-techniques-workshop', destination: '/training/continuous-improvement', permanent: true },
+      { source: '/courses/project-oxygen-manager-training', destination: '/training/team-effectiveness', permanent: true },
+      { source: '/courses/introduction-to-service-design-workshop', destination: '/training/customer-experience', permanent: true },
+      { source: '/courses/meaningful-work-motivating-teams-with-purpose', destination: '/develop/team-sessions', permanent: true },
+      { source: '/courses/agile-user-journey-mapping-workshop', destination: '/training/customer-experience', permanent: true },
+      { source: '/courses/agile-customer-journey-mapping-workshop', destination: '/training/customer-experience', permanent: true },
+      { source: '/courses/shared-organisational-purpose', destination: '/develop/leadership-facilitation', permanent: true },
+      { source: '/courses/customer-value-to-drive-improvement', destination: '/training/customer-experience', permanent: true },
+      { source: '/courses/reconnect-with-a-shared-organisational-purpose', destination: '/develop/leadership-facilitation', permanent: true },
+      { source: '/courses/using-customer-value-to-drive-improvement-workshop', destination: '/training/customer-experience', permanent: true },
+      { source: '/courses/creating-a-culture-of-collaboration', destination: '/training/team-effectiveness', permanent: true },
+
+
+      // =========================================================
+      // /courses → /training MIGRATION (section move, 12 Jun 2026)
+      // The 30 published course pages collapse into the new /training
+      // territory pages (plus a few /services and /develop homes). Every
+      // legacy alias above already points straight at these final homes, so
+      // no request is ever redirected twice. There is no /courses/:slug
+      // catch-all, so ordering within this block is not load-bearing.
+      // =========================================================
+
+      // Section front door
+      { source: '/courses', destination: '/training', permanent: true },
+
+      // Change management territory
+      { source: '/courses/change-management-training', destination: '/training/change-management', permanent: true },
+      { source: '/courses/driving-organisational-change', destination: '/training/change-management', permanent: true },
+      { source: '/courses/leading-a-team-through-change', destination: '/training/change-management', permanent: true },
+      { source: '/courses/building-the-case-for-change', destination: '/training/change-management', permanent: true },
+      { source: '/courses/effective-change-sponsor', destination: '/training/change-management', permanent: true },
+      { source: '/courses/organisational-culture-change-training', destination: '/training/change-management', permanent: true },
+      { source: '/courses/storytelling-for-change-management', destination: '/training/change-management', permanent: true },
+      { source: '/courses/data-storytelling-training', destination: '/training/change-management', permanent: true },
+      { source: '/courses/storytelling-for-leaders-training', destination: '/training/change-management', permanent: true },
+
+      // Systems thinking territory
+      { source: '/courses/systems-thinking-training', destination: '/training/systems-thinking', permanent: true },
+      { source: '/courses/system-archetypes-training', destination: '/training/systems-thinking', permanent: true },
+      { source: '/courses/systems-thinking-for-organisational-change', destination: '/training/systems-thinking', permanent: true },
+
+      // Team effectiveness territory
+      { source: '/courses/high-performing-teams-training', destination: '/training/team-effectiveness', permanent: true },
+      { source: '/courses/workplace-collaboration-training', destination: '/training/team-effectiveness', permanent: true },
+      { source: '/courses/building-a-collaborative-culture', destination: '/training/team-effectiveness', permanent: true },
+
+      // Standalone workshop territories
+      // NOTE: /courses/building-a-theory-of-change is the project's only real search
+      // equity (position 12, 2.6% CTR) — this is its single permanent hop home.
+      { source: '/courses/building-a-theory-of-change', destination: '/training/theory-of-change-workshop', permanent: true },
+      { source: '/courses/process-mapping-training', destination: '/training/process-mapping-workshop', permanent: true },
+      { source: '/courses/scenario-planning-for-leaders', destination: '/training/scenario-planning-workshop', permanent: true },
+
+      // Customer experience territory
+      { source: '/courses/user-journey-mapping-training', destination: '/training/customer-experience', permanent: true },
+      { source: '/courses/design-thinking-training', destination: '/training/customer-experience', permanent: true },
+      { source: '/courses/reducing-customer-effort', destination: '/training/customer-experience', permanent: true },
+      { source: '/courses/defining-value-in-service-delivery', destination: '/training/customer-experience', permanent: true },
+
+      // Continuous improvement territory
+      { source: '/courses/continuous-improvement-training', destination: '/training/continuous-improvement', permanent: true },
+      { source: '/courses/lean-process-design-training', destination: '/training/continuous-improvement', permanent: true },
+      { source: '/courses/workflow-optimisation-training', destination: '/training/continuous-improvement', permanent: true },
+
+      // Employee experience → services
+      { source: '/courses/employee-recognition-training', destination: '/services/employee-experience-consultancy', permanent: true },
+      { source: '/courses/employee-wellbeing-training', destination: '/services/employee-experience-consultancy', permanent: true },
+      { source: '/courses/preventing-burnout-at-work', destination: '/services/employee-experience-consultancy', permanent: true },
+
+      // Purpose → develop
+      { source: '/courses/defining-organisational-purpose', destination: '/develop/leadership-facilitation', permanent: true },
+      { source: '/courses/building-shared-purpose-in-teams', destination: '/develop/team-sessions', permanent: true },
 
 
       // =========================================================
@@ -700,35 +764,35 @@ const nextConfig = {
       { source: '/tools/executive-function', destination: '/tools', permanent: true },
 
       // Old school taxonomy
-      { source: '/school/change-management', destination: '/courses', permanent: true },
-      { source: '/school/change-management/:path*', destination: '/courses', permanent: true },
-      { source: '/school/catalysing-change', destination: '/courses', permanent: true },
-      { source: '/school/catalysing-change/:path*', destination: '/courses', permanent: true },
-      { source: '/school/organisational-effectiveness', destination: '/courses', permanent: true },
-      { source: '/school/organisational-effectiveness/:path*', destination: '/courses', permanent: true },
-      { source: '/school/team-effectiveness', destination: '/courses', permanent: true },
-      { source: '/school/team-effectiveness/:path*', destination: '/courses', permanent: true },
-      { source: '/school/:slug', destination: '/courses', permanent: true },
+      { source: '/school/change-management', destination: '/training/change-management', permanent: true },
+      { source: '/school/change-management/:path*', destination: '/training/change-management', permanent: true },
+      { source: '/school/catalysing-change', destination: '/training/change-management', permanent: true },
+      { source: '/school/catalysing-change/:path*', destination: '/training/change-management', permanent: true },
+      { source: '/school/organisational-effectiveness', destination: '/training/continuous-improvement', permanent: true },
+      { source: '/school/organisational-effectiveness/:path*', destination: '/training/continuous-improvement', permanent: true },
+      { source: '/school/team-effectiveness', destination: '/training/team-effectiveness', permanent: true },
+      { source: '/school/team-effectiveness/:path*', destination: '/training/team-effectiveness', permanent: true },
+      { source: '/school/:slug', destination: '/training', permanent: true },
 
       // Training areas
-      { source: '/training-area/employee-experience', destination: '/courses', permanent: true },
-      { source: '/training-area/employee-experience/:path*', destination: '/courses', permanent: true },
-      { source: '/training-area/capacity-development-training', destination: '/courses', permanent: true },
-      { source: '/training-area/systems-thinking', destination: '/courses', permanent: true },
-      { source: '/training-area/strategy-futures-training', destination: '/courses', permanent: true },
-      { source: '/training-area/service-design', destination: '/courses', permanent: true },
-      { source: '/training-area/design-thinking-innovation-training', destination: '/courses', permanent: true },
-      { source: '/training-area/continuous-improvement', destination: '/courses', permanent: true },
-      { source: '/training-area/operational-effectiveness-training', destination: '/courses', permanent: true },
-      { source: '/training-area/organisational-change', destination: '/courses', permanent: true },
-      { source: '/training-area/change-management-training', destination: '/courses', permanent: true },
-      { source: '/training-area/customer-experience', destination: '/courses', permanent: true },
-      { source: '/training-area/customer-experience-training', destination: '/courses', permanent: true },
-      { source: '/training-area/culture-change', destination: '/courses', permanent: true },
-      { source: '/training-area/culture-change-training', destination: '/courses', permanent: true },
-      { source: '/training-area/process-improvement', destination: '/courses', permanent: true },
-      { source: '/training-area/process-improvement-training', destination: '/courses', permanent: true },
-      { source: '/training-area/:slug', destination: '/courses', permanent: true },
+      { source: '/training-area/employee-experience', destination: '/services/employee-experience-consultancy', permanent: true },
+      { source: '/training-area/employee-experience/:path*', destination: '/services/employee-experience-consultancy', permanent: true },
+      { source: '/training-area/capacity-development-training', destination: '/training', permanent: true },
+      { source: '/training-area/systems-thinking', destination: '/training/systems-thinking', permanent: true },
+      { source: '/training-area/strategy-futures-training', destination: '/training', permanent: true },
+      { source: '/training-area/service-design', destination: '/training', permanent: true },
+      { source: '/training-area/design-thinking-innovation-training', destination: '/training', permanent: true },
+      { source: '/training-area/continuous-improvement', destination: '/training/continuous-improvement', permanent: true },
+      { source: '/training-area/operational-effectiveness-training', destination: '/training', permanent: true },
+      { source: '/training-area/organisational-change', destination: '/training', permanent: true },
+      { source: '/training-area/change-management-training', destination: '/training/change-management', permanent: true },
+      { source: '/training-area/customer-experience', destination: '/training/customer-experience', permanent: true },
+      { source: '/training-area/customer-experience-training', destination: '/training', permanent: true },
+      { source: '/training-area/culture-change', destination: '/training', permanent: true },
+      { source: '/training-area/culture-change-training', destination: '/training', permanent: true },
+      { source: '/training-area/process-improvement', destination: '/training/continuous-improvement', permanent: true },
+      { source: '/training-area/process-improvement-training', destination: '/training', permanent: true },
+      { source: '/training-area/:slug', destination: '/training', permanent: true },
 
       // Old taxonomies (catch-alls)
       { source: '/tool-use/:slug', destination: '/tools', permanent: true },
@@ -743,10 +807,10 @@ const nextConfig = {
       { source: '/topic/:slug/page/:num', destination: '/articles', permanent: true },
       { source: '/topic/:path*', destination: '/topics', permanent: true },
       { source: '/sector/:slug', destination: '/projects', permanent: true },
-      { source: '/event/:slug', destination: '/courses', permanent: true },
-      { source: '/event-type/:slug', destination: '/courses', permanent: true },
-      { source: '/training-platform/:slug', destination: '/courses', permanent: true },
-      { source: '/workshop/:slug', destination: '/courses', permanent: true },
+      { source: '/event/:slug', destination: '/training', permanent: true },
+      { source: '/event-type/:slug', destination: '/training', permanent: true },
+      { source: '/training-platform/:slug', destination: '/training', permanent: true },
+      { source: '/workshop/:slug', destination: '/training', permanent: true },
       { source: '/service/:slug', destination: '/services', permanent: true },
 
       // Old project renames
@@ -876,7 +940,7 @@ const nextConfig = {
       { source: '/resources', destination: '/tools', permanent: true },
       { source: '/newsletters', destination: '/newsletter', permanent: true },
       { source: '/toolkit', destination: '/tools', permanent: true },
-      { source: '/workshops', destination: '/courses', permanent: true },
+      { source: '/workshops', destination: '/training', permanent: true },
       { source: '/sitemap', destination: '/sitemap.xml', permanent: true },
 
       // Tool embed path
@@ -891,8 +955,8 @@ const nextConfig = {
       // =========================================================
 
       // Old course URLs
-      { source: '/courses/tools-for-change', destination: '/courses', permanent: true },
-      { source: '/courses/continuous-improvement-for-teams', destination: '/courses/continuous-improvement-training', permanent: true },
+      { source: '/courses/tools-for-change', destination: '/training', permanent: true },
+      { source: '/courses/continuous-improvement-for-teams', destination: '/training/continuous-improvement', permanent: true },
 
       // Old project URLs at root level (missing /projects/ prefix)
       { source: '/customer-focused-culture-change-in-housing', destination: '/projects/housing-association-merger-integration', permanent: true },
@@ -945,8 +1009,8 @@ const nextConfig = {
       { source: '/signs-of-vitality-snapshot', destination: '/states-of-vitality', permanent: true },
 
       // Old training-courses section
-      { source: '/training-courses', destination: '/courses', permanent: true },
-      { source: '/training-courses/:slug', destination: '/courses', permanent: true },
+      { source: '/training-courses', destination: '/training', permanent: true },
+      { source: '/training-courses/:slug', destination: '/training', permanent: true },
 
 
       // =========================================================

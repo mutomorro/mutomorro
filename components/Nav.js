@@ -460,12 +460,12 @@ export default function Nav() {
               </div>
             </div>
 
-            {/* Courses box */}
-            <Link href="/courses" onClick={closePanel} className="explore-courses-card">
+            {/* Training box */}
+            <Link href="/training" onClick={closePanel} className="explore-courses-card">
               <div>
                 <span className="explore-zone-label" style={{ color: '#9B51E0' }}>Learn and develop</span>
-                <span className="explore-courses-card__title">Courses</span>
-                <span className="explore-courses-card__desc">Ready-made sessions on popular topics</span>
+                <span className="explore-courses-card__title">Training</span>
+                <span className="explore-courses-card__desc">Workshops and courses on how organisations change</span>
               </div>
               <span className="explore-courses-card__chevron">›</span>
             </Link>
@@ -636,7 +636,7 @@ export default function Nav() {
                   <Link key={item.href} href={item.href} onClick={closeMobile} className="mobile-nav__explore-link">{item.label}</Link>
                 ))}
                 <span className="kicker" style={{ marginTop: '20px', marginBottom: '8px' }}>Learn and develop</span>
-                <Link href="/courses" onClick={closeMobile} className="mobile-nav__explore-link">Courses</Link>
+                <Link href="/training" onClick={closeMobile} className="mobile-nav__explore-link">Training</Link>
               </div>
             </div>
           </div>

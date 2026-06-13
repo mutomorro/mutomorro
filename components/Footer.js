@@ -77,7 +77,7 @@ export default function Footer() {
                     <p className="footer-heading">Explore</p>
                     <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '10px' }}>
                         <li><Link href="/articles" className="footer-link">Thinking</Link></li>
-                        <li><Link href="/courses" className="footer-link">Courses</Link></li>
+                        <li><Link href="/training" className="footer-link">Training</Link></li>
                         <li><Link href="/tools" className="footer-link">Tools of the Trade</Link></li>
                         <li><Link href="/topics" className="footer-link">Topics</Link></li>
                         <li><Link href="/states-of-vitality" className="footer-link">States of Vitality</Link></li>

@@ -11,7 +11,7 @@ export async function GET() {
     client.fetch(`*[_type == "article"]{ "type": "Article", title, "slug": "/articles/" + slug.current, shortSummary, "category": theme->title }`),
     client.fetch(`*[_type == "service"]{ "type": "Service", title, "slug": "/services/" + slug.current, "shortSummary": heroTagline, "category": categoryLabel }`),
     client.fetch(`*[_type == "project"]{ "type": "Case study", title, "slug": "/projects/" + slug.current, shortSummary, "category": clientSector }`),
-    client.fetch(`*[_type == "course"]{ "type": "Course", title, "slug": "/courses/" + slug.current, shortSummary, category }`),
+    client.fetch(`*[_type == "course" && !(_id in path("drafts.**"))]{ "type": "Training", title, "slug": "/training/" + slug.current, shortSummary, category }`),
     client.fetch(`*[_type == "resource"]{ "type": "Resource", title, "slug": "/resources/" + slug.current, "shortSummary": description }`),
     client.fetch(`*[_type == "dimension"]{ "type": "Dimension", title, "slug": "/emergent-framework/" + slug.current, shortSummary, "category": "EMERGENT" }`),
   ])

@@ -19,7 +19,7 @@ export default async function sitemap() {
     { url: `${BASE_URL}/states-of-vitality`, lastModified: STATIC_LASTMOD, changeFrequency: 'monthly', priority: 0.8 },
     { url: `${BASE_URL}/tools`, lastModified: STATIC_LASTMOD, changeFrequency: 'weekly', priority: 0.8 },
     { url: `${BASE_URL}/articles`, lastModified: STATIC_LASTMOD, changeFrequency: 'weekly', priority: 0.7 },
-    { url: `${BASE_URL}/courses`, lastModified: STATIC_LASTMOD, changeFrequency: 'monthly', priority: 0.7 },
+    { url: `${BASE_URL}/training`, lastModified: STATIC_LASTMOD, changeFrequency: 'monthly', priority: 0.7 },
     { url: `${BASE_URL}/projects`, lastModified: STATIC_LASTMOD, changeFrequency: 'monthly', priority: 0.7 },
     { url: `${BASE_URL}/topics`, lastModified: STATIC_LASTMOD, changeFrequency: 'weekly', priority: 0.8 },
     { url: `${BASE_URL}/diagnostics`, lastModified: new Date('2026-05-22'), changeFrequency: 'monthly', priority: 0.7 },
@@ -177,7 +177,7 @@ export default async function sitemap() {
       ),
     })),
     ...courses.map(c => ({
-      url: `${BASE_URL}/courses/${c.slug}`,
+      url: `${BASE_URL}/training/${c.slug}`,
       lastModified: c._updatedAt,
       changeFrequency: 'monthly',
       priority: 0.6,

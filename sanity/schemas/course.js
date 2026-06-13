@@ -87,6 +87,7 @@ export default defineType({
         { type: 'table' },
         { type: 'accordion' },
         { type: 'tabs' },
+        { type: 'courseEntry' },
         { type: 'image', options: { hotspot: true } },
       ],
       validation: Rule => Rule.required(),

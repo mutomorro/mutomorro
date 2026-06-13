@@ -2163,6 +2163,21 @@ a:hover {
   .section-padding-dimension { padding: 48px 72px 40px; }
 }
 
+/* Hero → first content: the hero's bottom padding and the content section's
+   top padding were stacking into a cavernous gap (~200px desktop). Trim the
+   content's top padding right after a hero — with or without a teaser strip
+   between — so the hero leads into the page instead of into dead space. */
+.section-padding-hero + .section-padding,
+.callout-teaser + .section-padding {
+  padding-top: 24px;
+}
+@media (min-width: 768px) {
+  .section-padding-hero + .section-padding,
+  .callout-teaser + .section-padding {
+    padding-top: 36px;
+  }
+}
+
 /* Footer responsive */
 .footer-wrapper { padding: 3rem 20px 2rem; }
 .footer-newsletter-row {
@@ -2315,8 +2330,8 @@ a:hover {
 }
 
 .portable-text h2 {
-  font-size: 1.75rem;
-  font-weight: 400;
+  font-size: 1.9rem;
+  font-weight: 600;
   color: var(--dark);
   margin: 2.5rem 0 1rem 0;
 }
@@ -2639,6 +2654,125 @@ a:hover {
   .content-tabs__tab {
     font-size: 16px;
     padding: 9px 11px;
+  }
+}
+
+/* ================================================
+   COURSE BLOCKS (training pillar pages)
+   Rendered by components/ContentCourse.js. Each course in a "The courses"
+   list becomes a distinct, scannable unit — a gradient index number, a bold
+   full-width title (deliberately heavier than the accordion labels inside it,
+   fixing the old inverted hierarchy), the intro beside a small spec rail, and
+   the existing accordions beneath. Sharp corners, house tokens.
+   ================================================ */
+
+.course-entry {
+  margin-top: 2.5rem;
+}
+
+/* From the second course on, a hairline centred in whitespace separates units
+   so a run of courses reads as a numbered series, not a wall of text. */
+.course-entry + .course-entry {
+  margin-top: 2.5rem;
+  padding-top: 2.5rem;
+  border-top: 1px solid rgba(34, 28, 43, 0.1);
+}
+
+/* Gradient index number on top (01, 02 …) — the page's signature heading
+   gradient, clipped to the glyphs. Decorative; the real heading is the h3. */
+.course-entry__num {
+  display: block;
+  font-size: 34px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.01em;
+  margin-bottom: 4px;
+  color: var(--accent-deep);
+  background: var(--gradient-heading);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* The course title. Overrides the faint .portable-text h3 (1.3rem/400) so it
+   outweighs its own accordion labels and anchors the unit. */
+.portable-text .course-entry__title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+  color: var(--dark);
+  margin: 0 0 1.25rem 0;
+}
+
+/* Intro prose beside the spec rail (collapses to one column on narrow views). */
+.course-entry__head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 200px;
+  gap: 28px;
+  align-items: start;
+}
+.course-entry__head--full {
+  display: block;
+}
+.course-entry__intro > :first-child {
+  margin-top: 0;
+}
+.course-entry__intro > :last-child {
+  margin-bottom: 0;
+}
+
+/* The spec rail — format / who it's for / what you leave with, lifted out of
+   the prose onto a warm panel so the page is scannable down the right edge. */
+.course-entry__spec {
+  background: var(--warm);
+  padding: 18px 20px;
+}
+.course-entry__spec dl {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.course-entry__spec-row dt {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(34, 28, 43, 0.55);
+  margin-bottom: 3px;
+}
+.course-entry__spec-row dd {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--dark);
+}
+/* The first row (Format) carries the accent — the most-scanned fact. */
+.course-entry__spec-row:first-child dd {
+  color: var(--accent-deep);
+}
+
+/* Accordions sit full-width beneath the intro/spec row. */
+.course-entry__detail {
+  margin-top: 1.5rem;
+}
+.course-entry__detail > .toc-accordion:first-child {
+  margin-top: 0;
+}
+
+/* Narrow / mobile: drop the spec rail beneath the intro. */
+@media (max-width: 720px) {
+  .course-entry__head {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+  .course-entry__num {
+    font-size: 30px;
+  }
+  .portable-text .course-entry__title {
+    font-size: 1.35rem;
   }
 }
 

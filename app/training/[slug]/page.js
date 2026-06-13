@@ -8,6 +8,7 @@ import RelatedContent from '../../../components/RelatedContent'
 import ContentTable from '../../../components/ContentTable'
 import ContentAccordion from '../../../components/ContentAccordion'
 import ContentTabs from '../../../components/ContentTabs'
+import ContentCourse from '../../../components/ContentCourse'
 import PageCallouts from '../../../components/PageCallouts'
 import CalloutTeaser from '../../../components/CalloutTeaser'
 import ThreeColumnLayout from '../../../components/ThreeColumnLayout'
@@ -83,6 +84,18 @@ export default async function TrainingPage({ params }) {
   const sidebarCallouts = await getSidebarCallouts('courses', course._id)
 
   const heroImageUrl = course.heroImage ? urlFor(course.heroImage).width(900).url() : null
+
+  // Heading anchors — shared by the ToC heading renderers below and the course
+  // blocks (which stand in for the h3s they replaced) — plus a 1-based,
+  // zero-padded number for each course in document order.
+  const { idByKey } = buildHeadingIndex(course.body)
+  const courseKeys = (course.body || [])
+    .filter((b) => b?._type === 'courseEntry')
+    .map((b) => b._key)
+  const courseNum = (key) => {
+    const i = courseKeys.indexOf(key)
+    return i === -1 ? null : String(i + 1).padStart(2, '0')
+  }
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -211,6 +224,13 @@ export default async function TrainingPage({ params }) {
                     table: ({ value }) => <ContentTable value={value} />,
                     accordion: ({ value }) => <ContentAccordion value={value} />,
                     tabs: ({ value }) => <ContentTabs value={value} />,
+                    courseEntry: ({ value }) => (
+                      <ContentCourse
+                        value={value}
+                        id={idByKey.get(value._key)}
+                        number={courseNum(value._key)}
+                      />
+                    ),
                   },
                   marks: {
                     link: ({ value, children }) => {
@@ -228,7 +248,7 @@ export default async function TrainingPage({ params }) {
                     },
                   },
                   block: {
-                    ...makeHeadingBlocks(buildHeadingIndex(course.body).idByKey),
+                    ...makeHeadingBlocks(idByKey),
                     blockquote: ({ children }) => (
                       <blockquote className="pull-quote">{children}</blockquote>
                     ),

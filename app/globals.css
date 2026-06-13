@@ -5623,6 +5623,27 @@ a:hover {
   color: rgba(0,0,0,0.4);
 }
 
+/* Collapsible H3 sub-lists: a section's sub-headings stay hidden until the
+   reader reaches that section, then expand. The links stay in the DOM
+   (crawlable) — only their visibility is toggled, so there's no SEO impact. */
+.toc-subwrap {
+  margin: 0;
+  padding: 0;
+}
+.toc-sublist {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: max-height 0.3s ease, opacity 0.25s ease;
+}
+.toc-sublist.expanded {
+  max-height: 600px;
+  opacity: 1;
+}
+
 .toc-item.active {
   background: rgba(155, 81, 224, 0.06);
   margin-left: -12px;

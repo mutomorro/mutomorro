@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
 import { buildHeadingIndex } from '../lib/slugify'
 
 const HEADER_OFFSET = 96
@@ -9,6 +9,33 @@ export default function TableOfContents({ body }) {
   // Shares buildHeadingIndex with the heading renderer, so the ids here are the
   // same unique, de-duplicated anchors the headings actually carry in the DOM.
   const headings = useMemo(() => buildHeadingIndex(body).headings, [body])
+
+  // Group each H2 with the H3s that follow it, so the nav can keep a section's
+  // sub-headings collapsed until the reader reaches that section. H3s that
+  // appear before any H2 (rare) fall into a leading group with no header.
+  const groups = useMemo(() => {
+    const out = []
+    let current = null
+    for (const h of headings) {
+      if (h.level === 2) {
+        current = { heading: h, children: [] }
+        out.push(current)
+      } else if (current) {
+        current.children.push(h)
+      } else {
+        current = { heading: null, children: [h] }
+        out.push(current)
+      }
+    }
+    return out
+  }, [headings])
+
+  // Document-order index per id, used for "active"/"passed" styling.
+  const orderById = useMemo(
+    () => new Map(headings.map((h, i) => [h.id, i])),
+    [headings],
+  )
+
   const [activeId, setActiveId] = useState(null)
   const [progress, setProgress] = useState(0)
   const [mobileOpen, setMobileOpen] = useState(false)
@@ -111,8 +138,15 @@ export default function TableOfContents({ body }) {
 
   if (headings.length === 0) return null
 
-  // Determine which items are "passed" (above the current active item).
-  const activeIndex = activeId ? headings.findIndex((h) => h.id === activeId) : -1
+  // "passed" = above the current active item. openGroupIndex = the group the
+  // reader is currently in (its H2 or one of its H3s is active); only that
+  // group's sub-headings are expanded.
+  const activeIndex = activeId ? (orderById.get(activeId) ?? -1) : -1
+  const openGroupIndex = activeId
+    ? groups.findIndex(
+        (g) => g.heading?.id === activeId || g.children.some((c) => c.id === activeId),
+      )
+    : -1
 
   return (
     <div className="toc-sidebar">
@@ -131,22 +165,65 @@ export default function TableOfContents({ body }) {
 
       <nav aria-label="Table of contents">
         <ul id="toc-list" className={`toc-list${mobileOpen ? ' expanded' : ''}`}>
-          {headings.map((h, i) => {
-            const isActive = h.id === activeId
-            const isPassed = !isActive && activeIndex >= 0 && i < activeIndex
+          {groups.map((group, gi) => {
+            const head = group.heading
+            const headActive = head?.id === activeId
+            const headOrder = head ? orderById.get(head.id) : -1
+            const headPassed =
+              head && !headActive && activeIndex >= 0 && headOrder < activeIndex
+            const open = gi === openGroupIndex
+            const hasChildren = group.children.length > 0
+
             return (
-              <li
-                key={h.id}
-                className={`toc-item${isActive ? ' active' : ''}${isPassed ? ' passed' : ''}`}
-              >
-                <a
-                  href={`#${h.id}`}
-                  className={`toc-link${h.level === 3 ? ' toc-sub' : ''}`}
-                  onClick={(e) => handleClick(e, h.id)}
-                >
-                  {h.text}
-                </a>
-              </li>
+              <Fragment key={head ? head.id : `group-${gi}`}>
+                {head && (
+                  <li
+                    className={`toc-item${headActive ? ' active' : ''}${
+                      headPassed ? ' passed' : ''
+                    }`}
+                  >
+                    <a
+                      href={`#${head.id}`}
+                      className="toc-link"
+                      onClick={(e) => handleClick(e, head.id)}
+                    >
+                      {head.text}
+                    </a>
+                  </li>
+                )}
+
+                {hasChildren && (
+                  <li className="toc-subwrap">
+                    <ul
+                      className={`toc-sublist${open ? ' expanded' : ''}`}
+                      aria-hidden={!open}
+                    >
+                      {group.children.map((c) => {
+                        const cActive = c.id === activeId
+                        const cPassed =
+                          !cActive && activeIndex >= 0 && orderById.get(c.id) < activeIndex
+                        return (
+                          <li
+                            key={c.id}
+                            className={`toc-item toc-subitem${cActive ? ' active' : ''}${
+                              cPassed ? ' passed' : ''
+                            }`}
+                          >
+                            <a
+                              href={`#${c.id}`}
+                              className="toc-link toc-sub"
+                              tabIndex={open ? undefined : -1}
+                              onClick={(e) => handleClick(e, c.id)}
+                            >
+                              {c.text}
+                            </a>
+                          </li>
+                        )
+                      })}
+                    </ul>
+                  </li>
+                )}
+              </Fragment>
             )
           })}
         </ul>

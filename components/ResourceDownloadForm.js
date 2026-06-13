@@ -18,7 +18,7 @@ export default function ResourceDownloadForm({
     lastName: '',
     email: '',
     organisation: '',
-    newsletterOptIn: true,
+    newsletterOptIn: false,
   })
   const [status, setStatus] = useState('idle') // idle | sending | success | error
   const [errorMessage, setErrorMessage] = useState('')

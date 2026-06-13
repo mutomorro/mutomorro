@@ -126,19 +126,6 @@ export default function TrainingFrontDoor() {
         </div>
       </section>
 
-      {/* Intro band - bespoke link placed early, repointed to /enquiry */}
-      <section className="section-padding" style={{ background: 'var(--white)' }}>
-        <div style={{ maxWidth: '760px', margin: '0 auto' }}>
-          <p className="lead-text" style={{ margin: 0 }}>
-            Everything here works the same way: we bring the training to you and shape it before
-            we arrive, so your people leave able to do the thing, not just read about it. Find the
-            area that fits what you&apos;re working on below - or, if you&apos;d rather we designed
-            something around your organisation from the ground up, that&apos;s{' '}
-            <Link href="/enquiry?service=training" className="inline-link">bespoke training</Link>.
-          </p>
-        </div>
-      </section>
-
       {/* ==========================================
           2 - TRAINING AREAS (the pillars)
           ========================================== */}

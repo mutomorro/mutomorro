@@ -5545,6 +5545,12 @@ a:hover {
   top: 96px;
   padding: 48px 0;
   max-height: calc(100vh - 96px);
+  /* overflow-y:auto would otherwise force overflow-x to "auto" too, so the
+     active item's highlight bleed surfaced as a horizontal scrollbar below
+     the ToC. The bleed is now contained (see .toc-item.active /
+     .toc-link::before), and overflow-x:hidden also neutralises the
+     vertical-scrollbar-width cascade on classic-scrollbar systems. */
+  overflow-x: hidden;
   overflow-y: auto;
 }
 
@@ -5616,7 +5622,7 @@ a:hover {
 .toc-link::before {
   content: '';
   position: absolute;
-  left: -12px;
+  left: 0;
   top: 0;
   width: 2px;
   height: 0;
@@ -5654,10 +5660,6 @@ a:hover {
 
 .toc-item.active {
   background: rgba(155, 81, 224, 0.06);
-  margin-left: -12px;
-  padding-left: 12px;
-  margin-right: -12px;
-  padding-right: 12px;
 }
 .toc-item.active .toc-link {
   color: var(--dark);

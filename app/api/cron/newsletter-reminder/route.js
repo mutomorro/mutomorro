@@ -8,8 +8,7 @@
  */
 
 import { createClient } from '@supabase/supabase-js'
-import { Resend } from 'resend'
-import { buildConfirmationEmail } from '../../../../components/emails/confirmation-email'
+import { sendConfirmationEmail } from '@/lib/confirmation-email'
 import { fetchAllPaginated } from '../../../../lib/supabase-paginate.js'
 
 export const maxDuration = 60
@@ -50,22 +49,15 @@ export async function GET(request) {
       return Response.json({ reminded: 0 })
     }
 
-    const resend = new Resend(process.env.RESEND_API_KEY)
     let reminded = 0
 
     for (const contact of contacts) {
       try {
-        const confirmUrl = `https://mutomorro.com/api/confirm?token=${contact.confirmation_token}`
-        const html = buildConfirmationEmail({
+        await sendConfirmationEmail({
+          contactId: contact.id,
           firstName: contact.first_name,
-          confirmUrl,
-        })
-
-        await resend.emails.send({
-          from: 'Mutomorro <hello@mutomorro.com>',
-          to: [contact.signup_email],
+          email: contact.signup_email,
           subject: 'Still interested? Confirm your email',
-          html,
         })
 
         await supabase

@@ -61,8 +61,11 @@ export async function POST(request) {
       .eq('resend_id', emailId)
       .single()
 
-    // Not a newsletter email (could be transactional) - ignore gracefully
+    // Not a newsletter broadcast — but it may be a transactional confirmation
+    // email. Reconcile delivery/bounce/complaint against the contact so the
+    // double opt-in flow is no longer a delivery blind spot.
     if (!recipient) {
+      await handleConfirmationEmailEvent(supabase, emailId, type)
       return new Response('OK', { status: 200 })
     }
 
@@ -245,4 +248,42 @@ export async function POST(request) {
   }
 
   return new Response('OK', { status: 200 })
+}
+
+/**
+ * Reconcile a Resend event against a confirmation/reminder email we sent,
+ * matched by the message id stored on the contact (contacts.confirmation_email_id).
+ * Gives the double opt-in flow the delivery telemetry the broadcast path
+ * already had — previously these events were dropped on the floor.
+ */
+async function handleConfirmationEmailEvent(supabase, emailId, type) {
+  const statusMap = {
+    'email.delivered': 'delivered',
+    'email.bounced': 'bounced',
+    'email.complained': 'complained',
+  }
+  const status = statusMap[type]
+  if (!status) return
+
+  const { data: contact } = await supabase
+    .from('contacts')
+    .select('id, newsletter_status')
+    .eq('confirmation_email_id', emailId)
+    .single()
+
+  if (!contact) return
+
+  const updates = { confirmation_email_status: status }
+
+  // A hard bounce or spam complaint on the confirmation email means it will
+  // never be confirmed. Take them out of the pending pile so the reminder cron
+  // stops chasing an address that can't receive — mirrors the broadcast path.
+  if (contact.newsletter_status === 'pending_confirmation') {
+    if (status === 'bounced') updates.newsletter_status = 'bounced'
+    else if (status === 'complained') updates.newsletter_status = 'unsubscribed'
+  }
+
+  await supabase.from('contacts').update(updates).eq('id', contact.id)
+
+  console.log(`Confirmation email ${status} reconciled for contact ${contact.id}`)
 }

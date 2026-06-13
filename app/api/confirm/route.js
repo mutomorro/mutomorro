@@ -1,6 +1,6 @@
 import crypto from 'crypto'
 import { createClient } from '@supabase/supabase-js'
-import { Resend } from 'resend'
+import { sendEmail } from '@/lib/resend'
 import { buildWelcomeEmail } from '../../../components/emails/welcome-email'
 
 const supabase = createClient(
@@ -82,9 +82,8 @@ async function sendWelcomeEmail(firstName, email) {
   const unsubscribeUrl = `https://mutomorro.com/api/unsubscribe?email=${encodeURIComponent(email)}&token=${unsubscribeToken}`
 
   const html = buildWelcomeEmail({ firstName, unsubscribeUrl })
-  const resend = new Resend(process.env.RESEND_API_KEY)
 
-  await resend.emails.send({
+  await sendEmail({
     from: 'James Freeman-Gray, Mutomorro <hello@mutomorro.com>',
     to: [email],
     subject: 'Seeing the unseen',

@@ -1,6 +1,5 @@
 import { createClient } from '@supabase/supabase-js'
-import { Resend } from 'resend'
-import { buildConfirmationEmail } from '../../../components/emails/confirmation-email'
+import { sendConfirmationEmail } from '@/lib/confirmation-email'
 import { verifyEmail, getCachedVerification } from '../../../components/email-verification'
 
 const supabase = createClient(
@@ -133,7 +132,7 @@ export async function POST(request) {
     // frozen after the response, so an un-awaited send is not guaranteed to run.
     if (shouldSendConfirmation && contactId) {
       try {
-        await sendConfirmationEmail(contactId, firstName, emailNormalised)
+        await sendConfirmationEmail({ contactId, firstName, email: emailNormalised })
       } catch (err) {
         console.error('Failed to send confirmation email:', err)
       }
@@ -148,25 +147,4 @@ export async function POST(request) {
       { status: 500 }
     )
   }
-}
-
-async function sendConfirmationEmail(contactId, firstName, email) {
-  const { data: contact } = await supabase
-    .from('contacts')
-    .select('confirmation_token')
-    .eq('id', contactId)
-    .single()
-
-  if (!contact?.confirmation_token) return
-
-  const confirmUrl = `https://mutomorro.com/api/confirm?token=${contact.confirmation_token}`
-  const html = buildConfirmationEmail({ firstName, confirmUrl })
-
-  const resend = new Resend(process.env.RESEND_API_KEY)
-  await resend.emails.send({
-    from: 'Mutomorro <hello@mutomorro.com>',
-    to: [email],
-    subject: 'Confirm your email address',
-    html,
-  })
 }

@@ -32,7 +32,18 @@ export default defineType({
       description: 'The full overview content',
       of: [
         { type: 'block' },
-        { type: 'image', options: { hotspot: true } },
+        {
+          type: 'image',
+          options: { hotspot: true },
+          fields: [
+            {
+              name: 'alt',
+              title: 'Alt text',
+              type: 'string',
+              description: 'Describe the image for accessibility and SEO.',
+            },
+          ],
+        },
       ],
     }),
     defineField({

@@ -59,6 +59,9 @@ export async function generateMetadata({ params }) {
   return {
     title,
     description,
+    alternates: {
+      canonical: `https://mutomorro.com/training/${slug}`,
+    },
     openGraph: {
       title,
       description,
@@ -172,7 +175,7 @@ export default async function TrainingPage({ params }) {
               <div className="img-perspective" style={{ maxWidth: '100%' }}>
                 <Image
                   src={heroImageUrl}
-                  alt={course.title || ''}
+                  alt={course.heroImage?.alt || course.title || ''}
                   width={900}
                   height={600}
                   priority

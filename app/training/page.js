@@ -4,6 +4,9 @@ export const metadata = {
   title: 'Training',
   description:
     'In-house training designed around your people - change management, systems thinking, team effectiveness, and focused workshops. Built around your real challenges, brought to you.',
+  alternates: {
+    canonical: 'https://mutomorro.com/training',
+  },
   openGraph: {
     title: 'Training',
     url: 'https://mutomorro.com/training',

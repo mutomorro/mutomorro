@@ -4,17 +4,25 @@ export default defineType({
   name: 'course',
   title: 'Courses',
   type: 'document',
+  groups: [
+    { name: 'core', title: 'Core', default: true },
+    { name: 'taxonomy', title: 'Taxonomy' },
+    { name: 'content', title: 'Content' },
+    { name: 'seo', title: 'SEO' },
+  ],
   fields: [
     defineField({
       name: 'title',
       title: 'Title',
       type: 'string',
+      group: 'core',
       validation: Rule => Rule.required(),
     }),
     defineField({
       name: 'slug',
       title: 'Slug',
       type: 'slug',
+      group: 'core',
       options: { source: 'title', maxLength: 96 },
       validation: Rule => Rule.required(),
     }),
@@ -22,6 +30,7 @@ export default defineType({
       name: 'theme',
       title: 'Theme',
       type: 'reference',
+      group: 'taxonomy',
       to: [{ type: 'theme' }],
       description: 'Primary theme - which service area does this course relate to?',
       validation: (rule) => rule.required(),
@@ -30,6 +39,7 @@ export default defineType({
       name: 'category',
       title: 'Category',
       type: 'string',
+      group: 'taxonomy',
       options: {
         list: [
   { title: 'Change', value: 'change' },
@@ -50,6 +60,7 @@ export default defineType({
       title: 'Short summary',
       type: 'text',
       rows: 2,
+      group: 'core',
       description: 'One or two sentences for cards and listings',
       validation: Rule => Rule.required(),
     }),
@@ -57,18 +68,29 @@ export default defineType({
       name: 'heroImage',
       title: 'Hero image',
       type: 'image',
+      group: 'core',
       options: { hotspot: true },
+      fields: [
+        {
+          name: 'alt',
+          title: 'Alt text',
+          type: 'string',
+          description: 'Describe the image for accessibility and SEO.',
+        },
+      ],
     }),
     defineField({
       name: 'duration',
       title: 'Duration',
       type: 'string',
+      group: 'core',
       description: 'e.g. 4 hours, 2 days, 6 weeks',
     }),
     defineField({
       name: 'format',
       title: 'Format',
       type: 'string',
+      group: 'core',
       options: {
         list: [
           { title: 'Self-paced online', value: 'self-paced' },
@@ -82,13 +104,25 @@ export default defineType({
       name: 'body',
       title: 'Body',
       type: 'array',
+      group: 'content',
       of: [
         { type: 'block' },
         { type: 'table' },
         { type: 'accordion' },
         { type: 'tabs' },
         { type: 'courseEntry' },
-        { type: 'image', options: { hotspot: true } },
+        {
+          type: 'image',
+          options: { hotspot: true },
+          fields: [
+            {
+              name: 'alt',
+              title: 'Alt text',
+              type: 'string',
+              description: 'Describe the image for accessibility and SEO.',
+            },
+          ],
+        },
       ],
       validation: Rule => Rule.required(),
     }),
@@ -96,6 +130,7 @@ export default defineType({
       name: 'relatedServices',
       title: 'Related Services',
       type: 'array',
+      group: 'taxonomy',
       of: [
         {
           type: 'reference',
@@ -108,6 +143,7 @@ export default defineType({
       name: 'relatedArticles',
       title: 'Related Articles',
       type: 'array',
+      group: 'taxonomy',
       of: [{ type: 'reference', to: [{ type: 'article' }] }],
       description: 'Articles that relate to this course.',
     }),
@@ -115,6 +151,7 @@ export default defineType({
       name: 'relatedTools',
       title: 'Related Tools',
       type: 'array',
+      group: 'taxonomy',
       of: [{ type: 'reference', to: [{ type: 'tool' }] }],
       description: 'Tools that relate to this course.',
     }),
@@ -122,6 +159,7 @@ export default defineType({
       name: 'relatedDimensions',
       title: 'Related dimensions',
       type: 'array',
+      group: 'taxonomy',
       description: 'Which EMERGENT dimensions does this course relate to?',
       of: [
         {
@@ -134,6 +172,7 @@ export default defineType({
       name: 'seoTitle',
       title: 'SEO Title',
       type: 'string',
+      group: 'seo',
       description: 'Custom page title for search engines. Falls back to course title if blank.',
     }),
     defineField({
@@ -141,6 +180,7 @@ export default defineType({
       title: 'SEO Description',
       type: 'text',
       rows: 2,
+      group: 'seo',
       description: 'Meta description for search results. Falls back to short summary if blank.',
     }),
   ],

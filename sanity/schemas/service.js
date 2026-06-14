@@ -150,6 +150,14 @@ export default defineType({
       description: 'The proposition diagram for this service (16:9, unique per service)',
       group: 'context',
       options: { hotspot: true },
+      fields: [
+        {
+          name: 'alt',
+          title: 'Alt text',
+          type: 'string',
+          description: 'Describe the image for accessibility and SEO.',
+        },
+      ],
     }),
 
     defineField({
@@ -444,6 +452,14 @@ export default defineType({
       description: 'The visual for this section (ecosystem animation placeholder, or a static image)',
       group: 'perspective',
       options: { hotspot: true },
+      fields: [
+        {
+          name: 'alt',
+          title: 'Alt text',
+          type: 'string',
+          description: 'Describe the image for accessibility and SEO.',
+        },
+      ],
     }),
 
     defineField({
@@ -579,6 +595,14 @@ export default defineType({
               type: 'image',
               description: 'The infographic visual (16:9, unique per service eventually)',
               options: { hotspot: true },
+              fields: [
+                {
+                  name: 'alt',
+                  title: 'Alt text',
+                  type: 'string',
+                  description: 'Describe the image for accessibility and SEO.',
+                },
+              ],
             }),
             defineField({
               name: 'stageLinkLabel',

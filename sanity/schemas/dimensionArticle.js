@@ -91,7 +91,18 @@ export default defineType({
       type: 'array',
       of: [
         { type: 'block' },
-        { type: 'image', options: { hotspot: true } },
+        {
+          type: 'image',
+          options: { hotspot: true },
+          fields: [
+            {
+              name: 'alt',
+              title: 'Alt text',
+              type: 'string',
+              description: 'Describe the image for accessibility and SEO.',
+            },
+          ],
+        },
       ],
       validation: Rule => Rule.required(),
       group: 'content',

@@ -1,10 +1,20 @@
 import Link from 'next/link'
-import { client, getCapabilityService, getAllCapabilityServices } from '../../../sanity/client'
+import Image from 'next/image'
+import { client, getCapabilityService, getSidebarCallouts } from '../../../sanity/client'
 import { PortableText } from '@portabletext/react'
 import { notFound } from 'next/navigation'
 import CTA from '../../../components/CTA'
 import NetworkIllustration from '../../../components/NetworkIllustration'
 import PageCallouts from '../../../components/PageCallouts'
+import ThreeColumnLayout from '../../../components/ThreeColumnLayout'
+import TableOfContents from '../../../components/TableOfContents'
+import ContentSidebar from '../../../components/ContentSidebar'
+import ContentTable from '../../../components/ContentTable'
+import ContentAccordion from '../../../components/ContentAccordion'
+import ContentTabs from '../../../components/ContentTabs'
+import { urlFor } from '../../../sanity/image'
+import { makeHeadingBlocks } from '../../../lib/portable-text-headings'
+import { buildHeadingIndex } from '../../../lib/slugify'
 
 export const revalidate = 3600
 
@@ -20,7 +30,7 @@ const ACCENT_COLOURS = ['#80388F', '#9B51E0', '#FF4279', '#E08F00', '#221C2B', '
 const BENTO_COLOURS = ['#80388F', '#9B51E0', '#FF4279', '#E08F00', '#221C2B']
 
 // Mid-page CTA
-function MidPageCta({ text, buttonLabel, serviceTitle }) {
+function MidPageCta({ text, buttonLabel, slug }) {
   return (
     <div className="section-padding" style={{
       textAlign: 'center',
@@ -36,7 +46,7 @@ function MidPageCta({ text, buttonLabel, serviceTitle }) {
         {text}
       </p>
       <a
-        href={`/contact?service=${encodeURIComponent(serviceTitle)}`}
+        href={`/enquiry?service=${slug}`}
         className="btn-primary"
       >
         {buttonLabel}
@@ -81,12 +91,11 @@ export default async function CapabilityServicePage({ params }) {
 
   if (!service) notFound()
 
-  // Build anchor nav items from available sections
-  const navItems = []
-  if (service.audienceBody?.length > 0) navItems.push('Who it\'s for')
-  if (service.structureItems?.length > 0) navItems.push('How it works')
-  if (service.differenceItems?.length > 0) navItems.push('What\'s different')
-  if (service.takeawayItems?.length > 0) navItems.push('What you take away')
+  const sidebarCallouts = await getSidebarCallouts('develop', service._id)
+
+  // Heading anchors for the rich body — shared by the left ToC and the heading
+  // renderers, so the nav ids match the in-page anchors (the /training pattern).
+  const { idByKey } = buildHeadingIndex(service.body)
 
   const pageTitle = service.heroHeading || service.title
   const pageDescription = service.seoDescription || service.heroTagline
@@ -165,42 +174,81 @@ export default async function CapabilityServicePage({ params }) {
       </section>
 
       {/* ==========================================
-          ANCHOR NAV (mid-dark)
+          BODY — recognition layer (situations / signpost)
+          Three-column: left ToC · rich body · right /enquiry sidebar.
+          Sits between the hero and the structured sections below
+          (recognition before process). Matches the /training template.
           ========================================== */}
-      {navItems.length > 0 && (
-        <nav className="anchor-nav">
-          <div className="anchor-nav__inner">
-            {navItems.map((label) => {
-              const id = label.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
-              return (
-                <a
-                  key={label}
-                  href={`#${id}`}
-                  className="anchor-nav__link"
-                >
-                  {label}
-                </a>
-              )
-            })}
-          </div>
-        </nav>
+      {service.body?.length > 0 && (
+        <section className="section--full section-padding" style={{ background: 'var(--white)' }}>
+          <ThreeColumnLayout
+            toc={<TableOfContents body={service.body} />}
+            sidebar={
+              <ContentSidebar
+                theme={service.theme}
+                contentType="develop"
+                currentSlug={slug}
+                relatedTools={service.relatedToolsViaTheme}
+                relatedCaseStudies={service.relatedCaseStudiesViaTheme}
+                sidebarCallouts={sidebarCallouts}
+                enquiryPrimary
+              />
+            }
+          >
+            <div className="portable-text">
+              <PortableText
+                value={service.body}
+                components={{
+                  types: {
+                    image: ({ value }) => (
+                      <div className="img-mat" style={{ margin: '2.5rem 0' }}>
+                        <Image
+                          src={urlFor(value).width(900).url()}
+                          alt={value.alt || ''}
+                          width={900}
+                          height={506}
+                          sizes="(max-width: 768px) 100vw, 680px"
+                          style={{ width: '100%', height: 'auto', display: 'block' }}
+                        />
+                      </div>
+                    ),
+                    table: ({ value }) => <ContentTable value={value} />,
+                    accordion: ({ value }) => <ContentAccordion value={value} />,
+                    tabs: ({ value }) => <ContentTabs value={value} />,
+                  },
+                  marks: {
+                    link: ({ value, children }) => {
+                      const href = value?.href || ''
+                      const external = /^https?:/i.test(href)
+                      return (
+                        <a
+                          href={href}
+                          className="inline-link"
+                          {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                        >
+                          {children}
+                        </a>
+                      )
+                    },
+                  },
+                  block: {
+                    ...makeHeadingBlocks(idByKey),
+                    blockquote: ({ children }) => (
+                      <blockquote className="pull-quote">{children}</blockquote>
+                    ),
+                  },
+                }}
+              />
+            </div>
+          </ThreeColumnLayout>
+        </section>
       )}
 
       {/* ==========================================
           WHO IT'S FOR (warm)
           ========================================== */}
       {service.audienceBody?.length > 0 && (
-        <section id="who-its-for" className="section--full section-padding" style={{ background: 'var(--warm)', position: 'relative' }}>
-          {/* Shadow gradient from anchor nav */}
-          <div style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            height: '60px',
-            background: 'linear-gradient(to bottom, rgba(66, 59, 73, 0.15), transparent)',
-            pointerEvents: 'none',
-          }} />
+        <section id="who-its-for" className="section--full section-padding" style={{ background: 'var(--warm)' }}>
           <div style={{ maxWidth: '1350px', margin: '0 auto', position: 'relative' }}>
             <div className="scroll-in">
               <span className="kicker" style={{ color: 'var(--accent)', marginBottom: '16px' }}>
@@ -434,7 +482,7 @@ export default async function CapabilityServicePage({ params }) {
       <MidPageCta
         text="Want to explore what this could look like for your organisation?"
         buttonLabel="Let's talk"
-        serviceTitle={service.title}
+        slug={slug}
       />
 
       {/* ==========================================
@@ -450,7 +498,7 @@ export default async function CapabilityServicePage({ params }) {
         heading={service.ctaHeading || `Interested in ${service.title?.toLowerCase() || 'this'}?`}
         body={service.ctaBody || 'Every organisation is different, so we always start with a conversation. No pitch, no obligation - just an honest discussion about what you need and whether our approach feels right.'}
         buttonText={service.ctaButtonLabel || 'Talk to us'}
-        buttonLink={service.ctaButtonUrl || '/contact'}
+        buttonLink={service.ctaButtonUrl || `/enquiry?service=${slug}`}
       />
 
     </main>

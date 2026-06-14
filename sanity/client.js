@@ -648,6 +648,16 @@ export async function getCapabilityService(slug) {
       // SEO
       seoTitle,
       seoDescription,
+
+      // Body (rich situations / signpost layer) + theme-driven sidebar content
+      body,
+      "theme": theme->{title, "slug": slug.current, anchorType, anchorUrl},
+      "relatedToolsViaTheme": *[_type == "tool" && theme._ref == ^.theme._ref][0..2]{
+        _id, title, "slug": slug.current, shortSummary, category, heroImage
+      },
+      "relatedCaseStudiesViaTheme": *[_type == "project" && theme._ref == ^.theme._ref][0..1]{
+        _id, title, "slug": slug.current
+      },
     }
   `, { slug }, fetchOpts)
 }

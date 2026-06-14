@@ -659,6 +659,17 @@ const nextConfig = {
 
 
       // =========================================================
+      // /develop RETHINK (15 Jun 2026) — rename + retirement
+      // Senior Leader Support → Strategic Thinking Partner (rename);
+      // Bespoke Training retired to the /training front door.
+      // Add only the no-slash source — the helper at the bottom of this
+      // file auto-generates the trailing-slash variant for each.
+      // =========================================================
+      { source: '/develop/senior-leader-support', destination: '/develop/strategic-thinking-partner', permanent: true },
+      { source: '/develop/bespoke-training', destination: '/training', permanent: true },
+
+
+      // =========================================================
       // ROOT-LEVEL TOOL PAGES → /tools/
       // Old WordPress had tools at root. New site uses /tools/ prefix.
       // =========================================================

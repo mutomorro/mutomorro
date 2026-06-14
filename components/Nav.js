@@ -653,7 +653,7 @@ export default function Nav() {
                 {[
                   { label: 'Executive Coaching', href: '/develop/executive-coaching' },
                   { label: 'Leadership Facilitation', href: '/develop/leadership-facilitation' },
-                  { label: 'Senior Leader Support', href: '/develop/senior-leader-support' },
+                  { label: 'Strategic Thinking Partner', href: '/develop/strategic-thinking-partner' },
                 ].map((item) => (
                   <Link key={item.href} href={item.href} onClick={closePanel} className="nav-menu-link">
                     <span className="nav-menu-link__label">{item.label}</span>
@@ -666,7 +666,6 @@ export default function Nav() {
               <div className="nav-menu-col">
                 <span className="kicker" style={{ marginBottom: '20px' }}>Support for Teams</span>
                 {[
-                  { label: 'Bespoke Training', href: '/develop/bespoke-training' },
                   { label: 'Team Sessions', href: '/develop/team-sessions' },
                   { label: 'Manager Coaching', href: '/develop/manager-coaching' },
                 ].map((item) => (
@@ -958,7 +957,7 @@ export default function Nav() {
                   {[
                     { label: 'Executive Coaching', href: '/develop/executive-coaching' },
                     { label: 'Leadership Facilitation', href: '/develop/leadership-facilitation' },
-                    { label: 'Senior Leader Support', href: '/develop/senior-leader-support' },
+                    { label: 'Strategic Thinking Partner', href: '/develop/strategic-thinking-partner' },
                   ].map((item) => (
                     <Link key={item.href} href={item.href} onClick={closeMobile} className="mobile-nav__service-link">{item.label}</Link>
                   ))}
@@ -966,7 +965,6 @@ export default function Nav() {
                 <div className="mobile-nav__service-category">
                   <span className="kicker" style={{ marginBottom: '8px' }}>Support for Teams</span>
                   {[
-                    { label: 'Bespoke Training', href: '/develop/bespoke-training' },
                     { label: 'Team Sessions', href: '/develop/team-sessions' },
                     { label: 'Manager Coaching', href: '/develop/manager-coaching' },
                   ].map((item) => (

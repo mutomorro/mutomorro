@@ -74,6 +74,40 @@ export default defineType({
       rows: 3,
       validation: (Rule) => Rule.required(),
     }),
+    defineField({
+      name: 'body',
+      title: 'Body',
+      type: 'array',
+      group: 'content',
+      description:
+        'Rich content shown between the hero and the "How it works" section. ' +
+        'Search-worthy pages hold the situations layer here (menu table + situation ' +
+        'sections, each with two accordions). Trust pages may use this lightly or not at all.',
+      of: [
+        { type: 'block' },
+        { type: 'table' },
+        { type: 'accordion' },
+        { type: 'tabs' },
+        {
+          type: 'image',
+          options: { hotspot: true },
+          fields: [
+            { name: 'alt', title: 'Alt text', type: 'string' },
+            { name: 'caption', title: 'Caption', type: 'string' },
+          ],
+        },
+      ],
+    }),
+    defineField({
+      name: 'theme',
+      title: 'Theme',
+      type: 'reference',
+      group: 'content',
+      to: [{ type: 'theme' }],
+      description:
+        'Optional - which service area this page relates to. Drives the "explore this service" ' +
+        'card in the right sidebar (via the theme\'s anchor URL). Leave unset if no theme fits.',
+    }),
 
     // === Who it's for group ===
     defineField({

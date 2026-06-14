@@ -189,7 +189,7 @@ export default async function ToolPage({ params }) {
               <div className="img-perspective" style={{ maxWidth: '100%' }}>
                 <Image
                   src={heroImageUrl}
-                  alt={tool.title || ''}
+                  alt={tool.heroImage?.alt || tool.title || ''}
                   width={900}
                   height={600}
                   priority

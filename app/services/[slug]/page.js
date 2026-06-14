@@ -310,7 +310,7 @@ export default async function ServicePage({ params }) {
                       <div className="fan-card fan-card-back">
                         <Image
                           src={service.stages[2].stageImageUrl}
-                          alt={`${service.title} - ${service.stages[2].stageHeading || 'Implement'}`}
+                          alt={service.stages[2].stageImageAlt || `${service.title} - ${service.stages[2].stageHeading || 'Implement'}`}
                           width={400}
                           height={300}
                           sizes="(max-width: 768px) 100vw, 400px"
@@ -321,7 +321,7 @@ export default async function ServicePage({ params }) {
                       <div className="fan-card fan-card-middle">
                         <Image
                           src={service.stages[1].stageImageUrl}
-                          alt={`${service.title} - ${service.stages[1].stageHeading || 'Co-design'}`}
+                          alt={service.stages[1].stageImageAlt || `${service.title} - ${service.stages[1].stageHeading || 'Co-design'}`}
                           width={400}
                           height={300}
                           sizes="(max-width: 768px) 100vw, 400px"
@@ -332,7 +332,7 @@ export default async function ServicePage({ params }) {
                       <div className="fan-card fan-card-front">
                         <Image
                           src={service.stages[0].stageImageUrl}
-                          alt={`${service.title} - ${service.stages[0].stageHeading || 'Understand'}`}
+                          alt={service.stages[0].stageImageAlt || `${service.title} - ${service.stages[0].stageHeading || 'Understand'}`}
                           width={400}
                           height={300}
                           sizes="(max-width: 768px) 100vw, 400px"
@@ -833,7 +833,7 @@ export default async function ServicePage({ params }) {
             <div className="scroll-in delay-1 img-offset img-lift">
               <Image
                 src={service.perspectiveImageUrl}
-                alt={service.perspectiveHeading}
+                alt={service.perspectiveImageAlt || service.perspectiveHeading}
                 width={600}
                 height={400}
                 sizes="(max-width: 768px) 100vw, 600px"

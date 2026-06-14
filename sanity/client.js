@@ -397,6 +397,7 @@ export async function getService(slug) {
       perspectiveHeading,
       perspectiveBody,
       "perspectiveImageUrl": perspectiveImage.asset->url,
+      "perspectiveImageAlt": perspectiveImage.alt,
       perspectiveLinkLabel,
       perspectiveLinkUrl,
 
@@ -416,6 +417,7 @@ export async function getService(slug) {
         stageInPractice,
         stageOutcome,
         "stageImageUrl": stageImage.asset->url,
+        "stageImageAlt": stageImage.alt,
         stageLinkLabel,
         stageLinkUrl,
       },

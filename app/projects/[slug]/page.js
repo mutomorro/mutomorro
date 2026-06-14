@@ -202,7 +202,7 @@ export default async function CaseStudy({ params }) {
               <div className="img-perspective" style={{ maxWidth: '100%' }}>
                 <Image
                   src={heroImageUrl}
-                  alt={project.title || ''}
+                  alt={project.heroImage?.alt || project.title || ''}
                   width={900}
                   height={600}
                   priority

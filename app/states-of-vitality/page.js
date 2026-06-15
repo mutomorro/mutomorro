@@ -67,31 +67,40 @@ const PRODUCT_SITE_URL = 'https://statesofvitality.com'
 // SCREENSHOT COMPONENTS
 // ============================================
 
-function ScreenshotDark({ src, alt }) {
+function ScreenshotDark({ src, alt, width, height, srcSet, sizes, priority = false }) {
   return (
     <div className="sov-screenshot-perspective">
       <div className="sov-screenshot-perspective__inner">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={src}
+          srcSet={srcSet}
+          sizes={sizes}
           alt={alt}
+          width={width}
+          height={height}
           style={{ width: '100%', height: 'auto', display: 'block' }}
-          loading="eager"
+          loading={priority ? 'eager' : 'lazy'}
+          fetchPriority={priority ? 'high' : undefined}
+          decoding="async"
         />
       </div>
     </div>
   )
 }
 
-function ScreenshotLight({ src, alt, style = {} }) {
+function ScreenshotLight({ src, alt, width, height, style = {} }) {
   return (
     <div className="screenshot-flat" style={style}>
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={src}
         alt={alt}
+        width={width}
+        height={height}
         style={{ width: '100%', height: 'auto', display: 'block' }}
         loading="lazy"
+        decoding="async"
       />
     </div>
   )
@@ -144,7 +153,12 @@ export default function StatesOfVitalityPage() {
           {/* Dashboard screenshot - mount animation with 200ms delay */}
           <HeroScreenshotReveal>
             <ScreenshotDark
-              src="/images/dashboard/sov-real/sov-landscape.png"
+              src="/images/dashboard/sov-real/sov-landscape.webp"
+              srcSet="/images/dashboard/sov-real/sov-landscape-700.webp 700w, /images/dashboard/sov-real/sov-landscape.webp 1400w"
+              sizes="(max-width: 900px) 90vw, 600px"
+              width={1400}
+              height={875}
+              priority
               alt="States of Vitality landscape chart - a streamgraph showing all eight dimensions of organisational health side by side"
             />
           </HeroScreenshotReveal>
@@ -342,7 +356,9 @@ export default function StatesOfVitalityPage() {
             {/* Dashboard screenshot - flat float-in */}
             <div className="scroll-screenshot-flat delay-2">
               <ScreenshotLight
-                src="/images/dashboard/sov-real/sov-eight-areas.png"
+                src="/images/dashboard/sov-real/sov-eight-areas.webp"
+                width={1400}
+                height={875}
                 alt="Scores across all eight areas - each dimension grouped by frequency language from Rarely true through to Almost always true"
               />
             </div>
@@ -522,7 +538,9 @@ export default function StatesOfVitalityPage() {
           {/* Dashboard screenshot - perspective float-in */}
           <div className="scroll-screenshot delay-2">
             <ScreenshotDark
-              src="/images/dashboard/sov-real/sov-by-level.png"
+              src="/images/dashboard/sov-real/sov-by-level.webp"
+              width={1400}
+              height={875}
               alt="By Role Level view comparing how senior, middle and front-line groups experience each dimension side by side"
             />
           </div>
@@ -712,11 +730,15 @@ export default function StatesOfVitalityPage() {
             alignItems: 'start',
           }}>
             <ScreenshotLight
-              src="/images/dashboard/sov-real/sov-dimension-detail.png"
+              src="/images/dashboard/sov-real/sov-dimension-detail.webp"
+              width={1400}
+              height={837}
               alt="A single dimension page showing the dimension score, response distribution and the questions inside it"
             />
             <ScreenshotLight
-              src="/images/dashboard/sov-real/sov-question-detail.png"
+              src="/images/dashboard/sov-real/sov-question-detail.webp"
+              width={1400}
+              height={875}
               alt="Drill down into a single question - see how different demographic groups responded"
               style={{ boxShadow: '0 12px 50px rgba(0,0,0,0.10)' }}
             />

@@ -613,6 +613,7 @@ export async function getCapabilityService(slug) {
       // Hero
       heroHeading,
       heroTagline,
+      heroImage,
 
       // Audience
       audienceHeading,

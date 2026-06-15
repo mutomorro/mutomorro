@@ -75,6 +75,21 @@ export default defineType({
       validation: (Rule) => Rule.required(),
     }),
     defineField({
+      name: 'heroImage',
+      title: 'Hero image',
+      type: 'image',
+      group: 'content',
+      options: { hotspot: true },
+      fields: [
+        {
+          name: 'alt',
+          title: 'Alt text',
+          type: 'string',
+          description: 'Describe the image for accessibility and SEO.',
+        },
+      ],
+    }),
+    defineField({
       name: 'body',
       title: 'Body',
       type: 'array',

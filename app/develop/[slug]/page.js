@@ -36,6 +36,7 @@ export async function generateMetadata({ params }) {
     title: service.seoTitle || service.heroHeading || service.title,
     description: service.seoDescription || service.heroTagline || '',
     path: `/develop/${slug}`,
+    image: service.heroImage ? urlFor(service.heroImage).url() : undefined,
     type: 'article',
   })
 }
@@ -59,6 +60,8 @@ export default async function CapabilityServicePage({ params }) {
   const pageTitle = service.heroHeading || service.title
   const pageDescription = service.seoDescription || service.heroTagline
 
+  const heroImageUrl = service.heroImage ? urlFor(service.heroImage).width(900).url() : null
+
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Service',
@@ -70,6 +73,7 @@ export default async function CapabilityServicePage({ params }) {
       url: 'https://mutomorro.com',
     },
     url: `https://mutomorro.com/develop/${slug}`,
+    ...(heroImageUrl && { image: heroImageUrl }),
   }
 
   const breadcrumbJsonLd = {
@@ -110,25 +114,47 @@ export default async function CapabilityServicePage({ params }) {
 
       {/* ==========================================
           HERO (dark)
+          Two-column grid when a hero image is set (image on the right),
+          single-column fallback when it isn't. Matches the /training template.
           ========================================== */}
       <section className="section--full dark-bg section-padding-hero">
-        <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
-          {/* Breadcrumb */}
-          <div className="breadcrumb" style={{ marginBottom: '24px' }}>
-            <Link href="/services" className="breadcrumb__link">How we help</Link>
-            <span className="breadcrumb__sep">/</span>
-            <Link href="/develop" className="breadcrumb__link">Building Capability</Link>
-            <span className="breadcrumb__sep">/</span>
-            <span className="breadcrumb__current">{service.audienceLabel}</span>
+        <div className={`section__inner content-hero-grid${heroImageUrl ? '' : ' content-hero-grid--single'}`}>
+          {/* Left: text content */}
+          <div>
+            {/* Breadcrumb */}
+            <div className="breadcrumb" style={{ marginBottom: '24px' }}>
+              <Link href="/services" className="breadcrumb__link">How we help</Link>
+              <span className="breadcrumb__sep">/</span>
+              <Link href="/develop" className="breadcrumb__link">Building Capability</Link>
+              <span className="breadcrumb__sep">/</span>
+              <span className="breadcrumb__current">{service.audienceLabel}</span>
+            </div>
+
+            <span className="kicker" style={{ marginBottom: '16px' }}>{service.audienceLabel}</span>
+            <h1 className="heading-gradient heading-display" style={{ margin: '0 0 32px', maxWidth: '700px' }}>
+              {service.heroHeading || service.title}
+            </h1>
+            <p className="lead-text" style={{ color: 'rgba(255,255,255,0.6)', maxWidth: '640px' }}>
+              {service.heroTagline}
+            </p>
           </div>
 
-          <span className="kicker" style={{ marginBottom: '16px' }}>{service.audienceLabel}</span>
-          <h1 className="heading-gradient heading-display" style={{ margin: '0 0 32px', maxWidth: '700px' }}>
-            {service.heroHeading || service.title}
-          </h1>
-          <p className="lead-text" style={{ color: 'rgba(255,255,255,0.6)', maxWidth: '640px' }}>
-            {service.heroTagline}
-          </p>
+          {/* Right: hero image */}
+          {heroImageUrl && (
+            <div className="content-hero-image-wrap">
+              <div className="img-perspective" style={{ maxWidth: '100%' }}>
+                <Image
+                  src={heroImageUrl}
+                  alt={service.heroImage?.alt || service.heroHeading || service.title || ''}
+                  width={900}
+                  height={600}
+                  priority
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                  style={{ width: '100%', height: 'auto', display: 'block' }}
+                />
+              </div>
+            </div>
+          )}
         </div>
       </section>
 

@@ -54,6 +54,7 @@ next-env.d.ts
 # Tracked scripts (kept for reference / re-runnability):
 !/scripts/sanity-remove-trailing-slashes.js
 !/scripts/audit-trailing-slashes.mjs
+!/scripts/seo-check.mjs
 !/scripts/migrations/
 !/scripts/migrations/**
 /wp-export/

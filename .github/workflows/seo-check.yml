@@ -1,0 +1,27 @@
+# SEO baseline gate (spec section I3).
+#
+# The SCHEMA half already runs inside `npm run build` (so a schema regression -
+# e.g. a new image field with no alt, or a routable type missing seoTitle -
+# fails the Vercel build and blocks the deploy).
+#
+# This workflow adds the LIVE half: it checks the deployed site after every push
+# to main and once a day, so rendering/content regressions (a dropped canonical,
+# a missing og:image, an unsized content image) surface as a red check.
+name: SEO check
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: '0 7 * * *' # daily 07:00 UTC
+  workflow_dispatch:
+
+jobs:
+  seo-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: node scripts/seo-check.mjs https://mutomorro.com

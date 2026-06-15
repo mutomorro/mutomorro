@@ -154,6 +154,52 @@ function PrimaryCta({ theme, contentType, variant = 'primary', asLink = false })
   )
 }
 
+// A first-class enquiry card for pages that have no contextual pageCallout to
+// act as the sidebar "star" (the Assess sub-pages). Mirrors the feature-callout
+// styling so it reads identically to the enquiry callouts on /develop and
+// /training, but is driven straight from props rather than a pageCallout doc.
+function EnquiryCard({ card }) {
+  if (!card?.buttonUrl) return null
+  return (
+    <div className="sidebar-callout sidebar-callout--feature" style={{ borderLeftColor: 'var(--accent)' }}>
+      {card.heading && <h3>{card.heading}</h3>}
+      {card.body && (
+        <div className="sidebar-callout__body">
+          <p>{card.body}</p>
+        </div>
+      )}
+      <MaybeExternalLink href={card.buttonUrl} className="sidebar-btn sidebar-btn--primary">
+        {card.buttonLabel || 'Start a conversation'} <span aria-hidden="true">→</span>
+      </MaybeExternalLink>
+    </div>
+  )
+}
+
+// A quieter secondary card that sits under the enquiry card (e.g. the States of
+// Vitality nudge). Deliberately not "feature" styled so it reads as secondary.
+function SecondaryCard({ card }) {
+  if (!card?.linkUrl) return null
+  const accent = card.accentColor || 'var(--accent)'
+  return (
+    <div className="sidebar-callout" style={{ borderLeftColor: accent }}>
+      {card.label && <span className="sidebar-card-label">{card.label}</span>}
+      {card.heading && <h3>{card.heading}</h3>}
+      {card.body && (
+        <div className="sidebar-callout__body">
+          <p>{card.body}</p>
+        </div>
+      )}
+      <MaybeExternalLink
+        href={card.linkUrl}
+        className="callout-link inline-link"
+        style={{ color: accent, backgroundImage: `linear-gradient(${accent}, ${accent})` }}
+      >
+        {card.linkLabel || 'Learn more'} <span aria-hidden="true">→</span>
+      </MaybeExternalLink>
+    </div>
+  )
+}
+
 export default function ContentSidebar({
   theme,
   contentType,
@@ -165,6 +211,10 @@ export default function ContentSidebar({
   relatedDimensions,
   hasFloatingBar = false,
   enquiryPrimary = false,
+  // First-class enquiry card (Assess sub-pages): props, not a pageCallout. When
+  // present and there's no contextual callout, this becomes the sidebar star.
+  enquiryCard,
+  secondaryCard,
 }) {
   // Filter "current" out of related lists and cap counts.
   const tools = (relatedTools || [])
@@ -200,6 +250,13 @@ export default function ContentSidebar({
   // callout is the star); everywhere else it's the dark service card as before.
   const service = <PrimaryCta theme={theme} contentType={contentType} asLink={enquiryPrimary} />
 
+  // Pages with no contextual pageCallout can still surface a first-class enquiry
+  // card (the Assess sub-pages): a primary "start a conversation" card plus an
+  // optional quieter secondary card. These ride in the same sticky slot the
+  // pageCallout star uses elsewhere, so the layout matches /develop exactly.
+  const enquiry = enquiryCard ? <EnquiryCard card={enquiryCard} /> : null
+  const secondary = secondaryCard ? <SecondaryCard card={secondaryCard} /> : null
+
   return (
     <div className="content-sidebar">
       {/* The scroll-away top CTA is the dark service card on non-enquiry pages.
@@ -212,10 +269,13 @@ export default function ContentSidebar({
             rides here in-flow (matching the prior mobile layout). On
             desktop this copy is hidden — the callout lives in the sticky
             stack below. */}
-        {stickyCallout && (
+        {(stickyCallout || enquiry) && (
           <div className="sidebar-callout-mobile-only">
-            <SidebarCallout callout={stickyCallout} asButton={enquiryPrimary} feature={enquiryPrimary} />
+            {stickyCallout
+              ? <SidebarCallout callout={stickyCallout} asButton={enquiryPrimary} feature={enquiryPrimary} />
+              : enquiry}
             {enquiryPrimary && service}
+            {secondary}
           </div>
         )}
         {scrollCallouts.map((c) => (
@@ -309,7 +369,10 @@ export default function ContentSidebar({
       </div>
 
       <SidebarStickyStack gap={hasFloatingBar ? 80 : 32}>
-        {stickyCallout && <SidebarCallout callout={stickyCallout} asButton={enquiryPrimary} feature={enquiryPrimary} />}
+        {stickyCallout
+          ? <SidebarCallout callout={stickyCallout} asButton={enquiryPrimary} feature={enquiryPrimary} />
+          : enquiry}
+        {secondary}
         {service}
       </SidebarStickyStack>
     </div>

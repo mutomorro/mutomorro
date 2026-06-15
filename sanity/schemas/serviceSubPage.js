@@ -78,7 +78,32 @@ export default defineType({
     }),
 
     // ===========================
-    // CONTENT SECTIONS
+    // BODY (rich content) - the three-column template
+    // ===========================
+    // Mirrors capabilityService.body. New Assess pages use this; the older
+    // "Content Sections" below stays for the one legacy page that uses it.
+
+    defineField({
+      name: 'body',
+      title: 'Body (rich content)',
+      type: 'array',
+      group: 'content',
+      description:
+        'The main rich content, shown in a three-column layout (left nav, body, right enquiry sidebar). ' +
+        'Holds the recognition layer (menu table + situations with accordions), the "how we run it" ' +
+        'section, and what-you-take-away. Use H2s for the left-nav sections and H3s for sub-points. ' +
+        'This is the field the Assess pages use. (The older "Content Sections" below is legacy - ' +
+        'leave existing pages on it; new pages use this.)',
+      of: [
+        { type: 'block' },
+        { type: 'table' },
+        { type: 'accordion' },
+        { type: 'tabs' },
+      ],
+    }),
+
+    // ===========================
+    // CONTENT SECTIONS (legacy)
     // ===========================
     // Flexible array of content sections - each has a heading and rich text body
 

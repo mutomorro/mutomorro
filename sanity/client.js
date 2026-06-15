@@ -532,7 +532,10 @@ export async function getServiceSubPage(serviceSlug, subPageSlug) {
       heroHeading,
       heroTagline,
 
-      // Content sections
+      // Rich body (three-column recognition layer) - new; the Assess pages use this
+      body,
+
+      // Content sections (legacy - the one older sub-page uses this)
       sections[] {
         heading,
         body,

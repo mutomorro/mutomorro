@@ -5,6 +5,35 @@ import { client, getServiceSubPage } from '../../../../sanity/client'
 import { PortableText } from '@portabletext/react'
 import { notFound } from 'next/navigation'
 import CTA from '../../../../components/CTA'
+import ThreeColumnLayout from '../../../../components/ThreeColumnLayout'
+import TableOfContents from '../../../../components/TableOfContents'
+import ContentSidebar from '../../../../components/ContentSidebar'
+import ContentTable from '../../../../components/ContentTable'
+import ContentAccordion from '../../../../components/ContentAccordion'
+import ContentTabs from '../../../../components/ContentTabs'
+import { urlFor } from '../../../../sanity/image'
+import { makeHeadingBlocks } from '../../../../lib/portable-text-headings'
+import { buildHeadingIndex } from '../../../../lib/slugify'
+
+// States of Vitality - external product URL used by the secondary sidebar card.
+// The woven in-body SoV mention is baked into each document at write time, so
+// update that too if this ever changes.
+const STATES_OF_VITALITY_URL = 'https://statesofvitality.com'
+
+// Secondary "States of Vitality" sidebar-card copy, per Assess sub-page. Kept
+// here (not in Sanity) per the build spec's "no new schema for one card" - the
+// heading differs per page, the body is shared. Promote to a document field if
+// it ever needs editing without a deploy.
+const SOV_CARD = {
+  'culture-assessment': {
+    heading: 'Want the ongoing picture?',
+    body: 'States of Vitality is our managed platform for tracking organisational health over time, across eight dimensions.',
+  },
+  'organisational-design-diagnostic': {
+    heading: 'Want the whole-organisation picture?',
+    body: 'States of Vitality is our managed platform for tracking organisational health over time, across eight dimensions.',
+  },
+}
 
 export const revalidate = 3600
 
@@ -43,6 +72,11 @@ export default async function ServiceSubPage({ params }) {
   const parentSlug = page.parentService?.slug?.current
   const parentTitle = page.parentService?.title
   const parentCategory = page.parentService?.categoryLabel
+
+  // Heading anchors for the rich body - shared by the left ToC and the heading
+  // renderers, so the nav ids match the in-page anchors (the /develop pattern).
+  const { idByKey } = buildHeadingIndex(page.body)
+  const sovCard = SOV_CARD[subpage]
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -133,7 +167,87 @@ export default async function ServiceSubPage({ params }) {
       </section>
 
       {/* ==========================================
-          CONTENT SECTIONS
+          BODY - recognition layer (three-column)
+          Left ToC · rich body · right enquiry sidebar.
+          Matches the /develop and /training templates. Renders only when the
+          new rich `body` is populated; the legacy page (sections only) skips it.
+          ========================================== */}
+      {page.body?.length > 0 && (
+        <section className="section--full section-padding" style={{ background: 'var(--white)' }}>
+          <ThreeColumnLayout
+            toc={<TableOfContents body={page.body} />}
+            sidebar={
+              <ContentSidebar
+                contentType="services"
+                currentSlug={`${slug}/${subpage}`}
+                enquiryPrimary
+                enquiryCard={{
+                  heading: page.ctaHeading,
+                  body: page.ctaBody,
+                  buttonLabel: page.ctaButtonLabel,
+                  buttonUrl: page.ctaButtonUrl || (parentSlug ? `/enquiry?service=${parentSlug}` : '/enquiry'),
+                }}
+                secondaryCard={sovCard ? {
+                  label: 'States of Vitality',
+                  heading: sovCard.heading,
+                  body: sovCard.body,
+                  linkLabel: 'Explore States of Vitality',
+                  linkUrl: STATES_OF_VITALITY_URL,
+                } : undefined}
+              />
+            }
+          >
+            <div className="portable-text">
+              <PortableText
+                value={page.body}
+                components={{
+                  types: {
+                    image: ({ value }) => (
+                      <div className="img-mat" style={{ margin: '2.5rem 0' }}>
+                        <Image
+                          src={urlFor(value).width(900).url()}
+                          alt={value.alt || ''}
+                          width={900}
+                          height={506}
+                          sizes="(max-width: 768px) 100vw, 680px"
+                          style={{ width: '100%', height: 'auto', display: 'block' }}
+                        />
+                      </div>
+                    ),
+                    table: ({ value }) => <ContentTable value={value} />,
+                    accordion: ({ value }) => <ContentAccordion value={value} />,
+                    tabs: ({ value }) => <ContentTabs value={value} />,
+                  },
+                  marks: {
+                    link: ({ value, children }) => {
+                      const href = value?.href || ''
+                      const external = /^https?:/i.test(href)
+                      return (
+                        <a
+                          href={href}
+                          className="inline-link"
+                          {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                        >
+                          {children}
+                        </a>
+                      )
+                    },
+                  },
+                  block: {
+                    ...makeHeadingBlocks(idByKey),
+                    blockquote: ({ children }) => (
+                      <blockquote className="pull-quote">{children}</blockquote>
+                    ),
+                  },
+                }}
+              />
+            </div>
+          </ThreeColumnLayout>
+        </section>
+      )}
+
+      {/* ==========================================
+          CONTENT SECTIONS (legacy)
           ========================================== */}
       {page.sections?.map((section, index) => {
         const isWarm = section.backgroundStyle === 'warm'

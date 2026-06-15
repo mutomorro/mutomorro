@@ -19,9 +19,11 @@ export default function HeroReveal({ children, className = '', delay = 0 }) {
     <div
       className={className}
       style={{
-        opacity: visible ? 1 : 0,
+        // This wraps the hero H1 — the mobile LCP element — so it must paint on
+        // first render. Keep opacity at 1 and animate translateY only; an
+        // opacity-0 fade gates LCP behind hydration + the 0.7s transition.
         transform: visible ? 'none' : 'translateY(20px)',
-        transition: 'opacity 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+        transition: 'transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
       }}
     >
       {children}

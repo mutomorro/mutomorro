@@ -129,6 +129,13 @@ function StageSlide({ stage, index }) {
           </div>
         </>
       )}
+
+      {stage.stageLinkLabel && stage.stageLinkUrl && (
+        <a href={stage.stageLinkUrl} className="approach-slider__stage-link">
+          {stage.stageLinkLabel}
+          <span aria-hidden="true" className="approach-slider__stage-link-arrow"> -&gt;</span>
+        </a>
+      )}
     </div>
   )
 }

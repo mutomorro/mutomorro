@@ -5176,6 +5176,28 @@ a:hover {
   align-items: start;
 }
 
+.approach-slider__stage-link {
+  display: inline-flex;
+  align-items: center;
+  margin-top: 1.75rem;
+  font-weight: 600;
+  color: var(--accent);
+  text-decoration: none;
+  transition: opacity 0.15s ease;
+}
+
+.approach-slider__stage-link:hover {
+  opacity: 0.7;
+}
+
+.approach-slider__stage-link-arrow {
+  transition: transform 0.15s ease;
+}
+
+.approach-slider__stage-link:hover .approach-slider__stage-link-arrow {
+  transform: translateX(3px);
+}
+
 @media (max-width: 900px) {
   .approach-slider {
     grid-template-columns: 1fr;

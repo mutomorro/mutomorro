@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { buildMetadata } from '@/lib/seo'
 import Image from 'next/image'
 import { client, getCapabilityService, getSidebarCallouts } from '../../../sanity/client'
 import { PortableText } from '@portabletext/react'
@@ -64,21 +65,12 @@ export async function generateMetadata({ params }) {
   const service = await getCapabilityService(slug)
   if (!service) return {}
 
-  const rawTitle = service.seoTitle || service.heroHeading || service.title
-  const title = rawTitle?.replace(/\s*[\|\-]\s*Mutomorro\s*$/i, '') || rawTitle
-  const description = service.seoDescription || service.heroTagline || ''
-
-  return {
-    title,
-    description,
-    openGraph: {
-      title,
-      description,
-      url: `https://mutomorro.com/develop/${slug}`,
-      type: 'article',
-      images: [{ url: '/og-default.png', width: 1200, height: 630 }],
-    },
-  }
+  return buildMetadata({
+    title: service.seoTitle || service.heroHeading || service.title,
+    description: service.seoDescription || service.heroTagline || '',
+    path: `/develop/${slug}`,
+    type: 'article',
+  })
 }
 
 // ============================================

@@ -1,4 +1,5 @@
 import { notFound } from 'next/navigation'
+import { buildMetadata } from '@/lib/seo'
 import { getArticle } from '../../../sanity/client'
 import { client } from '../../../sanity/client'
 import Image from 'next/image'
@@ -38,25 +39,15 @@ export async function generateMetadata({ params }) {
   )
   if (!article) return {}
 
-  const rawTitle = article.seoTitle || article.title
-  const title = rawTitle?.replace(/\s*[\|\-]\s*Mutomorro\s*$/i, '') || rawTitle
-  const description = article.seoDescription || article.shortSummary || article.subtitle || ''
-
-  return {
-    title,
-    description,
-    openGraph: {
-      title,
-      description,
-      url: `https://mutomorro.com/articles/${slug}`,
-      type: 'article',
-      publishedTime: article._createdAt,
-      modifiedTime: article._updatedAt,
-      ...(article.heroImageUrl && {
-        images: [{ url: article.heroImageUrl, width: 1200, height: 630 }],
-      }),
-    },
-  }
+  return buildMetadata({
+    title: article.seoTitle || article.title,
+    description: article.seoDescription || article.shortSummary || article.subtitle || '',
+    path: `/articles/${slug}`,
+    image: article.heroImageUrl,
+    type: 'article',
+    publishedTime: article._createdAt,
+    modifiedTime: article._updatedAt,
+  })
 }
 
 export default async function ArticlePage({ params }) {

@@ -1,4 +1,5 @@
 import { notFound } from 'next/navigation'
+import { buildMetadata } from '@/lib/seo'
 import { getProject } from '../../../sanity/client'
 import { client } from '../../../sanity/client'
 import Image from 'next/image'
@@ -35,23 +36,13 @@ export async function generateMetadata({ params }) {
   )
   if (!project) return {}
 
-  const rawTitle = project.seoTitle || project.title
-  const title = rawTitle?.replace(/\s*[\|\-]\s*Mutomorro\s*$/i, '') || rawTitle
-  const description = project.seoDescription || project.shortSummary || ''
-
-  return {
-    title,
-    description,
-    openGraph: {
-      title,
-      description,
-      url: `https://mutomorro.com/projects/${slug}`,
-      type: 'article',
-      ...(project.heroImageUrl && {
-        images: [{ url: project.heroImageUrl, width: 1200, height: 630 }],
-      }),
-    },
-  }
+  return buildMetadata({
+    title: project.seoTitle || project.title,
+    description: project.seoDescription || project.shortSummary || '',
+    path: `/projects/${slug}`,
+    image: project.heroImageUrl,
+    type: 'article',
+  })
 }
 
 export default async function CaseStudy({ params }) {

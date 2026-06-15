@@ -1,20 +1,29 @@
 import { defineField, defineType } from 'sanity'
+import { seoGroup, seoFields } from './_seo'
 
 export default defineType({
   name: 'theme',
   title: 'Themes',
   type: 'document',
+  groups: [
+    { name: 'core', title: 'Core', default: true },
+    { name: 'content', title: 'Hub Content' },
+    { name: 'taxonomy', title: 'Taxonomy' },
+    seoGroup,
+  ],
   fields: [
     defineField({
       name: 'title',
       title: 'Title',
       type: 'string',
+      group: 'core',
       validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: 'slug',
       title: 'Slug',
       type: 'slug',
+      group: 'core',
       options: { source: 'title', maxLength: 96 },
       validation: (Rule) => Rule.required(),
     }),
@@ -22,6 +31,7 @@ export default defineType({
       name: 'description',
       title: 'Description',
       type: 'array',
+      group: 'core',
       of: [{ type: 'block' }],
       description: 'Intro paragraph for the topic hub page.',
     }),
@@ -30,6 +40,7 @@ export default defineType({
       title: 'Tools Section Intro',
       type: 'text',
       rows: 2,
+      group: 'content',
       description: 'Short intro text shown above the tools list on the hub page.',
     }),
     defineField({
@@ -37,6 +48,7 @@ export default defineType({
       title: 'Articles Section Intro',
       type: 'text',
       rows: 2,
+      group: 'content',
       description: 'Short intro text shown above the articles list on the hub page.',
     }),
     defineField({
@@ -44,6 +56,7 @@ export default defineType({
       title: 'Courses Section Intro',
       type: 'text',
       rows: 2,
+      group: 'content',
       description: 'Short intro text shown above the courses list on the hub page.',
     }),
     defineField({
@@ -51,12 +64,14 @@ export default defineType({
       title: 'Case Studies Section Intro',
       type: 'text',
       rows: 2,
+      group: 'content',
       description: 'Short intro text shown above the case studies list on the hub page.',
     }),
     defineField({
       name: 'anchorType',
       title: 'Anchor type',
       type: 'string',
+      group: 'taxonomy',
       options: {
         list: [
           { title: 'Service', value: 'service' },
@@ -71,6 +86,7 @@ export default defineType({
       name: 'anchorUrl',
       title: 'Anchor URL',
       type: 'url',
+      group: 'taxonomy',
       description: 'The page this theme links to.',
       validation: (Rule) =>
         Rule.required().uri({ allowRelative: true, scheme: ['http', 'https'] }),
@@ -79,23 +95,12 @@ export default defineType({
       name: 'relatedThemes',
       title: 'Related Themes',
       type: 'array',
+      group: 'taxonomy',
       of: [{ type: 'reference', to: [{ type: 'theme' }] }],
       description: 'Related topic hubs to link to (2-3 recommended).',
       validation: (rule) => rule.max(4),
     }),
-    defineField({
-      name: 'seoTitle',
-      title: 'SEO Title',
-      type: 'string',
-      description: 'Custom page title for search engines. Falls back to theme title if empty.',
-    }),
-    defineField({
-      name: 'seoDescription',
-      title: 'SEO Description',
-      type: 'text',
-      rows: 3,
-      description: 'Meta description for search engines.',
-    }),
+    ...seoFields,
   ],
   preview: {
     select: {

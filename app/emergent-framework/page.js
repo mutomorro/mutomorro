@@ -1,4 +1,5 @@
 import DimensionExplorer from '../../components/DimensionExplorer'
+import { buildMetadata } from '@/lib/seo'
 import { getFrameworkOverview } from '../../sanity/client'
 import { PortableText } from '@portabletext/react'
 
@@ -8,23 +9,11 @@ const FALLBACK_DESCRIPTION =
 
 export async function generateMetadata() {
   const overview = await getFrameworkOverview()
-  const rawTitle = overview?.seoTitle || FALLBACK_TITLE
-  const title = rawTitle?.replace(/\s*[\|\-]\s*Mutomorro\s*$/i, '') || rawTitle
-  const description = overview?.seoDescription || FALLBACK_DESCRIPTION
-
-  return {
-    title,
-    description,
-    openGraph: {
-      title,
-      description,
-      url: 'https://mutomorro.com/emergent-framework',
-      images: [{ url: '/og-default.png', width: 1200, height: 630 }],
-    },
-    twitter: {
-      images: [{ url: '/og-default.png', width: 1200, height: 630 }],
-    },
-  }
+  return buildMetadata({
+    title: overview?.seoTitle || FALLBACK_TITLE,
+    description: overview?.seoDescription || FALLBACK_DESCRIPTION,
+    path: '/emergent-framework',
+  })
 }
 
 export default async function EmergentFramework() {

@@ -1,4 +1,5 @@
 import { notFound } from 'next/navigation'
+import { buildMetadata } from '@/lib/seo'
 import Link from 'next/link'
 import Image from 'next/image'
 import { PortableText } from '@portabletext/react'
@@ -24,29 +25,13 @@ export async function generateMetadata({ params }) {
   )
   if (!theme) return {}
 
-  const rawTitle = theme.seoTitle || `${theme.title} - Resources and Thinking`
-  const title = rawTitle.replace(/\s*[\|\-]\s*Mutomorro\s*$/i, '') || rawTitle
-  const description =
-    theme.seoDescription ||
-    `Tools, articles, courses and case studies on ${theme.title.toLowerCase()} from Mutomorro.`
-
-  return {
-    title,
-    description,
-    alternates: {
-      canonical: `https://mutomorro.com/topics/${theme.slug}`,
-    },
-    openGraph: {
-      title,
-      description,
-      url: `https://mutomorro.com/topics/${theme.slug}`,
-      type: 'website',
-      images: [{ url: '/og-default.png', width: 1200, height: 630 }],
-    },
-    twitter: {
-      images: ['/og-default.png'],
-    },
-  }
+  return buildMetadata({
+    title: theme.seoTitle || `${theme.title} - Resources and Thinking`,
+    description:
+      theme.seoDescription ||
+      `Tools, articles, courses and case studies on ${theme.title.toLowerCase()} from Mutomorro.`,
+    path: `/topics/${theme.slug}`,
+  })
 }
 
 const portableTextComponents = {

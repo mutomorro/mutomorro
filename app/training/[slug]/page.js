@@ -1,4 +1,5 @@
 import { client, getCourse, getSidebarCallouts } from '../../../sanity/client'
+import { buildMetadata } from '@/lib/seo'
 import { notFound } from 'next/navigation'
 import Image from 'next/image'
 import { PortableText } from '@portabletext/react'
@@ -52,30 +53,15 @@ export async function generateMetadata({ params }) {
   )
   if (!course) return {}
 
-  const rawTitle = course.seoTitle || course.title
-  const title = rawTitle?.replace(/\s*[\|\-]\s*Mutomorro\s*$/i, '') || rawTitle
-  const description = course.seoDescription || course.shortSummary || ''
-
-  return {
-    title,
-    description,
-    alternates: {
-      canonical: `https://mutomorro.com/training/${slug}`,
-    },
-    openGraph: {
-      title,
-      description,
-      url: `https://mutomorro.com/training/${slug}`,
-      type: 'article',
-      publishedTime: course._createdAt,
-      modifiedTime: course._updatedAt,
-      images: [{
-        url: course.heroImageUrl || '/og-default.png',
-        width: 1200,
-        height: 630,
-      }],
-    },
-  }
+  return buildMetadata({
+    title: course.seoTitle || course.title,
+    description: course.seoDescription || course.shortSummary || '',
+    path: `/training/${slug}`,
+    image: course.heroImageUrl,
+    type: 'article',
+    publishedTime: course._createdAt,
+    modifiedTime: course._updatedAt,
+  })
 }
 
 export default async function TrainingPage({ params }) {

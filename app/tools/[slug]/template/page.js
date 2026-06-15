@@ -1,4 +1,5 @@
 import { client, getToolTemplate, getDownloadSuccessCallout } from '@/sanity/client'
+import { buildMetadata } from '@/lib/seo'
 import { notFound } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -67,25 +68,13 @@ export async function generateMetadata({ params }) {
     description = capDescription(sentence ? `${lead} ${sentence}` : lead, 155)
   }
 
-  const url = `https://mutomorro.com/tools/${slug}/template`
-  const image = tool.heroImageUrl || '/og-default.png'
-
-  return {
+  return buildMetadata({
     title,
     description,
-    alternates: { canonical: `/tools/${slug}/template` },
-    openGraph: {
-      title,
-      description,
-      url,
-      type: 'website',
-      images: [{ url: image, width: 1200, height: 630 }],
-    },
-    twitter: {
-      card: 'summary_large_image',
-      images: [{ url: image, width: 1200, height: 630 }],
-    },
-  }
+    path: `/tools/${slug}/template`,
+    image: tool.heroImageUrl,
+    type: 'website',
+  })
 }
 
 const portableTextComponents = {

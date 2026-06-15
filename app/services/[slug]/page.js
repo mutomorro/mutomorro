@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { buildMetadata } from '@/lib/seo'
 import Image from 'next/image'
 import { client, getService } from '../../../sanity/client'
 import { PortableText } from '@portabletext/react'
@@ -83,25 +84,13 @@ export async function generateMetadata({ params }) {
   )
   if (!service) return {}
 
-  const rawTitle = service.seoTitle || service.heroHeading
-  const title = rawTitle?.replace(/\s*[\|\-]\s*Mutomorro\s*$/i, '') || rawTitle
-  const description = service.seoDescription || service.heroTagline || ''
-
-  return {
-    title,
-    description,
-    openGraph: {
-      title,
-      description,
-      url: `https://mutomorro.com/services/${slug}`,
-      type: 'article',
-      images: [{
-        url: service.ogImageUrl || '/og-default.png',
-        width: 1200,
-        height: 630,
-      }],
-    },
-  }
+  return buildMetadata({
+    title: service.seoTitle || service.heroHeading,
+    description: service.seoDescription || service.heroTagline || '',
+    path: `/services/${slug}`,
+    image: service.ogImageUrl,
+    type: 'article',
+  })
 }
 
 // ============================================

@@ -19,6 +19,7 @@ import BackgroundPattern from '@/components/animations/BackgroundPattern'
 import { makeHeadingBlocks } from '../../../lib/portable-text-headings'
 import { buildHeadingIndex } from '../../../lib/slugify'
 import { getSidebarCallouts } from '../../../sanity/client'
+import { buildMetadata } from '../../../lib/seo'
 
 export const revalidate = 3600
 
@@ -39,27 +40,15 @@ export async function generateMetadata({ params }) {
   )
   if (!tool) return {}
 
-  const rawTitle = tool.seoTitle || tool.title
-  const title = rawTitle?.replace(/\s*[\|\-]\s*Mutomorro\s*$/i, '') || rawTitle
-  const description = tool.seoDescription || tool.shortSummary || ''
-
-  return {
-    title,
-    description,
-    openGraph: {
-      title,
-      description,
-      url: `https://mutomorro.com/tools/${slug}`,
-      type: 'article',
-      publishedTime: tool._createdAt,
-      modifiedTime: tool._updatedAt,
-      images: [{
-        url: tool.heroImageUrl || '/og-default.png',
-        width: 1200,
-        height: 630,
-      }],
-    },
-  }
+  return buildMetadata({
+    title: tool.seoTitle || tool.title,
+    description: tool.seoDescription || tool.shortSummary || '',
+    path: `/tools/${slug}`,
+    image: tool.heroImageUrl,
+    type: 'article',
+    publishedTime: tool._createdAt,
+    modifiedTime: tool._updatedAt,
+  })
 }
 
 export default async function ToolPage({ params }) {

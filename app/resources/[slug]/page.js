@@ -6,6 +6,7 @@ import Link from 'next/link'
 import ResourceDownloadForm from '../../../components/ResourceDownloadForm'
 import CTA from '../../../components/CTA'
 import BackgroundPattern from '@/components/animations/BackgroundPattern'
+import { buildMetadata } from '../../../lib/seo'
 
 export const revalidate = 3600
 
@@ -25,21 +26,13 @@ export async function generateMetadata({ params }) {
   const resource = await getResource(slug)
   if (!resource) return {}
 
-  const rawTitle = resource.seoTitle || resource.title
-  const title = rawTitle?.replace(/\s*[\|\-]\s*Mutomorro\s*$/i, '') || rawTitle
-  const description = resource.seoDescription || ''
-
-  return {
-    title,
-    description,
-    openGraph: {
-      title,
-      description,
-      url: `https://mutomorro.com/resources/${slug}`,
-      type: 'article',
-      ...(resource.previewImageUrl && { images: [{ url: resource.previewImageUrl }] }),
-    },
-  }
+  return buildMetadata({
+    title: resource.seoTitle || resource.title,
+    description: resource.seoDescription || '',
+    path: `/resources/${slug}`,
+    image: resource.previewImageUrl,
+    type: 'article',
+  })
 }
 
 // ============================================

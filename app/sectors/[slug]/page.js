@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { buildMetadata } from '@/lib/seo'
 import Image from 'next/image'
 import { PortableText } from '@portabletext/react'
 import { notFound } from 'next/navigation'
@@ -27,24 +28,12 @@ export async function generateMetadata({ params }) {
   const page = await getSectorLandingPage(slug)
   if (!page) return {}
 
-  const title = (page.seoTitle || page.heroHeading || '').replace(/\s*[\|\-]\s*Mutomorro\s*$/i, '')
-  const description = page.seoDescription || page.heroSubheading || ''
-
-  return {
-    title,
-    description,
-    openGraph: {
-      title,
-      description,
-      url: `https://mutomorro.com/sectors/${slug}`,
-      type: 'website',
-      images: [{
-        url: page.seoImageUrl || '/og-default.png',
-        width: 1200,
-        height: 630,
-      }],
-    },
-  }
+  return buildMetadata({
+    title: page.seoTitle || page.heroHeading || '',
+    description: page.seoDescription || page.heroSubheading || '',
+    path: `/sectors/${slug}`,
+    image: page.seoImageUrl,
+  })
 }
 
 // ============================================

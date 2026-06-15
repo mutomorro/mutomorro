@@ -1,4 +1,5 @@
 import { client, getDimension, getDimensionArticles } from '../../../sanity/client'
+import { buildMetadata } from '@/lib/seo'
 import { notFound } from 'next/navigation'
 import Image from 'next/image'
 import { PortableText } from '@portabletext/react'
@@ -17,21 +18,12 @@ export async function generateMetadata({ params }) {
   const { dimension: slug } = await params
   const dimension = await getDimension(slug)
   if (!dimension) return {}
-  const rawTitle = dimension.seoTitle || `${dimension.title} - EMERGENT Framework`
-  const title = rawTitle?.replace(/\s*[\|\-]\s*Mutomorro\s*$/i, '') || rawTitle
-  const description = dimension.seoDescription || dimension.shortSummary || `Explore the ${dimension.title} dimension of the EMERGENT Framework.`
-
-  return {
-    title,
-    description,
-    openGraph: {
-      title,
-      description,
-      url: `https://mutomorro.com/emergent-framework/${slug}`,
-      type: 'article',
-      images: [{ url: '/og-default.png', width: 1200, height: 630 }],
-    },
-  }
+  return buildMetadata({
+    title: dimension.seoTitle || `${dimension.title} - EMERGENT Framework`,
+    description: dimension.seoDescription || dimension.shortSummary || `Explore the ${dimension.title} dimension of the EMERGENT Framework.`,
+    path: `/emergent-framework/${slug}`,
+    type: 'article',
+  })
 }
 
 export default async function DimensionPage({ params }) {

@@ -1155,6 +1155,21 @@ const nextConfig = {
       { source: '/tools/:slug/feed', destination: '/tools/:slug', permanent: true },
       { source: '/tools/feed', destination: '/tools', permanent: true },
 
+
+      // =========================================================
+      // 16 June 2026 - 404 triage
+      // =========================================================
+
+      // Legacy course slug requested under the new /training prefix. The
+      // /courses/systems-thinking-for-organisational-change alias already lands
+      // on /training/systems-thinking; this catches the same slug hit directly
+      // under /training/ (3 hits, no referrer — likely a stale inbound link).
+      { source: '/training/systems-thinking-for-organisational-change', destination: '/training/systems-thinking', permanent: true },
+
+      // Gemini surfaced a hallucinated nested tool path; the tool lives flat at
+      // /tools/edgar-scheins-culture-model.
+      { source: '/tools/culture-change/edgar-scheins-culture-model', destination: '/tools/edgar-scheins-culture-model', permanent: true },
+
     ]
 
     // Emit both `/path` and `/path/` variants for every source so requests

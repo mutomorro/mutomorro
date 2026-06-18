@@ -9,6 +9,8 @@ export const metadata = {
   title: 'About Mutomorro',
   description: 'Over 20 years helping organisations across every sector redesign how they work. From teams of 12 to workforces of 80,000.',
   openGraph: {
+    siteName: 'Mutomorro',
+    locale: 'en_GB',
     url: 'https://mutomorro.com/about',
     images: [{ url: '/og-default.png', width: 1200, height: 630 }],
   },

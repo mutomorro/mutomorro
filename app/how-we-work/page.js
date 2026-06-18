@@ -7,6 +7,8 @@ export const metadata = {
   title: 'How we work with organisations',
   description: 'Four stages - understand, co-design, implement, build capability. We start from where you are and work alongside your people, not instead of them.',
   openGraph: {
+    siteName: 'Mutomorro',
+    locale: 'en_GB',
     url: 'https://mutomorro.com/how-we-work',
     images: [{ url: '/og-default.png', width: 1200, height: 630 }],
   },

@@ -4,6 +4,8 @@ export const metadata = {
   title: 'Organisational Drift Audit',
   description: 'A short self-assessment to help leadership teams understand where organisational drift might be showing up. 12 questions, 6 dimensions, takes 5 minutes.',
   openGraph: {
+    siteName: 'Mutomorro',
+    locale: 'en_GB',
     url: 'https://mutomorro.com/diagnostics/drift-audit',
     title: 'Organisational Drift Audit',
     description: 'A short self-assessment to help leadership teams understand where organisational drift might be showing up.',

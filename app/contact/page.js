@@ -5,6 +5,8 @@ export const metadata = {
   title: 'Get in touch',
   description: 'Start a conversation about what you are working on. We will listen, share how we see it, and explore whether we can help.',
   openGraph: {
+    siteName: 'Mutomorro',
+    locale: 'en_GB',
     url: 'https://mutomorro.com/contact',
     images: [{ url: '/og-default.png', width: 1200, height: 630 }],
   },

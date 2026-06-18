@@ -13,6 +13,8 @@ export const metadata = {
   title: 'States of Vitality - organisational health diagnostic',
   description: 'States of Vitality is a managed organisational health diagnostic across eight dimensions. See the whole picture, the story beneath the scores, and where to focus.',
   openGraph: {
+    siteName: 'Mutomorro',
+    locale: 'en_GB',
     title: 'States of Vitality - organisational health diagnostic',
     description: 'States of Vitality is a managed organisational health diagnostic across eight dimensions. See the whole picture, the story beneath the scores, and where to focus.',
     url: 'https://mutomorro.com/states-of-vitality',

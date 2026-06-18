@@ -9,6 +9,8 @@ export const metadata = {
   title: 'Articles - thinking on organisational development',
   description: 'Perspectives on culture change, organisational design, change management, service design, and the systems that shape how organisations work.',
   openGraph: {
+    siteName: 'Mutomorro',
+    locale: 'en_GB',
     url: 'https://mutomorro.com/articles',
     images: [{ url: '/og-default.png', width: 1200, height: 630 }],
   },

@@ -5,6 +5,8 @@ export const metadata = {
   title: 'Building capability - leadership and team development',
   description: 'Development programmes for leaders and teams. Executive coaching, leadership facilitation, team sessions, and manager coaching.',
   openGraph: {
+    siteName: 'Mutomorro',
+    locale: 'en_GB',
     url: 'https://mutomorro.com/develop',
     images: [{ url: '/og-default.png', width: 1200, height: 630 }],
   },

@@ -11,6 +11,8 @@ export const metadata = {
     'Past editions of the Mutomorro newsletter on the invisible architecture of organisations.',
   alternates: { canonical: 'https://mutomorro.com/newsletter' },
   openGraph: {
+    siteName: 'Mutomorro',
+    locale: 'en_GB',
     title: 'Newsletter archive — Mutomorro',
     description:
       'Past editions of the Mutomorro newsletter on the invisible architecture of organisations.',

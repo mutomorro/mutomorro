@@ -4,6 +4,8 @@ export const metadata = {
   title: 'Privacy and cookies',
   description: 'How Mutomorro uses cookies and handles your data. Plain language, no legal waffle.',
   openGraph: {
+    siteName: 'Mutomorro',
+    locale: 'en_GB',
     url: 'https://mutomorro.com/privacy',
     images: [{ url: '/og-default.png', width: 1200, height: 630 }],
   },

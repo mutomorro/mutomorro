@@ -64,7 +64,10 @@ export async function generateMetadata({ params }) {
       title: row.subject || 'Newsletter',
       description: row.preview_text || undefined,
       url: canonical,
-      images: [{ url: ogImage }],
+      type: 'article',
+      siteName: 'Mutomorro',
+      locale: 'en_GB',
+      images: [{ url: ogImage, width: 1200, height: 630 }],
     },
     twitter: {
       title: row.subject || 'Newsletter',

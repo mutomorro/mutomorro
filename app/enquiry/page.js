@@ -6,6 +6,8 @@ export const metadata = {
   description:
     "Tell us about your organisation and what you're trying to shift. We'll explore whether a bespoke session or programme is the right fit - no pitch, no obligation.",
   openGraph: {
+    siteName: 'Mutomorro',
+    locale: 'en_GB',
     url: 'https://mutomorro.com/enquiry',
     images: [{ url: '/og-default.png', width: 1200, height: 630 }],
   },

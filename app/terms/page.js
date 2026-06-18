@@ -2,6 +2,8 @@ export const metadata = {
   title: 'Terms of use - Mutomorro',
   description: 'Terms of use for the Mutomorro website. Plain language, no legal waffle.',
   openGraph: {
+    siteName: 'Mutomorro',
+    locale: 'en_GB',
     url: 'https://mutomorro.com/terms',
     images: [{ url: '/og-default.png', width: 1200, height: 630 }],
   },

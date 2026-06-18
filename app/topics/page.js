@@ -13,6 +13,8 @@ export const metadata = {
     canonical: 'https://mutomorro.com/topics',
   },
   openGraph: {
+    siteName: 'Mutomorro',
+    locale: 'en_GB',
     title: 'Topics - Resources and Thinking | Mutomorro',
     description:
       "Explore Mutomorro's collection of tools, articles, courses and case studies, organised by subject.",

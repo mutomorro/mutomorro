@@ -15,6 +15,8 @@ export const metadata = {
     canonical: 'https://mutomorro.com',
   },
   openGraph: {
+    siteName: 'Mutomorro',
+    locale: 'en_GB',
     title: 'Mutomorro - We help leaders redesign how their organisations work',
     description: 'Organisational design, development and strategic change. We work across purpose, strategy, structure, culture, and capability to help organisations work better.',
     url: 'https://mutomorro.com',

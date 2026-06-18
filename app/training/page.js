@@ -8,6 +8,8 @@ export const metadata = {
     canonical: 'https://mutomorro.com/training',
   },
   openGraph: {
+    siteName: 'Mutomorro',
+    locale: 'en_GB',
     title: 'Training',
     url: 'https://mutomorro.com/training',
     images: [{ url: '/og-default.png', width: 1200, height: 630 }],

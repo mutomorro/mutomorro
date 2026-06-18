@@ -5,6 +5,8 @@ export const metadata = {
   title: 'Diagnostics',
   description: 'Free self-assessment tools for leadership teams. Explore where your organisation stands and start meaningful conversations.',
   openGraph: {
+    siteName: 'Mutomorro',
+    locale: 'en_GB',
     url: 'https://mutomorro.com/diagnostics',
     images: [{ url: '/og-default.png', width: 1200, height: 630 }],
   },

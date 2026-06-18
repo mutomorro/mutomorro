@@ -9,6 +9,8 @@ export const metadata = {
   title: 'Tools and templates for organisational development',
   description: 'Free downloadable tools, templates, and frameworks. Practical resources for leaders working on culture, change, strategy, and organisational design.',
   openGraph: {
+    siteName: 'Mutomorro',
+    locale: 'en_GB',
     url: 'https://mutomorro.com/tools',
     images: [{ url: '/og-default.png', width: 1200, height: 630 }],
   },

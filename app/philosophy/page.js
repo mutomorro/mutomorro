@@ -16,6 +16,8 @@ export const metadata = {
   title: 'Our philosophy - Intentional Ecosystems',
   description: 'Organisations are living systems - complex, interconnected, and adaptive. We work with the patterns beneath the surface to help leaders create conditions where good things happen naturally.',
   openGraph: {
+    siteName: 'Mutomorro',
+    locale: 'en_GB',
     url: 'https://mutomorro.com/philosophy',
     images: [{ url: '/og-default.png', width: 1200, height: 630 }],
   },

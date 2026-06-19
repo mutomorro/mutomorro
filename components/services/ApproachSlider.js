@@ -42,44 +42,57 @@ export default function ApproachSlider({ approachIntro, stages = [], approachKic
         ))}
       </nav>
 
-      {/* Content panel */}
-      <div className="approach-slider__panel" key={active}>
-        {active === 0 ? (
-          <div className="approach-slider__slide">
-            <span className="kicker" style={{ color: 'var(--accent)', marginBottom: '12px' }}>
-              {approachKicker}
-            </span>
-            {approachIntroHeadline && (
-              <h2 className="heading-h2" style={{ margin: '0 0 20px' }}>
-                {approachIntroHeadline}
-              </h2>
-            )}
-            <div className="portable-text">
-              <PortableText value={approachIntro} />
-            </div>
-            {principles?.length > 0 && (
-              <div className="approach-slider__principles">
-                {principles.map((p, i) => (
-                  <div key={p._key || i} className="approach-principle">
-                    <p className="approach-principle__title">{p.title}</p>
-                    <p className="approach-principle__desc">{p.description}</p>
-                  </div>
-                ))}
-              </div>
-            )}
+      {/* Content panel — every slide is rendered into the server HTML and the
+          inactive ones are hidden with the `hidden` attribute (never
+          conditionally rendered, never unmounted). This mirrors the tabs /
+          accordion SEO contract: crawlers and AI answer engines see all four
+          stages' copy and their `stageLinkUrl` connector links in view-source,
+          while a reader still sees one slide at a time. Never switch back to
+          `{active === 0 ? … : …}` — that drops the other slides (and their
+          links) from the SSR HTML and the ranking value with them. */}
+      <div className="approach-slider__panel">
+        {/* Intro — slide 0 */}
+        <div className="approach-slider__slide" hidden={active !== 0}>
+          <span className="kicker" style={{ color: 'var(--accent)', marginBottom: '12px' }}>
+            {approachKicker}
+          </span>
+          {approachIntroHeadline && (
+            <h2 className="heading-h2" style={{ margin: '0 0 20px' }}>
+              {approachIntroHeadline}
+            </h2>
+          )}
+          <div className="portable-text">
+            <PortableText value={approachIntro} />
           </div>
-        ) : (
-          <StageSlide stage={stages[active - 1]} index={active - 1} />
-        )}
+          {principles?.length > 0 && (
+            <div className="approach-slider__principles">
+              {principles.map((p, i) => (
+                <div key={p._key || i} className="approach-principle">
+                  <p className="approach-principle__title">{p.title}</p>
+                  <p className="approach-principle__desc">{p.description}</p>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+        {/* Stages — slides 1..n */}
+        {stages.map((stage, i) => (
+          <StageSlide
+            key={stage._key || `stage-${i}`}
+            stage={stage}
+            index={i}
+            hidden={active !== i + 1}
+          />
+        ))}
       </div>
     </div>
   )
 }
 
-function StageSlide({ stage, index }) {
+function StageSlide({ stage, index, hidden }) {
   if (!stage) return null
   return (
-    <div className="approach-slider__slide">
+    <div className="approach-slider__slide" hidden={hidden}>
       <span className="kicker" style={{ color: 'var(--accent)', marginBottom: '12px' }}>
         Stage {stage.stageNumber || String(index + 1).padStart(2, '0')}
       </span>

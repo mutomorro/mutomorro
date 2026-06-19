@@ -130,8 +130,10 @@ export default function PropositionStepper({
   const [active, setActive] = useState(0)
   if (!steps?.length) return null
 
+  // `current` drives the canvas animation column. The body column below renders
+  // every step (hidden-toggled) so all step copy + the philosophy link are in
+  // the SSR HTML, not just the active step.
   const current = steps[active] || steps[0]
-  const isLastStep = active === steps.length - 1
 
   return (
     <div className="proposition-stepper">
@@ -169,30 +171,42 @@ export default function PropositionStepper({
         ))}
       </nav>
 
-      {/* Body column — fades on step change */}
+      {/* Body column — every step's panel is rendered into the server HTML and
+          the inactive ones hidden with the `hidden` attribute (never
+          conditionally rendered). Crawlers and AI answer engines see all steps'
+          copy and the philosophy connector link in view-source; a reader sees
+          one at a time. The panel still fades on step change because the
+          `prop-stepper-fade` animation re-runs when `hidden` is removed. */}
       <div className="proposition-stepper__body">
-        <div className="proposition-stepper__body-inner" key={active} role="tabpanel">
-          {current.kicker && (
-            <span className="kicker" style={{ color: 'var(--accent)', marginBottom: '10px' }}>
-              {current.kicker}
-            </span>
-          )}
-          {current.headline && (
-            <h3 className="proposition-stepper__headline">{current.headline}</h3>
-          )}
-          {current.body && (
-            <div className="portable-text">
-              <PortableText value={current.body} />
-            </div>
-          )}
-          {isLastStep && philosophyLinkLabel && philosophyLinkUrl && (
-            <p style={{ marginTop: '20px' }}>
-              <Link href={philosophyLinkUrl} className="inline-link">
-                {philosophyLinkLabel} →
-              </Link>
-            </p>
-          )}
-        </div>
+        {steps.map((step, i) => (
+          <div
+            key={step._key || i}
+            className="proposition-stepper__body-inner"
+            role="tabpanel"
+            hidden={active !== i}
+          >
+            {step.kicker && (
+              <span className="kicker" style={{ color: 'var(--accent)', marginBottom: '10px' }}>
+                {step.kicker}
+              </span>
+            )}
+            {step.headline && (
+              <h3 className="proposition-stepper__headline">{step.headline}</h3>
+            )}
+            {step.body && (
+              <div className="portable-text">
+                <PortableText value={step.body} />
+              </div>
+            )}
+            {i === steps.length - 1 && philosophyLinkLabel && philosophyLinkUrl && (
+              <p style={{ marginTop: '20px' }}>
+                <Link href={philosophyLinkUrl} className="inline-link">
+                  {philosophyLinkLabel} →
+                </Link>
+              </p>
+            )}
+          </div>
+        ))}
       </div>
 
       {/* Animation column */}

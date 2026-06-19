@@ -129,8 +129,6 @@ const dimensions = [
 export default function DimensionExplorer() {
   const [activeTab, setActiveTab] = useState('es')
 
-  const activeDim = dimensions.find(d => d.key === activeTab)
-
   return (
     <div className="de-container">
       {/* Tab row */}
@@ -148,37 +146,49 @@ export default function DimensionExplorer() {
         ))}
       </div>
 
-      {/* Panel */}
-      <div className="de-panel" key={activeTab} style={{ '--active-color': activeDim.colour }}>
-        <div className="de-panel-inner">
-          {/* Left column */}
-          <div className="de-panel-left">
-            <h2 className="de-dim-name" style={{ color: activeDim.colour }}>{activeDim.name}</h2>
-            <div className="de-tagline">{activeDim.tagline}</div>
-            <p className="de-description">{activeDim.description}</p>
-            <div className="de-lens-question">
-              <span className="de-lens-label">The lens question</span>
-              {activeDim.lensQuestion}
+      {/* Panels — every dimension is rendered into the server HTML and the
+          inactive ones hidden with the `hidden` attribute (never conditionally
+          rendered). Crawlers and AI answer engines see all eight dimensions'
+          descriptions, lens questions and prompts in view-source; a reader sees
+          one at a time. The `dePanelFade` animation re-runs when `hidden` is
+          removed, preserving the fade-on-tab-change. */}
+      {dimensions.map((dim) => (
+        <div
+          key={dim.key}
+          className="de-panel"
+          hidden={activeTab !== dim.key}
+          style={{ '--active-color': dim.colour }}
+        >
+          <div className="de-panel-inner">
+            {/* Left column */}
+            <div className="de-panel-left">
+              <h2 className="de-dim-name" style={{ color: dim.colour }}>{dim.name}</h2>
+              <div className="de-tagline">{dim.tagline}</div>
+              <p className="de-description">{dim.description}</p>
+              <div className="de-lens-question">
+                <span className="de-lens-label">The lens question</span>
+                {dim.lensQuestion}
+              </div>
             </div>
-          </div>
 
-          {/* Right column */}
-          <div className="de-panel-right">
-            <div className="de-questions-label">Questions worth asking</div>
-            <ul className="de-question-list">
-              {activeDim.questions.map((q, i) => (
-                <li key={i} className="de-question-item">{q}</li>
-              ))}
-            </ul>
-            <div className="de-panel-explore">
-              <Link href={`/emergent-framework/${activeDim.slug}`} className="de-explore-link">
-                Explore {activeDim.name}
-                <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M1 7h12M8 2l5 5-5 5"/></svg>
-              </Link>
+            {/* Right column */}
+            <div className="de-panel-right">
+              <div className="de-questions-label">Questions worth asking</div>
+              <ul className="de-question-list">
+                {dim.questions.map((q, i) => (
+                  <li key={i} className="de-question-item">{q}</li>
+                ))}
+              </ul>
+              <div className="de-panel-explore">
+                <Link href={`/emergent-framework/${dim.slug}`} className="de-explore-link">
+                  Explore {dim.name}
+                  <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M1 7h12M8 2l5 5-5 5"/></svg>
+                </Link>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      ))}
     </div>
   )
 }

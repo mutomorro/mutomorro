@@ -33,12 +33,11 @@ export default async function EnquiryPage({ searchParams }) {
         <div style={{ maxWidth: '1350px', margin: '0 auto', position: 'relative' }}>
           <span className="kicker" style={{ marginBottom: '20px' }}>Work with us</span>
           <h1 className="heading-display heading-gradient" style={{ maxWidth: '900px', margin: '0 0 32px' }}>
-            Let&apos;s talk about what you&apos;re navigating
+            Tell us how we can help
           </h1>
           <p className="lead-text" style={{ color: 'rgba(255,255,255,0.6)', maxWidth: '680px' }}>
-            Our best work starts with understanding your context - your people, your
-            challenges, the change you&apos;re trying to make. Tell us what you&apos;re working on and
-            we&apos;ll explore whether we&apos;re the right fit, and what working together could look like.
+            Our best work starts with understanding your context. Let&apos;s talk about where you
+            are, where you want to get to, and how we might get there together.
           </p>
         </div>
       </BackgroundPattern>

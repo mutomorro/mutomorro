@@ -6,7 +6,7 @@ export default function CTA({
   heading = 'Let\'s talk about what you\'re working on',
   body = 'Whether you\'re navigating a merger, rethinking how you\'re structured, or trying to shift a culture that isn\'t working - start with a conversation.',
   buttonText = 'Talk to us',
-  buttonLink = '/contact',
+  buttonLink = '/enquiry',
   secondaryText,
   secondaryLink,
 }) {

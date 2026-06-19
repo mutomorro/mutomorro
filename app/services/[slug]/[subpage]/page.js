@@ -380,7 +380,7 @@ export default async function ServiceSubPage({ params }) {
         heading={page.ctaHeading || 'Ready to talk?'}
         body={page.ctaBody || 'Get in touch and let\'s have an honest conversation about where you are and what might help.'}
         buttonText={page.ctaButtonLabel || 'Start a conversation'}
-        buttonLink={page.ctaButtonUrl || '/contact'}
+        buttonLink={page.ctaButtonUrl || '/enquiry'}
       />
 
     </main>

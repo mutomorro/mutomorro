@@ -2,9 +2,9 @@ import ContactForm from '../../components/ContactForm'
 import BackgroundPattern from '@/components/animations/BackgroundPattern'
 
 export const metadata = {
-  title: 'Design training around your people',
+  title: 'Work with us',
   description:
-    "Tell us about your organisation and what you're trying to shift. We'll explore whether a bespoke session or programme is the right fit - no pitch, no obligation.",
+    "Tell us about your organisation and what you're trying to shift. We'll explore whether we're the right fit - no pitch, no obligation.",
   openGraph: {
     siteName: 'Mutomorro',
     locale: 'en_GB',
@@ -17,9 +17,11 @@ export const metadata = {
 }
 
 export default async function EnquiryPage({ searchParams }) {
-  // The bespoke CTAs across the training pages carry the area they came from
-  // as ?service=<slug>. ContactForm forwards it to /api/contact and logs it to
-  // PostHog, so we know where the enquiry started without surfacing it here.
+  // Some CTAs carry the area the enquiry came from as ?service=<slug> (training,
+  // develop, the housing sector callouts). ContactForm forwards it to
+  // /api/contact and logs it to PostHog, so we know where the enquiry started
+  // without surfacing it here. Future option: use `service` to tailor the hero
+  // copy (consultancy / sector / training variants) instead of one neutral hero.
   const params = await searchParams
   const service = params?.service || null
 
@@ -31,12 +33,12 @@ export default async function EnquiryPage({ searchParams }) {
         <div style={{ maxWidth: '1350px', margin: '0 auto', position: 'relative' }}>
           <span className="kicker" style={{ marginBottom: '20px' }}>Work with us</span>
           <h1 className="heading-display heading-gradient" style={{ maxWidth: '900px', margin: '0 0 32px' }}>
-            Let&apos;s design this around your people
+            Let&apos;s talk about what you&apos;re navigating
           </h1>
           <p className="lead-text" style={{ color: 'rgba(255,255,255,0.6)', maxWidth: '680px' }}>
-            Our training lands best when it&apos;s shaped to your context - your people, your
+            Our best work starts with understanding your context - your people, your
             challenges, the change you&apos;re trying to make. Tell us what you&apos;re working on and
-            we&apos;ll explore whether a bespoke session or programme is the right fit.
+            we&apos;ll explore whether we&apos;re the right fit, and what working together could look like.
           </p>
         </div>
       </BackgroundPattern>
@@ -84,7 +86,7 @@ export default async function EnquiryPage({ searchParams }) {
                 </p>
                 <p style={{ margin: 0 }}>
                   From there we can arrange a conversation to explore ideas and work out
-                  whether there&apos;s a good fit - and what a session or programme might look like.
+                  whether there&apos;s a good fit - and what working together might look like.
                 </p>
               </div>
             </div>

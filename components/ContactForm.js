@@ -28,7 +28,7 @@ export default function ContactForm({ service }) {
       const res = await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...formData, service, fax_number: honeypot, _t: formLoadedAt }),
+        body: JSON.stringify({ ...formData, service, source_page: window.location.pathname, fax_number: honeypot, _t: formLoadedAt }),
       })
 
       if (!res.ok) {

@@ -27,7 +27,7 @@ export async function POST(request) {
       return Response.json({ success: true }, { status: 200 })
     }
 
-    const { name, email, organisation, message, service } = formData
+    const { name, email, organisation, message, service, source_page } = formData
 
     if (!name || !email || !message) {
       return Response.json(
@@ -105,7 +105,7 @@ export async function POST(request) {
             </p>
             ` : ''}
             <p style="margin-top: 2rem; color: #888; font-size: 0.85rem;">
-              Sent from mutomorro.com/contact - reply directly to this email to respond.
+              Sent from mutomorro.com${source_page || '/contact'} - reply directly to this email to respond.
             </p>
           </div>
         `,
@@ -124,7 +124,7 @@ export async function POST(request) {
           organisation: organisation || null,
           service: service || null,
           message,
-          source_page: '/contact',
+          source_page: source_page || '/contact',
         })
 
       if (submissionError) {

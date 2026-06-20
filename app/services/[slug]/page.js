@@ -246,6 +246,16 @@ export default async function ServicePage({ params }) {
               {label}
             </a>
           ))}
+          {service.subPages?.map((sp) => (
+            <a
+              key={sp.slug}
+              href={`/services/${slug}/${sp.slug}`}
+              className="anchor-nav__link anchor-nav__link--sub"
+            >
+              {sp.title}
+            </a>
+          ))}
+          <Link href="/enquiry" className="anchor-nav__cta">Enquire</Link>
         </div>
       </nav>
 
@@ -623,8 +633,8 @@ export default async function ServicePage({ params }) {
       {/* ==========================================
           SECTION 7: APPROACH (slider)
           ========================================== */}
-      <BackgroundPattern variant="network" className="section--full section-padding" style={{ background: '#FFFFFF' }}>
-        <div id="approach" style={{ maxWidth: '1350px', margin: '0 auto' }}>
+      <section id="approach" className="section--full section-padding" style={{ background: 'var(--warm)' }}>
+        <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
           {service.stages?.length > 0 && (
             <ApproachSlider
               approachIntro={service.approachIntro}
@@ -635,7 +645,7 @@ export default async function ServicePage({ params }) {
             />
           )}
         </div>
-      </BackgroundPattern>
+      </section>
 
       {/* ==========================================
           SECTION 8: CTA (triple, dark)
@@ -711,13 +721,26 @@ export default async function ServicePage({ params }) {
                             href={`/articles/${article.slug.current}`}
                             className="explore-card"
                           >
-                            <div className="explore-card__title">{article.title}</div>
-                            {article.shortSummary && (
-                              <p className="explore-card__text">{article.shortSummary}</p>
-                            )}
-                            <span className="explore-card__action">
-                              Read article <span className="arrow">→</span>
-                            </span>
+                            <div className="explore-card__thumb">
+                              {article.heroImageUrl ? (
+                                <Image
+                                  src={article.heroImageUrl}
+                                  alt=""
+                                  width={160}
+                                  height={120}
+                                  sizes="120px"
+                                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                />
+                              ) : (
+                                <span className="explore-card__glyph" aria-hidden="true">✦</span>
+                              )}
+                            </div>
+                            <div className="explore-card__body">
+                              <div className="explore-card__title">{article.title}</div>
+                              <span className="explore-card__action">
+                                Read article <span className="arrow">→</span>
+                              </span>
+                            </div>
                           </Link>
                         </li>
                       ))}
@@ -754,13 +777,26 @@ export default async function ServicePage({ params }) {
                             href={`/tools/${tool.slug.current}`}
                             className="explore-card"
                           >
-                            <div className="explore-card__title">{tool.title}</div>
-                            {tool.shortSummary && (
-                              <p className="explore-card__text">{tool.shortSummary}</p>
-                            )}
-                            <span className="explore-card__action">
-                              Explore tool <span className="arrow">→</span>
-                            </span>
+                            <div className="explore-card__thumb">
+                              {tool.heroImageUrl ? (
+                                <Image
+                                  src={tool.heroImageUrl}
+                                  alt=""
+                                  width={160}
+                                  height={120}
+                                  sizes="120px"
+                                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                />
+                              ) : (
+                                <span className="explore-card__glyph" aria-hidden="true">◇</span>
+                              )}
+                            </div>
+                            <div className="explore-card__body">
+                              <div className="explore-card__title">{tool.title}</div>
+                              <span className="explore-card__action">
+                                Explore tool <span className="arrow">→</span>
+                              </span>
+                            </div>
                           </Link>
                         </li>
                       ))}

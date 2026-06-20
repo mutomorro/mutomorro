@@ -950,9 +950,9 @@ a:hover {
   align-items: center;
 }
 .anchor-nav__link {
-  font-size: 13px;
+  font-size: 13.5px;
   font-weight: 400;
-  color: rgba(255,255,255,0.55);
+  color: rgba(255,255,255,0.82);
   text-decoration: none;
   padding: 0 16px;
   height: 100%;
@@ -969,6 +969,29 @@ a:hover {
   color: rgba(255,255,255,0.9);
   border-bottom-color: var(--accent);
 }
+.anchor-nav__link--sub {
+  text-transform: none;
+  letter-spacing: 0.01em;
+  color: #f3b6cd;
+}
+.anchor-nav__link--sub::before { content: "\21B3"; margin-right: 6px; opacity: 0.7; }
+.anchor-nav__link--sub:hover { color: #ffd0e0; }
+.anchor-nav__cta {
+  margin-left: auto;
+  flex: none;
+  align-self: center;
+  background: var(--pink);
+  color: #fff;
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 0.02em;
+  padding: 8px 18px;
+  border-radius: 4px;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background 0.2s;
+}
+.anchor-nav__cta:hover { background: #e23368; }
 
 /* --- Breadcrumbs --- */
 .breadcrumb {
@@ -1482,11 +1505,13 @@ a:hover {
 
 /* --- Explore card: low-key list item for service page "Explore" section --- */
 .explore-card {
-  display: block;
-  padding: 20px 24px;
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  padding: 12px 14px;
   background: var(--white);
   border: 1px solid rgba(0,0,0,0.10);
-  border-radius: 0;
+  border-radius: 8px;
   text-decoration: none;
   color: inherit;
   transition: border-color 0.25s, transform 0.25s;
@@ -1495,6 +1520,19 @@ a:hover {
   border-color: rgba(0,0,0,0.35);
   transform: translateY(-1px);
 }
+.explore-card__thumb {
+  flex: none;
+  width: 84px;
+  aspect-ratio: 4 / 3;
+  border-radius: 6px;
+  overflow: hidden;
+  background: linear-gradient(135deg, #efe7f6, #f8e3ec);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.explore-card__glyph { font-size: 26px; color: #b98cc9; }
+.explore-card__body { min-width: 0; }
 .explore-card__title {
   font-family: 'Source Sans 3', sans-serif;
   font-size: 17px;
@@ -5042,6 +5080,66 @@ a:hover {
 }
 
 /* ----- ApproachSlider ----- */
+/* ----- Approach: vertical flow (Wave 2 - replaced the tabbed slider) ----- */
+.approach-flow__intro { max-width: 780px; margin-bottom: 1rem; }
+.approach-flow__principles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.25rem; }
+.approach-flow__principles-end { margin-top: 3.5rem; padding-top: 2.5rem; border-top: 1px solid rgba(34,28,43,0.15); }
+.approach-flow__principles-label { color: var(--accent); display: block; margin: 0 0 1.25rem; }
+.approach-flow__principles .approach-principle {
+  background: var(--white);
+  border: 1px solid rgba(0,0,0,0.10);
+  border-radius: 8px;
+  padding: 18px 20px;
+}
+.approach-flow__principles .approach-principle__title { font-weight: 600; color: var(--dark); margin: 0 0 6px; font-size: 16px; }
+.approach-flow__principles .approach-principle__desc { font-size: 14.5px; line-height: 1.55; color: rgba(0,0,0,0.62); margin: 0; }
+
+.approach-flow__stages { margin-top: 1.5rem; }
+.approach-stage { padding: 3.75rem 0; border-top: 1px solid rgba(34,28,43,0.15); }
+.approach-flow__stages > .approach-stage:first-child { border-top: 0; padding-top: 1.5rem; }
+.approach-stage__head { display: flex; align-items: baseline; gap: 16px; margin-bottom: 1.25rem; }
+.approach-stage__num {
+  font-size: 42px; font-weight: 300; line-height: 1; letter-spacing: -0.01em;
+  color: var(--stage-colour, var(--accent));
+}
+.approach-stage__kicker { color: var(--stage-colour, var(--accent)); margin: 0; }
+.approach-stage__top {
+  display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  gap: 2.5rem; align-items: start;
+}
+.approach-stage__image {
+  border-radius: 8px; overflow: hidden;
+  border: 1px solid rgba(0,0,0,0.06); box-shadow: 0 4px 18px rgba(34,28,43,0.08);
+}
+.approach-stage__image img { display: block; width: 100%; height: auto; }
+.approach-stage__divider { height: 1px; background: rgba(0,0,0,0.08); margin: 2rem 0; }
+.approach-stage__detail {
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 2rem; align-items: start;
+}
+.approach-stage__practice-label { color: var(--accent); margin-bottom: 16px; display: block; }
+.approach-connect {
+  display: flex; align-items: center; gap: 16px; margin-top: 1.75rem;
+  background: var(--white); border: 1px solid rgba(128,56,143,0.3);
+  border-left: 4px solid var(--accent); border-radius: 8px;
+  padding: 16px 20px; text-decoration: none;
+  transition: border-color 0.2s var(--ease), transform 0.2s var(--ease);
+}
+.approach-connect:hover { border-color: var(--accent-deep); transform: translateY(-1px); }
+.approach-connect__label { font-weight: 600; color: var(--dark); display: block; }
+.approach-connect__sub { font-size: 13.5px; color: rgba(0,0,0,0.55); }
+.approach-connect__arrow {
+  margin-left: auto; color: var(--accent-deep); font-weight: 600; font-size: 18px;
+  transition: transform 0.2s var(--ease);
+}
+.approach-connect:hover .approach-connect__arrow { transform: translateX(3px); }
+
+@media (max-width: 768px) {
+  .approach-stage__top, .approach-stage__detail { grid-template-columns: 1fr; gap: 1.5rem; }
+  .approach-flow__principles { grid-template-columns: repeat(2, 1fr); }
+  .approach-stage__num { font-size: 36px; }
+}
+
 .approach-slider {
   display: grid;
   grid-template-columns: 88px 1fr;

@@ -445,6 +445,7 @@ export async function getService(slug) {
         title,
         slug,
         shortSummary,
+        "heroImageUrl": heroImage.asset->url,
         "category": theme->title,
         "themeSlug": theme->slug.current,
       },
@@ -453,6 +454,7 @@ export async function getService(slug) {
         title,
         slug,
         shortSummary,
+        "heroImageUrl": heroImage.asset->url,
         category,
         "themeSlug": theme->slug.current,
       },
@@ -503,6 +505,12 @@ export async function getService(slug) {
         categoryLabel,
         heroTagline,
       },
+
+      // Sub-pages (for the sticky-nav jump links and the "Where to start" on-ramp)
+      "subPages": *[_type == "serviceSubPage" && parentService._ref == ^._id]{
+        title,
+        "slug": slug.current,
+      } | order(title asc),
     }
   `, { slug }, fetchOpts)
 }

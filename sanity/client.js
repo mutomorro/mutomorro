@@ -506,10 +506,11 @@ export async function getService(slug) {
         heroTagline,
       },
 
-      // Sub-pages (for the sticky-nav jump links and the "Where to start" on-ramp)
+      // Sub-pages (sticky-nav jump links + the "Where to start" on-ramp cards)
       "subPages": *[_type == "serviceSubPage" && parentService._ref == ^._id]{
         title,
         "slug": slug.current,
+        heroTagline,
       } | order(title asc),
     }
   `, { slug }, fetchOpts)

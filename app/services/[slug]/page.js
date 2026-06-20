@@ -13,6 +13,7 @@ import PageCallouts from '../../../components/PageCallouts'
 import ApproachSlider from '../../../components/services/ApproachSlider'
 import PropositionStepper from '../../../components/services/PropositionStepper'
 import RecognitionTriggers from '../../../components/services/RecognitionTriggers'
+import WhereToStart from '../../../components/services/WhereToStart'
 import ServiceFAQ from '../../../components/services/ServiceFAQ'
 import { buildFaqJsonLd } from '../../../components/services/faqJsonLd'
 import HighlightedText from '../../../components/HighlightedText'
@@ -385,6 +386,11 @@ export default async function ServicePage({ params }) {
           </div>
         </section>
       )}
+
+      {/* ==========================================
+          WHERE TO START (sub-page on-ramp; self-hides when no sub-pages)
+          ========================================== */}
+      <WhereToStart subPages={service.subPages} serviceSlug={slug} />
 
       {/* ==========================================
           LOGO STRIP (client credibility, after proof)

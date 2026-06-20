@@ -422,7 +422,7 @@ export default async function ServicePage({ params }) {
       {/* ==========================================
           AFTER-PROOF CTA (light) - catch the buyer right after proof
           ========================================== */}
-      <section className="section--full section-padding" style={{ background: 'var(--white)', textAlign: 'center' }}>
+      <section className="section--full after-proof-cta" style={{ background: 'var(--white)', textAlign: 'center' }}>
         <div style={{ maxWidth: '640px', margin: '0 auto' }}>
           <p className="cta-band__prompt">
             Recognise your situation? Let&rsquo;s talk about what this could look like for you.

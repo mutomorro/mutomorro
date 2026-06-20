@@ -3546,35 +3546,53 @@ a:hover {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 10px 24px;
+  padding: 15px 34px;
   font-family: 'Source Sans 3', 'Source Sans Pro', sans-serif;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 400;
+  letter-spacing: 0.06em;
   text-decoration: none;
   border: none;
   cursor: pointer;
   white-space: nowrap;
-  min-height: 40px;
+  min-height: 48px;
   border-radius: 0;
-  transition: opacity 0.15s;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+  transition: color 0.4s var(--ease), border-color 0.3s var(--ease);
 }
-.triple-cta__btn:hover { opacity: 0.85; }
+/* Signature accent-wipe on hover (matches .btn-primary) */
+.triple-cta__btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  clip-path: polygon(0 0, 0 0, 0 100%, 0 100%);
+  transition: clip-path 0.5s var(--ease);
+}
+.triple-cta__btn:hover::before { clip-path: polygon(0 0, 110% 0, 100% 100%, 0 100%); }
 
 /* Light background variants */
 .triple-cta__btn--primary {
-  background: #221C2B;
-  color: #FAF6F1;
+  background: var(--black);
+  color: #fff;
 }
+.triple-cta__btn--primary::before { background: var(--accent); }
 .triple-cta__btn--secondary {
   background: transparent;
-  color: #221C2B;
-  border: 1px solid #221C2B;
+  color: var(--dark);
+  border: 1px solid rgba(34,28,43,0.35);
 }
+.triple-cta__btn--secondary::before { background: var(--dark); }
+.triple-cta__btn--secondary:hover { color: #fff; border-color: var(--dark); }
 .triple-cta__btn--tertiary {
   background: transparent;
-  color: #9B51E0;
-  border: 1px solid #9B51E0;
+  color: var(--accent);
+  border: 1px solid var(--accent);
 }
+.triple-cta__btn--tertiary::before { background: var(--accent); }
+.triple-cta__btn--tertiary:hover { color: #fff; }
 
 /* Dark background variants */
 .triple-cta__buttons--dark {
@@ -3582,18 +3600,24 @@ a:hover {
 }
 .triple-cta__btn--primary-dark {
   background: #FAF6F1;
-  color: #221C2B;
+  color: var(--dark);
 }
+.triple-cta__btn--primary-dark::before { background: var(--accent); }
+.triple-cta__btn--primary-dark:hover { color: #fff; }
 .triple-cta__btn--secondary-dark {
   background: transparent;
   color: #FAF6F1;
-  border: 1px solid #FAF6F1;
+  border: 1px solid rgba(250,246,241,0.4);
 }
+.triple-cta__btn--secondary-dark::before { background: #FAF6F1; }
+.triple-cta__btn--secondary-dark:hover { color: var(--dark); border-color: #FAF6F1; }
 .triple-cta__btn--tertiary-dark {
   background: transparent;
-  color: #9B51E0;
-  border: 1px solid #9B51E0;
+  color: var(--accent);
+  border: 1px solid var(--accent);
 }
+.triple-cta__btn--tertiary-dark::before { background: var(--accent); }
+.triple-cta__btn--tertiary-dark:hover { color: #fff; }
 
 /* ============================================
    SERVICE PAGE - MOBILE RESPONSIVE
@@ -5275,7 +5299,13 @@ a:hover {
 /* ----- After-proof CTA band + quiet post-Approach PDF offer (Wave 2) ----- */
 .cta-band__prompt {
   font-size: 21px; font-weight: 400; color: var(--dark); line-height: 1.45;
-  margin: 0 auto 1.5rem; max-width: 30ch;
+  margin: 0 auto 1.75rem; max-width: 40ch;
+}
+/* After-proof CTA is a coda to Proof (both white) - pull it up so it reads as
+   one block with the proof above rather than floating in a white void. */
+.after-proof-cta { padding: 8px 20px 80px; margin-top: -40px; }
+@media (max-width: 768px) {
+  .after-proof-cta { padding: 8px 20px 56px; margin-top: -20px; }
 }
 .pdf-offer {
   display: flex; align-items: center; gap: 16px;

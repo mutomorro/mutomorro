@@ -362,9 +362,10 @@ export async function getService(slug) {
       "propositionImageUrl": propositionImage.asset->url,
       propositionCaption,
 
-      // Proposition (new interactive stepper)
+      // Proposition (the why-us argument - static 3-up since Batch 4)
       propositionKicker,
       propositionHeadline,
+      propositionLead,
       propositionPhilosophyLinkLabel,
       propositionPhilosophyLinkUrl,
       propositionSteps[] {
@@ -372,6 +373,7 @@ export async function getService(slug) {
         kicker,
         headline,
         body,
+        "bodyText": pt::text(body),
         animationKey,
       },
 

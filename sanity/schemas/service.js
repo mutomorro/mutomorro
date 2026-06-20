@@ -239,7 +239,18 @@ export default defineType({
       name: 'propositionHeadline',
       title: 'Proposition Section Headline',
       type: 'string',
-      description: 'The main heading above the three-step stepper.',
+      description: 'The main heading for the why-us argument.',
+      group: 'proposition',
+    }),
+
+    defineField({
+      name: 'propositionLead',
+      title: 'Proposition Lead Line',
+      type: 'text',
+      rows: 3,
+      description:
+        'The keyword lead sentence under the headline - folds up the old Context framing so the SEO phrase and buyer framing survive the merge. ' +
+        'e.g. "Our culture change consultancy works with the conditions that shape how your organisation functions - not a programme run alongside the work, but a change to the environment culture grows from."',
       group: 'proposition',
     }),
 

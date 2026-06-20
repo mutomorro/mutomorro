@@ -11,7 +11,7 @@ import LogoStrip from '../../../components/LogoStrip'
 import BackgroundPattern from '@/components/animations/BackgroundPattern'
 import PageCallouts from '../../../components/PageCallouts'
 import ApproachSlider from '../../../components/services/ApproachSlider'
-import PropositionStepper from '../../../components/services/PropositionStepper'
+import PropositionArgument from '../../../components/services/PropositionArgument'
 import RecognitionTriggers from '../../../components/services/RecognitionTriggers'
 import WhereToStart from '../../../components/services/WhereToStart'
 import ServiceFAQ from '../../../components/services/ServiceFAQ'
@@ -417,103 +417,36 @@ export default async function ServicePage({ params }) {
       </section>
 
       {/* ==========================================
-          WHY US (late) - Context
-          (Context/Proposition/Perspective merge into one zone in Batch 4)
+          WHY US (late) - merged concept zone (Batch 4)
+          Proposition argument (white): leads with the keyword lead line
+          (propositionLead, folded up from the old standalone Context
+          section, which no longer renders - its fields are retained in
+          Sanity for the PDF), then the 3 beats as a static, all-visible
+          3-up. The argument is the point, so nothing sits behind a click.
+          The Perspective / Intentional Ecosystems close follows. Spec §5.6.
           ========================================== */}
-      <section id="context" className="section--full section-padding" style={{ background: 'var(--white)' }}>
+      <section id="proposition" className="section--full section-padding" style={{ background: 'var(--white)' }}>
         <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
-          <div className="scroll-in">
-            <span className="kicker" style={{ color: '#FF4279', marginBottom: '16px' }}>Why us</span>
-            <h2 className="heading-h2" style={{ margin: '0 0 2rem' }}>
-              <HighlightedText text={service.contextHeading} highlight="create the conditions" />
+          <div className="scroll-in" style={{ marginBottom: '2.5rem' }}>
+            <span className="kicker" style={{ color: 'var(--accent)', marginBottom: '16px' }}>
+              {service.propositionKicker || 'How we see it'}
+            </span>
+            <h2 className="heading-h2" style={{ margin: '0 0 1.25rem' }}>
+              <HighlightedText
+                text={service.propositionHeadline || service.recognitionHeading}
+                highlight="conditions that create it"
+              />
             </h2>
+            {service.propositionLead && (
+              <p className="lead-text why-us__lead">{service.propositionLead}</p>
+            )}
           </div>
 
-          {(() => {
-            const fanImages = (service.stages || []).slice(0, 3).filter(s => s.stageImageUrl)
-            const hasFan = fanImages.length > 0
-            return (
-              <div style={{
-                display: 'grid',
-                gridTemplateColumns: hasFan ? '1fr 1fr' : '1fr',
-                gap: '4rem',
-                alignItems: 'start',
-              }}>
-                <div className="scroll-in" style={{ maxWidth: hasFan ? 'none' : '800px' }}>
-                  <div className="portable-text" style={{ color: 'rgba(0,0,0,0.7)' }}>
-                    <PortableText value={service.contextBody} />
-                  </div>
-                </div>
-
-                {hasFan && (
-                  <div className="fan-composition scroll-in delay-1">
-                    {service.stages[2]?.stageImageUrl && (
-                      <div className="fan-card fan-card-back">
-                        <Image
-                          src={service.stages[2].stageImageUrl}
-                          alt={service.stages[2].stageImageAlt || `${service.title} - ${service.stages[2].stageHeading || 'Implement'}`}
-                          width={400}
-                          height={300}
-                          sizes="(max-width: 768px) 100vw, 400px"
-                        />
-                      </div>
-                    )}
-                    {service.stages[1]?.stageImageUrl && (
-                      <div className="fan-card fan-card-middle">
-                        <Image
-                          src={service.stages[1].stageImageUrl}
-                          alt={service.stages[1].stageImageAlt || `${service.title} - ${service.stages[1].stageHeading || 'Co-design'}`}
-                          width={400}
-                          height={300}
-                          sizes="(max-width: 768px) 100vw, 400px"
-                        />
-                      </div>
-                    )}
-                    {service.stages[0]?.stageImageUrl && (
-                      <div className="fan-card fan-card-front">
-                        <Image
-                          src={service.stages[0].stageImageUrl}
-                          alt={service.stages[0].stageImageAlt || `${service.title} - ${service.stages[0].stageHeading || 'Understand'}`}
-                          width={400}
-                          height={300}
-                          sizes="(max-width: 768px) 100vw, 400px"
-                        />
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-            )
-          })()}
+          {hasPropositionSteps && (
+            <PropositionArgument steps={service.propositionSteps} />
+          )}
         </div>
       </section>
-
-      {/* ==========================================
-          WHY US (late) - Proposition (stepper)
-          ========================================== */}
-      {hasPropositionSteps && (
-        <section id="proposition" className="section--full section-padding" style={{ background: 'var(--white)' }}>
-          <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
-            <div className="scroll-in" style={{ marginBottom: '2.5rem' }}>
-              <span className="kicker" style={{ color: 'var(--accent)', marginBottom: '16px' }}>
-                {service.propositionKicker || 'Our proposition'}
-              </span>
-              <h2 className="heading-h2" style={{ margin: 0 }}>
-                <HighlightedText
-                  text={service.propositionHeadline || service.recognitionHeading}
-                  highlight="conditions that create it"
-                />
-              </h2>
-            </div>
-
-            <PropositionStepper
-              steps={service.propositionSteps}
-              philosophyLinkLabel={service.propositionPhilosophyLinkLabel}
-              philosophyLinkUrl={service.propositionPhilosophyLinkUrl}
-            />
-          </div>
-        </section>
-      )}
 
       {/* ==========================================
           WHY US (late) - Perspective (ecosystem)
@@ -526,30 +459,11 @@ export default async function ServicePage({ params }) {
               {service.perspectiveHeading}
             </h2>
           </div>
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: '1fr 1fr',
-            gap: '4rem',
-            alignItems: 'start',
-          }}>
+          <div className="why-us__perspective-grid">
             <div className="scroll-in">
               <div className="portable-text" style={{ maxWidth: '600px' }}>
                 <PortableText value={perspectiveBody} />
               </div>
-              {service.perspectiveLinkLabel && service.perspectiveLinkUrl && (
-                <Link
-                  href={service.perspectiveLinkUrl}
-                  className="inline-link"
-                  style={{
-                    display: 'inline-block',
-                    marginTop: '24px',
-                    fontSize: '15px',
-                    fontWeight: '400',
-                  }}
-                >
-                  {service.perspectiveLinkLabel} →
-                </Link>
-              )}
             </div>
             <div className="scroll-in delay-1">
               <EcosystemVisual />

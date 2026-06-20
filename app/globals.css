@@ -45,6 +45,7 @@
   /* Canonical design tokens */
   --white: #FFFFFF;
   --warm: #FAF6F1;
+  --warm-deep: #F4ECDF; /* deeper warm for "panel on warm" separation; used in Approach, reusable estate-wide */
   --dark: #221C2B;
   --black: #000000;
   --accent: #9B51E0;
@@ -5081,6 +5082,14 @@ a:hover {
 
 /* ----- ApproachSlider ----- */
 /* ----- Approach: vertical flow (Wave 2 - replaced the tabbed slider) ----- */
+/* The whole section sits on the deeper warm, with a deliberate edge top + bottom so
+   its outer boundary reads clearly stronger than the gentle panel-to-base steps inside
+   (Wave 2 design pass - "panels on deep warm"). */
+.approach-section {
+  background: var(--warm-deep);
+  border-top: 1px solid rgba(34,28,43,0.13);
+  border-bottom: 1px solid rgba(34,28,43,0.13);
+}
 .approach-flow__intro { max-width: 780px; margin-bottom: 1rem; }
 .approach-flow__principles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.25rem; }
 .approach-flow__principles-end { margin-top: 3.5rem; padding-top: 2.5rem; border-top: 1px solid rgba(34,28,43,0.15); }
@@ -5094,9 +5103,17 @@ a:hover {
 .approach-flow__principles .approach-principle__title { font-weight: 600; color: var(--dark); margin: 0 0 6px; font-size: 16px; }
 .approach-flow__principles .approach-principle__desc { font-size: 14.5px; line-height: 1.55; color: rgba(0,0,0,0.62); margin: 0; }
 
-.approach-flow__stages { margin-top: 1.5rem; }
-.approach-stage { padding: 3.75rem 0; border-top: 1px solid rgba(34,28,43,0.15); }
-.approach-flow__stages > .approach-stage:first-child { border-top: 0; padding-top: 1.5rem; }
+.approach-flow__stages { margin-top: 2rem; display: flex; flex-direction: column; gap: 1.5rem; }
+/* Each stage is a panel floating on the deep-warm base: the colour step between panel
+   and base does the separating, so the old between-stage hairlines are gone and each
+   stage reads as its own block ("sections within a section"). */
+.approach-stage {
+  background: var(--warm);
+  border: 1px solid rgba(34,28,43,0.06);
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(34,28,43,0.05);
+  padding: 2.75rem 3rem;
+}
 .approach-stage__head { display: flex; align-items: baseline; gap: 16px; margin-bottom: 1.25rem; }
 .approach-stage__num {
   font-size: 42px; font-weight: 300; line-height: 1; letter-spacing: -0.01em;
@@ -5112,7 +5129,7 @@ a:hover {
   border: 1px solid rgba(0,0,0,0.06); box-shadow: 0 4px 18px rgba(34,28,43,0.08);
 }
 .approach-stage__image img { display: block; width: 100%; height: auto; }
-.approach-stage__divider { height: 1px; background: rgba(0,0,0,0.08); margin: 2rem 0; }
+.approach-stage__divider { height: 1px; background: rgba(0,0,0,0.06); margin: 2rem 0; }
 .approach-stage__detail {
   display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 2rem; align-items: start;
@@ -5135,6 +5152,7 @@ a:hover {
 .approach-connect:hover .approach-connect__arrow { transform: translateX(3px); }
 
 @media (max-width: 768px) {
+  .approach-stage { padding: 1.75rem 1.5rem; border-radius: 12px; }
   .approach-stage__top, .approach-stage__detail { grid-template-columns: 1fr; gap: 1.5rem; }
   .approach-flow__principles { grid-template-columns: repeat(2, 1fr); }
   .approach-stage__num { font-size: 36px; }

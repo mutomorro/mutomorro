@@ -120,7 +120,7 @@ export default async function ServicePage({ params }) {
   // about portable-text markDefs.
   const perspectiveBody = linkifyPhrase(
     service.perspectiveBody,
-    'Our philosophy page',
+    'philosophy page',
     '/philosophy',
   )
   const hasRelatedProjects = service.relatedProjects?.length > 0
@@ -451,7 +451,7 @@ export default async function ServicePage({ params }) {
       {/* ==========================================
           APPROACH (vertical flow, warm)
           ========================================== */}
-      <section id="approach" className="section--full section-padding" style={{ background: 'var(--warm)' }}>
+      <section id="approach" className="section--full section-padding approach-section">
         <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
           {service.stages?.length > 0 && (
             <ApproachSlider

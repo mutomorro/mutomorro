@@ -13,8 +13,8 @@ export default function RecognitionTriggers({
 
   return (
     <section
-      className="section--full dark-bg recognition-triggers"
-      style={{ background: '#221C2B' }}
+      className="section--full recognition-triggers"
+      style={{ background: 'var(--warm)' }}
     >
       <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
         <div className="scroll-in recognition-triggers__header">

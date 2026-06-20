@@ -4,11 +4,9 @@ import Image from 'next/image'
 import { client, getService } from '../../../sanity/client'
 import { PortableText } from '@portabletext/react'
 import { notFound } from 'next/navigation'
-import CTA from '../../../components/CTA'
-import ServiceTripleCta, { ServiceTripleCtaDark } from '../../../components/ServiceTripleCta'
+import { ServiceTripleCtaDark } from '../../../components/ServiceTripleCta'
 import EcosystemVisual from '../../../components/EcosystemVisual'
 import ServiceHero from '../../../components/heroes/ServiceHero'
-import RecognitionRow from '../../../components/RecognitionRow'
 import LogoStrip from '../../../components/LogoStrip'
 import BackgroundPattern from '@/components/animations/BackgroundPattern'
 import PageCallouts from '../../../components/PageCallouts'
@@ -96,6 +94,11 @@ export async function generateMetadata({ params }) {
 // ============================================
 // PAGE COMPONENT
 // ============================================
+//
+// Section order is Layout A (buyer-first, Wave 2): situation + proof lead,
+// the "conditions / Intentional Ecosystems" concept becomes earned
+// differentiation in a late "why us" zone (Context -> Proposition ->
+// Perspective). See docs/seo/service-page-layout-spec-2026-06-20.md.
 
 export default async function ServicePage({ params }) {
   const { slug } = await params
@@ -173,7 +176,7 @@ export default async function ServicePage({ params }) {
       )}
 
       {/* ==========================================
-          SECTION 1: HERO (dark)
+          HERO (dark)
           H1 = small heroKicker label, H2 = large statement
           ========================================== */}
       <section className="section--full dark-bg section-padding-hero" style={{ position: 'relative', overflow: 'hidden' }}>
@@ -224,17 +227,14 @@ export default async function ServicePage({ params }) {
       </section>
 
       {/* ==========================================
-          ANCHOR NAV (updated labels for new section order)
+          ANCHOR NAV (Layout A order)
           ========================================== */}
       <nav className="anchor-nav">
         <div className="anchor-nav__inner">
           {(() => {
-            const navItems = ['Context']
-            if (hasPropositionSteps || service.recognitionItems?.length > 0) {
-              navItems.push('Proposition')
-            }
+            const navItems = []
             if (hasRelatedProjects) navItems.push('Proof')
-            navItems.push('Approach', 'Perspective')
+            navItems.push('Approach')
             if (hasFaqs) navItems.push('FAQ')
             return navItems
           })().map((label) => (
@@ -260,194 +260,7 @@ export default async function ServicePage({ params }) {
       </nav>
 
       {/* ==========================================
-          SECTION 2: CONTEXT (warm)
-          ========================================== */}
-      <BackgroundPattern variant="woven" className="section--full section-padding" style={{ background: '#FAF6F1', position: 'relative' }}>
-        <div style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          height: '16px',
-          background: 'linear-gradient(to bottom, rgba(66, 59, 73, 0.15), transparent)',
-          pointerEvents: 'none',
-        }} />
-
-        <div id="context" style={{ maxWidth: '1350px', margin: '0 auto' }}>
-          <div className="scroll-in">
-            <span className="kicker" style={{ color: '#FF4279', marginBottom: '16px' }}>Context</span>
-            <h2 className="heading-h2" style={{ margin: '0 0 2rem' }}>
-              <HighlightedText text={service.contextHeading} highlight="create the conditions" />
-            </h2>
-          </div>
-
-          {(() => {
-            const fanImages = (service.stages || []).slice(0, 3).filter(s => s.stageImageUrl)
-            const hasFan = fanImages.length > 0
-            return (
-              <div style={{
-                display: 'grid',
-                gridTemplateColumns: hasFan ? '1fr 1fr' : '1fr',
-                gap: '4rem',
-                alignItems: 'start',
-              }}>
-                <div className="scroll-in" style={{ maxWidth: hasFan ? 'none' : '800px' }}>
-                  <div className="portable-text" style={{ color: 'rgba(0,0,0,0.7)' }}>
-                    <PortableText value={service.contextBody} />
-                  </div>
-                  <ServiceTripleCta
-                    serviceTitle={service.title}
-                    heroHeading={service.heroHeading}
-                    slug={slug}
-                    position="after-context"
-                  />
-                </div>
-
-                {hasFan && (
-                  <div className="fan-composition scroll-in delay-1">
-                    {service.stages[2]?.stageImageUrl && (
-                      <div className="fan-card fan-card-back">
-                        <Image
-                          src={service.stages[2].stageImageUrl}
-                          alt={service.stages[2].stageImageAlt || `${service.title} - ${service.stages[2].stageHeading || 'Implement'}`}
-                          width={400}
-                          height={300}
-                          sizes="(max-width: 768px) 100vw, 400px"
-                        />
-                      </div>
-                    )}
-                    {service.stages[1]?.stageImageUrl && (
-                      <div className="fan-card fan-card-middle">
-                        <Image
-                          src={service.stages[1].stageImageUrl}
-                          alt={service.stages[1].stageImageAlt || `${service.title} - ${service.stages[1].stageHeading || 'Co-design'}`}
-                          width={400}
-                          height={300}
-                          sizes="(max-width: 768px) 100vw, 400px"
-                        />
-                      </div>
-                    )}
-                    {service.stages[0]?.stageImageUrl && (
-                      <div className="fan-card fan-card-front">
-                        <Image
-                          src={service.stages[0].stageImageUrl}
-                          alt={service.stages[0].stageImageAlt || `${service.title} - ${service.stages[0].stageHeading || 'Understand'}`}
-                          width={400}
-                          height={300}
-                          sizes="(max-width: 768px) 100vw, 400px"
-                        />
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-            )
-          })()}
-        </div>
-      </BackgroundPattern>
-
-      {/* ==========================================
-          LOGO STRIP
-          ========================================== */}
-      {service.showLogoStrip !== false && (
-        <LogoStrip />
-      )}
-
-      {/* ==========================================
-          SECTION 3: PROPOSITION
-          New PropositionStepper if propositionSteps exists.
-          Otherwise falls back to the legacy Recognition section.
-          ========================================== */}
-      {hasPropositionSteps ? (
-        <section id="proposition" className="section--full section-padding" style={{ background: 'var(--white)' }}>
-          <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
-            {/* Full-width section heading, sized like other section H2s */}
-            <div className="scroll-in" style={{ marginBottom: '2.5rem' }}>
-              <span className="kicker" style={{ color: 'var(--accent)', marginBottom: '16px' }}>
-                {service.propositionKicker || 'Our proposition'}
-              </span>
-              <h2 className="heading-h2" style={{ margin: 0 }}>
-                <HighlightedText
-                  text={service.propositionHeadline || service.recognitionHeading}
-                  highlight="conditions that create it"
-                />
-              </h2>
-            </div>
-
-            <PropositionStepper
-              steps={service.propositionSteps}
-              philosophyLinkLabel={service.propositionPhilosophyLinkLabel}
-              philosophyLinkUrl={service.propositionPhilosophyLinkUrl}
-            />
-          </div>
-        </section>
-      ) : (
-        service.recognitionItems?.length > 0 && (
-          <section id="proposition" className="section--full section-padding" style={{ background: 'var(--white)' }}>
-            <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
-              <div className="scroll-in">
-                <span className="kicker" style={{ color: '#FF4279', marginBottom: '16px' }}>Recognition</span>
-                <h2 className="heading-h2" style={{ margin: '0 0 20px' }}>
-                  {service.recognitionHeading}
-                </h2>
-                {service.recognitionIntro && (
-                  <p className="lead-text" style={{ maxWidth: '720px', marginBottom: '2.5rem' }}>
-                    {service.recognitionIntro}
-                  </p>
-                )}
-              </div>
-
-              <div style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '20px',
-                marginBottom: '2.5rem',
-              }}>
-                {service.recognitionItems.slice(0, 4).map((item, i) => (
-                  <RecognitionRow
-                    key={item._key || i}
-                    item={item}
-                    index={i}
-                    slug={slug}
-                    delay={i * 0.1}
-                  />
-                ))}
-              </div>
-
-              <ServiceTripleCta
-                serviceTitle={service.title}
-                heroHeading={service.heroHeading}
-                slug={slug}
-                position="after-recognition"
-              />
-            </div>
-          </section>
-        )
-      )}
-
-      {/* Bridge text only renders in the legacy recognition path */}
-      {!hasPropositionSteps && service.recognitionBridge && (
-        <section className="section--full dark-bg bridge-text section-padding" style={{ background: '#423B49' }}>
-          <div className="scroll-in" style={{
-            maxWidth: '860px',
-            margin: '0 auto',
-            textAlign: 'center',
-          }}>
-            <div className="portable-text">
-              <PortableText value={service.recognitionBridge} components={{
-                marks: {
-                  em: ({ children }) => (
-                    <em style={{ color: '#9B51E0', fontStyle: 'italic' }}>{children}</em>
-                  ),
-                },
-              }} />
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* ==========================================
-          SECTION 4: RECOGNITION TRIGGERS (dark, scattered chips)
+          TRIGGERS - your situation (pulled up)
           ========================================== */}
       {hasTriggers && (
         <RecognitionTriggers
@@ -458,7 +271,7 @@ export default async function ServicePage({ params }) {
       )}
 
       {/* ==========================================
-          SECTION 5: PROOF (case studies, 3 in a row)
+          PROOF (case studies, 3 in a row)
           ========================================== */}
       {(hasRelatedProjects || service.testimonialQuote) && (
         <section id="proof" className="section--full section-padding" style={{ background: 'var(--white)' }}>
@@ -574,7 +387,173 @@ export default async function ServicePage({ params }) {
       )}
 
       {/* ==========================================
-          SECTION 6: STATS (dark)
+          LOGO STRIP (client credibility, after proof)
+          ========================================== */}
+      {service.showLogoStrip !== false && (
+        <LogoStrip />
+      )}
+
+      {/* ==========================================
+          APPROACH (vertical flow, warm)
+          ========================================== */}
+      <section id="approach" className="section--full section-padding" style={{ background: 'var(--warm)' }}>
+        <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
+          {service.stages?.length > 0 && (
+            <ApproachSlider
+              approachIntro={service.approachIntro}
+              stages={service.stages}
+              approachKicker="Our approach"
+              approachIntroHeadline={service.approachIntroHeading || 'How we work'}
+              principles={service.approachPrinciples}
+            />
+          )}
+        </div>
+      </section>
+
+      {/* ==========================================
+          WHY US (late) - Context
+          (Context/Proposition/Perspective merge into one zone in Batch 4)
+          ========================================== */}
+      <section id="context" className="section--full section-padding" style={{ background: 'var(--white)' }}>
+        <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
+          <div className="scroll-in">
+            <span className="kicker" style={{ color: '#FF4279', marginBottom: '16px' }}>Why us</span>
+            <h2 className="heading-h2" style={{ margin: '0 0 2rem' }}>
+              <HighlightedText text={service.contextHeading} highlight="create the conditions" />
+            </h2>
+          </div>
+
+          {(() => {
+            const fanImages = (service.stages || []).slice(0, 3).filter(s => s.stageImageUrl)
+            const hasFan = fanImages.length > 0
+            return (
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: hasFan ? '1fr 1fr' : '1fr',
+                gap: '4rem',
+                alignItems: 'start',
+              }}>
+                <div className="scroll-in" style={{ maxWidth: hasFan ? 'none' : '800px' }}>
+                  <div className="portable-text" style={{ color: 'rgba(0,0,0,0.7)' }}>
+                    <PortableText value={service.contextBody} />
+                  </div>
+                </div>
+
+                {hasFan && (
+                  <div className="fan-composition scroll-in delay-1">
+                    {service.stages[2]?.stageImageUrl && (
+                      <div className="fan-card fan-card-back">
+                        <Image
+                          src={service.stages[2].stageImageUrl}
+                          alt={service.stages[2].stageImageAlt || `${service.title} - ${service.stages[2].stageHeading || 'Implement'}`}
+                          width={400}
+                          height={300}
+                          sizes="(max-width: 768px) 100vw, 400px"
+                        />
+                      </div>
+                    )}
+                    {service.stages[1]?.stageImageUrl && (
+                      <div className="fan-card fan-card-middle">
+                        <Image
+                          src={service.stages[1].stageImageUrl}
+                          alt={service.stages[1].stageImageAlt || `${service.title} - ${service.stages[1].stageHeading || 'Co-design'}`}
+                          width={400}
+                          height={300}
+                          sizes="(max-width: 768px) 100vw, 400px"
+                        />
+                      </div>
+                    )}
+                    {service.stages[0]?.stageImageUrl && (
+                      <div className="fan-card fan-card-front">
+                        <Image
+                          src={service.stages[0].stageImageUrl}
+                          alt={service.stages[0].stageImageAlt || `${service.title} - ${service.stages[0].stageHeading || 'Understand'}`}
+                          width={400}
+                          height={300}
+                          sizes="(max-width: 768px) 100vw, 400px"
+                        />
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            )
+          })()}
+        </div>
+      </section>
+
+      {/* ==========================================
+          WHY US (late) - Proposition (stepper)
+          ========================================== */}
+      {hasPropositionSteps && (
+        <section id="proposition" className="section--full section-padding" style={{ background: 'var(--white)' }}>
+          <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
+            <div className="scroll-in" style={{ marginBottom: '2.5rem' }}>
+              <span className="kicker" style={{ color: 'var(--accent)', marginBottom: '16px' }}>
+                {service.propositionKicker || 'Our proposition'}
+              </span>
+              <h2 className="heading-h2" style={{ margin: 0 }}>
+                <HighlightedText
+                  text={service.propositionHeadline || service.recognitionHeading}
+                  highlight="conditions that create it"
+                />
+              </h2>
+            </div>
+
+            <PropositionStepper
+              steps={service.propositionSteps}
+              philosophyLinkLabel={service.propositionPhilosophyLinkLabel}
+              philosophyLinkUrl={service.propositionPhilosophyLinkUrl}
+            />
+          </div>
+        </section>
+      )}
+
+      {/* ==========================================
+          WHY US (late) - Perspective (ecosystem)
+          ========================================== */}
+      <section id="perspective" className="section--full warm-bg section-padding">
+        <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
+          <div className="scroll-in">
+            <span className="kicker" style={{ color: 'var(--accent)', marginBottom: '16px' }}>Perspective</span>
+            <h2 className="heading-h2" style={{ margin: '0 0 32px' }}>
+              {service.perspectiveHeading}
+            </h2>
+          </div>
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: '1fr 1fr',
+            gap: '4rem',
+            alignItems: 'start',
+          }}>
+            <div className="scroll-in">
+              <div className="portable-text" style={{ maxWidth: '600px' }}>
+                <PortableText value={perspectiveBody} />
+              </div>
+              {service.perspectiveLinkLabel && service.perspectiveLinkUrl && (
+                <Link
+                  href={service.perspectiveLinkUrl}
+                  className="inline-link"
+                  style={{
+                    display: 'inline-block',
+                    marginTop: '24px',
+                    fontSize: '15px',
+                    fontWeight: '400',
+                  }}
+                >
+                  {service.perspectiveLinkLabel} →
+                </Link>
+              )}
+            </div>
+            <div className="scroll-in delay-1">
+              <EcosystemVisual />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ==========================================
+          STATS (dark) - the investment case
           ========================================== */}
       {service.stats?.length > 0 && (
         <BackgroundPattern variant="constellation" className="section--full dark-bg section-padding" style={{ background: '#221C2B' }}>
@@ -631,35 +610,26 @@ export default async function ServicePage({ params }) {
       )}
 
       {/* ==========================================
-          SECTION 7: APPROACH (slider)
+          FAQ
           ========================================== */}
-      <section id="approach" className="section--full section-padding" style={{ background: 'var(--warm)' }}>
-        <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
-          {service.stages?.length > 0 && (
-            <ApproachSlider
-              approachIntro={service.approachIntro}
-              stages={service.stages}
-              approachKicker="Our approach"
-              approachIntroHeadline={service.approachIntroHeading || 'How we work'}
-              principles={service.approachPrinciples}
+      {hasFaqs && (
+        <section
+          id="faq"
+          className="section--full service-faq-section"
+          style={{ background: 'var(--white)' }}
+        >
+          <div style={{ maxWidth: '900px', margin: '0 auto' }}>
+            <ServiceFAQ
+              items={service.faqItems}
+              heading={service.faqSectionHeading || 'Common questions'}
+              kicker={service.faqSectionKicker}
             />
-          )}
-        </div>
-      </section>
+          </div>
+        </section>
+      )}
 
       {/* ==========================================
-          SECTION 8: CTA (triple, dark)
-          ========================================== */}
-      <ServiceTripleCtaDark
-        serviceTitle={service.title}
-        heroHeading={service.heroHeading}
-        slug={slug}
-        position="after-approach"
-      />
-
-      {/* ==========================================
-          SECTION 8.5: EXPLORE THIS TOPIC
-          (related articles + tools - browsing/discovery)
+          GO DEEPER (related articles + tools)
           ========================================== */}
       {(service.relatedArticles?.length > 0 || service.relatedTools?.length > 0) && (() => {
         const articles = service.relatedArticles || []
@@ -820,218 +790,15 @@ export default async function ServicePage({ params }) {
       })()}
 
       {/* ==========================================
-          SECTION 9: PERSPECTIVE (warm)
-          ========================================== */}
-      <section id="perspective" className="section--full warm-bg section-padding">
-        {service.perspectiveImageUrl ? (
-          <div style={{
-            maxWidth: '1350px',
-            margin: '0 auto',
-            display: 'grid',
-            gridTemplateColumns: '1fr 380px',
-            gap: '4rem',
-            alignItems: 'start',
-          }}>
-            <div className="scroll-in">
-              <span className="kicker" style={{ color: 'var(--accent)', marginBottom: '16px' }}>Perspective</span>
-              <h2 className="heading-h2" style={{ margin: '0 0 24px' }}>
-                {service.perspectiveHeading}
-              </h2>
-              <div className="portable-text">
-                <PortableText value={perspectiveBody} />
-              </div>
-              {service.perspectiveLinkLabel && service.perspectiveLinkUrl && (
-                <Link
-                  href={service.perspectiveLinkUrl}
-                  className="inline-link"
-                  style={{
-                    display: 'inline-block',
-                    marginTop: '24px',
-                    fontSize: '15px',
-                    fontWeight: '400',
-                  }}
-                >
-                  {service.perspectiveLinkLabel} →
-                </Link>
-              )}
-            </div>
-            <div className="scroll-in delay-1 img-offset img-lift">
-              <Image
-                src={service.perspectiveImageUrl}
-                alt={service.perspectiveImageAlt || service.perspectiveHeading}
-                width={600}
-                height={400}
-                sizes="(max-width: 768px) 100vw, 600px"
-                style={{ width: '100%', height: 'auto', display: 'block' }}
-              />
-            </div>
-          </div>
-        ) : (
-          <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
-            <div className="scroll-in">
-              <span className="kicker" style={{ color: 'var(--accent)', marginBottom: '16px' }}>Perspective</span>
-              <h2 className="heading-h2" style={{ margin: '0 0 32px' }}>
-                {service.perspectiveHeading}
-              </h2>
-            </div>
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: '1fr 1fr',
-              gap: '4rem',
-              alignItems: 'start',
-            }}>
-              <div className="scroll-in">
-                <div className="portable-text" style={{ maxWidth: '600px' }}>
-                  <PortableText value={perspectiveBody} />
-                </div>
-                {service.perspectiveLinkLabel && service.perspectiveLinkUrl && (
-                  <Link
-                    href={service.perspectiveLinkUrl}
-                    className="inline-link"
-                    style={{
-                      display: 'inline-block',
-                      marginTop: '24px',
-                      fontSize: '15px',
-                      fontWeight: '400',
-                    }}
-                  >
-                    {service.perspectiveLinkLabel} →
-                  </Link>
-                )}
-              </div>
-              <div className="scroll-in delay-1">
-                <EcosystemVisual />
-              </div>
-            </div>
-          </div>
-        )}
-      </section>
-
-      {/* The standalone Outcomes section was removed (12 May 2026 brief):
-          outcomes are now expressed per-stage inside the Approach slider's
-          "What you get" boxes. Sanity content for outcomes/outcomesHeading/
-          outcomesIntro/outcomesClosing is intentionally retained for
-          possible future reuse. */}
-
-      {/* ==========================================
-          SECTION 10: FAQ
-          ========================================== */}
-      {hasFaqs && (
-        <section
-          id="faq"
-          className="section--full service-faq-section"
-          style={{ background: 'var(--white)' }}
-        >
-          <div style={{ maxWidth: '900px', margin: '0 auto' }}>
-            <ServiceFAQ
-              items={service.faqItems}
-              heading={service.faqSectionHeading || 'Common questions'}
-              kicker={service.faqSectionKicker}
-            />
-          </div>
-        </section>
-      )}
-
-      {/* ==========================================
           PAGE CALLOUTS
           ========================================== */}
       <PageCallouts pageType="services" pageId={service._id} />
 
       {/* ==========================================
-          RELATED DIMENSIONS
-          ========================================== */}
-      {service.relatedDimensions?.length > 0 && (
-        <section className="section--full warm-bg section-padding">
-          <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
-            <span className="kicker" style={{ marginBottom: '24px' }}>
-              EMERGENT dimensions this connects to
-            </span>
-            <div style={{
-              display: 'flex',
-              flexWrap: 'wrap',
-              gap: '12px',
-            }}>
-              {service.relatedDimensions.map((dim) => (
-                <Link
-                  key={dim._id}
-                  href={`/emergent-framework/${dim.slug.current}`}
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    padding: '8px 16px',
-                    border: `1.5px solid ${dim.colour}`,
-                    color: dim.colour,
-                    fontSize: '14px',
-                    fontWeight: '400',
-                    textDecoration: 'none',
-                    transition: 'background 0.2s, color 0.2s',
-                  }}
-                >
-                  <span style={{
-                    fontWeight: '400',
-                    fontSize: '13px',
-                    opacity: 0.7,
-                  }}>
-                    {dim.anchor}
-                  </span>
-                  {dim.title}
-                </Link>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* ==========================================
-          RELATED SERVICES
-          ========================================== */}
-      {service.relatedServices?.length > 0 && (
-        <section className="section--full section-padding" style={{ background: 'var(--white)' }}>
-          <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
-            <span className="kicker" style={{ marginBottom: '2rem' }}>
-              You might also be interested in
-            </span>
-            <div className="related-services-grid" style={{
-              display: 'grid',
-              gridTemplateColumns: `repeat(${Math.min(service.relatedServices.length, 3)}, 1fr)`,
-              gap: '24px',
-            }}>
-              {service.relatedServices.map((related, i) => (
-                <Link
-                  key={related._id}
-                  href={`/services/${related.slug.current}`}
-                  className="card-a scroll-in"
-                  style={{ transitionDelay: `${i * 0.1}s` }}
-                >
-                  <div className="card-a__corner"></div>
-                  <div className="card-a__body">
-                    <span className="card-a__tag">{related.categoryLabel}</span>
-                    <p className="card-a__title">{related.title}</p>
-                    {related.heroTagline && (
-                      <p className="card-a__text">{related.heroTagline}</p>
-                    )}
-                  </div>
-                  <div className="card-a__footer">
-                    <div className="card-a__footer-bg"></div>
-                    <div className="card-a__action">
-                      Learn more <span className="arrow">→</span>
-                    </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* ==========================================
-          BOTTOM CTA (dark, triple)
+          FINAL CTA (dark, Talk to us + Download the overview)
           ========================================== */}
       <ServiceTripleCtaDark
         serviceTitle={service.title}
-        heroHeading={service.heroHeading}
-        slug={slug}
         position="bottom"
       />
     </main>

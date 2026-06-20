@@ -2,24 +2,21 @@
 
 import { usePostHog } from 'posthog-js/react'
 
-export default function ServiceTripleCta({ prompt, serviceTitle, heroHeading, slug, position }) {
+// PDF assets in public/downloads are named by service title, not heroHeading
+// (which is a marketing headline). e.g. "Culture Change Consultancy - Mutomorro.pdf".
+function pdfPathFor(serviceTitle) {
+  return `/downloads/${encodeURIComponent(`${serviceTitle} Consultancy - Mutomorro.pdf`)}`
+}
+
+// Two real CTAs everywhere: "Talk to us" (the goal page, /enquiry) and
+// "Download the overview" (the low-commitment, forwardable per-service PDF).
+// Newsletter lives in the footer, so it is no longer an inline CTA.
+export default function ServiceTripleCta({ prompt, serviceTitle, position }) {
   const posthog = usePostHog()
-  // PDF assets in public/downloads are named by service title, not heroHeading
-  // (which is a marketing headline). Using heroHeading here 404'd every download.
-  const pdfFilename = `${serviceTitle} Consultancy`
-  const pdfPath = `/downloads/${encodeURIComponent(`${pdfFilename} - Mutomorro.pdf`)}`
+  const pdfPath = pdfPathFor(serviceTitle)
 
   function track(action) {
-    posthog?.capture('service_cta_click', {
-      action,
-      service: serviceTitle,
-      position,
-    })
-  }
-
-  function handleNewsletterScroll() {
-    track('newsletter_scroll')
-    document.getElementById('newsletter')?.scrollIntoView({ behavior: 'smooth' })
+    posthog?.capture('service_cta_click', { action, service: serviceTitle, position })
   }
 
   return (
@@ -27,7 +24,7 @@ export default function ServiceTripleCta({ prompt, serviceTitle, heroHeading, sl
       {prompt && <p className="triple-cta__prompt">{prompt}</p>}
       <div className="triple-cta__buttons">
         <a
-          href={`/contact?service=${encodeURIComponent(serviceTitle)}`}
+          href="/enquiry"
           className="triple-cta__btn triple-cta__btn--primary"
           onClick={() => track('contact')}
         >
@@ -42,36 +39,17 @@ export default function ServiceTripleCta({ prompt, serviceTitle, heroHeading, sl
         >
           Download the overview
         </a>
-        <button
-          type="button"
-          className="triple-cta__btn triple-cta__btn--tertiary"
-          onClick={handleNewsletterScroll}
-        >
-          Stay in the loop
-        </button>
       </div>
     </div>
   )
 }
 
-export function ServiceTripleCtaDark({ serviceTitle, heroHeading, slug, position }) {
+export function ServiceTripleCtaDark({ serviceTitle, position }) {
   const posthog = usePostHog()
-  // PDF assets in public/downloads are named by service title, not heroHeading
-  // (which is a marketing headline). Using heroHeading here 404'd every download.
-  const pdfFilename = `${serviceTitle} Consultancy`
-  const pdfPath = `/downloads/${encodeURIComponent(`${pdfFilename} - Mutomorro.pdf`)}`
+  const pdfPath = pdfPathFor(serviceTitle)
 
   function track(action) {
-    posthog?.capture('service_cta_click', {
-      action,
-      service: serviceTitle,
-      position,
-    })
-  }
-
-  function handleNewsletterScroll() {
-    track('newsletter_scroll')
-    document.getElementById('newsletter')?.scrollIntoView({ behavior: 'smooth' })
+    posthog?.capture('service_cta_click', { action, service: serviceTitle, position })
   }
 
   return (
@@ -95,7 +73,7 @@ export function ServiceTripleCtaDark({ serviceTitle, heroHeading, slug, position
         </p>
         <div className="triple-cta__buttons triple-cta__buttons--dark">
           <a
-            href={`/contact?service=${encodeURIComponent(serviceTitle)}`}
+            href="/enquiry"
             className="triple-cta__btn triple-cta__btn--primary-dark"
             onClick={() => track('contact')}
           >
@@ -110,13 +88,6 @@ export function ServiceTripleCtaDark({ serviceTitle, heroHeading, slug, position
           >
             Download the overview
           </a>
-          <button
-            type="button"
-            className="triple-cta__btn triple-cta__btn--tertiary-dark"
-            onClick={handleNewsletterScroll}
-          >
-            Stay in the loop
-          </button>
         </div>
       </div>
     </section>

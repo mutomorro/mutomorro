@@ -1170,6 +1170,23 @@ const nextConfig = {
       // /tools/edgar-scheins-culture-model.
       { source: '/tools/culture-change/edgar-scheins-culture-model', destination: '/tools/edgar-scheins-culture-model', permanent: true },
 
+
+      // =========================================================
+      // 20 June 2026 - Supabase 404-log triage
+      // =========================================================
+
+      // New training slugs requested under the old /courses prefix. The explicit
+      // /courses/<old-slug> aliases above cover the legacy names, but these are
+      // the *current* /training slugs hit directly under /courses (each maps 1:1
+      // to its live /training page).
+      { source: '/courses/team-effectiveness', destination: '/training/team-effectiveness', permanent: true },
+      { source: '/courses/continuous-improvement', destination: '/training/continuous-improvement', permanent: true },
+      { source: '/courses/process-mapping-workshop', destination: '/training/process-mapping-workshop', permanent: true },
+      { source: '/courses/theory-of-change-workshop', destination: '/training/theory-of-change-workshop', permanent: true },
+      { source: '/courses/systems-thinking', destination: '/training/systems-thinking', permanent: true },
+      { source: '/courses/change-management', destination: '/training/change-management', permanent: true },
+      { source: '/courses/scenario-planning-workshop', destination: '/training/scenario-planning-workshop', permanent: true },
+
     ]
 
     // Emit both `/path` and `/path/` variants for every source so requests

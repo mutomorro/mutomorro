@@ -4,7 +4,7 @@ import Image from 'next/image'
 import { client, getService } from '../../../sanity/client'
 import { PortableText } from '@portabletext/react'
 import { notFound } from 'next/navigation'
-import { ServiceTripleCtaDark } from '../../../components/ServiceTripleCta'
+import ServiceTripleCta, { ServiceTripleCtaDark } from '../../../components/ServiceTripleCta'
 import EcosystemVisual from '../../../components/EcosystemVisual'
 import ServiceHero from '../../../components/heroes/ServiceHero'
 import LogoStrip from '../../../components/LogoStrip'
@@ -14,6 +14,7 @@ import ApproachSlider from '../../../components/services/ApproachSlider'
 import PropositionArgument from '../../../components/services/PropositionArgument'
 import RecognitionTriggers from '../../../components/services/RecognitionTriggers'
 import WhereToStart from '../../../components/services/WhereToStart'
+import ApproachPdfOffer from '../../../components/services/ApproachPdfOffer'
 import ServiceFAQ from '../../../components/services/ServiceFAQ'
 import { buildFaqJsonLd } from '../../../components/services/faqJsonLd'
 import HighlightedText from '../../../components/HighlightedText'
@@ -419,6 +420,18 @@ export default async function ServicePage({ params }) {
       )}
 
       {/* ==========================================
+          AFTER-PROOF CTA (light) - catch the buyer right after proof
+          ========================================== */}
+      <section className="section--full section-padding" style={{ background: 'var(--white)', textAlign: 'center' }}>
+        <div style={{ maxWidth: '640px', margin: '0 auto' }}>
+          <p className="cta-band__prompt">
+            Recognise your situation? Let&rsquo;s talk about what this could look like for you.
+          </p>
+          <ServiceTripleCta serviceTitle={service.title} position="after-proof" />
+        </div>
+      </section>
+
+      {/* ==========================================
           WHERE TO START (sub-page on-ramp; self-hides when no sub-pages)
           ========================================== */}
       <WhereToStart subPages={service.subPages} serviceSlug={slug} />
@@ -444,6 +457,7 @@ export default async function ServicePage({ params }) {
               principles={service.approachPrinciples}
             />
           )}
+          <ApproachPdfOffer serviceTitle={service.title} />
         </div>
       </section>
 

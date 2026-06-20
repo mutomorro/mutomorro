@@ -4,7 +4,7 @@ import { usePostHog } from 'posthog-js/react'
 
 // PDF assets in public/downloads are named by service title, not heroHeading
 // (which is a marketing headline). e.g. "Culture Change Consultancy - Mutomorro.pdf".
-function pdfPathFor(serviceTitle) {
+export function pdfPathFor(serviceTitle) {
   return `/downloads/${encodeURIComponent(`${serviceTitle} Consultancy - Mutomorro.pdf`)}`
 }
 

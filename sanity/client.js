@@ -510,6 +510,10 @@ export async function getService(slug) {
         heroTagline,
       },
 
+      // Where to start (on-ramp explainer; renders even without sub-pages)
+      whereToStartHeading,
+      whereToStartIntro,
+
       // Sub-pages (sticky-nav jump links + the "Where to start" on-ramp cards)
       "subPages": *[_type == "serviceSubPage" && parentService._ref == ^._id]{
         title,

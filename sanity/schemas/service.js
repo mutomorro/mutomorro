@@ -23,6 +23,7 @@ export default defineType({
     { name: 'approach', title: 'Approach' },
     { name: 'outcomes', title: 'Outcomes' },
     { name: 'examples', title: 'Examples' },
+    { name: 'start', title: 'Where to start' },
     { name: 'faq', title: 'FAQ' },
     { name: 'cta', title: 'CTA' },
     { name: 'logoStrip', title: 'Logo Strip' },
@@ -824,6 +825,27 @@ export default defineType({
       type: 'string',
       description: 'e.g. "Name, Role, Organisation"',
       group: 'examples',
+    }),
+
+    // ===========================
+    // Where to start (on-ramp explainer + sub-page cards)
+    // ===========================
+
+    defineField({
+      name: 'whereToStartHeading',
+      title: 'Where to Start Heading',
+      type: 'string',
+      description: 'Varied H2 for the "Where to start" section, e.g. "A practical first step". If blank, falls back to an auto heading ("A focused way in" / "Two ways in") and the section only shows when the service has sub-pages.',
+      group: 'start',
+    }),
+
+    defineField({
+      name: 'whereToStartIntro',
+      title: 'Where to Start Intro',
+      type: 'text',
+      description: 'Short explainer below the heading - where a leader might begin with this service. Renders the section even when there are no sub-pages.',
+      group: 'start',
+      rows: 3,
     }),
 
     // ===========================

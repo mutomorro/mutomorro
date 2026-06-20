@@ -434,7 +434,12 @@ export default async function ServicePage({ params }) {
       {/* ==========================================
           WHERE TO START (sub-page on-ramp; self-hides when no sub-pages)
           ========================================== */}
-      <WhereToStart subPages={service.subPages} serviceSlug={slug} />
+      <WhereToStart
+        heading={service.whereToStartHeading}
+        intro={service.whereToStartIntro}
+        subPages={service.subPages}
+        serviceSlug={slug}
+      />
 
       {/* ==========================================
           LOGO STRIP (client credibility, after proof)

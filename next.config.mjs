@@ -1144,8 +1144,14 @@ const nextConfig = {
       // Missing topic page - no /topics/scaling-operations exists; nearest match is operational-effectiveness
       { source: '/topics/scaling-operations', destination: '/topics/operational-effectiveness', permanent: true },
 
-      // Old PDF download URLs (lead-gen PDFs no longer served at these paths)
-      { source: '/downloads/:path*', destination: '/tools', permanent: true },
+      // NOTE: a broad `/downloads/:path*` -> /tools catch-all used to live here
+      // (27 May 404 triage, for dead WordPress lead-gen PDFs). It over-matched
+      // and redirected every LIVE service-overview PDF
+      // (/downloads/{Title} Consultancy - Mutomorro.pdf, linked from the
+      // service-page download CTA) plus the States of Vitality overview to
+      // /tools. Removed so those serve from public/downloads. Genuinely-dead
+      // old PDF URLs now 404; add specific redirects (like the two above) if
+      // GSC flags any.
 
       // WordPress stub URL (just "/wp-" with nothing after it - not caught by /wp-content/:path*)
       { source: '/wp-', destination: '/', permanent: true },

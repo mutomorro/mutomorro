@@ -355,6 +355,8 @@ export async function getService(slug) {
       heroKicker,
       heroHeading,
       heroTagline,
+      heroStats[]{ value, label },
+      heroSectors,
 
       // Context
       contextHeading,

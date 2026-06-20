@@ -120,6 +120,39 @@ export default defineType({
       validation: (rule) => rule.required(),
     }),
 
+    defineField({
+      name: 'heroStats',
+      title: 'Hero Credibility Stats',
+      type: 'array',
+      group: 'hero',
+      description:
+        'Up to ~2 short proof points in the hero (gradient number + label). Ships empty - the strip stays off until you add stats. ' +
+        'IMPORTANT: any size or range MUST carry its unit in the label so it cannot be misread - e.g. value "50-3,000", label "employees in the organisations we work with".',
+      validation: (rule) => rule.max(3),
+      of: [
+        {
+          type: 'object',
+          name: 'heroStat',
+          fields: [
+            defineField({ name: 'value', title: 'Value', type: 'string', description: 'e.g. "20+" or "50-3,000"', validation: (r) => r.required() }),
+            defineField({ name: 'label', title: 'Label', type: 'string', description: 'e.g. "20+ years" or "employees in the organisations we work with"', validation: (r) => r.required() }),
+          ],
+          preview: { select: { title: 'value', subtitle: 'label' } },
+        },
+      ],
+    }),
+
+    defineField({
+      name: 'heroSectors',
+      title: 'Hero Sectors',
+      type: 'array',
+      group: 'hero',
+      description:
+        'Sector names shown as pills in the hero (e.g. Housing, Nonprofit, Government, Fintech). Sector names, not client names. Ships empty - the row stays off until you add sectors.',
+      of: [{ type: 'string' }],
+      options: { layout: 'tags' },
+    }),
+
     // ===========================
     // CONTEXT
     // ===========================

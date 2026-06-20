@@ -5224,6 +5224,36 @@ a:hover {
 }
 
 
+/* ----- Hero credibility strip (Wave 2 - Batch 5; ships off until populated) ----- */
+.hero-cred {
+  display: flex; align-items: center; gap: 28px; flex-wrap: wrap;
+  margin-top: 34px; padding-top: 24px;
+  border-top: 1px solid rgba(255,255,255,0.14);
+}
+.hero-cred__stats { display: flex; gap: 30px; flex-wrap: wrap; }
+.hero-cred__stat { display: flex; flex-direction: column; }
+.hero-cred__value { font-size: 30px; font-weight: 300; line-height: 1; }
+.hero-cred__label {
+  font-size: 13.5px; color: rgba(255,255,255,0.6); margin-top: 5px; max-width: 18ch;
+}
+.hero-cred__divider {
+  width: 1px; align-self: stretch; min-height: 36px; background: rgba(255,255,255,0.16);
+}
+.hero-cred__sectors-label {
+  display: block; font-size: 11.5px; letter-spacing: 0.12em; text-transform: uppercase;
+  color: rgba(255,255,255,0.4); margin-bottom: 9px;
+}
+.hero-cred__pills { display: flex; gap: 8px; flex-wrap: wrap; }
+.hero-cred__pill {
+  border: 1px solid rgba(255,255,255,0.28); color: rgba(255,255,255,0.82);
+  padding: 6px 14px; border-radius: 999px; font-size: 13px;
+}
+@media (max-width: 768px) {
+  .hero-cred { gap: 20px; }
+  .hero-cred__divider { display: none; }
+}
+
+
 /* ----- RecognitionTriggers (centred, scattered pill cluster on dark) ----- */
 .recognition-triggers {
   padding: 80px 0;

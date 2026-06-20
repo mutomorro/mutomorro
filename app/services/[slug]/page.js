@@ -202,6 +202,37 @@ export default async function ServicePage({ params }) {
             <p className="lead-text" style={{ color: 'rgba(255,255,255,0.6)', maxWidth: '680px' }}>
               {service.heroTagline}
             </p>
+
+            {/* Credibility strip - schema-driven; each half independently
+                optional, renders only when populated. Ships OFF (heroStats +
+                heroSectors empty on all 14) until curated per service. */}
+            {(service.heroStats?.length > 0 || service.heroSectors?.length > 0) && (
+              <div className="hero-cred">
+                {service.heroStats?.length > 0 && (
+                  <div className="hero-cred__stats">
+                    {service.heroStats.map((stat, i) => (
+                      <div key={i} className="hero-cred__stat">
+                        <span className="hero-cred__value heading-gradient">{stat.value}</span>
+                        <span className="hero-cred__label">{stat.label}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {service.heroStats?.length > 0 && service.heroSectors?.length > 0 && (
+                  <span className="hero-cred__divider" aria-hidden="true" />
+                )}
+                {service.heroSectors?.length > 0 && (
+                  <div className="hero-cred__sectors">
+                    <span className="hero-cred__sectors-label">Sectors we work in</span>
+                    <div className="hero-cred__pills">
+                      {service.heroSectors.map((sector, i) => (
+                        <span key={i} className="hero-cred__pill">{sector}</span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
 

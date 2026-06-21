@@ -3266,17 +3266,29 @@ a:hover {
   margin-bottom: 0.5rem;
 }
 
-/* --- Service Sub-Pages: Gradient Dash --- */
-.service-subpage .body-text ul {
+/* --- Service pages + sub-pages: gradient dash bullets + numbered markers ---
+   Covers the legacy .body-text lists AND the three-column .portable-text body
+   (Assess / Wave 2 sub-pages, plus the main service Perspective block). Tailwind
+   preflight strips list-style from <ul>, and the base .portable-text ul rule only
+   restores indent - so these wrappers must opt in here too, or their bullets
+   render as indented space with no marker. Scoped to .portable-text / .body-text
+   so the "In this article" .toc-list (a sibling, not a descendant) is untouched. */
+.service-subpage .body-text ul,
+.service-subpage .portable-text ul,
+.service-page .portable-text ul {
   list-style: none;
   padding-left: 0;
 }
-.service-subpage .body-text ul li {
+.service-subpage .body-text ul li,
+.service-subpage .portable-text ul li,
+.service-page .portable-text ul li {
   padding-left: 24px;
   position: relative;
   margin-bottom: 12px;
 }
-.service-subpage .body-text ul li::before {
+.service-subpage .body-text ul li::before,
+.service-subpage .portable-text ul li::before,
+.service-page .portable-text ul li::before {
   content: '';
   position: absolute;
   left: 0;
@@ -3284,6 +3296,36 @@ a:hover {
   width: 12px;
   height: 2px;
   background: linear-gradient(90deg, #80388F, #FF4279);
+}
+
+/* Ordered lists: numeric markers (01, 02 ...) matching the tools/articles style */
+.service-subpage .body-text ol,
+.service-subpage .portable-text ol,
+.service-page .portable-text ol {
+  list-style: none;
+  padding-left: 0;
+  counter-reset: list-counter;
+}
+.service-subpage .body-text ol li,
+.service-subpage .portable-text ol li,
+.service-page .portable-text ol li {
+  padding-left: 36px;
+  position: relative;
+  margin-bottom: 16px;
+  counter-increment: list-counter;
+}
+.service-subpage .body-text ol li::before,
+.service-subpage .portable-text ol li::before,
+.service-page .portable-text ol li::before {
+  content: counter(list-counter, decimal-leading-zero);
+  position: absolute;
+  left: 0;
+  top: 2px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
 }
 
 /* --- Courses: Checkmarks --- */

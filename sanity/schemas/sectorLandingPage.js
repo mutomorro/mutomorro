@@ -11,7 +11,10 @@ const blockContent = {
         { title: 'H3', value: 'h3' },
         { title: 'H4', value: 'h4' },
       ],
-      lists: [{ title: 'Bullet', value: 'bullet' }],
+      lists: [
+        { title: 'Bullet', value: 'bullet' },
+        { title: 'Numbered', value: 'number' },
+      ],
       marks: {
         decorators: [
           { title: 'Bold', value: 'strong' },

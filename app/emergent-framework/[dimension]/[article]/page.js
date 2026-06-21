@@ -7,6 +7,9 @@ import Link from 'next/link'
 import SectionNavFooter from '../../../../components/emergent/SectionNavFooter'
 import { DIMENSION_LETTERS } from '../../../../components/emergent/constants'
 import { urlFor } from '../../../../sanity/image'
+import ContentTable from '../../../../components/ContentTable'
+import ContentAccordion from '../../../../components/ContentAccordion'
+import ContentTabs from '../../../../components/ContentTabs'
 
 export const revalidate = 3600
 
@@ -150,6 +153,9 @@ export default async function DimensionArticlePage({ params }) {
                     />
                   </div>
                 ),
+                table: ({ value }) => <ContentTable value={value} />,
+                accordion: ({ value }) => <ContentAccordion value={value} />,
+                tabs: ({ value }) => <ContentTabs value={value} />,
               },
               marks: {
                 link: ({ value, children }) => (

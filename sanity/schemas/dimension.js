@@ -97,6 +97,9 @@ export default defineType({
       description: 'Full wiki content for this dimension',
       of: [
         { type: 'block' },
+        { type: 'table' },
+        { type: 'accordion' },
+        { type: 'tabs' },
         {
           type: 'image',
           options: { hotspot: true },

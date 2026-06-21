@@ -32,6 +32,9 @@ export default defineType({
       description: 'The full overview content',
       of: [
         { type: 'block' },
+        { type: 'table' },
+        { type: 'accordion' },
+        { type: 'tabs' },
         {
           type: 'image',
           options: { hotspot: true },

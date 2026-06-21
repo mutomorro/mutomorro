@@ -2377,7 +2377,7 @@ a:hover {
 
 .portable-text h3 {
   font-size: 1.3rem;
-  font-weight: 400;
+  font-weight: 600; /* match .portable-text h2 weight - prose H2/H3 share visual weight */
   color: var(--dark);
   margin: 2rem 0 0.75rem 0;
 }

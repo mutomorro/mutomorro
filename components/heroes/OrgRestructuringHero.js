@@ -1,14 +1,40 @@
 'use client'
 import { useEffect, useRef } from 'react'
 
-export default function OrgRestructuringHero() {
+// Seeded PRNG so a capture is reproducible — sweep `seed` to curate the "shape".
+function mulberry32(a) {
+  return function () {
+    a |= 0; a = (a + 0x6D2B79F5) | 0
+    var t = Math.imul(a ^ (a >>> 15), 1 | a)
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296
+  }
+}
+
+// Live usage (`<OrgRestructuringHero />`) passes no props and behaves exactly as
+// before. The capture harness passes props to freeze one settled frame, seed
+// the RNG, boost the deliberately-faint alphas so it reads as a still, hide the
+// orbiting labels, and render at higher pixel density.
+export default function OrgRestructuringHero({
+  seed = null,
+  freezeTime = null,
+  alphaBoost = 1,
+  showLabels = true,
+  dprOverride = null,
+  spreadX = 1,
+  spreadY = 1,
+  labelScale = 1,
+} = {}) {
   const canvasRef = useRef(null)
 
   useEffect(() => {
     const canvas = canvasRef.current
     if (!canvas) return
     const ctx = canvas.getContext('2d')
-    const dpr = window.devicePixelRatio || 1
+    const dpr = dprOverride || window.devicePixelRatio || 1
+    // Stretch the circular layout to fill a target frame: equal X/Y = uniform
+    // zoom (square), X>Y = wide fill (16:9). 1/1 = unchanged (live behaviour).
+    const stretched = spreadX !== 1 || spreadY !== 1
     let animId
     const parent = canvas.parentElement
     let W, H, cx, cy
@@ -27,9 +53,12 @@ export default function OrgRestructuringHero() {
       var f = idx - i
       if (i >= colours.length - 1) { i = colours.length - 2; f = 1 }
       var a = colours[i], b = colours[i + 1]
-      return 'rgba(' + Math.round(a.r + (b.r - a.r) * f) + ',' +
-             Math.round(a.g + (b.g - a.g) * f) + ',' +
-             Math.round(a.b + (b.b - a.b) * f) + ',' + alpha + ')'
+      var r = Math.round(a.r + (b.r - a.r) * f)
+      var g = Math.round(a.g + (b.g - a.g) * f)
+      var bl = Math.round(a.b + (b.b - a.b) * f)
+      var aOut = alpha * alphaBoost
+      if (aOut > 1) aOut = 1
+      return 'rgba(' + r + ',' + g + ',' + bl + ',' + aOut + ')'
     }
 
     function lerp(a, b, t) { return a + (b - a) * t }
@@ -75,6 +104,11 @@ export default function OrgRestructuringHero() {
     }
 
     function initScene() {
+      // Seed only the one-time layout init, then restore the real RNG. Done
+      // inside initScene (called from resize) so every rebuild is reproducible.
+      var origRandom = Math.random
+      if (seed != null) Math.random = mulberry32(seed)
+
       nodes = []
       connections = []
       knowledgeParticles = []
@@ -188,6 +222,8 @@ export default function OrgRestructuringHero() {
           fontSize: ringSizes[l.ring]
         })
       }
+
+      if (seed != null) Math.random = origRandom
     }
 
     function resize() {
@@ -204,7 +240,10 @@ export default function OrgRestructuringHero() {
       initScene()
     }
 
-    const ro = new ResizeObserver(resize)
+    // In freeze mode there's no animation loop, so a resize (incl. the
+    // ResizeObserver's async initial fire) must repaint — setting canvas.width
+    // clears the bitmap, which would otherwise wipe the single drawn frame.
+    const ro = new ResizeObserver(() => { resize(); if (freezeTime != null) tick(freezeTime) })
     ro.observe(parent)
     resize()
 
@@ -331,8 +370,8 @@ export default function OrgRestructuringHero() {
         var currentAngle = ti.baseAngle + time * ti.orbitSpeed
         var radialBreath = Math.sin(time * ti.breathSpeed + ti.phase) * ti.breathAmount
         var currentRadius = ti.radius + radialBreath
-        var x = cx + Math.cos(currentAngle) * currentRadius
-        var y = cy + Math.sin(currentAngle) * currentRadius
+        var x = cx + Math.cos(currentAngle) * currentRadius * spreadX
+        var y = cy + Math.sin(currentAngle) * currentRadius * spreadY
         var fadeCycle = Math.sin(time * ti.fadeSpeed + ti.fadePhase)
         var alpha = 0.4 + fadeCycle * 0.15
         var tilt = Math.sin(currentAngle) * 0.04
@@ -343,7 +382,7 @@ export default function OrgRestructuringHero() {
 
         ctx.shadowColor = colourAt(ti.colourPos, 0.5)
         ctx.shadowBlur = 20
-        ctx.font = '400 ' + ti.fontSize + 'px "Source Sans 3", "Source Sans Pro", sans-serif'
+        ctx.font = '400 ' + (ti.fontSize * labelScale) + 'px "Source Sans 3", "Source Sans Pro", sans-serif'
         ctx.fillStyle = colourAt(ti.colourPos, alpha)
         ctx.fillText(ti.text, 0, 0)
 
@@ -360,16 +399,31 @@ export default function OrgRestructuringHero() {
     function tick(time) {
       ctx.clearRect(0, 0, W, H)
 
+      ctx.save()
+      if (stretched) { ctx.translate(cx, cy); ctx.scale(spreadX, spreadY); ctx.translate(-cx, -cy) }
+
       updateNodes(time)
       drawConnections(time)
       drawKnowledgeParticles(time)
       drawNodes(time)
-      drawTextLabels(time)
 
-      animId = requestAnimationFrame(tick)
+      ctx.restore()
+
+      if (showLabels) drawTextLabels(time)
+
+      if (freezeTime == null) animId = requestAnimationFrame(tick)
     }
 
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    if (freezeTime != null) {
+      // One static frame at the chosen settle time, drawn once fonts are ready
+      // so the labels measure correctly.
+      var drawOnce = function () { resize(); tick(freezeTime) }
+      if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(drawOnce)
+      } else {
+        drawOnce()
+      }
+    } else if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       tick(10000)
     } else {
       animId = requestAnimationFrame(tick)
@@ -379,7 +433,7 @@ export default function OrgRestructuringHero() {
       cancelAnimationFrame(animId)
       ro.disconnect()
     }
-  }, [])
+  }, [seed, freezeTime, alphaBoost, showLabels, dprOverride, spreadX, spreadY, labelScale])
 
   return <canvas ref={canvasRef} style={{ display: 'block', width: '100%', height: '100%' }} />
 }

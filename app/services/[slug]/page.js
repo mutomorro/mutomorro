@@ -78,6 +78,7 @@ export async function generateMetadata({ params }) {
   const service = await client.fetch(
     `*[_type == "service" && slug.current == $slug][0]{
       title, heroHeading, heroKicker, seoTitle, seoDescription, heroTagline,
+      "heroImageUrl": heroImage.asset->url,
       "ogImageUrl": propositionImage.asset->url
     }`,
     { slug }
@@ -88,7 +89,7 @@ export async function generateMetadata({ params }) {
     title: service.seoTitle || service.heroHeading,
     description: service.seoDescription || service.heroTagline || '',
     path: `/services/${slug}`,
-    image: service.ogImageUrl,
+    image: service.heroImageUrl || service.ogImageUrl,
     type: 'article',
   })
 }

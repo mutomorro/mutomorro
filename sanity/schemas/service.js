@@ -154,6 +154,24 @@ export default defineType({
       options: { layout: 'tags' },
     }),
 
+    defineField({
+      name: 'heroImage',
+      title: 'Hero image',
+      type: 'image',
+      group: 'hero',
+      description:
+        'Social/search share-preview image (Open Graph), and available for cards. The page hero itself stays the animation, so this is not shown at the top of the page.',
+      options: { hotspot: true },
+      fields: [
+        defineField({
+          name: 'alt',
+          title: 'Alt text',
+          type: 'string',
+          description: 'Describe the image for accessibility and SEO',
+        }),
+      ],
+    }),
+
     // ===========================
     // CONTEXT
     // ===========================

@@ -1,14 +1,40 @@
 'use client'
 import { useEffect, useRef } from 'react'
 
-export default function PostMergerHero() {
+// Seeded PRNG so a capture is reproducible — sweep `seed` to curate the "shape".
+function mulberry32(a) {
+  return function () {
+    a |= 0; a = (a + 0x6D2B79F5) | 0
+    var t = Math.imul(a ^ (a >>> 15), 1 | a)
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296
+  }
+}
+
+// Live usage (`<PostMergerHero />`) passes no props and behaves exactly as
+// before. The capture harness passes props to freeze one settled frame, seed
+// the RNG, boost the deliberately-faint alphas so it reads as a still, hide the
+// orbiting labels, and render at higher pixel density.
+export default function PostMergerHero({
+  seed = null,
+  freezeTime = null,
+  alphaBoost = 1,
+  showLabels = true,
+  dprOverride = null,
+  spreadX = 1,
+  spreadY = 1,
+  labelScale = 1,
+} = {}) {
   const canvasRef = useRef(null)
 
   useEffect(() => {
     const canvas = canvasRef.current
     if (!canvas) return
     const ctx = canvas.getContext('2d')
-    const dpr = window.devicePixelRatio || 1
+    const dpr = dprOverride || window.devicePixelRatio || 1
+    // Stretch the circular layout to fill a target frame: equal X/Y = uniform
+    // zoom (square), X>Y = wide fill (16:9). 1/1 = unchanged (live behaviour).
+    const stretched = spreadX !== 1 || spreadY !== 1
     let animId
     const parent = canvas.parentElement
     let W, H, cx, cy
@@ -26,9 +52,16 @@ export default function PostMergerHero() {
       cy = H / 2
     }
 
-    const ro = new ResizeObserver(resize)
+    // In freeze mode there's no animation loop, so a resize (incl. the
+    // ResizeObserver's async initial fire) must repaint — setting canvas.width
+    // clears the bitmap, which would otherwise wipe the single drawn frame.
+    const ro = new ResizeObserver(() => { resize(); if (freezeTime != null) tick(freezeTime) })
     ro.observe(parent)
     resize()
+
+    // Seed only the one-time layout init, then restore the real RNG.
+    var origRandom = Math.random
+    if (seed != null) Math.random = mulberry32(seed)
 
     // ---- COLOURS (brand gradient) ----
     var colours = [
@@ -48,7 +81,9 @@ export default function PostMergerHero() {
       var r = Math.round(a.r + (b.r - a.r) * f);
       var g = Math.round(a.g + (b.g - a.g) * f);
       var bl = Math.round(a.b + (b.b - a.b) * f);
-      return 'rgba(' + r + ',' + g + ',' + bl + ',' + alpha + ')';
+      var aOut = alpha * alphaBoost;
+      if (aOut > 1) aOut = 1;
+      return 'rgba(' + r + ',' + g + ',' + bl + ',' + aOut + ')';
     }
 
     // ---- TWO GALAXY CLUSTERS ----
@@ -141,6 +176,8 @@ export default function PostMergerHero() {
         fontSize: ringSizes[l.ring]
       });
     }
+
+    if (seed != null) Math.random = origRandom
 
     // ---- CONNECTIONS between nearby particles ----
     function drawConnections(particles, galaxyX, galaxyY, rotation, colourBase, time) {
@@ -313,8 +350,8 @@ export default function PostMergerHero() {
         var radialBreath = Math.sin(time * t.breathSpeed + t.phase) * t.breathAmount;
         var currentRadius = t.radius + radialBreath;
 
-        var x = cx + Math.cos(currentAngle) * currentRadius;
-        var y = cy + Math.sin(currentAngle) * currentRadius;
+        var x = cx + Math.cos(currentAngle) * currentRadius * spreadX;
+        var y = cy + Math.sin(currentAngle) * currentRadius * spreadY;
 
         var fadeCycle = Math.sin(time * t.fadeSpeed + t.fadePhase);
         var alpha = 0.4 + fadeCycle * 0.15;
@@ -328,7 +365,7 @@ export default function PostMergerHero() {
         // Glow pass
         ctx.shadowColor = colourAt(t.colourPos, 0.5);
         ctx.shadowBlur = 20;
-        ctx.font = '400 ' + t.fontSize + 'px "Source Sans 3", "Source Sans Pro", sans-serif';
+        ctx.font = '400 ' + (t.fontSize * labelScale) + 'px "Source Sans 3", "Source Sans Pro", sans-serif';
         ctx.fillStyle = colourAt(t.colourPos, alpha);
         ctx.fillText(t.text, 0, 0);
 
@@ -345,6 +382,9 @@ export default function PostMergerHero() {
     // ---- MAIN LOOP ----
     function tick(time) {
       ctx.clearRect(0, 0, W, H);
+
+      ctx.save();
+      if (stretched) { ctx.translate(cx, cy); ctx.scale(spreadX, spreadY); ctx.translate(-cx, -cy); }
 
       // Galaxy positions - slowly drifting together
       // They oscillate gently, never quite fully merging
@@ -377,13 +417,24 @@ export default function PostMergerHero() {
       // Bridge particles in overlap
       drawBridgeParticles(mx, my, time);
 
-      // Text labels
-      drawTextLabels(time);
+      ctx.restore();
 
-      animId = requestAnimationFrame(tick);
+      // Text labels
+      if (showLabels) drawTextLabels(time);
+
+      if (freezeTime == null) animId = requestAnimationFrame(tick);
     }
 
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    if (freezeTime != null) {
+      // One static frame at the chosen settle time, drawn once fonts are ready
+      // so the labels measure correctly.
+      var drawOnce = function () { resize(); tick(freezeTime); }
+      if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(drawOnce)
+      } else {
+        drawOnce()
+      }
+    } else if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       tick(20000);
     } else {
       animId = requestAnimationFrame(tick);
@@ -393,7 +444,7 @@ export default function PostMergerHero() {
       cancelAnimationFrame(animId)
       ro.disconnect()
     }
-  }, [])
+  }, [seed, freezeTime, alphaBoost, showLabels, dprOverride, spreadX, spreadY, labelScale])
 
   return <canvas ref={canvasRef} style={{ display: 'block', width: '100%', height: '100%' }} />
 }

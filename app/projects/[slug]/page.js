@@ -8,6 +8,9 @@ import CTA from '../../../components/CTA'
 import { PortableText } from '@portabletext/react'
 import { urlFor } from '../../../sanity/image'
 import Lightbox from '../../../components/Lightbox'
+import ContentTable from '../../../components/ContentTable'
+import ContentAccordion from '../../../components/ContentAccordion'
+import ContentTabs from '../../../components/ContentTabs'
 import PageCallouts from '../../../components/PageCallouts'
 import CalloutTeaser from '../../../components/CalloutTeaser'
 import ThreeColumnLayout from '../../../components/ThreeColumnLayout'
@@ -121,13 +124,21 @@ export default async function CaseStudy({ params }) {
     return blocks
   })()
 
-  const portableTextComponents = {
+  const hasBody = Array.isArray(project.body) && project.body.length > 0
+
+  // Portable Text components. The heading-anchor index must be built from the
+  // same array that is rendered AND fed to the ToC, so we use a small factory
+  // and instantiate it per source (the new body, and the legacy combined body).
+  const makeComponents = (headingSource) => ({
     types: {
       image: ({ value }) => (
         <div className="img-mat" style={{ margin: '2.5rem 0' }}>
           <Lightbox src={urlFor(value).url()} alt={value.alt || ''} cover={false} />
         </div>
       ),
+      table: ({ value }) => <ContentTable value={value} />,
+      accordion: ({ value }) => <ContentAccordion value={value} />,
+      tabs: ({ value }) => <ContentTabs value={value} />,
     },
     marks: {
       link: ({ value, children }) => (
@@ -135,12 +146,20 @@ export default async function CaseStudy({ params }) {
       ),
     },
     block: {
-      ...makeHeadingBlocks(buildHeadingIndex(combinedBody).idByKey),
+      ...makeHeadingBlocks(buildHeadingIndex(headingSource).idByKey),
+      // Migrated section labels: the small eyebrow. Rendered as a div (not a p)
+      // so the .portable-text p rule can't override the .kicker font-size. Kept
+      // out of the ToC, which only indexes h2/h3.
+      kicker: ({ children }) => <div className="kicker">{children}</div>,
       blockquote: ({ children }) => (
         <blockquote className="pull-quote">{children}</blockquote>
       ),
     },
-  }
+  })
+
+  const portableTextComponents = makeComponents(combinedBody)
+  const bodyComponents = makeComponents(hasBody ? project.body : [])
+  const tocSource = hasBody ? project.body : combinedBody
 
   return (
     <main className="page-project">
@@ -215,7 +234,7 @@ export default async function CaseStudy({ params }) {
       {/* Content sections — three-column layout with ToC and sidebar */}
       <section className="section--full section-padding" style={{ background: 'var(--white)' }}>
         <ThreeColumnLayout
-          toc={<TableOfContents body={combinedBody} />}
+          toc={<TableOfContents body={tocSource} />}
           sidebar={
             <ContentSidebar
               theme={project.theme}
@@ -227,6 +246,12 @@ export default async function CaseStudy({ params }) {
             />
           }
         >
+          {hasBody ? (
+            <div className="portable-text">
+              <PortableText value={project.body} components={bodyComponents} />
+            </div>
+          ) : (
+            <>
           {sections.map(({ key, label }) => {
             const content = project[key]
             if (!content) return null
@@ -274,6 +299,8 @@ export default async function CaseStudy({ params }) {
                   </div>
                 </div>
               )}
+            </>
+          )}
             </>
           )}
         </ThreeColumnLayout>

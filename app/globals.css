@@ -3359,14 +3359,18 @@ a:hover {
 /* --- Ordered lists: same across all three --- */
 .page-tool .portable-text ol,
 .page-article .portable-text ol,
-.page-course .portable-text ol {
+.page-course .portable-text ol,
+.page-project .portable-text ol,
+.page-sector .portable-text ol {
   list-style: none;
   padding-left: 0;
   counter-reset: list-counter;
 }
 .page-tool .portable-text ol li,
 .page-article .portable-text ol li,
-.page-course .portable-text ol li {
+.page-course .portable-text ol li,
+.page-project .portable-text ol li,
+.page-sector .portable-text ol li {
   padding-left: 36px;
   position: relative;
   margin-bottom: 16px;
@@ -3374,7 +3378,9 @@ a:hover {
 }
 .page-tool .portable-text ol li::before,
 .page-article .portable-text ol li::before,
-.page-course .portable-text ol li::before {
+.page-course .portable-text ol li::before,
+.page-project .portable-text ol li::before,
+.page-sector .portable-text ol li::before {
   content: counter(list-counter, decimal-leading-zero);
   position: absolute;
   left: 0;
@@ -3389,7 +3395,9 @@ a:hover {
 /* Ordered lists on dark */
 .page-tool .dark-bg .portable-text ol li::before,
 .page-article .dark-bg .portable-text ol li::before,
-.page-course .dark-bg .portable-text ol li::before {
+.page-course .dark-bg .portable-text ol li::before,
+.page-project .dark-bg .portable-text ol li::before,
+.page-sector .dark-bg .portable-text ol li::before {
   color: #FFA200;
 }
 

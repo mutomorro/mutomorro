@@ -57,6 +57,13 @@ export default {
     { name: 'content', title: 'Content' },
     { name: 'seo',     title: 'SEO' },
   ],
+  fieldsets: [
+    {
+      name: 'legacy',
+      title: 'Legacy sections (migrated into Body)',
+      options: { collapsible: true, collapsed: true },
+    },
+  ],
   fields: [
     // ── Core ────────────────────────────────────────────────────────────────
     {
@@ -154,10 +161,65 @@ export default {
 
     // ── Content sections ─────────────────────────────────────────────────────
     {
+      name: 'body',
+      title: 'Body',
+      type: 'array',
+      group: 'content',
+      description:
+        'The main case study content - one flexible canvas (tables, accordions, tabs, ' +
+        'bullet and numbered lists, inline images), matching Tools and Articles. The migrated ' +
+        'case studies have their five former sections merged here as H2 headings; new case ' +
+        'studies start from this single field.',
+      of: [
+        {
+          type: 'block',
+          // Standard body styles plus a reusable "Kicker" eyebrow label (small
+          // uppercase accent text, rendered via the global .kicker class). The
+          // migrated section labels use it, so each section keeps a single real
+          // H2 (its descriptive heading) instead of two stacked H2s. Lists are
+          // listed so numbered lists are available; marks keep Sanity defaults.
+          styles: [
+            { title: 'Normal', value: 'normal' },
+            { title: 'Heading 2', value: 'h2' },
+            { title: 'Heading 3', value: 'h3' },
+            { title: 'Heading 4', value: 'h4' },
+            { title: 'Section label', value: 'h6' },
+            { title: 'Quote', value: 'blockquote' },
+            { title: 'Kicker', value: 'kicker' },
+          ],
+          lists: [
+            { title: 'Bullet', value: 'bullet' },
+            { title: 'Numbered', value: 'number' },
+          ],
+        },
+        { type: 'table' },
+        { type: 'accordion' },
+        { type: 'tabs' },
+        {
+          type: 'image',
+          options: { hotspot: true },
+          fields: [
+            {
+              name: 'alt',
+              title: 'Alt text',
+              type: 'string',
+              description: 'Describe the image for screen readers and search engines',
+            },
+            {
+              name: 'caption',
+              title: 'Caption',
+              type: 'string',
+            },
+          ],
+        },
+      ],
+    },
+    {
       name: 'clientAndContext',
       title: 'Client and context',
       ...blockContent,
       group: 'content',
+      fieldset: 'legacy',
       description: 'Who the client is, their sector, and the context for this work.',
     },
     {
@@ -165,6 +227,7 @@ export default {
       title: 'The objective',
       ...blockContent,
       group: 'content',
+      fieldset: 'legacy',
       description: 'What the organisation was trying to achieve.',
     },
     {
@@ -172,6 +235,7 @@ export default {
       title: 'The approach',
       ...blockContent,
       group: 'content',
+      fieldset: 'legacy',
       description: 'How the work was done — collaborative, capability-building, systems-thinking.',
     },
     {
@@ -179,6 +243,7 @@ export default {
       title: 'What changed',
       ...blockContent,
       group: 'content',
+      fieldset: 'legacy',
       description: 'Tangible outcomes and new capabilities the organisation gained.',
     },
     {
@@ -186,6 +251,7 @@ export default {
       title: 'Key insight',
       ...blockContent,
       group: 'content',
+      fieldset: 'legacy',
       description: 'What this project revealed — the learning that shaped the Mutomorro approach.',
     },
 

@@ -156,28 +156,29 @@ export default async function ResourcePage({ params }) {
               </div>
             )}
 
-            {/* Form card */}
-            <div className="dark-form-wrapper" style={{
-              flex: '1 1 60%',
-              background: 'rgba(255,255,255,0.06)',
-              border: '1px solid rgba(255,255,255,0.1)',
-              borderRadius: '4px',
-              padding: '2rem',
-            }}>
+            {/* Download column */}
+            <div style={{ flex: '1 1 60%' }}>
               {resource.gated ? (
-                <ResourceDownloadForm
-                  resourceTitle={resource.title}
-                  resourceSlug={slug}
-                  resourceType={resource.resourceType}
-                  downloadUrl={resource.downloadUrl}
-                  downloadButtonLabel={resource.downloadButtonLabel}
-                />
+                <div className="dark-form-wrapper" style={{
+                  background: 'rgba(255,255,255,0.06)',
+                  border: '1px solid rgba(255,255,255,0.1)',
+                  borderRadius: '4px',
+                  padding: '2rem',
+                }}>
+                  <ResourceDownloadForm
+                    resourceTitle={resource.title}
+                    resourceSlug={slug}
+                    resourceType={resource.resourceType}
+                    downloadUrl={resource.downloadUrl}
+                    downloadButtonLabel={resource.downloadButtonLabel}
+                  />
+                </div>
               ) : (
                 <FreeDownload
                   downloadUrl={resource.downloadUrl}
+                  downloadFileName={resource.downloadFileName}
                   downloadButtonLabel={resource.downloadButtonLabel}
                   resourceType={resource.resourceType}
-                  dark
                 />
               )}
             </div>
@@ -364,6 +365,43 @@ export default async function ResourcePage({ params }) {
           border-left-color: #FF4279 !important;
         }
 
+        /* Ungated free-download panel */
+        .resource-download-panel {
+          background: rgba(255,255,255,0.04);
+          border: 1px solid rgba(255,255,255,0.1);
+          border-radius: 6px;
+          padding: 2.5rem;
+        }
+        .resource-download-panel__kicker {
+          display: inline-block;
+          margin-bottom: 16px;
+        }
+        .resource-download-panel__lead {
+          font-size: 18px;
+          font-weight: 300;
+          line-height: 1.6;
+          color: rgba(255,255,255,0.7);
+          margin: 0 0 28px;
+          max-width: 34ch;
+        }
+        .resource-download-panel__btn {
+          display: inline-flex !important;
+          align-items: center;
+          gap: 10px;
+          background: #9B51E0 !important;
+          color: #fff !important;
+        }
+        .resource-download-panel__btn:hover {
+          background: #8a3fd0 !important;
+        }
+        .resource-download-panel__meta {
+          font-size: 12px;
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+          color: rgba(255,255,255,0.4);
+          margin: 18px 0 0;
+        }
+
         @media (max-width: 768px) {
           .resource-header-row {
             flex-direction: column !important;
@@ -376,6 +414,9 @@ export default async function ResourcePage({ params }) {
             grid-template-columns: 1fr !important;
             gap: 2rem !important;
           }
+          .resource-download-panel {
+            padding: 1.75rem !important;
+          }
         }
       `}</style>
 
@@ -385,32 +426,25 @@ export default async function ResourcePage({ params }) {
 }
 
 // ── Free (ungated) download block ──
-function FreeDownload({ downloadUrl, downloadButtonLabel, resourceType, dark }) {
+function FreeDownload({ downloadUrl, downloadFileName, downloadButtonLabel, resourceType }) {
   const typeLabels = { primer: 'Primer', whitepaper: 'Whitepaper', guide: 'Guide' }
   const typeLabel = typeLabels[resourceType] || 'Resource'
-  const buttonText = downloadButtonLabel || `Download ${typeLabel}`
+  const buttonText = downloadButtonLabel || `Download the ${typeLabel.toLowerCase()}`
+  const href = downloadUrl + '?dl=' + (downloadFileName ? encodeURIComponent(downloadFileName) : '')
 
   return (
-    <div>
-      <h3 className="heading-h4" style={{ margin: '0 0 12px' }}>
-        Free download
-      </h3>
-      <p style={{
-        fontSize: '15px',
-        fontWeight: '300',
-        lineHeight: '1.5',
-        margin: '0 0 1.5rem',
-      }}>
-        No form needed - it's yours.
+    <div className="resource-download-panel">
+      <span className="kicker resource-download-panel__kicker">Free download</span>
+      <p className="resource-download-panel__lead">
+        The full {typeLabel.toLowerCase()}, as a PDF - yours to keep. No sign-up, no email.
       </p>
-      <a
-        href={downloadUrl + '?dl='}
-        download
-        className="btn-primary"
-        style={{ display: 'inline-flex' }}
-      >
+      <a href={href} download className="btn-primary resource-download-panel__btn">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
         {buttonText}
       </a>
+      <p className="resource-download-panel__meta">PDF · Free · No email required</p>
     </div>
   )
 }

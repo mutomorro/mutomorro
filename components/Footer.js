@@ -79,6 +79,8 @@ export default function Footer() {
                         <li><Link href="/articles" className="footer-link">Thinking</Link></li>
                         <li><Link href="/training" className="footer-link">Training</Link></li>
                         <li><Link href="/tools" className="footer-link">Tools of the Trade</Link></li>
+                        <li><Link href="/diagnostics" className="footer-link">Diagnostics</Link></li>
+                        <li><Link href="/resources" className="footer-link">Guides &amp; primers</Link></li>
                         <li><Link href="/topics" className="footer-link">Topics</Link></li>
                         <li><Link href="/states-of-vitality" className="footer-link">States of Vitality</Link></li>
                     </ul>

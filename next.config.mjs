@@ -947,8 +947,8 @@ const nextConfig = {
       { source: '/develop/leadership-programme', destination: '/develop', permanent: true },
       { source: '/ideation/transformation-story-lab', destination: '/services', permanent: true },
 
-      // Resources/toolkit/workshops - old WordPress sections
-      { source: '/resources', destination: '/tools', permanent: true },
+      // Toolkit/workshops - old WordPress sections.
+      // ('/resources' redirect removed Jun 2026 - it now serves a real index page)
       { source: '/newsletters', destination: '/newsletter', permanent: true },
       { source: '/toolkit', destination: '/tools', permanent: true },
       { source: '/workshops', destination: '/training', permanent: true },

@@ -711,6 +711,22 @@ export async function getAllResourceSlugs() {
   )
 }
 
+export async function getAllResources() {
+  return await client.fetch(
+    `*[_type == "resource" && !(_id in path("drafts.**"))] | order(_createdAt desc) {
+      title,
+      "slug": slug.current,
+      subtitle,
+      resourceType,
+      resourceTypeLabel,
+      gated,
+      "previewImageUrl": previewImage.asset->url
+    }`,
+    {},
+    fetchOpts
+  )
+}
+
 // ============================================
 // SECTOR LANDING PAGES
 // ============================================

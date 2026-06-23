@@ -25,7 +25,7 @@ const blockContent = {
             title: 'URL',
             name: 'link',
             type: 'object',
-            fields: [{ title: 'URL', name: 'href', type: 'url' }],
+            fields: [{ title: 'URL', name: 'href', type: 'url', validation: (rule) => rule.uri({ allowRelative: true, scheme: ['http', 'https', 'mailto', 'tel'] }) }],
           },
         ],
       },

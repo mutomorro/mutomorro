@@ -217,6 +217,20 @@ export async function POST(request) {
     return NextResponse.json({ error: 'Failed to fetch audience contacts' }, { status: 500 })
   }
 
+  // Defensive dedup: collapse any duplicate contacts to one row each. A
+  // duplicate here (unstable pagination order, overlapping compound filters,
+  // etc.) would otherwise trip the newsletter_recipients (send_id, contact_id)
+  // unique constraint and abort the entire send at the insert step. Also keeps
+  // total_recipients honest.
+  {
+    const seenContactIds = new Set()
+    audienceContacts = audienceContacts.filter((c) => {
+      if (seenContactIds.has(c.id)) return false
+      seenContactIds.add(c.id)
+      return true
+    })
+  }
+
   // ─── 6. Dedup against previous sends with same issue_key ────────
   const { data: matchingSends } = await supabase
     .from('newsletter_sends')

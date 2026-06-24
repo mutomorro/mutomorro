@@ -8,6 +8,21 @@ import {
 
 export const maxDuration = 30
 
+// Scalar text fields the editor may override for a live preview. Mirrors the
+// whitelist the editor's save endpoint writes back to content_json.
+const EDITORIAL_OVERRIDE_KEYS = [
+  'subject',
+  'previewText',
+  'monthYear',
+  'subjectLine',
+  'introText',
+  'observationKicker',
+  'observationTitle',
+  'observationBody',
+  'signOff',
+  'ps',
+]
+
 export async function POST(request) {
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -24,11 +39,16 @@ export async function POST(request) {
         return NextResponse.json({ error: loaded.reason }, { status: 400 })
       }
 
-      // Allow ad-hoc overrides from the request (e.g. user edits before saving)
-      const merged = {
-        ...loaded.content,
-        subject: content.subject ?? loaded.content.subject,
-        previewText: content.previewText ?? loaded.content.previewText,
+      // Allow ad-hoc text overrides from the request so an unsaved edit in the
+      // /admin/newsletter/edit editor previews live. Only these scalar text
+      // fields are overridable; arrays/hero image always come from the saved
+      // content. Existing callers (the send page) pass only subject/previewText,
+      // so the rest are no-ops for them — this stays backward-compatible.
+      const merged = { ...loaded.content }
+      for (const key of EDITORIAL_OVERRIDE_KEYS) {
+        if (content[key] !== undefined && content[key] !== null) {
+          merged[key] = content[key]
+        }
       }
 
       const html = await renderEditorial(merged)

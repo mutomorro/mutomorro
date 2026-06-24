@@ -785,7 +785,18 @@ function EditorialContent({ theme, issues, loading, selectedIssueId, onSelectIss
         )}
         {selectedIssue && !selectedIssue.hasContent && (
           <p style={{ fontSize: '12px', color: theme.danger, margin: '8px 0 0 0', lineHeight: 1.5 }}>
-            This issue has no <code style={{ fontSize: '11px' }}>content_json</code> yet. Populate it on the calendar item before previewing or sending.
+            This issue has no content yet.{' '}
+            <a href={`/admin/newsletter/edit/${selectedIssueId}`} style={{ color: theme.accent, textDecoration: 'underline' }}>
+              Add content
+            </a>
+            {' '}before previewing or sending.
+          </p>
+        )}
+        {selectedIssueId && selectedIssue?.hasContent && (
+          <p style={{ margin: '10px 0 0 0' }}>
+            <a href={`/admin/newsletter/edit/${selectedIssueId}`} style={{ fontSize: '13px', color: theme.accent, textDecoration: 'none' }}>
+              Edit content {'→'}
+            </a>
           </p>
         )}
       </div>

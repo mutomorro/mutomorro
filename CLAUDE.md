@@ -25,6 +25,7 @@ const all = await fetchAllPaginated((from, to) => supabase
   .from('contacts')
   .select('id, signup_email')
   .in('newsletter_status', ['active', 'confirmed'])
+  .order('id', { ascending: true }) // REQUIRED — see "stable ORDER BY" gotcha below
   .range(from, to)
 )
 
@@ -36,6 +37,19 @@ const { count } = await supabase
 ```
 
 **Anchoring incident:** April 2026 newsletter warm-up sent duplicates to 645 contacts over three weeks because `newsletter_recipients.select('contact_id')` returned 1,000 of 2,403 rows, letting 413 already-sent contacts escape the dedup filter. Full investigation notes are kept locally in `docs/running-summaries/` (gitignored) — `session-summary-newsletter-dedup-fix-2026-04-17.md` for the root-cause fix and `session-summary-pagination-audit-fix-2026-04-17.md` for the codebase-wide audit.
+
+### Paginated fetches need a stable ORDER BY
+
+`fetchAllPaginated` (and any raw `.range()` loop) issues one query per page, and Postgres makes **no ordering guarantee between separate queries**. Without an explicit, **unique** `ORDER BY`, a row near a page boundary can come back in two pages (a duplicate) or in none (a silent skip). Always `.order()` by a unique column — `'id'` is the safe default.
+
+```js
+// WRONG — pages can duplicate or skip rows
+fetchAllPaginated((from, to) => supabase.from('contacts').select('id').range(from, to))
+// RIGHT — stable, unique sort key
+fetchAllPaginated((from, to) => supabase.from('contacts').select('id').order('id', { ascending: true }).range(from, to))
+```
+
+**Anchoring incident:** 24 Jun 2026, Newsletter #3's send aborted (0 sent) when the audience fetch (`lib/newsletter-audiences.js` — 3,818 contacts over 4 pages, no `ORDER BY`) returned one contact twice and the `newsletter_recipients (send_id, contact_id)` unique constraint rejected the insert. Fixed in `1b2ecde` (`.order('id')` on the paginated fetch + dedupe contacts before the recipient insert). A retrospective audit found no past under-delivery: the only other >1,000-row send (Drift, 28 May) was retried enough that the attempts' union reached every subscriber.
 
 ### Tables currently >1,000 rows
 

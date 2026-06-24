@@ -274,7 +274,8 @@ export default function ContentSidebar({
     if (!primary?.url) return true
     if (c.linkUrl === primary.url) return false
     if (
-      primary.kind === 'enquiry' &&
+      typeof primary.url === 'string' &&
+      primary.url.startsWith('/enquiry') &&
       typeof c.linkUrl === 'string' &&
       c.linkUrl.startsWith('/enquiry')
     ) {

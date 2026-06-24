@@ -665,6 +665,7 @@ export async function getCapabilityService(slug) {
       ctaBody,
       ctaButtonLabel,
       ctaButtonUrl,
+      sidebarPrimary,
 
       // SEO
       seoTitle,

@@ -169,6 +169,19 @@ export default defineType({
       ],
     }),
     defineField({
+      name: 'sidebarPrimary',
+      title: 'Right-sidebar CTA (override)',
+      type: 'object',
+      group: 'content',
+      description: 'Optional. The primary call-to-action card shown in the right sidebar. Leave blank to use the default enquiry CTA.',
+      fields: [
+        { name: 'heading', title: 'Heading', type: 'string' },
+        { name: 'body', title: 'Body', type: 'text', rows: 3 },
+        { name: 'label', title: 'Button label', type: 'string' },
+        { name: 'url', title: 'Button URL', type: 'string' },
+      ],
+    }),
+    defineField({
       name: 'seoTitle',
       title: 'SEO Title',
       type: 'string',

@@ -176,6 +176,8 @@ export default async function CapabilityServicePage({ params }) {
                 relatedTools={service.relatedToolsViaTheme}
                 relatedCaseStudies={service.relatedCaseStudiesViaTheme}
                 sidebarCallouts={sidebarCallouts}
+                primaryOverride={service.sidebarPrimary}
+                enquiryService={slug}
               />
             }
           >

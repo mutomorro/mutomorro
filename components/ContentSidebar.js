@@ -30,6 +30,23 @@ function MaybeExternalLink({ href, className, style, children }) {
   )
 }
 
+// Inline-link rendering for Portable Text bodies inside sidebar cards.
+const inlinePtComponents = {
+  marks: {
+    link: ({ value, children }) => (
+      <a
+        href={value?.href}
+        className="inline-link"
+        {...(value?.href && /^https?:/i.test(value.href)
+          ? { target: '_blank', rel: 'noopener noreferrer' }
+          : {})}
+      >
+        {children}
+      </a>
+    ),
+  },
+}
+
 // Tiny square thumbnail for related-list items. Renders nothing when the
 // item has no image, so lists on pages whose query doesn't fetch one are
 // unaffected.
@@ -49,16 +66,15 @@ function RelatedThumb({ image }) {
   )
 }
 
-function SidebarCallout({ callout, asButton = false, feature = false }) {
+// A promotional sidebar card — a Page Callout rendered in the sidebar. These
+// sit above the primary CTA: one pins, the rest scroll (see the orchestrator).
+function SidebarCallout({ callout }) {
   const accent = callout.accentColor || 'var(--accent)'
   const showLink = Boolean(callout.linkUrl && callout.linkLabel)
   const hasImage = Boolean(callout.image?.asset) && callout.showImageInSidebar === true
   const imageUrl = hasImage ? urlFor(callout.image).width(720).url() : null
   return (
-    <div
-      className={`sidebar-callout${feature ? ' sidebar-callout--feature' : ''}`}
-      style={{ borderLeftColor: accent }}
-    >
+    <div className="sidebar-callout" style={{ borderLeftColor: accent }}>
       {hasImage && (
         <div className="sidebar-callout__image">
           <Image
@@ -74,34 +90,10 @@ function SidebarCallout({ callout, asButton = false, feature = false }) {
       {callout.heading && <h3>{callout.heading}</h3>}
       {callout.body && (
         <div className="sidebar-callout__body">
-          <PortableText
-            value={callout.body}
-            components={{
-              marks: {
-                link: ({ value, children }) => (
-                  <a
-                    href={value?.href}
-                    className="inline-link"
-                    {...(value?.href && /^https?:/i.test(value.href)
-                      ? { target: '_blank', rel: 'noopener noreferrer' }
-                      : {})}
-                  >
-                    {children}
-                  </a>
-                ),
-              },
-            }}
-          />
+          <PortableText value={callout.body} components={inlinePtComponents} />
         </div>
       )}
-      {showLink && (asButton ? (
-        <MaybeExternalLink
-          href={callout.linkUrl}
-          className="sidebar-btn sidebar-btn--primary"
-        >
-          {callout.linkLabel} <span aria-hidden="true">→</span>
-        </MaybeExternalLink>
-      ) : (
+      {showLink && (
         <MaybeExternalLink
           href={callout.linkUrl}
           className="callout-link inline-link"
@@ -112,92 +104,117 @@ function SidebarCallout({ callout, asButton = false, feature = false }) {
         >
           {callout.linkLabel} <span aria-hidden="true">→</span>
         </MaybeExternalLink>
-      ))}
+      )}
     </div>
   )
 }
 
-function PrimaryCta({ theme, contentType, variant = 'primary', asLink = false }) {
-  // Every content type's primary CTA points at the related service
-  // (theme.anchorUrl). Tools already surface a download CTA via the
-  // floating bottom bar; case studies fall through to the service
-  // rather than the generic /contact route.
-  if (!theme?.anchorUrl) return null
+// The page's one page-owned primary CTA, pinned at the bottom of the sidebar.
+// `kind` selects styling: 'service' uses the dark service card; everything else
+// (enquiry / per-page override) uses the prominent feature-callout card.
+function PrimaryCard({ primary }) {
+  if (!primary?.url) return null
 
-  // Enquiry-primary pages (training): the enquiry callout is the star, so the
-  // service steps down to a quiet inline link rather than a second card
-  // competing beneath it.
-  if (asLink) {
+  if (primary.kind === 'service') {
     return (
-      <MaybeExternalLink href={theme.anchorUrl} className="sidebar-service-link">
-        Explore more ways we can help in {theme.title} <span aria-hidden="true">→</span>
-      </MaybeExternalLink>
+      <div className="sticky-service-cta">
+        {primary.eyebrow && <span className="sidebar-card-label">{primary.eyebrow}</span>}
+        {primary.heading && <h3>{primary.heading}</h3>}
+        <MaybeExternalLink href={primary.url} className="sidebar-btn sidebar-btn--primary">
+          {primary.label} <span aria-hidden="true">→</span>
+        </MaybeExternalLink>
+      </div>
     )
   }
 
-  const heading =
-    contentType === 'course'
-      ? `Interested in ${theme.title}?`
-      : `Thinking about shifting your organisation's ${theme.title.toLowerCase()}?`
-
   return (
-    <div className="sticky-service-cta">
-      <span className="sidebar-card-label">{theme.title}</span>
-      <h3>{heading}</h3>
-      <MaybeExternalLink
-        href={theme.anchorUrl}
-        className={`sidebar-btn sidebar-btn--${variant}`}
-      >
-        Explore this service →
+    <div
+      className="sidebar-callout sidebar-callout--feature"
+      style={{ borderLeftColor: primary.accentColor || 'var(--accent)' }}
+    >
+      {primary.heading && <h3>{primary.heading}</h3>}
+      {primary.body && (
+        <div className="sidebar-callout__body">
+          {Array.isArray(primary.body) ? (
+            <PortableText value={primary.body} components={inlinePtComponents} />
+          ) : (
+            <p>{primary.body}</p>
+          )}
+        </div>
+      )}
+      <MaybeExternalLink href={primary.url} className="sidebar-btn sidebar-btn--primary">
+        {primary.label} <span aria-hidden="true">→</span>
       </MaybeExternalLink>
     </div>
   )
 }
 
-// A first-class enquiry card for pages that have no contextual pageCallout to
-// act as the sidebar "star" (the Assess sub-pages). Mirrors the feature-callout
-// styling so it reads identically to the enquiry callouts on /develop and
-// /training, but is driven straight from props rather than a pageCallout doc.
-function EnquiryCard({ card }) {
-  if (!card?.buttonUrl) return null
-  return (
-    <div className="sidebar-callout sidebar-callout--feature" style={{ borderLeftColor: 'var(--accent)' }}>
-      {card.heading && <h3>{card.heading}</h3>}
-      {card.body && (
-        <div className="sidebar-callout__body">
-          <p>{card.body}</p>
-        </div>
-      )}
-      <MaybeExternalLink href={card.buttonUrl} className="sidebar-btn sidebar-btn--primary">
-        {card.buttonLabel || 'Start a conversation'} <span aria-hidden="true">→</span>
-      </MaybeExternalLink>
-    </div>
-  )
-}
+// Page types whose primary action is "make an enquiry" rather than the related
+// service. Everything else falls back to the related service (theme.anchorUrl).
+const ENQUIRY_TYPES = new Set(['develop', 'training', 'course', 'project', 'services', 'serviceSubPage'])
 
-// A quieter secondary card that sits under the enquiry card (e.g. the States of
-// Vitality nudge). Deliberately not "feature" styled so it reads as secondary.
-function SecondaryCard({ card }) {
-  if (!card?.linkUrl) return null
-  const accent = card.accentColor || 'var(--accent)'
-  return (
-    <div className="sidebar-callout" style={{ borderLeftColor: accent }}>
-      {card.label && <span className="sidebar-card-label">{card.label}</span>}
-      {card.heading && <h3>{card.heading}</h3>}
-      {card.body && (
-        <div className="sidebar-callout__body">
-          <p>{card.body}</p>
-        </div>
-      )}
-      <MaybeExternalLink
-        href={card.linkUrl}
-        className="callout-link inline-link"
-        style={{ color: accent, backgroundImage: `linear-gradient(${accent}, ${accent})` }}
-      >
-        {card.linkLabel || 'Learn more'} <span aria-hidden="true">→</span>
-      </MaybeExternalLink>
-    </div>
-  )
+// Work out the single page-owned primary CTA, returning the remaining callouts
+// (with any callout consumed as the primary removed). Resolution order:
+//   1. an explicit per-page override (heading/label/url),
+//   2. on enquiry-led pages, the page's enquiry callout if one exists (so its
+//      tailored copy carries through) — otherwise a generic enquiry CTA,
+//   3. otherwise the related service (theme.anchorUrl).
+function resolvePrimary({ contentType, theme, callouts, primaryOverride, enquiryService }) {
+  if (primaryOverride?.url) {
+    return {
+      primary: {
+        kind: 'override',
+        heading: primaryOverride.heading || null,
+        body: primaryOverride.body || null,
+        label: primaryOverride.label || 'Find out more',
+        url: primaryOverride.url,
+      },
+      remaining: callouts,
+    }
+  }
+
+  if (ENQUIRY_TYPES.has(contentType)) {
+    const idx = callouts.findIndex(
+      (c) => typeof c.linkUrl === 'string' && c.linkUrl.startsWith('/enquiry')
+    )
+    if (idx !== -1) {
+      const c = callouts[idx]
+      return {
+        primary: {
+          kind: 'enquiry',
+          heading: c.heading || 'Ready to talk?',
+          body: c.body || null,
+          label: c.linkLabel || 'Make an enquiry',
+          url: c.linkUrl,
+          accentColor: c.accentColor,
+        },
+        remaining: callouts.filter((_, i) => i !== idx),
+      }
+    }
+    const url = enquiryService ? `/enquiry?service=${enquiryService}` : '/enquiry'
+    return {
+      primary: { kind: 'enquiry', heading: 'Ready to talk?', label: 'Make an enquiry', url },
+      remaining: callouts,
+    }
+  }
+
+  if (theme?.anchorUrl) {
+    const t = theme.title || ''
+    return {
+      primary: {
+        kind: 'service',
+        eyebrow: theme.title || null,
+        heading: t
+          ? `Thinking about shifting your organisation's ${t.toLowerCase()}?`
+          : 'Explore the related service',
+        label: 'Explore this service',
+        url: theme.anchorUrl,
+      },
+      remaining: callouts,
+    }
+  }
+
+  return { primary: null, remaining: callouts }
 }
 
 export default function ContentSidebar({
@@ -210,11 +227,11 @@ export default function ContentSidebar({
   sidebarCallouts,
   relatedDimensions,
   hasFloatingBar = false,
-  enquiryPrimary = false,
-  // First-class enquiry card (Assess sub-pages): props, not a pageCallout. When
-  // present and there's no contextual callout, this becomes the sidebar star.
-  enquiryCard,
-  secondaryCard,
+  // The page's primary CTA can be overridden per page (heading/body/label/url);
+  // left undefined, it is derived by convention from contentType + theme.
+  primaryOverride,
+  // Fallback enquiry target (slug) for enquiry-led pages with no enquiry callout.
+  enquiryService,
 }) {
   // Filter "current" out of related lists and cap counts.
   const tools = (relatedTools || [])
@@ -238,48 +255,54 @@ export default function ContentSidebar({
     })
     .slice(0, 2)
 
-  const callouts = sidebarCallouts || []
-  // The first (lowest displayOrder) callout rides in the sticky bottom
-  // stack alongside the service CTA so it stays visible while scrolling.
-  // Any extras fall back into the scroll flow as before.
-  const stickyCallout = callouts[0]
-  const scrollCallouts = callouts.slice(1)
   const dimensions = relatedDimensions || []
 
-  // Enquiry-primary pages render the service as a quiet link (the enquiry
-  // callout is the star); everywhere else it's the dark service card as before.
-  const service = <PrimaryCta theme={theme} contentType={contentType} asLink={enquiryPrimary} />
+  // The single page-owned primary CTA (pinned at the bottom), plus the callouts
+  // left over to act as promos above it.
+  const { primary, remaining } = resolvePrimary({
+    theme,
+    contentType,
+    callouts: sidebarCallouts || [],
+    primaryOverride,
+    enquiryService,
+  })
 
-  // Pages with no contextual pageCallout can still surface a first-class enquiry
-  // card (the Assess sub-pages): a primary "start a conversation" card plus an
-  // optional quieter secondary card. These ride in the same sticky slot the
-  // pageCallout star uses elsewhere, so the layout matches /develop exactly.
-  const enquiry = enquiryCard ? <EnquiryCard card={enquiryCard} /> : null
-  const secondary = secondaryCard ? <SecondaryCard card={secondaryCard} /> : null
+  // Drop any promo that duplicates the primary's destination — on enquiry-led
+  // pages that means any other /enquiry link, so we never show two ways to the
+  // same place.
+  const promos = (remaining || []).filter((c) => {
+    if (!primary?.url) return true
+    if (c.linkUrl === primary.url) return false
+    if (
+      primary.kind === 'enquiry' &&
+      typeof c.linkUrl === 'string' &&
+      c.linkUrl.startsWith('/enquiry')
+    ) {
+      return false
+    }
+    return true
+  })
+
+  // The callouts arrive ordered by displayOrder asc. One "Secondary" promo pins
+  // just above the primary; any further promos (and all "In-flow" ones) scroll.
+  const pinnableIdx = promos.findIndex((c) => (c.role || 'secondary') !== 'inFlow')
+  const pinnedPromo = pinnableIdx !== -1 ? promos[pinnableIdx] : null
+  const scrollPromos = promos.filter((_, i) => i !== pinnableIdx)
 
   return (
     <div className="content-sidebar">
-      {/* The scroll-away top CTA is the dark service card on non-enquiry pages.
-          On enquiry pages the service is only a link, so it rides under the
-          enquiry callout below rather than sitting alone up here. */}
-      <div className="content-sidebar__top-cta">{enquiryPrimary ? null : service}</div>
-
       <div className="content-sidebar__scroll">
-        {/* On mobile the sticky stack is hidden, so the priority callout
-            rides here in-flow (matching the prior mobile layout). On
-            desktop this copy is hidden — the callout lives in the sticky
-            stack below. */}
-        {(stickyCallout || enquiry) && (
+        {/* On mobile the sticky stack is hidden, so the pinned cards ride here
+            in-flow. Hidden on desktop, where they live in the sticky stack. */}
+        {(pinnedPromo || primary) && (
           <div className="sidebar-callout-mobile-only">
-            {stickyCallout
-              ? <SidebarCallout callout={stickyCallout} asButton={enquiryPrimary} feature={enquiryPrimary} />
-              : enquiry}
-            {enquiryPrimary && service}
-            {secondary}
+            {pinnedPromo && <SidebarCallout callout={pinnedPromo} />}
+            {primary && <PrimaryCard primary={primary} />}
           </div>
         )}
-        {scrollCallouts.map((c) => (
-          <SidebarCallout key={c._id} callout={c} asButton={enquiryPrimary} />
+
+        {scrollPromos.map((c) => (
+          <SidebarCallout key={c._id} callout={c} />
         ))}
 
         {tools.length > 0 && (
@@ -368,12 +391,10 @@ export default function ContentSidebar({
         )}
       </div>
 
+      {/* Pinned to the bottom: one promo (if any) above the page's primary CTA. */}
       <SidebarStickyStack gap={hasFloatingBar ? 80 : 32}>
-        {stickyCallout
-          ? <SidebarCallout callout={stickyCallout} asButton={enquiryPrimary} feature={enquiryPrimary} />
-          : enquiry}
-        {secondary}
-        {service}
+        {pinnedPromo && <SidebarCallout callout={pinnedPromo} />}
+        {primary && <PrimaryCard primary={primary} />}
       </SidebarStickyStack>
     </div>
   )

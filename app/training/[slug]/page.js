@@ -188,7 +188,6 @@ export default async function TrainingPage({ params }) {
               relatedTools={course.relatedTools}
               relatedCaseStudies={course.relatedCaseStudiesViaTheme}
               sidebarCallouts={sidebarCallouts}
-              enquiryPrimary
             />
           }
         >

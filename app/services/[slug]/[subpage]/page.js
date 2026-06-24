@@ -15,26 +15,6 @@ import { urlFor } from '../../../../sanity/image'
 import { makeHeadingBlocks } from '../../../../lib/portable-text-headings'
 import { buildHeadingIndex } from '../../../../lib/slugify'
 
-// States of Vitality - external product URL used by the secondary sidebar card.
-// The woven in-body SoV mention is baked into each document at write time, so
-// update that too if this ever changes.
-const STATES_OF_VITALITY_URL = 'https://statesofvitality.com'
-
-// Secondary "States of Vitality" sidebar-card copy, per Assess sub-page. Kept
-// here (not in Sanity) per the build spec's "no new schema for one card" - the
-// heading differs per page, the body is shared. Promote to a document field if
-// it ever needs editing without a deploy.
-const SOV_CARD = {
-  'culture-assessment': {
-    heading: 'Want the ongoing picture?',
-    body: 'States of Vitality is our managed platform for tracking organisational health over time, across eight dimensions.',
-  },
-  'organisational-design-diagnostic': {
-    heading: 'Want the whole-organisation picture?',
-    body: 'States of Vitality is our managed platform for tracking organisational health over time, across eight dimensions.',
-  },
-}
-
 export const revalidate = 3600
 
 export async function generateStaticParams() {
@@ -76,7 +56,6 @@ export default async function ServiceSubPage({ params }) {
   // Heading anchors for the rich body - shared by the left ToC and the heading
   // renderers, so the nav ids match the in-page anchors (the /develop pattern).
   const { idByKey } = buildHeadingIndex(page.body)
-  const sovCard = SOV_CARD[subpage]
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -180,20 +159,12 @@ export default async function ServiceSubPage({ params }) {
               <ContentSidebar
                 contentType="services"
                 currentSlug={`${slug}/${subpage}`}
-                enquiryPrimary
-                enquiryCard={{
+                primaryOverride={{
                   heading: page.ctaHeading,
                   body: page.ctaBody,
-                  buttonLabel: page.ctaButtonLabel,
-                  buttonUrl: page.ctaButtonUrl || (parentSlug ? `/enquiry?service=${parentSlug}` : '/enquiry'),
+                  label: page.ctaButtonLabel,
+                  url: page.ctaButtonUrl || (parentSlug ? `/enquiry?service=${parentSlug}` : '/enquiry'),
                 }}
-                secondaryCard={sovCard ? {
-                  label: 'States of Vitality',
-                  heading: sovCard.heading,
-                  body: sovCard.body,
-                  linkLabel: 'Explore States of Vitality',
-                  linkUrl: STATES_OF_VITALITY_URL,
-                } : undefined}
               />
             }
           >

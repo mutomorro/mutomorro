@@ -910,7 +910,8 @@ export async function getSidebarCallouts(pageType, pageId) {
       linkUrl,
       linkLabel,
       accentColor,
-      displayOrder
+      displayOrder,
+      role
     }
   `, { pageType, pageId }, fetchOpts)
 }

@@ -205,6 +205,24 @@ export default defineType({
     }),
 
     defineField({
+      name: 'role',
+      title: 'Sidebar role',
+      type: 'string',
+      group: 'settings',
+      options: {
+        list: [
+          { title: 'Secondary - can pin above the primary CTA', value: 'secondary' },
+          { title: 'In-flow - always scrolls with the page', value: 'inFlow' },
+        ],
+        layout: 'radio',
+      },
+      initialValue: 'secondary',
+      description:
+        'Sidebar cards only. "Secondary" cards can pin near the bottom of the sidebar, just above the page\'s primary CTA - at most one pins per page (lowest Display Order wins) and any others scroll. "In-flow" cards always scroll with the page. Ignored for full-width (in-page) callouts.',
+      hidden: ({ parent }) => parent?.placement === 'page',
+    }),
+
+    defineField({
       name: 'showInDownloadSuccess',
       title: 'Feature in download success',
       type: 'boolean',

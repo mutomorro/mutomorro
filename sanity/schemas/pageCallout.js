@@ -37,6 +37,7 @@ const PAGE_TYPE_OPTIONS = [
   { title: 'Courses', value: 'courses' },
   { title: 'Develop (Building Capability)', value: 'develop' },
   { title: 'Sectors', value: 'sectors' },
+  { title: 'Service sub-pages', value: 'serviceSubPages' },
 ]
 
 const TARGETABLE_TYPES = [
@@ -47,6 +48,7 @@ const TARGETABLE_TYPES = [
   { type: 'course' },
   { type: 'capabilityService' },
   { type: 'sectorLandingPage' },
+  { type: 'serviceSubPage' },
 ]
 
 export default defineType({

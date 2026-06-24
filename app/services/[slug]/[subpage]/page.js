@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { buildMetadata } from '@/lib/seo'
 import Image from 'next/image'
-import { client, getServiceSubPage } from '../../../../sanity/client'
+import { client, getServiceSubPage, getSidebarCallouts } from '../../../../sanity/client'
 import { PortableText } from '@portabletext/react'
 import { notFound } from 'next/navigation'
 import CTA from '../../../../components/CTA'
@@ -48,6 +48,8 @@ export default async function ServiceSubPage({ params }) {
   const page = await getServiceSubPage(slug, subpage)
 
   if (!page) notFound()
+
+  const sidebarCallouts = await getSidebarCallouts('serviceSubPages', page._id)
 
   const parentSlug = page.parentService?.slug?.current
   const parentTitle = page.parentService?.title
@@ -159,6 +161,7 @@ export default async function ServiceSubPage({ params }) {
               <ContentSidebar
                 contentType="services"
                 currentSlug={`${slug}/${subpage}`}
+                sidebarCallouts={sidebarCallouts}
                 primaryOverride={{
                   heading: page.ctaHeading,
                   body: page.ctaBody,

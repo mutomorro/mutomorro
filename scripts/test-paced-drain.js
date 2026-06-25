@@ -17,7 +17,7 @@ import * as dotenv from 'dotenv'
 dotenv.config({ path: '.env.local' })
 
 import { createClient } from '@supabase/supabase-js'
-import { drainOnce } from '../lib/newsletter-drain.js'
+import { drainOnce, reconcileSend } from '../lib/newsletter-drain.js'
 
 const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY)
 
@@ -126,7 +126,7 @@ async function drainToComplete(sendId, resend, opts = {}, maxTicks = 6) {
 }
 
 async function sendStatus(sendId) {
-  const { data } = await supabase.from('newsletter_sends').select('status, total_sent').eq('id', sendId).single()
+  const { data } = await supabase.from('newsletter_sends').select('status, total_sent, reconciled_at').eq('id', sendId).single()
   return data
 }
 
@@ -148,6 +148,7 @@ async function run() {
     check('no duplicate contact', st.dupContacts === 0)
     check('total_sent derived = 4', ss.total_sent === 4, `total_sent=${ss.total_sent}, status=${ss.status}`)
     check('mock sent 4 emails', resend.stats().sent.length === 4, `mock=${resend.stats().sent.length}`)
+    check('reconciled at finalize', ss.reconciled_at != null, `reconciled_at=${ss.reconciled_at ? 'set' : 'null'}`)
   }
 
   // S2: concurrency A2 — two ticks at once must not double-send
@@ -207,6 +208,28 @@ async function run() {
     check('send completed', res.status === 'complete', `status=${res.status}`)
     check('all 3 sent (claimed row reclaimed)', st.sent === 3 && st.distinctResend === 3, `sent=${st.sent}`)
     check('no duplicate contact', st.dupContacts === 0)
+  }
+
+  // S6: reconciliation catches a cross-batch dupe (one contact delivered in two
+  // sibling sends of the same issue_key)
+  console.log('\nS6 reconciliation (cross-batch dupe)')
+  {
+    const { data: cs } = await supabase.from('contacts')
+      .insert([{ first_name: 'ZZ', signup_email: `zzdrain-${cidSeq++}@test.invalid`, newsletter_status: 'active' }])
+      .select('id, signup_email')
+    const c = cs[0]
+    const mkSend = async (suffix) => {
+      const { data: s } = await supabase.from('newsletter_sends')
+        .insert({ subject: 'ZZ', issue_key: `${KEY_PREFIX}-s6`, preview_text: 't', content_json: PROMO, status: 'complete', total_recipients: 1 })
+        .select('id').single()
+      await supabase.from('newsletter_recipients')
+        .insert({ send_id: s.id, contact_id: c.id, email: c.signup_email, status: 'sent', resend_id: `re_${suffix}` })
+      return s.id
+    }
+    await mkSend('a')
+    const sB = await mkSend('b')
+    const rec = await reconcileSend(sB, { supabase, resend: mockResend() })
+    check('reconcile flags cross-batch dupe', rec.ok === false && rec.dupContacts === 1, `ok=${rec.ok} dup=${rec.dupContacts} missing=${rec.missing}`)
   }
 
   await cleanup()

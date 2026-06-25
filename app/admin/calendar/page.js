@@ -67,6 +67,8 @@ export default function CalendarPage() {
   const [view, setView] = useState('week')
   const [anchorDate, setAnchorDate] = useState(() => getMonday(new Date()))
   const [items, setItems] = useState([])
+  const [overdue, setOverdue] = useState([])
+  const [backlog, setBacklog] = useState([])
   const [loading, setLoading] = useState(true)
   const [modalOpen, setModalOpen] = useState(false)
   const [editingItem, setEditingItem] = useState(null)
@@ -80,6 +82,8 @@ export default function CalendarPage() {
       if (!res.ok) throw new Error('Failed to load')
       const data = await res.json()
       setItems(data.items || [])
+      setOverdue(data.overdue || [])
+      setBacklog(data.backlog || [])
     } catch (err) {
       console.error(err)
     } finally {
@@ -133,6 +137,19 @@ export default function CalendarPage() {
           prev.map((i) => (i.id === item.id ? { ...i, status: nextStatus } : i))
         )
       }
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
+  async function markDone(item) {
+    try {
+      const res = await fetch('/api/admin/calendar', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: item.id, status: 'done' }),
+      })
+      if (res.ok) fetchItems()
     } catch (err) {
       console.error(err)
     }
@@ -257,6 +274,9 @@ export default function CalendarPage() {
         </div>
       </div>
 
+      {/* Summary bar — counts by type for the visible range + overdue/backlog alerts */}
+      <CalendarSummary theme={theme} items={items} overdue={overdue} backlog={backlog} />
+
       {/* Calendar grid */}
       {view === 'week' ? (
         <WeekView
@@ -282,6 +302,31 @@ export default function CalendarPage() {
         />
       )}
 
+      {/* Overdue lane — past-due open items, invisible in the current grid */}
+      {overdue.length > 0 && (
+        <ItemLane
+          theme={theme}
+          title="Overdue"
+          accent={theme.danger}
+          items={overdue}
+          showDate
+          onItemClick={openEdit}
+          onMarkDone={markDone}
+        />
+      )}
+
+      {/* Unscheduled backlog — open items with no date, otherwise invisible */}
+      {backlog.length > 0 && (
+        <ItemLane
+          theme={theme}
+          title="Unscheduled backlog"
+          accent={theme.warning}
+          items={backlog}
+          onItemClick={openEdit}
+          onMarkDone={markDone}
+        />
+      )}
+
       {/* Modal */}
       {modalOpen && (
         <ItemModal
@@ -293,6 +338,76 @@ export default function CalendarPage() {
           onClose={() => setModalOpen(false)}
         />
       )}
+    </div>
+  )
+}
+
+function CalendarSummary({ theme, items, overdue, backlog }) {
+  const byType = {}
+  for (const it of items) byType[it.type] = (byType[it.type] || 0) + 1
+  const typeEntries = Object.entries(byType).sort((a, b) => b[1] - a[1])
+
+  return (
+    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px 16px', alignItems: 'center', marginBottom: '20px', fontSize: '13px' }}>
+      <span style={{ color: theme.textSecondary }}>{items.length} in view</span>
+      {typeEntries.map(([type, n]) => (
+        <span key={type} style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', color: theme.textMuted }}>
+          <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: typeColours[type] || theme.textLabel }} />
+          {n} {type}
+        </span>
+      ))}
+      {overdue.length > 0 && (
+        <span style={{ color: theme.danger, marginLeft: 'auto', fontWeight: 500 }}>
+          ⚠ {overdue.length} overdue
+        </span>
+      )}
+      {backlog.length > 0 && (
+        <span style={{ color: theme.warning, marginLeft: overdue.length > 0 ? 0 : 'auto' }}>
+          {backlog.length} unscheduled
+        </span>
+      )}
+    </div>
+  )
+}
+
+function ItemLane({ theme, title, accent, items, showDate, onItemClick, onMarkDone }) {
+  return (
+    <div style={{ background: theme.cardBg, border: `1px solid ${theme.cardBorder}`, borderRadius: '10px', padding: '16px 18px', marginTop: '24px' }}>
+      <h2 style={{ fontSize: '13px', fontWeight: 400, color: accent, textTransform: 'uppercase', letterSpacing: '0.5px', margin: '0 0 12px' }}>
+        {title} <span style={{ color: theme.textMuted }}>· {items.length}</span>
+      </h2>
+      <div style={{ display: 'flex', flexDirection: 'column' }}>
+        {items.map((item) => (
+          <div
+            key={item.id}
+            style={{
+              display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 0',
+              borderBottom: `1px solid ${theme.rowBorder}`,
+            }}
+          >
+            <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: typeColours[item.type] || theme.textLabel, flexShrink: 0 }} />
+            <div style={{ flex: 1, minWidth: 0, cursor: 'pointer' }} onClick={() => onItemClick(item)}>
+              <div style={{ fontSize: '14px', color: theme.textPrimary, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                {item.title}
+              </div>
+              <div style={{ fontSize: '12px', color: theme.textMuted }}>
+                {item.type}{item.status ? ` · ${item.status}` : ''}
+                {showDate && item.scheduled_date ? ` · was ${new Date(item.scheduled_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}` : ''}
+              </div>
+            </div>
+            <button
+              onClick={() => onMarkDone(item)}
+              title="Mark done"
+              style={{
+                padding: '4px 10px', fontSize: '12px', background: theme.cardBgHover, color: theme.textSecondary,
+                border: `1px solid ${theme.cardBorder}`, borderRadius: '4px', cursor: 'pointer', fontFamily: 'inherit', flexShrink: 0,
+              }}
+            >
+              ✓ Done
+            </button>
+          </div>
+        ))}
+      </div>
     </div>
   )
 }

@@ -89,6 +89,30 @@ export async function GET(request) {
       supabase.from('tenders').select('id', { count: 'exact', head: true }),
     ])
 
+    // Triage queues — the genuine signal in a 7,964-row table.
+    // Action queue: still open, unrated, status 'new', and scored worth a look.
+    // (total_score>=40 ≈ 18 live items; every 'yes' James has ever given scored 80+.)
+    const QUEUE_SCORE_THRESHOLD = 40
+    const nowIso = new Date().toISOString()
+    const in7Iso = new Date(Date.now() + 7 * 86400000).toISOString()
+    const in14Iso = new Date(Date.now() + 14 * 86400000).toISOString()
+    const triageFields = 'id, title, organisation, sector, total_score, ai_summary, deadline, source_url, source, value_low, value_high, status, james_rating'
+
+    const [queueRes, queueCountRes, closingRes, closing7Res, closing14Res] = await Promise.all([
+      supabase.from('tenders').select(triageFields)
+        .eq('status', 'new').is('james_rating', null).gte('total_score', QUEUE_SCORE_THRESHOLD)
+        .or(`deadline.is.null,deadline.gte.${nowIso}`)
+        .order('total_score', { ascending: false }).limit(25),
+      supabase.from('tenders').select('id', { count: 'exact', head: true })
+        .eq('status', 'new').is('james_rating', null).gte('total_score', QUEUE_SCORE_THRESHOLD)
+        .or(`deadline.is.null,deadline.gte.${nowIso}`),
+      supabase.from('tenders').select(triageFields)
+        .gte('deadline', nowIso).lt('deadline', in14Iso)
+        .order('deadline', { ascending: true }).limit(25),
+      supabase.from('tenders').select('id', { count: 'exact', head: true }).gte('deadline', nowIso).lt('deadline', in7Iso),
+      supabase.from('tenders').select('id', { count: 'exact', head: true }).gte('deadline', nowIso).lt('deadline', in14Iso),
+    ])
+
     return NextResponse.json({
       tenders: data || [],
       total: count || 0,
@@ -101,6 +125,14 @@ export async function GET(request) {
         archived: archivedRes.count || 0,
         unrated: unratedRes.count || 0,
         triggers: triggerRes.count || 0,
+        actionQueue: queueCountRes.count || 0,
+        closing7: closing7Res.count || 0,
+        closing14: closing14Res.count || 0,
+      },
+      triage: {
+        scoreThreshold: QUEUE_SCORE_THRESHOLD,
+        queue: queueRes.data || [],
+        closing: closingRes.data || [],
       },
     })
   } catch (err) {

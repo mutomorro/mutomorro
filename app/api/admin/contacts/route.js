@@ -17,6 +17,7 @@ export async function GET(request) {
   const tier = searchParams.get('tier') || ''
   const source = searchParams.get('source') || ''
   const newsletter = searchParams.get('newsletter') || ''
+  const zb = searchParams.get('zb') || ''
   const tag = searchParams.get('tag') || ''
   const page = parseInt(searchParams.get('page') || '1', 10)
   const sort = searchParams.get('sort') || 'created_at'
@@ -26,7 +27,7 @@ export async function GET(request) {
   try {
     let query = supabase
       .from('contacts')
-      .select('id, first_name, last_name, signup_email, organisation_name, role, tier, newsletter_status, sources, first_source, tags, download_count, created_at', { count: 'exact' })
+      .select('id, first_name, last_name, signup_email, organisation_name, role, seniority, industry, enriched, tier, newsletter_status, newsletter_opens, newsletter_clicks, last_download_date, sources, first_source, tags, download_count, created_at', { count: 'exact' })
 
     // Search
     if (search) {
@@ -34,7 +35,9 @@ export async function GET(request) {
     }
 
     // Filters
-    if (tier) {
+    if (tier === '(unset)') {
+      query = query.is('tier', null)
+    } else if (tier) {
       query = query.eq('tier', tier)
     }
     if (source) {
@@ -42,9 +45,18 @@ export async function GET(request) {
     }
     if (newsletter) {
       if (newsletter === 'never') {
-        query = query.is('newsletter_status', null)
+        // 'never' is stored as a literal for most rows, but some legacy rows are
+        // NULL — match both so the filter agrees with the KPI bucket.
+        query = query.or('newsletter_status.is.null,newsletter_status.eq.never')
       } else {
         query = query.eq('newsletter_status', newsletter)
+      }
+    }
+    if (zb) {
+      if (zb === 'unverified') {
+        query = query.is('zb_status', null)
+      } else {
+        query = query.eq('zb_status', zb)
       }
     }
     if (tag) {

@@ -7,6 +7,8 @@ import { AdminThemeProvider, useAdminTheme } from '../../lib/admin-theme-context
 const navItems = [
   { label: 'Overview', href: '/admin' },
   { label: 'Contacts', href: '/admin/contacts' },
+  { label: 'Engagement', href: '/admin/engagement' },
+  { label: 'Enquiries', href: '/admin/enquiries' },
   { label: 'Pipeline', href: '/admin/pipeline' },
   { label: 'Newsletter', href: '/admin/newsletter' },
   { label: 'Outreach', href: '/admin/outreach' },
@@ -14,6 +16,7 @@ const navItems = [
   { label: 'Handoffs', href: '/admin/handoffs' },
   { label: 'Analytics', href: '/admin/analytics' },
   { label: 'Tenders', href: '/admin/tenders' },
+  { label: '404s', href: '/admin/redirects' },
 ]
 
 export default function AdminShell({ children }) {

@@ -37,17 +37,47 @@ export async function GET(request) {
   const startStr = `${startDate.getFullYear()}-${String(startDate.getMonth() + 1).padStart(2, '0')}-${String(startDate.getDate()).padStart(2, '0')}`
   const endStr = `${endDate.getFullYear()}-${String(endDate.getMonth() + 1).padStart(2, '0')}-${String(endDate.getDate()).padStart(2, '0')}`
 
+  // Today (UTC, matching the date param format) — drives the overdue cut.
+  const todayStr = new Date().toISOString().split('T')[0]
+  const DONE_STATES = '("done","published","cancelled")'
+
   try {
-    const { data, error } = await supabase
-      .from('calendar_items')
-      .select('*')
-      .or(`and(scheduled_date.gte.${startStr},scheduled_date.lte.${endStr}),and(due_date.gte.${startStr},due_date.lte.${endStr})`)
-      .order('scheduled_date', { ascending: true })
-      .order('scheduled_time', { ascending: true })
+    const [rangeRes, overdueRes, backlogRes] = await Promise.all([
+      supabase
+        .from('calendar_items')
+        .select('*')
+        .or(`and(scheduled_date.gte.${startStr},scheduled_date.lte.${endStr}),and(due_date.gte.${startStr},due_date.lte.${endStr})`)
+        .order('scheduled_date', { ascending: true })
+        .order('scheduled_time', { ascending: true }),
+      // Overdue — anywhere in the past, still open (not done/published/cancelled).
+      supabase
+        .from('calendar_items')
+        .select('*')
+        .lt('scheduled_date', todayStr)
+        .not('scheduled_date', 'is', null)
+        .not('status', 'in', DONE_STATES)
+        .order('scheduled_date', { ascending: true })
+        .limit(100),
+      // Unscheduled backlog — open items with no scheduled_date (invisible in the grid).
+      supabase
+        .from('calendar_items')
+        .select('*')
+        .is('scheduled_date', null)
+        .not('status', 'in', DONE_STATES)
+        .order('created_at', { ascending: false })
+        .limit(100),
+    ])
 
-    if (error) throw error
+    if (rangeRes.error) throw rangeRes.error
 
-    return NextResponse.json({ items: data || [], start: startStr, end: endStr })
+    return NextResponse.json({
+      items: rangeRes.data || [],
+      overdue: overdueRes.data || [],
+      backlog: backlogRes.data || [],
+      start: startStr,
+      end: endStr,
+      today: todayStr,
+    })
   } catch (err) {
     console.error('Calendar GET error:', err)
     return NextResponse.json({ error: 'Failed to load calendar' }, { status: 500 })

@@ -1,13 +1,15 @@
 'use client'
 
-import { useState, useId } from 'react'
+import { useState, useId, useRef } from 'react'
 import posthog from 'posthog-js'
+import { identifyLead, trackFormStart } from '@/lib/analytics'
 
 export default function NewsletterSignup({ variant = 'inline' }) {
   const [formData, setFormData] = useState({ firstName: '', email: '' })
   const [status, setStatus] = useState('idle') // idle | sending | success | error
   const [honeypot, setHoneypot] = useState('')
   const [formLoadedAt] = useState(Date.now())
+  const startedRef = useRef(false)
 
   const isFooter = variant === 'footer' || variant === 'footer-row'
   const isFooterRow = variant === 'footer-row'
@@ -39,6 +41,10 @@ export default function NewsletterSignup({ variant = 'inline' }) {
   )
 
   function handleChange(e) {
+    if (!startedRef.current) {
+      startedRef.current = true
+      trackFormStart('newsletter', { newsletter_variant: variant })
+    }
     setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }))
   }
 
@@ -59,6 +65,7 @@ export default function NewsletterSignup({ variant = 'inline' }) {
         source_page: window.location.pathname,
         already_subscribed: !!data.alreadySubscribed,
       })
+      identifyLead(formData.email, { lead_stage: 'newsletter' })
       setStatus(data.alreadySubscribed ? 'already' : 'success')
       setFormData({ firstName: '', email: '' })
     } catch {

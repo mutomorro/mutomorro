@@ -4,6 +4,7 @@ import { usePathname } from 'next/navigation'
 import Nav from './Nav'
 import Footer from './Footer'
 import ScrollObserver from './ScrollObserver'
+import ScrollDepth from './ScrollDepth'
 import { ConsentProvider } from './CookieConsent/ConsentProvider'
 import CookieBanner from './CookieConsent/CookieBanner'
 import TrackingScripts from './CookieConsent/TrackingScripts'
@@ -66,6 +67,7 @@ export default function LayoutShell({ children }) {
       <SpeedInsights />
       <PostHogProvider>
         <PostHogPageView />
+        <ScrollDepth />
         <ConsentProvider>
           <a href="#main-content" className="skip-link">Skip to content</a>
           <Nav />

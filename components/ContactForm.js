@@ -1,7 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import posthog from 'posthog-js'
+import { identifyLead, trackFormStart } from '@/lib/analytics'
 
 export default function ContactForm({ service }) {
   const [formData, setFormData] = useState({
@@ -14,8 +15,13 @@ export default function ContactForm({ service }) {
   const [errorMessage, setErrorMessage] = useState('')
   const [honeypot, setHoneypot] = useState('')
   const [formLoadedAt] = useState(Date.now())
+  const startedRef = useRef(false)
 
   function handleChange(e) {
+    if (!startedRef.current) {
+      startedRef.current = true
+      trackFormStart('contact', { service_interest: service || undefined })
+    }
     setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }))
   }
 
@@ -40,6 +46,7 @@ export default function ContactForm({ service }) {
         service_interest: service || undefined,
         source_page: window.location.pathname,
       })
+      identifyLead(formData.email, { lead_stage: 'enquiry', last_enquiry_service: service || undefined })
       setStatus('success')
       setFormData({ name: '', email: '', organisation: '', message: '' })
     } catch (err) {

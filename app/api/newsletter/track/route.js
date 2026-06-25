@@ -1,3 +1,4 @@
+import { after } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { TRACKABLE_HOSTS, incrementSendCounter } from '@/lib/newsletter-tracking'
 
@@ -6,6 +7,11 @@ const PIXEL = Buffer.from(
   'R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7',
   'base64'
 )
+
+const PIXEL_HEADERS = {
+  'Content-Type': 'image/gif',
+  'Cache-Control': 'no-store, no-cache, must-revalidate',
+}
 
 export async function GET(request) {
   const { searchParams } = new URL(request.url)
@@ -26,43 +32,21 @@ export async function GET(request) {
     }
   }
 
-  // If no rid, return pixel or redirect gracefully
+  // No rid: nothing to record — return pixel or redirect.
   if (!rid) {
     if (url) return Response.redirect(url, 302)
-    return new Response(PIXEL, {
-      headers: {
-        'Content-Type': 'image/gif',
-        'Cache-Control': 'no-store, no-cache, must-revalidate',
-      },
-    })
+    return new Response(PIXEL, { headers: PIXEL_HEADERS })
   }
 
-  // Fire off tracking asynchronously - don't block the response
-  const trackingPromise = recordTracking(rid, url)
+  // Record AFTER the response is sent — never hold the connection. The open
+  // storm is independent of send pacing (a 10k issue can yield thousands of
+  // opens in one minute regardless of how slowly we sent), so a per-open DB
+  // round trip in the request path is exactly the connection pressure we are
+  // removing. (The old handler blocked up to 2s waiting on the write.)
+  after(() => recordTracking(rid, url).catch(err => console.error('Tracking error:', err)))
 
-  if (url) {
-    // Click: redirect immediately, tracking runs in background
-    trackingPromise.catch(err => console.error('Tracking error:', err))
-    return Response.redirect(url, 302)
-  }
-
-  // Open: wait briefly for tracking, then return pixel
-  // (Use waitUntil pattern if available, otherwise just don't block too long)
-  try {
-    await Promise.race([
-      trackingPromise,
-      new Promise(resolve => setTimeout(resolve, 2000)),
-    ])
-  } catch (err) {
-    console.error('Tracking error:', err)
-  }
-
-  return new Response(PIXEL, {
-    headers: {
-      'Content-Type': 'image/gif',
-      'Cache-Control': 'no-store, no-cache, must-revalidate',
-    },
-  })
+  if (url) return Response.redirect(url, 302)
+  return new Response(PIXEL, { headers: PIXEL_HEADERS })
 }
 
 async function recordTracking(rid, url) {
@@ -73,80 +57,40 @@ async function recordTracking(rid, url) {
 
   const now = new Date().toISOString()
 
-  // Look up the recipient
-  const { data: recipient, error } = await supabase
-    .from('newsletter_recipients')
-    .select('id, send_id, contact_id, status, opened_at, clicked_at')
-    .eq('id', rid)
-    .single()
-
-  if (error || !recipient) return
-
-  const statusOrder = ['queued', 'pending', 'sent', 'delivered', 'opened', 'clicked']
-
-  // --- Record open ---
-  if (!recipient.opened_at) {
-    // First open - set timestamp
-    const openUpdate = { opened_at: now }
-    // Only upgrade status if it won't downgrade
-    if (statusOrder.indexOf('opened') > statusOrder.indexOf(recipient.status)) {
-      openUpdate.status = 'opened'
-    }
-    await supabase
-      .from('newsletter_recipients')
-      .update(openUpdate)
-      .eq('id', recipient.id)
-
-    // Increment contact newsletter_opens
-    const { data: contact } = await supabase
-      .from('contacts')
-      .select('newsletter_opens')
-      .eq('id', recipient.contact_id)
-      .single()
-
-    if (contact) {
-      await supabase
-        .from('contacts')
-        .update({ newsletter_opens: (contact.newsletter_opens || 0) + 1 })
-        .eq('id', recipient.contact_id)
-    }
-
-    // Increment total_opened on the send record (atomic, race-safe)
-    await incrementSendCounter(supabase, recipient.send_id, 'total_opened')
+  // Record the open. Every pixel hit (and every click) implies an open.
+  // mark_receipt enforces the claimed-floor (never advances a not-yet-sent row's
+  // status out of 'claimed') and returns a row ONLY on the first open for this
+  // recipient — so the aggregate counter is bumped once per recipient, not once
+  // per event. `counted` is true only when the row is durably sent.
+  const { data: openRows, error: openErr } = await supabase
+    .rpc('mark_receipt', { p_recipient_id: rid, p_kind: 'opened', p_at: now })
+  if (openErr) {
+    console.error('track: mark_receipt(opened) failed:', openErr.message || openErr)
+    return
+  }
+  const open = openRows?.[0]
+  if (open?.counted) {
+    await incrementSendCounter(supabase, open.send_id, 'total_opened')
   }
 
-  // --- Record click (if url present) ---
-  if (url && !recipient.clicked_at) {
-    await supabase
-      .from('newsletter_recipients')
-      .update({ status: 'clicked', clicked_at: now })
-      .eq('id', recipient.id)
+  if (!url) return
 
-    // Increment contact newsletter_clicks
-    const { data: contact } = await supabase
-      .from('contacts')
-      .select('newsletter_clicks')
-      .eq('id', recipient.contact_id)
-      .single()
-
-    if (contact) {
-      await supabase
-        .from('contacts')
-        .update({ newsletter_clicks: (contact.newsletter_clicks || 0) + 1 })
-        .eq('id', recipient.contact_id)
-    }
-
-    // Increment total_clicked on the send record (atomic, race-safe)
-    await incrementSendCounter(supabase, recipient.send_id, 'total_clicked')
-
-    // Write a signal
-    await supabase
-      .from('signals')
-      .insert({
-        contact_id: recipient.contact_id,
-        type: 'newsletter-click',
-        strength: 'medium',
-        metadata: { url },
-      })
+  // Record the click. The first-party pixel is the SINGLE source for clicks
+  // (the Resend webhook ignores click events), so no double-count.
+  const { data: clickRows, error: clickErr } = await supabase
+    .rpc('mark_receipt', { p_recipient_id: rid, p_kind: 'clicked', p_at: now })
+  if (clickErr) {
+    console.error('track: mark_receipt(clicked) failed:', clickErr.message || clickErr)
+    return
+  }
+  const click = clickRows?.[0]
+  if (click?.counted) {
+    await incrementSendCounter(supabase, click.send_id, 'total_clicked')
+    await supabase.from('signals').insert({
+      contact_id: click.contact_id,
+      type: 'newsletter-click',
+      strength: 'medium',
+      metadata: { url },
+    })
   }
 }

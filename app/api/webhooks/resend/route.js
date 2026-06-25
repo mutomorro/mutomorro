@@ -48,148 +48,69 @@ export async function POST(request) {
   const event = JSON.parse(rawBody)
   const { type, data } = event
   const emailId = data?.email_id
-  const svixId = request.headers.get('svix-id')
 
   if (!emailId) {
     return new Response('OK', { status: 200 })
   }
 
-  try {
-    // Find the newsletter recipient by resend_id
-    const { data: recipient } = await supabase
-      .from('newsletter_recipients')
-      .select('id, send_id, contact_id, status')
-      .eq('resend_id', emailId)
-      .single()
+  // Opens and clicks are tracked first-party via the open pixel / click
+  // redirect (the SINGLE source of truth for engagement). We deliberately
+  // ignore Resend's email.opened / email.clicked here: it halves open-event
+  // load on the shared DB during a send, and removes the double-count the old
+  // handler produced (it bumped total_opened on every open event, ungated).
+  const kindMap = {
+    'email.delivered': 'delivered',
+    'email.bounced': 'bounced',
+    'email.complained': 'complained',
+  }
+  const kind = kindMap[type]
+  if (!kind) {
+    return new Response('OK', { status: 200 })
+  }
 
-    // Not a newsletter broadcast — but it may be a transactional confirmation
-    // email. Reconcile delivery/bounce/complaint against the contact so the
-    // double opt-in flow is no longer a delivery blind spot.
-    if (!recipient) {
+  const now = new Date().toISOString()
+
+  try {
+    // One guarded round trip: stamps the timestamp, guards status against a
+    // downgrade, and returns a row ONLY on the first such event for the
+    // recipient (so the aggregate counter is bumped once). No row = a duplicate
+    // event OR not a newsletter recipient.
+    const { data: rows, error } = await supabase.rpc('mark_receipt_by_resend', {
+      p_resend_id: emailId,
+      p_kind: kind,
+      p_at: now,
+    })
+
+    if (error) {
+      console.error('Webhook mark_receipt_by_resend error:', error.message || error)
+      return new Response('OK', { status: 200 })
+    }
+
+    const rec = rows?.[0]
+
+    if (!rec) {
+      // Not a (first-time) newsletter recipient event. It may be a transactional
+      // confirmation/reminder email — reconcile delivery/bounce/complaint against
+      // the contact so the double opt-in flow is not a delivery blind spot.
+      // (A duplicate newsletter event also lands here and is a harmless no-op:
+      // a newsletter resend_id never matches a contact's confirmation_email_id.)
       await handleConfirmationEmailEvent(supabase, emailId, type)
       return new Response('OK', { status: 200 })
     }
 
-    // Idempotency: check if this svix-id was already processed
-    // We use the recipient status as a proxy - don't downgrade status
-    const statusOrder = ['queued', 'sent', 'delivered', 'opened', 'clicked']
-    const eventStatusMap = {
-      'email.delivered': 'delivered',
-      'email.opened': 'opened',
-      'email.clicked': 'clicked',
-      'email.bounced': 'bounced',
-      'email.complained': 'complained',
-    }
-
-    const newStatus = eventStatusMap[type]
-    if (!newStatus) {
-      return new Response('OK', { status: 200 })
-    }
-
-    // For progression events, don't downgrade (e.g. don't go from clicked back to opened)
-    if (
-      statusOrder.includes(recipient.status) &&
-      statusOrder.includes(newStatus) &&
-      statusOrder.indexOf(newStatus) <= statusOrder.indexOf(recipient.status)
-    ) {
-      // Already at this status or beyond - but still allow aggregate counter updates for opens/clicks
-      if (type !== 'email.opened' && type !== 'email.clicked') {
-        return new Response('OK', { status: 200 })
-      }
-    }
-
-    const now = new Date().toISOString()
-
-    if (type === 'email.delivered') {
-      await supabase
-        .from('newsletter_recipients')
-        .update({ status: 'delivered', delivered_at: now })
-        .eq('id', recipient.id)
-
-      await incrementSendCounter(supabase, recipient.send_id, 'total_delivered')
-
-    } else if (type === 'email.opened') {
-      // Only update recipient status if not already opened or clicked
-      if (recipient.status !== 'opened' && recipient.status !== 'clicked') {
-        await supabase
-          .from('newsletter_recipients')
-          .update({ status: 'opened', opened_at: now })
-          .eq('id', recipient.id)
-      }
-
-      // Always increment aggregate counters (Resend sends one event per open)
-      await incrementSendCounter(supabase, recipient.send_id, 'total_opened')
-
-      await supabase
-        .from('contacts')
-        .select('newsletter_opens')
-        .eq('id', recipient.contact_id)
-        .single()
-        .then(({ data: contact }) => {
-          if (contact) {
-            return supabase
-              .from('contacts')
-              .update({ newsletter_opens: (contact.newsletter_opens || 0) + 1 })
-              .eq('id', recipient.contact_id)
-          }
-        })
-
-    } else if (type === 'email.clicked') {
-      if (recipient.status !== 'clicked') {
-        await supabase
-          .from('newsletter_recipients')
-          .update({ status: 'clicked', clicked_at: now })
-          .eq('id', recipient.id)
-      }
-
-      await incrementSendCounter(supabase, recipient.send_id, 'total_clicked')
-
-      await supabase
-        .from('contacts')
-        .select('newsletter_clicks')
-        .eq('id', recipient.contact_id)
-        .single()
-        .then(({ data: contact }) => {
-          if (contact) {
-            return supabase
-              .from('contacts')
-              .update({ newsletter_clicks: (contact.newsletter_clicks || 0) + 1 })
-              .eq('id', recipient.contact_id)
-          }
-        })
-
-      // Write a signal for click engagement
-      await supabase
-        .from('signals')
-        .insert({
-          contact_id: recipient.contact_id,
-          type: 'newsletter-click',
-          strength: 'medium',
-        })
-
-    } else if (type === 'email.bounced') {
-      await supabase
-        .from('newsletter_recipients')
-        .update({ status: 'bounced', bounced_at: now })
-        .eq('id', recipient.id)
-
-      await incrementSendCounter(supabase, recipient.send_id, 'total_bounced')
-
+    if (kind === 'delivered') {
+      await incrementSendCounter(supabase, rec.send_id, 'total_delivered')
+    } else if (kind === 'bounced') {
+      await incrementSendCounter(supabase, rec.send_id, 'total_bounced')
       await supabase
         .from('contacts')
         .update({ newsletter_status: 'bounced' })
-        .eq('id', recipient.contact_id)
-
-    } else if (type === 'email.complained') {
-      await supabase
-        .from('newsletter_recipients')
-        .update({ status: 'complained' })
-        .eq('id', recipient.id)
-
+        .eq('id', rec.contact_id)
+    } else if (kind === 'complained') {
       await supabase
         .from('contacts')
         .update({ newsletter_status: 'unsubscribed' })
-        .eq('id', recipient.contact_id)
+        .eq('id', rec.contact_id)
     }
 
     console.log(`Webhook processed: ${type} for ${emailId}`)

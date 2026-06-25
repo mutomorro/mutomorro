@@ -128,6 +128,12 @@ export async function POST(request) {
     return NextResponse.json({ error: 'audienceId is required' }, { status: 400 })
   }
 
+  // Cutover flag (default 'legacy' = the synchronous burst). When 'paced', POST
+  // only validates + snapshots content + materialises the 'queued' recipient
+  // rows, and the drain cron sends them. The legacy burst stays one flag-flip
+  // (or revert) away for rollback.
+  const pacedMode = process.env.NEWSLETTER_SEND_MODE === 'paced'
+
   // ─── 1. Resolve template + content ────────────────────────────────
   let resolvedSubject = ''
   let resolvedPreview = ''
@@ -236,19 +242,29 @@ export async function POST(request) {
     .from('newsletter_sends')
     .select('id')
     .eq('issue_key', issueKey)
-    .range(0, 9999)
+    .order('id', { ascending: true })
 
   const matchingSendIds = (matchingSends || []).map(s => s.id)
+  // Legacy treats only 'delivered'-bucket rows as already-sent ('queued' rows
+  // from a stuck burst are retryable). Paced additionally excludes contacts
+  // already 'queued'/'claimed' in a sibling send of this issue (the drain
+  // resumes those from the original send) plus 'complained' — so a re-POST can
+  // never cross-batch-duplicate a contact who is already in flight.
+  const dedupStatuses = pacedMode
+    ? ['queued', 'claimed', 'sent', 'delivered', 'opened', 'clicked', 'bounced', 'complained']
+    : DELIVERED_STATUSES
   let alreadySentIds = new Set()
   if (matchingSendIds.length > 0) {
-    // Only treat rows that actually went out as "already sent". 'queued' rows
-    // come from a send that started but never completed (e.g. function
-    // timeout) — those contacts never received an email and must be retried.
+    // Paginated fetch needs a stable, unique ORDER BY (CLAUDE.md gotcha) or a
+    // page boundary can skip a contact — which would let an already-sent
+    // recipient back into the audience. (send_id, contact_id) is unique.
     const alreadySent = await fetchAllPaginated((from, to) => supabase
       .from('newsletter_recipients')
       .select('contact_id')
       .in('send_id', matchingSendIds)
-      .in('status', DELIVERED_STATUSES)
+      .in('status', dedupStatuses)
+      .order('send_id', { ascending: true })
+      .order('contact_id', { ascending: true })
       .range(from, to)
     )
     alreadySentIds = new Set(alreadySent.map(r => r.contact_id))
@@ -299,13 +315,13 @@ export async function POST(request) {
     }, { status: 409 })
   }
 
-  // ─── 8. Pre-create the newsletter_sends row (status='sending') ────
+  // ─── 8. Create the newsletter_sends row + snapshot content ────────
   const sendPayload = {
     subject: resolvedSubject,
     issue_key: issueKey,
     preview_text: resolvedPreview,
     content_json: template === 'editorial' ? editorialContent : promoContent,
-    status: 'sending',
+    status: pacedMode ? 'draining' : 'sending',
     total_recipients: eligible.length,
   }
 
@@ -321,8 +337,50 @@ export async function POST(request) {
   }
   const sendId = send.id
 
-  // Kick off the actual work after the response. The status endpoint reads
-  // the row and recipient table for live progress.
+  // ─── PACED: materialise the queue synchronously and return ────────
+  // No render, no Resend here — the drain cron claims and sends these rows.
+  if (pacedMode) {
+    const recipientRows = eligible.map(c => ({
+      send_id: sendId,
+      contact_id: c.id,
+      email: c.signup_email,
+      status: 'queued',
+    }))
+    // Idempotent on (send_id, contact_id) — a replay never duplicates a row.
+    // Chunked to keep each round trip bounded for large audiences.
+    const CHUNK = 1000
+    for (let i = 0; i < recipientRows.length; i += CHUNK) {
+      const { error: insErr } = await supabase
+        .from('newsletter_recipients')
+        .upsert(recipientRows.slice(i, i + CHUNK), {
+          onConflict: 'send_id,contact_id',
+          ignoreDuplicates: true,
+        })
+      if (insErr) {
+        console.error('create-queue: recipient insert failed:', insErr)
+        await supabase
+          .from('newsletter_sends')
+          .update({
+            status: 'failed',
+            completed_at: new Date().toISOString(),
+            failure_reason: `create-queue insert failed: ${insErr.message || insErr}`,
+          })
+          .eq('id', sendId)
+        return NextResponse.json({ error: 'Failed to materialise the send queue' }, { status: 500 })
+      }
+    }
+
+    return NextResponse.json({
+      sendId,
+      status: 'draining',
+      total: eligible.length,
+      issueKey,
+      audienceName: audience.name,
+    })
+  }
+
+  // ─── LEGACY: kick off the synchronous burst after the response. The
+  // status endpoint reads the row and recipient table for live progress.
   after(async () => {
     try {
       await runSend({

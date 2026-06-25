@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
-import { fetchAllPaginated } from '../../../../lib/supabase-paginate.js'
 
 export async function GET() {
   const supabase = createClient(
@@ -22,7 +21,8 @@ export async function GET() {
       sendsResult,
       byTier,
       bySource,
-      recipientsAll,
+      issueStatsResult,
+      sendStatsResult,
     ] = await Promise.all([
       supabase.from('contacts').select('id', { count: 'exact', head: true }).in('newsletter_status', ['active', 'confirmed']),
       supabase.from('contacts').select('id', { count: 'exact', head: true }).eq('newsletter_status', 'unsubscribed'),
@@ -37,30 +37,36 @@ export async function GET() {
         .range(0, 9999),
       supabase.rpc('get_newsletter_tier_counts'),
       supabase.rpc('get_newsletter_source_counts'),
-      // Live engagement stats — only the columns we need to aggregate.
-      fetchAllPaginated((from, to) => supabase
-        .from('newsletter_recipients')
-        .select('send_id, contact_id, status, opened_at, clicked_at')
-        .range(from, to)
-      ),
+      // Server-side GROUP BY aggregations (replaces loading the entire
+      // newsletter_recipients table into JS): per-issue DISTINCT-contact stats
+      // for the headline, per-send row counts for the batch-detail expand.
+      supabase.rpc('get_newsletter_issue_stats'),
+      supabase.rpc('get_newsletter_send_stats'),
     ])
 
     const allSends = sendsResult.data || []
-    const recipients = recipientsAll || []
 
-    // Aggregate live engagement per send_id
+    // Per-send row counts (= per-batch distinct recipients) for the expand detail.
     const perSend = new Map()
-    for (const r of recipients) {
-      let s = perSend.get(r.send_id)
-      if (!s) {
-        s = { total: 0, opened: 0, clicked: 0, bounced: 0, contactIds: new Set() }
-        perSend.set(r.send_id, s)
-      }
-      s.total++
-      s.contactIds.add(r.contact_id)
-      if (r.opened_at) s.opened++
-      if (r.clicked_at) s.clicked++
-      if (r.status === 'bounced') s.bounced++
+    for (const r of (sendStatsResult.data || [])) {
+      perSend.set(r.send_id, {
+        total: Number(r.total),
+        opened: Number(r.opened),
+        clicked: Number(r.clicked),
+        bounced: Number(r.bounced),
+      })
+    }
+
+    // Per-issue DISTINCT-contact engagement (dedupes multi-batch retries).
+    const issueStats = new Map()
+    for (const r of (issueStatsResult.data || [])) {
+      issueStats.set(r.group_key, {
+        recipients: Number(r.recipients),
+        delivered: Number(r.delivered),
+        opened: Number(r.opened),
+        clicked: Number(r.clicked),
+        bounced: Number(r.bounced),
+      })
     }
 
     // Group sends by issue_key — sends without an issue_key stand alone (id as the key).
@@ -87,18 +93,8 @@ export async function GET() {
     }
 
     const grouped = Array.from(groups.values()).map(g => {
-      const sendIds = g.sends.map(s => s.id)
-      let total = 0, opened = 0, clicked = 0, bounced = 0
-      const uniqueContacts = new Set()
-      for (const id of sendIds) {
-        const live = perSend.get(id)
-        if (!live) continue
-        total += live.total
-        opened += live.opened
-        clicked += live.clicked
-        bounced += live.bounced
-        for (const cid of live.contactIds) uniqueContacts.add(cid)
-      }
+      const stats = issueStats.get(g.key) || { recipients: 0, delivered: 0, opened: 0, clicked: 0, bounced: 0 }
+
       // Determine combined status: any 'sending' wins; else 'failed' if any failed; else 'complete'
       let combinedStatus = 'complete'
       if (g.sends.some(s => s.status === 'sending')) combinedStatus = 'sending'
@@ -111,12 +107,13 @@ export async function GET() {
         createdAt: g.createdAt,
         status: combinedStatus,
         batchCount: g.sends.length,
-        // Aggregate counts across all batches
-        total,
-        opened,
-        clicked,
-        bounced,
-        uniqueContacts: uniqueContacts.size,
+        // Headline = DISTINCT contacts across all batches of the issue
+        // (fixes the old attempt-row sum that showed e.g. 6,120 for 3,818 sent).
+        delivered: stats.delivered,
+        recipients: stats.recipients,
+        opened: stats.opened,
+        clicked: stats.clicked,
+        bounced: stats.bounced,
         // Per-batch rows for expand-to-detail
         batches: g.sends.map(s => {
           const live = perSend.get(s.id) || { total: 0, opened: 0, clicked: 0, bounced: 0 }
@@ -134,7 +131,7 @@ export async function GET() {
     }).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
 
     // Last send summary = most recent group with at least one delivered email
-    const lastSend = grouped.find(g => g.total > 0) || null
+    const lastSend = grouped.find(g => g.delivered > 0) || null
 
     const tierRows = byTier.data || []
     const sourceRows = bySource.data || []

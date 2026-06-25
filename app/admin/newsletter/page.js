@@ -255,9 +255,9 @@ function Skeleton({ theme, height = 20, width }) {
 }
 
 function LastSendSummary({ theme, send }) {
-  const openRate = pct(send.opened, send.total)
-  const clickRate = pct(send.clicked, send.total)
-  const bounceRate = pct(send.bounced, send.total)
+  const openRate = pct(send.opened, send.delivered)
+  const clickRate = pct(send.clicked, send.delivered)
+  const bounceRate = pct(send.bounced, send.delivered)
   const bounceHigh = bounceRate !== null && bounceRate > 2
 
   return (
@@ -272,7 +272,7 @@ function LastSendSummary({ theme, send }) {
       </div>
 
       <div className="admin-lastsend-metrics" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px' }}>
-        <Metric theme={theme} label="Sent" value={send.total.toLocaleString()} />
+        <Metric theme={theme} label="Sent" value={send.delivered.toLocaleString()} />
         <Metric
           theme={theme}
           label="Open rate"
@@ -364,9 +364,9 @@ function SendHistory({ theme, sends, expanded, setExpanded }) {
         {sends.map((g) => {
           const isOpen = !!expanded[g.key]
           const canExpand = g.batchCount > 1
-          const openRate = pct(g.opened, g.total)
-          const clickRate = pct(g.clicked, g.total)
-          const bounceRate = pct(g.bounced, g.total)
+          const openRate = pct(g.opened, g.delivered)
+          const clickRate = pct(g.clicked, g.delivered)
+          const bounceRate = pct(g.bounced, g.delivered)
           const bounceHigh = bounceRate !== null && bounceRate > 2
 
           return (
@@ -400,7 +400,7 @@ function SendHistory({ theme, sends, expanded, setExpanded }) {
                 <div style={{ fontSize: '12px', color: theme.textMuted }}>
                   {shortDate(g.createdAt)}
                 </div>
-                <div>{g.total.toLocaleString()}</div>
+                <div>{g.delivered.toLocaleString()}</div>
                 <div>
                   {openRate !== null ? openRate.toFixed(1) + '%' : '—'}
                   <span style={{ fontSize: '11px', marginLeft: '4px', color: theme.textMuted }}>

@@ -22,12 +22,14 @@ export async function GET(_request, { params }) {
       return NextResponse.json({ error: 'Send not found' }, { status: 404 })
     }
 
-    // Live count of sent recipients (in case total_sent on the row is stale)
+    // Live count of recipients actually sent — keyed on the durable resend_id,
+    // not status='sent' (webhooks advance rows to delivered/opened during a
+    // paced drain, which would otherwise undercount progress).
     const { count: sentCount } = await supabase
       .from('newsletter_recipients')
       .select('*', { count: 'exact', head: true })
       .eq('send_id', id)
-      .eq('status', 'sent')
+      .not('resend_id', 'is', null)
 
     return NextResponse.json({
       sendId: send.id,

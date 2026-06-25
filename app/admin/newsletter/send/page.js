@@ -260,7 +260,7 @@ export default function NewsletterSendPage() {
       .then((r) => r.ok ? r.json() : Promise.reject())
       .then((d) => {
         setSendProgress(d)
-        if (d.status === 'complete' || d.status === 'failed') {
+        if (d.status === 'complete' || d.status === 'failed' || d.status === 'paused_quota') {
           if (pollRef.current) {
             clearInterval(pollRef.current)
             pollRef.current = null
@@ -908,11 +908,12 @@ function SendProgress({ theme, progress }) {
   const pct = progress.total > 0 ? Math.min(100, (progress.sent / progress.total) * 100) : 0
   const isComplete = progress.status === 'complete'
   const isFailed = progress.status === 'failed'
+  const isPaused = progress.status === 'paused_quota'
   return (
     <div style={{ marginTop: '20px', padding: '18px', background: isComplete ? 'rgba(45,212,191,0.06)' : isFailed ? 'rgba(255,66,121,0.06)' : theme.accentBg, borderRadius: '6px', border: `1px solid ${isComplete ? 'rgba(45,212,191,0.2)' : isFailed ? 'rgba(255,66,121,0.2)' : theme.accentBorder}` }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '10px', flexWrap: 'wrap', gap: '8px' }}>
         <span style={{ fontSize: '14px', color: theme.textPrimary, fontWeight: 400 }}>
-          {isComplete ? 'Send complete' : isFailed ? 'Send failed' : 'Sending…'}
+          {isComplete ? 'Send complete' : isFailed ? 'Send failed' : isPaused ? 'Paused (Resend quota)' : 'Sending…'}
         </span>
         <span style={{ fontSize: '13px', color: theme.textSecondary }}>
           {progress.sent.toLocaleString()} / {progress.total.toLocaleString()}

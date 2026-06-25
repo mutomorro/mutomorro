@@ -40,6 +40,7 @@ import {
   fetchAudienceContacts,
 } from '../../../../../lib/newsletter-audiences.js'
 import { fetchAllPaginated } from '../../../../../lib/supabase-paginate.js'
+import { drainOnce } from '../../../../../lib/newsletter-drain.js'
 
 export const maxDuration = 800
 
@@ -55,6 +56,10 @@ const SUMMARY_RECIPIENT = 'james@mutomorro.com'
 // (notably 'queued') means the send never completed for that contact and they
 // must be eligible for retry.
 const DELIVERED_STATUSES = ['sent', 'delivered', 'opened', 'clicked', 'bounced']
+// Paced create-queue: sends at or below this drain inline (finish in the
+// request); the cron mops up anything left.
+const INLINE_SEND_THRESHOLD = 250
+const INLINE_DRAIN_BUDGET_MS = 15_000
 
 const EXCLUDED_DOMAIN_PATTERNS = [
   /\.edu$/i,
@@ -98,6 +103,25 @@ export async function POST(request) {
     .select('id')
   if (stuckRows && stuckRows.length > 0) {
     console.log(`Newsletter send: auto-recovered ${stuckRows.length} stuck send(s)`)
+  }
+
+  // Recover paced sends whose drain cron has gone silent (E2): a 'draining' row
+  // whose heartbeat is stale (or never stamped well after creation) means the
+  // cron stopped. Flip to failed so the operator notices and dedup unblocks.
+  const hbStale = new Date(Date.now() - 15 * 60 * 1000).toISOString()
+  const neverStamped = new Date(Date.now() - 5 * 60 * 1000).toISOString()
+  const { data: stuckDraining } = await supabase
+    .from('newsletter_sends')
+    .update({
+      status: 'failed',
+      completed_at: new Date().toISOString(),
+      failure_reason: 'Auto-failed: draining with no recent drain-cron heartbeat (cron stopped).',
+    })
+    .eq('status', 'draining')
+    .or(`drain_heartbeat_at.lt.${hbStale},and(drain_heartbeat_at.is.null,created_at.lt.${neverStamped})`)
+    .select('id')
+  if (stuckDraining && stuckDraining.length > 0) {
+    console.log(`Newsletter send: auto-recovered ${stuckDraining.length} stuck draining send(s)`)
   }
 
   let body
@@ -367,6 +391,17 @@ export async function POST(request) {
           })
           .eq('id', sendId)
         return NextResponse.json({ error: 'Failed to materialise the send queue' }, { status: 500 })
+      }
+    }
+
+    // Tiny sends: drain inline so they finish in the request; the cron mops up
+    // any remainder. Same claim_newsletter_wave SKIP LOCKED, so a coincident
+    // cron tick is the ordinary A2 case.
+    if (eligible.length <= INLINE_SEND_THRESHOLD) {
+      try {
+        await drainOnce(sendId, { supabase, resend, budgetMs: INLINE_DRAIN_BUDGET_MS })
+      } catch (e) {
+        console.error('create-queue: inline drain failed (cron will continue):', e?.message || e)
       }
     }
 

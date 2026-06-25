@@ -6,9 +6,40 @@ Scope: mutomorro.com monthly newsletter via Resend (Amazon SES). Trigger: one te
 
 - **Authentication is genuinely sound.** Both DKIM and SPF align to the From domain and DMARC PASSES for these sends (DKIM `d=mutomorro.com` is identifier-aligned; envelope `send.mutomorro.com` aligns to From under relaxed SPF). This is the part you do *not* need to panic about before the full send.
 - **The photekton spam landing is almost certainly a weak/false signal, not a systemic fault.** `photekton.com` runs on Google Workspace (`dig MX` → `smtp.google.com`), so it was Gmail's filter. Gmail leans heavily on *domain reputation + per-recipient engagement*; a near-dead catch-all test inbox with zero prior opens is exactly the kind of address Gmail spam-files on thin reputation. One such address is not evidence of a list-wide problem.
-- **Nothing here is a hard blocker** for the ~3,800 send — auth passes, plain text is auto-generated, one-click unsubscribe and a postal address are present, link tracking is first-party (no misaligned tracking domain). The send can proceed.
+- **Nothing here is a hard blocker** for the ~3,800 send — auth passes, plain text is auto-generated, one-click unsubscribe and a postal address are present, link tracking is first-party (no misaligned tracking domain). **SUPERSEDED — see "Update" below:** the original audit cleared the send to proceed, but Google Postmaster data on a real send (Drift = 1.03% spam) added one genuine pre-send action — trim the never-engaged.
 - **Two things are worth doing before the send as cheap insurance:** (1) check the domain's current standing in Resend Deliverability Insights + Google Postmaster Tools, and (2) confirm the ~3,800 audience is genuinely opt-in/engaged (a young low-volume sender blasting a large cold-ish list in one month is the single biggest reputation risk here — far bigger than any template detail).
 - **Recommended hardening (not blockers):** upgrade DKIM 1024→2048-bit (it is 1024 today, verified) and move DMARC `p=none → p=quarantine` after a couple of clean sends.
+
+---
+
+## Update — the decisive finding: engagement, not auth (25 Jun, supersedes "no hard blocker")
+
+The audit below stands on the technicals (auth passes, content clean). But correlating Google Postmaster spam data against real sends changed the headline. **There IS a pre-full-list-send action: trim the never-engaged.**
+
+**The evidence — real send data points:**
+- **Drift "Slow enough to miss" (28 May, 3,885 delivered, ~1,714 Gmail): Postmaster user-reported spam = 1.03%** — 3.4× Gmail's 0.3% policy line, on a *clean, no-duplicate, opt-in* send with a Gmail denominator large enough to be meaningful. So the spam is NOT residual April warm-up duplicate fatigue ([[project_postmaster_spam_blips]]) — a clean full-list send still draws ~1%.
+- **Promo "Introducing Moresapien" (10 Jun, 562, smaller subset): Postmaster spam = 0.00%** — consistent (smaller/cleaner = clean), but the Gmail denominator (~250) is too small to be decisive on its own.
+- **Fixes That Fail (25 Jun, 3,833): Postmaster lags ~8 days; figure expected ~3 July** — the tie-breaker, and it lands before the full-list send (~2 weeks out), so the cut can be decided on data, not a guess.
+
+**Root cause — list provenance, not the engine/auth/content.** The sendable audience is a lead-magnet list, not a newsletter list:
+- 3,778 sendable (`active`/`confirmed`); **84% (3,175) first-sourced from `template-download`**, only 6 from `newsletter-signup`.
+- **34% (1,273) have never opened or clicked any send.** People who downloaded a template months ago don't recall consenting to a newsletter, so a fraction hit "report spam" instead of unsubscribe.
+
+**The Gmail asymmetry makes it self-perpetuating.** Resend has shown 0 complaints throughout because **Gmail does not relay individual spam reports** to senders (only aggregate Postmaster data); Microsoft/Outlook also no longer reliably relay. The complaint→unsubscribe webhook ([webhooks/resend/route.js:109](app/api/webhooks/resend/route.js)) *does* auto-unsubscribe on `email.complained` — but it never fires for Gmail, so **Gmail complainers are never removed and keep receiving (and re-reporting) every send.** The list cannot self-clean on the side that's actually complaining; only a proactive engagement-based cut reaches them.
+
+**The cut: by engagement, NOT by Gmail.** Gmail looks like the culprit only because it's the one provider that lets us see the complaints — but Gmail addresses on this list engage *better* (69% open/click vs 64% for non-Gmail). Cutting "all Gmail" would bin ~1,161 engaged readers. The clean lever is the never-engaged, in priority order:
+
+| Cut tier | Count (cumulative) | Rationale |
+|---|---|---|
+| Gmail never-engaged | 520 | zero value + low B2B + the only segment that complains *invisibly* — cut first |
+| + other free-webmail never-engaged | 718 | same low-B2B-value logic (yahoo/hotmail/outlook.com/icloud/etc.) |
+| + cold business addresses | 1,273 | cold but possible prospects — consider re-permission over a hard cut |
+
+**The engaged core is strong, so the cut costs little.** Last 3 sends: **click rate 4.4–5.9% (~2× the B2B average)**, click-to-open up to 21%, open rate 28–37% on the full list — projecting to **~45–55% once the dead weight is removed** (top-quartile B2B). Trimming makes the metrics reflect reality *and* protects deliverability for everyone (engagement is the dominant reputation signal; non-openers actively drag the domain).
+
+**Decision status:** cut agreed in principle; depth pending the 25 Jun Postmaster figure (~3 July). If still ≥ ~0.5%, cut the never-engaged (start with the 520 Gmail-cold); if < 0.3%, hold and keep monitoring. Reversible (suppress, don't delete — they stay in the CRM for sales/nurture). Tracked as task #4. Going forward, a standing "no opens/clicks in ~6 months → suppress" sunset rule keeps the list clean.
+
+**Also surfaced:** the promo template doesn't route links through the click-tracker (0 clicks on the 10 Jun promo despite 33.8% opens) — fix before the next promo so promo engagement isn't blind.
 
 ---
 
@@ -109,6 +140,14 @@ Content & structure are in good shape and contain **no deliverability blockers.*
 
 ## Prioritized fix list
 
+**Top priority — added 25 Jun after Postmaster data (see Update); these supersede "the send can proceed":**
+
+| # | Fix | Area | Impact | Effort | Where | Blocker? |
+|---|-----|------|--------|--------|-------|----------|
+| 0 | **Trim the never-engaged** (suppress, don't delete; by engagement not domain — start with the 520 Gmail-cold, up to all 1,273 cold) before the full-list send | Reputation | **Critical** | Low–Med | new `newsletter_audiences` filter (`newsletter_opens>0 OR newsletter_clicks>0`) | **Pre-send (pending 25 Jun figure ~3 July)** |
+| 0b | Standing **sunset rule** — auto-suppress contacts with no open/click in ~6 months | Reputation | High | Med | cron / audience definition | Ongoing |
+| 0c | Fix **promo template click-tracking** (links not routed through `/api/newsletter/track`; 0 clicks on 10 Jun) | Measurement | Med | Low | `components/emails/promo-template.jsx` | Before next promo |
+
 Legend — **Blocker?** = needed before the ~3,800 full-list send. Impact = effect on deliverability.
 
 | # | Fix | Area | Impact | Effort | Where | Blocker? |
@@ -123,7 +162,7 @@ Legend — **Blocker?** = needed before the ~3,800 full-list send. Impact = effe
 | 8 | (Optional) BIMI/VMC for the brand checkmark — only after `p=quarantine`+ and a registered trademark | Auth/Brand | Low | High | DNS + VMC vendor | Defer |
 
 ### Bottom line
-Authentication passes and the content is clean — the full-list send is **not blocked**. The photekton spam landing reads as a thin-reputation + dead-inbox Gmail filtering artefact, not a systemic fault. Spend the pre-send effort on **reputation/engagement** (items 1–3), not on chasing the template.
+Authentication passes and the content is clean — so *technically* the send isn't blocked. But real Postmaster data (see Update) shows a clean, opt-in, no-duplicate full-list send still drew **1.03% Gmail spam** (3.4× the policy line), driven by a 34% never-engaged tail on a lead-magnet-sourced list — and Gmail complainers can't self-remove (no feedback loop). **The pre-full-list-send action is to trim the never-engaged** (engagement-based, not Gmail-based; the engaged core clicks at ~2× the B2B average and is worth protecting). Spend pre-send effort there, not on the template. Final cut depth pends the 25 Jun Postmaster figure (~3 July).
 
 ---
 *Sources: live `dig` + `openssl` verification (25 Jun 2026); Resend docs (automatic plain-text emails, batch send, dedicated/shared IPs, deliverability insights); Google/Yahoo/Microsoft 2024–2026 bulk-sender requirements (dmarcian, Mailgun, redsift, powerdmarc); NIST DKIM 2048-bit guidance.*

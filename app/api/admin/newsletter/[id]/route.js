@@ -15,7 +15,7 @@ export async function GET(request, { params }) {
   )
 
   try {
-    const [sendResult, statusBreakdown, engagedRecipients] = await Promise.all([
+    const [sendResult, statusBreakdown, engagedRecipients, sendStats] = await Promise.all([
       // The send record (exclude heavy fields)
       supabase
         .from('newsletter_sends')
@@ -35,9 +35,22 @@ export async function GET(request, { params }) {
         .not('opened_at', 'is', null)
         .order('opened_at', { ascending: false })
         .limit(30),
+
+      // Live per-send engagement, to derive over the stored total_* counters.
+      supabase.rpc('get_newsletter_send_stats').eq('send_id', id).maybeSingle(),
     ])
 
     if (sendResult.error) throw sendResult.error
+
+    // Derive engagement from row state (the single source of truth) rather than
+    // the stored total_* counters, which were historically inflated by
+    // per-open-event double-counting.
+    if (sendResult.data && sendStats?.data) {
+      sendResult.data.total_delivered = Number(sendStats.data.total)
+      sendResult.data.total_opened = Number(sendStats.data.opened)
+      sendResult.data.total_clicked = Number(sendStats.data.clicked)
+      sendResult.data.total_bounced = Number(sendStats.data.bounced)
+    }
 
     // Status breakdown (returned by RPC as rows of {status, count})
     const statusCounts = {}

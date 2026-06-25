@@ -59,7 +59,7 @@ export async function GET(request) {
       supabase.from('contacts').select('id', { count: 'exact', head: true }).in('newsletter_status', ['active', 'confirmed']).gte('newsletter_consent_date', weekAgoISO),
       supabase.from('calendar_items').select('*').or(`scheduled_date.gte.${mondayStr},due_date.gte.${mondayStr}`).or(`scheduled_date.lte.${sundayStr},due_date.lte.${sundayStr}`).order('scheduled_date', { ascending: true }),
       supabase.from('organisations').select('id', { count: 'exact', head: true }).neq('status', 'new'),
-      supabase.from('newsletter_sends').select('subject, total_recipients, total_sent, total_delivered, total_opened, total_clicked, total_bounced, created_at').neq('status', 'draft').order('created_at', { ascending: false }).limit(1).maybeSingle(),
+      supabase.from('newsletter_sends').select('id, issue_key, subject, total_recipients, total_sent, total_delivered, total_opened, total_clicked, total_bounced, created_at').neq('status', 'draft').order('created_at', { ascending: false }).limit(1).maybeSingle(),
       queryPostHog(trendsQuery({ math: 'dau', dateRange: '-7d', interval: 'day' })).catch(() => null),
       queryPostHog(trendsQuery({ math: 'total', dateRange: '-7d', interval: 'day' })).catch(() => null),
       queryPostHog(trendsQuery({ dateRange: '-7d', breakdownProperty: '$referring_domain', breakdownLimit: 5 })).catch(() => null),
@@ -144,6 +144,26 @@ export async function GET(request) {
       writeSnapshot(supabase, analytics).catch(() => {})
     }
 
+    // Derive the last newsletter's engagement from row state (the single source
+    // of truth) rather than the stored total_* counters, which were historically
+    // inflated by per-open-event double-counting. Matches /admin/newsletter.
+    let lastNewsletterData = lastNewsletter.data || null
+    if (lastNewsletterData) {
+      const groupKey = lastNewsletterData.issue_key || `__no_key__${lastNewsletterData.id}`
+      const { data: issueStats } = await supabase.rpc('get_newsletter_issue_stats')
+      const stat = (issueStats || []).find((s) => s.group_key === groupKey)
+      if (stat) {
+        lastNewsletterData = {
+          ...lastNewsletterData,
+          total_recipients: Number(stat.recipients),
+          total_delivered: Number(stat.delivered),
+          total_opened: Number(stat.opened),
+          total_clicked: Number(stat.clicked),
+          total_bounced: Number(stat.bounced),
+        }
+      }
+    }
+
     return NextResponse.json({
       contactsThisWeek: { total: totalContactsThisWeek, previousWeek: contactsPreviousWeek.count || 0, bySource: contactsBySource },
       signals: enrichedSignals,
@@ -151,7 +171,7 @@ export async function GET(request) {
       newsletterSubscribers: newsletterCount.count || 0,
       newsletterNewThisWeek: newsletterCountPrevWeek.count || 0,
       calendar: calendarThisWeek.data || [],
-      lastNewsletter: lastNewsletter.data || null,
+      lastNewsletter: lastNewsletterData,
       outreach: apolloSequences ? {
         activeSequences: apolloSequences.filter((s) => s.active && !s.archived).length,
         totalContacts: apolloSequences.filter((s) => s.active && !s.archived).reduce((sum, s) => sum + (s.unique_scheduled || 0), 0),

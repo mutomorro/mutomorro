@@ -1,8 +1,9 @@
 'use client'
 
-import { useState, useEffect, useId } from 'react'
+import { useState, useEffect, useId, useRef } from 'react'
 import posthog from 'posthog-js'
 import { isFreeEmailProvider, FREE_EMAIL_MESSAGE, FREE_EMAIL_EMPHASIS } from '@/lib/email-validation'
+import { identifyLead, trackFormStart } from '@/lib/analytics'
 
 const [NOTICE_BEFORE, NOTICE_AFTER] = FREE_EMAIL_MESSAGE.split(FREE_EMAIL_EMPHASIS)
 
@@ -59,6 +60,7 @@ export default function ToolDownloadForm({ toolTitle, toolSlug, pdfUrl, successC
   // (label htmlFor only binds to the first matching id). Submission/anti-spam
   // keys off the name attributes, not these ids.
   const fid = useId()
+  const startedRef = useRef(false)
 
   useEffect(() => {
     if (process.env.NODE_ENV !== 'development') return
@@ -68,6 +70,10 @@ export default function ToolDownloadForm({ toolTitle, toolSlug, pdfUrl, successC
   }, [])
 
   function handleChange(e) {
+    if (!startedRef.current) {
+      startedRef.current = true
+      trackFormStart('tool_download', { tool_name: toolTitle })
+    }
     const { name, value, type, checked } = e.target
     setFormData(prev => ({
       ...prev,
@@ -120,6 +126,7 @@ export default function ToolDownloadForm({ toolTitle, toolSlug, pdfUrl, successC
         tool_name: toolTitle,
         source_page: window.location.pathname,
       })
+      identifyLead(formData.email, { lead_stage: 'tool_download', last_tool: toolTitle })
       setStatus('success')
     } catch (err) {
       setStatus('error')

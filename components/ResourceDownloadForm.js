@@ -1,8 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import posthog from 'posthog-js'
 import { isFreeEmailProvider, FREE_EMAIL_MESSAGE, FREE_EMAIL_EMPHASIS } from '@/lib/email-validation'
+import { identifyLead, trackFormStart } from '@/lib/analytics'
 
 const [NOTICE_BEFORE, NOTICE_AFTER] = FREE_EMAIL_MESSAGE.split(FREE_EMAIL_EMPHASIS)
 
@@ -24,6 +25,7 @@ export default function ResourceDownloadForm({
   const [errorMessage, setErrorMessage] = useState('')
   const [emailNotice, setEmailNotice] = useState(false)
   const [noticeShake, setNoticeShake] = useState(0)
+  const startedRef = useRef(false)
 
   const typeLabels = { primer: 'Primer', whitepaper: 'Whitepaper', guide: 'Guide' }
   const typeLabel = typeLabels[resourceType] || 'Resource'
@@ -31,6 +33,10 @@ export default function ResourceDownloadForm({
   const headingText = downloadButtonLabel || 'Get your free copy'
 
   function handleChange(e) {
+    if (!startedRef.current) {
+      startedRef.current = true
+      trackFormStart('resource_download', { resource_name: resourceTitle })
+    }
     const { name, value, type, checked } = e.target
     setFormData(prev => ({
       ...prev,
@@ -94,6 +100,7 @@ export default function ResourceDownloadForm({
         organisation: formData.organisation || undefined,
         source_page: window.location.pathname,
       })
+      identifyLead(formData.email, { lead_stage: 'resource_download', last_resource: resourceTitle })
 
       // Trigger the download
       if (downloadUrl) {

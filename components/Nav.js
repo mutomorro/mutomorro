@@ -6,6 +6,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import NavPanel from './NavPanel'
 import SearchPanel from './SearchPanel'
+import { trackCtaClick } from '@/lib/analytics'
 
 // Inline service glyph — a light, static mark at rest that animates in place on hover.
 // Each is a massively-simplified echo of that service's hero animation. Only the hovered
@@ -350,7 +351,7 @@ export default function Nav() {
             </Link>
             <Link
               href="/contact"
-              onClick={closePanel}
+              onClick={() => { trackCtaClick({ location: 'nav', label: 'Talk to us', destination: '/contact' }); closePanel() }}
               className={isTransparent ? 'btn-primary btn-primary--dark' : 'btn-primary'}
               style={{ fontSize: '14px', padding: '10px 24px' }}
             >
@@ -1018,7 +1019,7 @@ export default function Nav() {
           {/* CTA buttons */}
           <div className="mobile-nav__ctas">
             <Link href="/states-of-vitality" onClick={closeMobile} className="btn-sec">States of Vitality</Link>
-            <Link href="/contact" onClick={closeMobile} className="btn-primary">Talk to us</Link>
+            <Link href="/contact" onClick={() => { trackCtaClick({ location: 'nav-mobile', label: 'Talk to us', destination: '/contact' }); closeMobile() }} className="btn-primary">Talk to us</Link>
           </div>
         </div>
       </div>

@@ -175,6 +175,13 @@ export default function AdminTenders() {
 
   const stats = data?.stats || {}
   const tenders = data?.tenders || []
+  const triage = data?.triage || { queue: [], closing: [], scoreThreshold: 40 }
+
+  // Rate from a triage card, then refresh so the rated item leaves the queue.
+  async function rateFromTriage(id, r) {
+    await patchTender(id, { james_rating: r })
+    fetchTenders()
+  }
 
   return (
     <div>
@@ -196,6 +203,11 @@ export default function AdminTenders() {
         <span>{stats.unrated || 0} unrated</span>
         {data && <span style={{ marginLeft: 'auto' }}>Showing {data.total} results · Page {data.page} of {data.pages}</span>}
       </div>
+
+      {/* Triage — the genuine action queue + deadline radar */}
+      {!loading && (triage.queue.length > 0 || triage.closing.length > 0) && (
+        <TenderTriage theme={theme} triage={triage} stats={stats} ratingColours={ratingColours} onRate={rateFromTriage} saving={saving} />
+      )}
 
       {/* Filters */}
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '20px' }}>
@@ -249,6 +261,7 @@ export default function AdminTenders() {
               />
               {selectedId === tender.id && (
                 <DetailPanel
+                  key={detail?.id}
                   theme={theme}
                   tempColours={tempColours}
                   detail={detail}
@@ -279,6 +292,9 @@ export default function AdminTenders() {
           }
           .admin-tender-row-inner {
             flex-wrap: wrap !important;
+          }
+          .admin-tender-triage {
+            grid-template-columns: 1fr !important;
           }
         }
       `}</style>
@@ -392,15 +408,11 @@ function TenderRow({ theme, rowStyle, tempColours, ratingColours, tender, isSele
 }
 
 function DetailPanel({ theme, tempColours, detail, loading, onPatch, saving }) {
-  const [notes, setNotes] = useState('')
-  const [ratingNotes, setRatingNotes] = useState('')
-
-  useEffect(() => {
-    if (detail) {
-      setNotes(detail.notes || '')
-      setRatingNotes(detail.rating_notes || '')
-    }
-  }, [detail])
+  // Initialised once from props; the parent remounts this panel via key={detail?.id}
+  // when the selected tender changes, so there is no effect re-seeding these (which
+  // would wipe unsaved edits whenever the parent patches the tender object).
+  const [notes, setNotes] = useState(detail?.notes || '')
+  const [ratingNotes, setRatingNotes] = useState(detail?.rating_notes || '')
 
   const detailStyle = {
     background: theme.cardBgHover,
@@ -571,6 +583,117 @@ function DetailPanel({ theme, tempColours, detail, loading, onPatch, saving }) {
           </div>
         </div>
       </div>
+    </div>
+  )
+}
+
+function TenderTriage({ theme, triage, stats, ratingColours, onRate, saving }) {
+  return (
+    <div className="admin-tender-triage" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '24px' }}>
+      <TriageCard
+        theme={theme}
+        accent={theme.accent}
+        title="Action queue"
+        subtitle={`${stats.actionQueue || 0} open · unrated · score ≥ ${triage.scoreThreshold || 40}`}
+        items={triage.queue}
+        kind="queue"
+        ratingColours={ratingColours}
+        onRate={onRate}
+        saving={saving}
+      />
+      <TriageCard
+        theme={theme}
+        accent={theme.warning}
+        title="Closing soon"
+        subtitle={`${stats.closing7 || 0} within 7 days · ${stats.closing14 || 0} within 14`}
+        items={triage.closing}
+        kind="closing"
+        ratingColours={ratingColours}
+        onRate={onRate}
+        saving={saving}
+      />
+    </div>
+  )
+}
+
+function TriageCard({ theme, accent, title, subtitle, items, kind, ratingColours, onRate, saving }) {
+  const shown = (items || []).slice(0, 8)
+  const more = (items || []).length - shown.length
+  return (
+    <div style={{ background: theme.cardBg, border: `1px solid ${theme.cardBorder}`, borderRadius: '10px', padding: '16px 18px' }}>
+      <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: '12px' }}>
+        <h2 style={{ fontSize: '14px', fontWeight: 500, color: theme.textPrimary, margin: 0 }}>
+          <span style={{ color: accent }}>●</span> {title}
+        </h2>
+        <span style={{ fontSize: '11px', color: theme.textMuted }}>{subtitle}</span>
+      </div>
+      {shown.length === 0 ? (
+        <p style={{ fontSize: '13px', color: theme.textLabel, fontStyle: 'italic', margin: 0 }}>Nothing here right now.</p>
+      ) : (
+        <div style={{ display: 'flex', flexDirection: 'column' }}>
+          {shown.map((t) => (
+            <TriageRow key={t.id} theme={theme} tender={t} kind={kind} ratingColours={ratingColours} onRate={onRate} saving={saving} />
+          ))}
+        </div>
+      )}
+      {more > 0 && (
+        <div style={{ fontSize: '12px', color: theme.textMuted, marginTop: '8px' }}>+ {more} more — see the list below</div>
+      )}
+    </div>
+  )
+}
+
+function TriageRow({ theme, tender, kind, ratingColours, onRate, saving }) {
+  const days = daysUntil(tender.deadline)
+  const urgent = days !== null && days >= 0 && days < 7
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '9px 0', borderBottom: `1px solid ${theme.rowBorder}` }}>
+      <div style={{ fontSize: '14px', fontWeight: 500, color: theme.textPrimary, width: '30px', flexShrink: 0, textAlign: 'center' }}>
+        {tender.total_score}
+      </div>
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <a
+          href={tender.source_url || '#'}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ fontSize: '13px', color: theme.textPrimary, textDecoration: 'none', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
+          title={tender.title}
+        >
+          {tender.title}
+        </a>
+        <div style={{ fontSize: '11px', color: theme.textMuted, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+          {tender.organisation || 'Unknown'}{tender.ai_summary ? ` — ${tender.ai_summary}` : ''}
+        </div>
+      </div>
+      <div style={{ flexShrink: 0, textAlign: 'right', minWidth: '52px' }}>
+        {tender.deadline ? (
+          <span style={{ fontSize: '12px', color: urgent ? theme.danger : theme.textSecondary }}>
+            {days < 0 ? 'expired' : `${days}d`}
+          </span>
+        ) : (
+          <span style={{ fontSize: '11px', color: theme.textLabel }}>no date</span>
+        )}
+      </div>
+      {kind === 'queue' && (
+        <div style={{ display: 'flex', gap: '3px', flexShrink: 0 }}>
+          {['yes', 'maybe', 'no'].map((r) => (
+            <button
+              key={r}
+              onClick={() => onRate(tender.id, tender.james_rating === r ? null : r)}
+              disabled={saving}
+              title={r === 'yes' ? 'Would bid' : r === 'maybe' ? 'Maybe' : 'Would not bid'}
+              style={{
+                padding: '3px 7px', fontSize: '12px', cursor: 'pointer', fontFamily: 'inherit',
+                background: tender.james_rating === r ? ratingColours[r] : theme.cardBg,
+                color: tender.james_rating === r ? '#fff' : theme.textLabel,
+                border: `1px solid ${tender.james_rating === r ? ratingColours[r] : theme.cardBorder}`,
+              }}
+            >
+              {r === 'yes' ? '✓' : r === 'maybe' ? '?' : '✕'}
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   )
 }

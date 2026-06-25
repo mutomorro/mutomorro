@@ -32,6 +32,22 @@ export default function NewsletterPage() {
   const [data, setData] = useState(null)
   const [loading, setLoading] = useState(true)
   const [expanded, setExpanded] = useState({})
+  const [config, setConfig] = useState(null)
+  const [pool, setPool] = useState(null)
+  const [reconcile, setReconcile] = useState(null)
+
+  function loadConfig() {
+    return fetch('/api/admin/newsletter-config')
+      .then((r) => r.ok ? r.json() : Promise.reject())
+      .then((d) => { setConfig(d.config); setPool(d.pool) })
+      .catch((e) => console.error(e))
+  }
+  function loadReconcile() {
+    return fetch('/api/admin/newsletter/reconcile')
+      .then((r) => r.ok ? r.json() : Promise.reject())
+      .then(setReconcile)
+      .catch((e) => console.error(e))
+  }
 
   useEffect(() => {
     fetch('/api/admin/newsletter')
@@ -39,6 +55,8 @@ export default function NewsletterPage() {
       .then(setData)
       .catch((e) => console.error(e))
       .finally(() => setLoading(false))
+    loadConfig()
+    loadReconcile()
   }, [])
 
   const subs = data?.subscribers || {}
@@ -52,6 +70,11 @@ export default function NewsletterPage() {
 
   return (
     <div>
+      {/* Send-health banner — loud when the auto-send cron is paused */}
+      {config && !config.enabled && (
+        <SendHealthBanner theme={theme} config={config} />
+      )}
+
       {/* Header + primary action */}
       <div style={{
         display: 'flex',
@@ -98,6 +121,11 @@ export default function NewsletterPage() {
         <Card theme={theme} label="Unsubscribed" value={loading ? null : subs.unsubscribed} />
       </div>
 
+      {/* Send health: pool gauge + settings + dedup health */}
+      {config && (
+        <SendHealth theme={theme} config={config} pool={pool} onSaved={loadConfig} />
+      )}
+
       {/* Last send summary */}
       <Section theme={theme} title="Last send" style={{ marginBottom: '24px' }}>
         {loading ? (
@@ -119,6 +147,11 @@ export default function NewsletterPage() {
           <SendHistory theme={theme} sends={sends} expanded={expanded} setExpanded={setExpanded} />
         )}
       </Section>
+
+      {/* Counter integrity — stored total_* vs recomputed source-of-truth */}
+      {reconcile?.summary?.drifted > 0 && (
+        <CounterIntegrity theme={theme} reconcile={reconcile} onReconciled={loadReconcile} />
+      )}
 
       {/* Subscriber composition */}
       {!loading && (
@@ -487,6 +520,327 @@ function StatusBadge({ theme, status, small }) {
       {status}
     </span>
   )
+}
+
+function relTime(dateStr) {
+  if (!dateStr) return ''
+  const days = Math.floor((Date.now() - new Date(dateStr).getTime()) / 86400000)
+  if (days <= 0) return 'today'
+  if (days === 1) return 'yesterday'
+  if (days < 30) return `${days} days ago`
+  const months = Math.floor(days / 30)
+  if (months === 1) return '1 month ago'
+  if (months < 12) return `${months} months ago`
+  return new Date(dateStr).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
+}
+
+function SendHealthBanner({ theme, config }) {
+  return (
+    <div style={{
+      background: theme.danger + '14',
+      border: `1px solid ${theme.danger}55`,
+      borderRadius: '10px',
+      padding: '16px 18px',
+      marginBottom: '24px',
+      display: 'flex',
+      gap: '14px',
+      alignItems: 'flex-start',
+    }}>
+      <span aria-hidden="true" style={{ fontSize: '18px', lineHeight: 1.2 }}>⏸</span>
+      <div style={{ flex: 1 }}>
+        <div style={{ fontSize: '15px', fontWeight: 500, color: theme.danger, marginBottom: '4px' }}>
+          Auto-send is paused{config.paused_at ? ` — since ${shortDate(config.paused_at)} (${relTime(config.paused_at)})` : ''}
+        </div>
+        {config.paused_reason && (
+          <div style={{ fontSize: '13px', color: theme.textSecondary, lineHeight: 1.5 }}>
+            {config.paused_reason}
+          </div>
+        )}
+        <div style={{ fontSize: '12px', color: theme.textMuted, marginTop: '6px' }}>
+          The daily cron will not send while paused. Manual sends from “Send a newsletter” still work. Resume in Send engine settings below.
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function SendHealth({ theme, config, pool, onSaved }) {
+  const [editing, setEditing] = useState(false)
+  const [form, setForm] = useState(null)
+  const [saving, setSaving] = useState(false)
+  const [msg, setMsg] = useState(null)
+
+  function startEdit() {
+    setForm({
+      enabled: config.enabled,
+      batch_size: config.batch_size,
+      daily_cap: config.daily_cap,
+      bounce_rate_threshold: config.bounce_rate_threshold,
+      skip_weekends: config.skip_weekends,
+      domain_exclusions_enabled: config.domain_exclusions_enabled,
+      summary_email: config.summary_email || '',
+    })
+    setMsg(null)
+    setEditing(true)
+  }
+
+  async function save() {
+    setSaving(true); setMsg(null)
+    try {
+      const payload = {
+        enabled: !!form.enabled,
+        batch_size: parseInt(form.batch_size, 10),
+        daily_cap: parseInt(form.daily_cap, 10),
+        bounce_rate_threshold: parseFloat(form.bounce_rate_threshold),
+        skip_weekends: !!form.skip_weekends,
+        domain_exclusions_enabled: !!form.domain_exclusions_enabled,
+        summary_email: form.summary_email,
+      }
+      const r = await fetch('/api/admin/newsletter-config', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      })
+      if (!r.ok) throw new Error('save failed')
+      await onSaved()
+      setEditing(false)
+      setMsg({ ok: true, text: 'Settings saved.' })
+    } catch (e) {
+      setMsg({ ok: false, text: 'Could not save settings.' })
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  const set = (k, v) => setForm((f) => ({ ...f, [k]: v }))
+  const capMismatch = config.batch_size > config.daily_cap
+
+  return (
+    <Section theme={theme} title="Send engine" style={{ marginBottom: '24px' }}>
+      {/* Pool gauge */}
+      {pool && (
+        <div className="admin-lastsend-metrics" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '18px' }}>
+          <Metric theme={theme} label="Sendable pool" value={(pool.activeContacts || 0).toLocaleString()} sub="active + confirmed" />
+          <Metric theme={theme} label="Already sent to" value={(pool.uniqueSent || 0).toLocaleString()} sub="unique contacts" />
+          <Metric theme={theme} label="Remaining" value={(pool.remaining || 0).toLocaleString()} sub="never sent yet" />
+          <Metric
+            theme={theme}
+            label="Cron"
+            value={config.enabled ? 'On' : 'Paused'}
+            highlight={config.enabled ? theme.success : theme.danger}
+            sub={config.last_send_date ? `last ${shortDate(config.last_send_date)}` : 'never run'}
+          />
+        </div>
+      )}
+
+      {/* Warnings */}
+      {!config.domain_exclusions_enabled && (
+        <div style={{ fontSize: '12px', color: theme.warning, marginBottom: capMismatch ? '4px' : '14px' }}>
+          ⚠ Domain exclusions are off — competitor / free-provider blocks won’t apply on send.
+        </div>
+      )}
+      {capMismatch && (
+        <div style={{ fontSize: '12px', color: theme.warning, marginBottom: '14px' }}>
+          ⚠ Batch size ({config.batch_size}) exceeds the daily cap ({config.daily_cap}).
+        </div>
+      )}
+
+      {!editing ? (
+        <>
+          <div className="admin-breakdown-cols" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px 28px' }}>
+            <SettingRow theme={theme} label="Auto-send cron" value={config.enabled ? 'Enabled' : 'Paused'} />
+            <SettingRow theme={theme} label="Batch size" value={config.batch_size} />
+            <SettingRow theme={theme} label="Daily cap" value={config.daily_cap} />
+            <SettingRow theme={theme} label="Bounce-rate threshold" value={`${config.bounce_rate_threshold}%`} />
+            <SettingRow theme={theme} label="Skip weekends" value={config.skip_weekends ? 'Yes' : 'No'} />
+            <SettingRow theme={theme} label="Domain exclusions" value={config.domain_exclusions_enabled ? 'On' : 'Off'} />
+            <SettingRow theme={theme} label="Summary email" value={config.summary_email || '—'} />
+          </div>
+          <div style={{ marginTop: '16px', display: 'flex', alignItems: 'center', gap: '14px' }}>
+            <button onClick={startEdit} style={btnSecondary(theme)}>Edit settings</button>
+            {msg && <span style={{ fontSize: '13px', color: msg.ok ? theme.success : theme.danger }}>{msg.text}</span>}
+          </div>
+        </>
+      ) : (
+        <>
+          <div className="admin-breakdown-cols" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px 28px' }}>
+            <ToggleField theme={theme} label="Auto-send cron" checked={!!form.enabled} onChange={(v) => set('enabled', v)} hint={!form.enabled ? 'Enabling clears the pause reason.' : 'Daily paced drain active.'} />
+            <ToggleField theme={theme} label="Skip weekends" checked={!!form.skip_weekends} onChange={(v) => set('skip_weekends', v)} />
+            <NumField theme={theme} label="Batch size" value={form.batch_size} onChange={(v) => set('batch_size', v)} />
+            <NumField theme={theme} label="Daily cap" value={form.daily_cap} onChange={(v) => set('daily_cap', v)} />
+            <NumField theme={theme} label="Bounce-rate threshold (%)" value={form.bounce_rate_threshold} onChange={(v) => set('bounce_rate_threshold', v)} step="0.1" />
+            <ToggleField theme={theme} label="Domain exclusions" checked={!!form.domain_exclusions_enabled} onChange={(v) => set('domain_exclusions_enabled', v)} />
+            <TextField theme={theme} label="Summary email" value={form.summary_email} onChange={(v) => set('summary_email', v)} wide />
+          </div>
+          <div style={{ marginTop: '18px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <button onClick={save} disabled={saving} style={btnPrimary(theme, saving)}>{saving ? 'Saving…' : 'Save settings'}</button>
+            <button onClick={() => { setEditing(false); setMsg(null) }} disabled={saving} style={btnSecondary(theme)}>Cancel</button>
+            {msg && <span style={{ fontSize: '13px', color: msg.ok ? theme.success : theme.danger }}>{msg.text}</span>}
+          </div>
+        </>
+      )}
+    </Section>
+  )
+}
+
+function CounterIntegrity({ theme, reconcile, onReconciled }) {
+  const [busy, setBusy] = useState(false)
+  const [msg, setMsg] = useState(null)
+  const s = reconcile.summary
+  const drifted = reconcile.drifted || []
+
+  async function backfill() {
+    if (!window.confirm(`Recompute and overwrite the stored counters on ${s.drifted} send${s.drifted === 1 ? '' : 's'} to match the source-of-truth recipient rows? No email is sent.`)) return
+    setBusy(true); setMsg(null)
+    try {
+      const r = await fetch('/api/admin/newsletter/reconcile', { method: 'POST' })
+      if (!r.ok) throw new Error()
+      const d = await r.json()
+      await onReconciled()
+      setMsg({ ok: true, text: `Backfilled ${d.updated} send${d.updated === 1 ? '' : 's'}.` })
+    } catch (e) {
+      setMsg({ ok: false, text: 'Backfill failed.' })
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  const cols = '2.4fr 1fr 1fr 1fr 1fr'
+  return (
+    <Section theme={theme} title="Counter integrity" style={{ marginBottom: '24px' }}>
+      <p style={{ fontSize: '13px', color: theme.textSecondary, lineHeight: 1.55, margin: '0 0 14px' }}>
+        The dashboard rates above are computed live from recipient rows, so they’re correct. But the{' '}
+        <strong style={{ color: theme.textPrimary, fontWeight: 500 }}>stored</strong> counters on{' '}
+        <strong style={{ color: theme.textPrimary, fontWeight: 500 }}>{s.drifted}</strong> of {s.sends} sends are stale
+        — stored delivered totals {s.storedDelivered.toLocaleString()} vs the true {s.realDelivered.toLocaleString()};
+        opens {s.storedOpened.toLocaleString()} vs {s.realOpened.toLocaleString()}. Backfilling rewrites the stored
+        columns to match (a one-off cleanup; future sends self-maintain).
+      </p>
+
+      <div style={{ overflowX: 'auto' }}>
+        <div style={{ minWidth: '560px' }}>
+          <div style={{
+            display: 'grid', gridTemplateColumns: cols, gap: '8px', padding: '8px 4px',
+            borderBottom: `1px solid ${theme.headerBorder}`, fontSize: '11px', color: theme.textMuted,
+            textTransform: 'uppercase', letterSpacing: '0.5px',
+          }}>
+            <div>Send</div><div>Delivered</div><div>Opens</div><div>Clicks</div><div>Bounces</div>
+          </div>
+          {drifted.slice(0, 30).map((row) => (
+            <div key={row.id} style={{
+              display: 'grid', gridTemplateColumns: cols, gap: '8px', padding: '12px 4px',
+              borderBottom: `1px solid ${theme.rowBorder}`, fontSize: '13px', color: theme.textSecondary, alignItems: 'center',
+            }}>
+              <div style={{ color: theme.textPrimary, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                {row.subject || '(untitled)'}
+                <span style={{ fontSize: '11px', color: theme.textMuted, marginLeft: '8px' }}>{shortDate(row.createdAt)}</span>
+              </div>
+              <DriftCell theme={theme} stored={row.stored.delivered} real={row.real.delivered} />
+              <DriftCell theme={theme} stored={row.stored.opened} real={row.real.opened} />
+              <DriftCell theme={theme} stored={row.stored.clicked} real={row.real.clicked} />
+              <DriftCell theme={theme} stored={row.stored.bounced} real={row.real.bounced} />
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div style={{ marginTop: '16px', display: 'flex', alignItems: 'center', gap: '14px' }}>
+        <button onClick={backfill} disabled={busy} style={btnPrimary(theme, busy)}>
+          {busy ? 'Recomputing…' : 'Recompute stored counters'}
+        </button>
+        {msg && <span style={{ fontSize: '13px', color: msg.ok ? theme.success : theme.danger }}>{msg.text}</span>}
+      </div>
+    </Section>
+  )
+}
+
+function DriftCell({ theme, stored, real }) {
+  if (stored === real) {
+    return <div style={{ color: theme.textMuted }}>{real.toLocaleString()}</div>
+  }
+  return (
+    <div>
+      <span style={{ color: theme.textMuted, textDecoration: 'line-through' }}>{stored.toLocaleString()}</span>
+      <span style={{ color: theme.textMuted, margin: '0 5px' }}>→</span>
+      <span style={{ color: theme.success, fontWeight: 500 }}>{real.toLocaleString()}</span>
+    </div>
+  )
+}
+
+function SettingRow({ theme, label, value }) {
+  return (
+    <div style={{ display: 'flex', justifyContent: 'space-between', padding: '7px 0', borderBottom: `1px solid ${theme.rowBorder}`, fontSize: '13px' }}>
+      <span style={{ color: theme.textSecondary }}>{label}</span>
+      <span style={{ color: theme.textPrimary }}>{value}</span>
+    </div>
+  )
+}
+
+function ToggleField({ theme, label, checked, onChange, hint }) {
+  return (
+    <div>
+      <label style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}>
+        <button
+          type="button"
+          role="switch"
+          aria-checked={checked}
+          onClick={() => onChange(!checked)}
+          style={{
+            width: '38px', height: '22px', borderRadius: '11px', border: 'none', cursor: 'pointer',
+            background: checked ? theme.accent : theme.inputBg, position: 'relative', flexShrink: 0,
+            transition: 'background 0.15s',
+          }}
+        >
+          <span style={{
+            position: 'absolute', top: '3px', left: checked ? '19px' : '3px', width: '16px', height: '16px',
+            borderRadius: '50%', background: '#fff', transition: 'left 0.15s', boxShadow: '0 1px 2px rgba(0,0,0,0.3)',
+          }} />
+        </button>
+        <span style={{ fontSize: '13px', color: theme.textSecondary }}>{label}</span>
+      </label>
+      {hint && <div style={{ fontSize: '11px', color: theme.textMuted, marginTop: '4px', marginLeft: '48px' }}>{hint}</div>}
+    </div>
+  )
+}
+
+function fieldLabel(theme) {
+  return { display: 'block', fontSize: '11px', color: theme.textMuted, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '6px' }
+}
+function fieldInput(theme) {
+  return {
+    width: '100%', boxSizing: 'border-box', padding: '8px 10px', borderRadius: '6px',
+    border: `1px solid ${theme.cardBorder}`, background: theme.inputBg, color: theme.textPrimary,
+    fontSize: '14px', fontFamily: 'inherit', outline: 'none',
+  }
+}
+function NumField({ theme, label, value, onChange, step }) {
+  return (
+    <div>
+      <label style={fieldLabel(theme)}>{label}</label>
+      <input type="number" step={step || '1'} value={value} onChange={(e) => onChange(e.target.value)} style={fieldInput(theme)} />
+    </div>
+  )
+}
+function TextField({ theme, label, value, onChange, wide }) {
+  return (
+    <div style={wide ? { gridColumn: '1 / -1' } : undefined}>
+      <label style={fieldLabel(theme)}>{label}</label>
+      <input type="text" value={value} onChange={(e) => onChange(e.target.value)} style={fieldInput(theme)} />
+    </div>
+  )
+}
+
+function btnPrimary(theme, busy) {
+  return {
+    padding: '9px 18px', borderRadius: '6px', border: 'none', background: theme.accent, color: '#fff',
+    fontSize: '13px', fontWeight: 400, cursor: busy ? 'default' : 'pointer', opacity: busy ? 0.6 : 1, fontFamily: 'inherit',
+  }
+}
+function btnSecondary(theme) {
+  return {
+    padding: '9px 18px', borderRadius: '6px', border: `1px solid ${theme.cardBorder}`, background: 'transparent',
+    color: theme.textSecondary, fontSize: '13px', fontWeight: 400, cursor: 'pointer', fontFamily: 'inherit',
+  }
 }
 
 const emptyText = (theme) => ({ fontSize: '14px', color: theme.textMuted, fontStyle: 'italic' })

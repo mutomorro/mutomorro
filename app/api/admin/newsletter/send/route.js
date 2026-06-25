@@ -347,6 +347,10 @@ export async function POST(request) {
     content_json: template === 'editorial' ? editorialContent : promoContent,
     status: pacedMode ? 'draining' : 'sending',
     total_recipients: eligible.length,
+    // Editorial sends carry their calendar item so the drain's finalize() can
+    // mark it 'published' (the paced path has no in-memory editorialItem like
+    // the legacy runSend did). Promo sends have no calendar item → null.
+    calendar_item_id: template === 'editorial' ? (editorialItem?.id || null) : null,
   }
 
   const { data: send, error: sendErr } = await supabase

@@ -68,12 +68,17 @@ function mockResend({ behavior } = {}) {
   }
 }
 
+const CAL_TITLE_PREFIX = 'ZZ Drain Test calendar item'
+
 async function cleanup() {
   const { data: sends } = await supabase.from('newsletter_sends').select('id').like('issue_key', `${KEY_PREFIX}%`)
   const ids = (sends || []).map((s) => s.id)
   if (ids.length) await supabase.from('newsletter_recipients').delete().in('send_id', ids)
   await supabase.from('newsletter_sends').delete().like('issue_key', `${KEY_PREFIX}%`)
   await supabase.from('contacts').delete().like('signup_email', 'zzdrain-%@test.invalid')
+  // Synthetic calendar items from S7 (FK to newsletter_sends is ON DELETE SET
+  // NULL, so the sends above are already gone — delete the items last).
+  await supabase.from('calendar_items').delete().like('title', `${CAL_TITLE_PREFIX}%`)
 }
 
 /** Seed a draining send with N recipients. `statuses` = array of contacts'
@@ -230,6 +235,30 @@ async function run() {
     const sB = await mkSend('b')
     const rec = await reconcileSend(sB, { supabase, resend: mockResend() })
     check('reconcile flags cross-batch dupe', rec.ok === false && rec.dupContacts === 1, `ok=${rec.ok} dup=${rec.dupContacts} missing=${rec.missing}`)
+  }
+
+  // S7: editorial send marks its content-calendar item 'published' at finalize
+  // (the paced equivalent of legacy runSend step 14). Promo sends leave it null.
+  console.log('\nS7 calendar publish at finalize')
+  {
+    const { data: cal } = await supabase.from('calendar_items')
+      .insert({ title: `${CAL_TITLE_PREFIX} s7`, type: 'newsletter', status: 'scheduled' })
+      .select('id, status').single()
+    const { data: contacts } = await supabase.from('contacts')
+      .insert([{ first_name: 'ZZ', signup_email: `zzdrain-${cidSeq++}@test.invalid`, newsletter_status: 'active' }])
+      .select('id, signup_email')
+    const { data: send } = await supabase.from('newsletter_sends')
+      .insert({ subject: PROMO.subject, issue_key: `${KEY_PREFIX}-s7`, preview_text: 't', content_json: PROMO, status: 'draining', total_recipients: 1, calendar_item_id: cal.id })
+      .select('id').single()
+    await supabase.from('newsletter_recipients')
+      .insert({ send_id: send.id, contact_id: contacts[0].id, email: contacts[0].signup_email, status: 'queued' })
+
+    const res = await drainToComplete(send.id, mockResend())
+    const { data: calAfter } = await supabase.from('calendar_items')
+      .select('status, completed_at').eq('id', cal.id).single()
+    check('send completed', res.status === 'complete', `status=${res.status}`)
+    check('calendar item published', calAfter.status === 'published', `status=${calAfter.status}`)
+    check('calendar completed_at stamped', calAfter.completed_at != null, `completed_at=${calAfter.completed_at ? 'set' : 'null'}`)
   }
 
   await cleanup()

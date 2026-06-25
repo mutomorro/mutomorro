@@ -1,5 +1,6 @@
 import crypto from 'crypto'
 import { createClient } from '@supabase/supabase-js'
+import { incrementSendCounter } from '@/lib/newsletter-tracking'
 
 function verifySvixSignature(payload, headers, secret) {
   const msgId = headers.get('svix-id')
@@ -105,24 +106,7 @@ export async function POST(request) {
         .update({ status: 'delivered', delivered_at: now })
         .eq('id', recipient.id)
 
-      await supabase.rpc('increment_field', { row_id: recipient.send_id, field_name: 'total_delivered' })
-        .then(() => {})
-        .catch(() => {
-          // Fallback: direct update
-          return supabase
-            .from('newsletter_sends')
-            .select('total_delivered')
-            .eq('id', recipient.send_id)
-            .single()
-            .then(({ data: send }) => {
-              if (send) {
-                return supabase
-                  .from('newsletter_sends')
-                  .update({ total_delivered: (send.total_delivered || 0) + 1 })
-                  .eq('id', recipient.send_id)
-              }
-            })
-        })
+      await incrementSendCounter(supabase, recipient.send_id, 'total_delivered')
 
     } else if (type === 'email.opened') {
       // Only update recipient status if not already opened or clicked
@@ -134,18 +118,7 @@ export async function POST(request) {
       }
 
       // Always increment aggregate counters (Resend sends one event per open)
-      const { data: send } = await supabase
-        .from('newsletter_sends')
-        .select('total_opened')
-        .eq('id', recipient.send_id)
-        .single()
-
-      if (send) {
-        await supabase
-          .from('newsletter_sends')
-          .update({ total_opened: (send.total_opened || 0) + 1 })
-          .eq('id', recipient.send_id)
-      }
+      await incrementSendCounter(supabase, recipient.send_id, 'total_opened')
 
       await supabase
         .from('contacts')
@@ -169,18 +142,7 @@ export async function POST(request) {
           .eq('id', recipient.id)
       }
 
-      const { data: send } = await supabase
-        .from('newsletter_sends')
-        .select('total_clicked')
-        .eq('id', recipient.send_id)
-        .single()
-
-      if (send) {
-        await supabase
-          .from('newsletter_sends')
-          .update({ total_clicked: (send.total_clicked || 0) + 1 })
-          .eq('id', recipient.send_id)
-      }
+      await incrementSendCounter(supabase, recipient.send_id, 'total_clicked')
 
       await supabase
         .from('contacts')
@@ -211,18 +173,7 @@ export async function POST(request) {
         .update({ status: 'bounced', bounced_at: now })
         .eq('id', recipient.id)
 
-      const { data: send } = await supabase
-        .from('newsletter_sends')
-        .select('total_bounced')
-        .eq('id', recipient.send_id)
-        .single()
-
-      if (send) {
-        await supabase
-          .from('newsletter_sends')
-          .update({ total_bounced: (send.total_bounced || 0) + 1 })
-          .eq('id', recipient.send_id)
-      }
+      await incrementSendCounter(supabase, recipient.send_id, 'total_bounced')
 
       await supabase
         .from('contacts')

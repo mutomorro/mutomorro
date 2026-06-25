@@ -1,5 +1,5 @@
 import { createClient } from '@supabase/supabase-js'
-import { TRACKABLE_HOSTS } from '@/lib/newsletter-tracking'
+import { TRACKABLE_HOSTS, incrementSendCounter } from '@/lib/newsletter-tracking'
 
 // 1x1 transparent GIF
 const PIXEL = Buffer.from(
@@ -111,19 +111,8 @@ async function recordTracking(rid, url) {
         .eq('id', recipient.contact_id)
     }
 
-    // Increment total_opened on the send record
-    const { data: send } = await supabase
-      .from('newsletter_sends')
-      .select('total_opened')
-      .eq('id', recipient.send_id)
-      .single()
-
-    if (send) {
-      await supabase
-        .from('newsletter_sends')
-        .update({ total_opened: (send.total_opened || 0) + 1 })
-        .eq('id', recipient.send_id)
-    }
+    // Increment total_opened on the send record (atomic, race-safe)
+    await incrementSendCounter(supabase, recipient.send_id, 'total_opened')
   }
 
   // --- Record click (if url present) ---
@@ -147,19 +136,8 @@ async function recordTracking(rid, url) {
         .eq('id', recipient.contact_id)
     }
 
-    // Increment total_clicked on the send record
-    const { data: send } = await supabase
-      .from('newsletter_sends')
-      .select('total_clicked')
-      .eq('id', recipient.send_id)
-      .single()
-
-    if (send) {
-      await supabase
-        .from('newsletter_sends')
-        .update({ total_clicked: (send.total_clicked || 0) + 1 })
-        .eq('id', recipient.send_id)
-    }
+    // Increment total_clicked on the send record (atomic, race-safe)
+    await incrementSendCounter(supabase, recipient.send_id, 'total_clicked')
 
     // Write a signal
     await supabase

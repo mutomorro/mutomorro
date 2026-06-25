@@ -55,6 +55,9 @@ next-env.d.ts
 !/scripts/sanity-remove-trailing-slashes.js
 !/scripts/audit-trailing-slashes.mjs
 !/scripts/seo-check.mjs
+!/scripts/create-sov-sidebar-callout.mjs
+!/scripts/migrate-enquiry-primaries.mjs
+!/scripts/delete-enquiry-callouts.mjs
 !/scripts/migrations/
 !/scripts/migrations/**
 /wp-export/

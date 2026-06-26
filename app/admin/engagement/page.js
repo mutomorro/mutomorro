@@ -3,8 +3,27 @@
 import { useState, useEffect } from 'react'
 import { useAdminTheme } from '../../../lib/admin-theme-context'
 
+// Initial state from the URL (deep-links, e.g. from the Overview pool cards).
+function paramFrom(key, allowed, fallback) {
+  if (typeof window === 'undefined') return fallback
+  const v = new URLSearchParams(window.location.search).get(key)
+  return v && allowed.includes(v) ? v : fallback
+}
+
+// Deep-link-only filters (from the Overview UK-funnel boxes). Not shown as chips
+// to avoid clutter; when one is active a labelled, clearable pill is shown instead.
+const DEEP_LINK_FILTERS = {
+  uk_subscribed: 'UK · subscribed',
+  uk_engaged: 'UK · subscribed + engaged',
+  uk_target: 'UK · Target (warm + fit)',
+  uk_notsub: 'UK · not subscribed',
+  uk_target_audience: 'Target Audience (fit, reachable)',
+  uk_optedout: 'UK · opted-out',
+}
+
 const PEOPLE_FILTERS = [
   { value: 'golden', label: '★ Golden ticket' },
+  { value: 'engaged', label: 'Engaged (warm)' },
   { value: 'all', label: 'Most engaged' },
   { value: 'uk', label: 'UK-based' },
   { value: 'recent', label: 'Recently active' },
@@ -68,7 +87,7 @@ function orgCsvRow(o) {
 
 export default function EngagementPage() {
   const { theme } = useAdminTheme()
-  const [tab, setTab] = useState('people')
+  const [tab, setTab] = useState(() => paramFrom('tab', ['people', 'orgs'], 'people'))
 
   return (
     <div>
@@ -99,7 +118,7 @@ export default function EngagementPage() {
 }
 
 function PeopleTab({ theme }) {
-  const [filter, setFilter] = useState('all')
+  const [filter, setFilter] = useState(() => paramFrom('filter', [...PEOPLE_FILTERS.map((f) => f.value), ...Object.keys(DEEP_LINK_FILTERS)], 'all'))
   const [weights, setWeights] = useState(DEFAULT_WEIGHTS)
   const [showWeights, setShowWeights] = useState(false)
   const [people, setPeople] = useState([])
@@ -188,6 +207,18 @@ function PeopleTab({ theme }) {
     <div>
       {/* Filter chips + scoring/export controls */}
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '12px', alignItems: 'center' }}>
+        {DEEP_LINK_FILTERS[filter] && (
+          <button
+            onClick={() => setFilter('all')}
+            title="Clear this view"
+            style={{
+              padding: '6px 12px', fontSize: '13px', cursor: 'pointer', fontFamily: 'inherit', borderRadius: '20px',
+              background: theme.accent, color: '#fff', border: `1px solid ${theme.accent}`,
+            }}
+          >
+            {DEEP_LINK_FILTERS[filter]} ✕
+          </button>
+        )}
         {PEOPLE_FILTERS.map((f) => (
           <button
             key={f.value}

@@ -20,6 +20,8 @@ export async function GET(request) {
   const zb = searchParams.get('zb') || ''
   const tag = searchParams.get('tag') || ''
   const segment = searchParams.get('segment') || ''
+  const sector = searchParams.get('sector') || ''
+  const scope = searchParams.get('scope') || ''
   const page = parseInt(searchParams.get('page') || '1', 10)
   const sort = searchParams.get('sort') || 'created_at'
   const perPage = 20
@@ -28,7 +30,7 @@ export async function GET(request) {
   try {
     let query = supabase
       .from('contacts')
-      .select('id, first_name, last_name, signup_email, organisation_name, role, seniority, industry, enriched, tier, newsletter_status, newsletter_opens, newsletter_clicks, last_download_date, sources, first_source, tags, download_count, created_at', { count: 'exact' })
+      .select('id, first_name, last_name, signup_email, organisation_name, role, seniority, industry, sector, out_of_scope, enriched, tier, newsletter_status, newsletter_opens, newsletter_clicks, last_download_date, sources, first_source, tags, download_count, created_at', { count: 'exact' })
 
     // Search
     if (search) {
@@ -63,12 +65,23 @@ export async function GET(request) {
     if (tag) {
       query = query.contains('tags', [tag])
     }
+    // Sector curation filters.
+    if (sector === '(none)') {
+      query = query.is('sector', null)
+    } else if (sector) {
+      query = query.eq('sector', sector)
+    }
+    if (scope === 'out') {
+      query = query.eq('out_of_scope', true)
+    } else if (scope === 'in') {
+      query = query.eq('out_of_scope', false)
+    }
 
     // Working-segment filters (drive the header chips).
     if (segment === 'no_company') {
       query = query.is('organisation_name', null)
     } else if (segment === 'decision_makers') {
-      query = query.in('seniority', ['director', 'c_suite', 'head', 'vp', 'founder', 'partner', 'owner'])
+      query = query.in('seniority', ['manager', 'director', 'c_suite', 'head', 'vp', 'founder', 'partner', 'owner'])
     } else if (segment === 'active_30d') {
       const thirty = new Date(Date.now() - 30 * 86400000).toISOString()
       query = query.gte('last_download_date', thirty)
@@ -142,10 +155,16 @@ export async function PATCH(request) {
 
   try {
     const body = await request.json()
-    const { id, ...updates } = body
+    const { id } = body
 
     if (!id) {
       return NextResponse.json({ error: 'ID is required' }, { status: 400 })
+    }
+
+    // Column allow-list — never spread the raw body into .update().
+    const updates = pickEditable(body)
+    if (Object.keys(updates).length === 0) {
+      return NextResponse.json({ error: 'Nothing to update' }, { status: 400 })
     }
 
     const { data, error } = await supabase
@@ -155,11 +174,108 @@ export async function PATCH(request) {
       .select()
       .single()
 
-    if (error) throw error
+    if (error) {
+      // 23505 = unique violation (e.g. another contact already has that email).
+      const msg = error.code === '23505'
+        ? 'That email is already used by another contact.'
+        : 'Failed to update contact.'
+      return NextResponse.json({ error: msg }, { status: 400 })
+    }
 
     return NextResponse.json(data)
   } catch (err) {
     console.error('Contacts PATCH error:', err)
     return NextResponse.json({ error: 'Failed to update contact' }, { status: 500 })
   }
+}
+
+// Delete a contact. interactions + newsletter_recipients cascade; signals +
+// diagnostic_responses null out; a linked handoff (NO ACTION) blocks the delete.
+export async function DELETE(request) {
+  const sessionCookie = request.cookies.get('admin_session')?.value
+  if (!sessionCookie) {
+    return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
+  }
+
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL,
+    process.env.SUPABASE_SERVICE_ROLE_KEY
+  )
+
+  try {
+    const { id } = await request.json()
+    if (!id) {
+      return NextResponse.json({ error: 'ID is required' }, { status: 400 })
+    }
+
+    const { error } = await supabase.from('contacts').delete().eq('id', id)
+    if (error) {
+      const msg = error.code === '23503'
+        ? 'This contact is linked to a handoff. Unlink it there first, then delete.'
+        : 'Failed to delete contact.'
+      return NextResponse.json({ error: msg }, { status: 409 })
+    }
+
+    return NextResponse.json({ ok: true })
+  } catch (err) {
+    console.error('Contacts DELETE error:', err)
+    return NextResponse.json({ error: 'Failed to delete contact' }, { status: 500 })
+  }
+}
+
+// Bulk sector / scope curation for the selected contacts.
+export async function POST(request) {
+  const sessionCookie = request.cookies.get('admin_session')?.value
+  if (!sessionCookie) {
+    return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
+  }
+
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL,
+    process.env.SUPABASE_SERVICE_ROLE_KEY
+  )
+
+  try {
+    const body = await request.json()
+    const ids = Array.isArray(body.ids)
+      ? body.ids.filter((n) => Number.isFinite(Number(n))).map(Number)
+      : []
+    if (ids.length === 0) {
+      return NextResponse.json({ error: 'ids are required' }, { status: 400 })
+    }
+
+    const updates = {}
+    if ('sector' in body) {
+      const s = typeof body.sector === 'string' ? body.sector.trim() : ''
+      updates.sector = s === '' ? null : s
+    }
+    if (typeof body.out_of_scope === 'boolean') {
+      updates.out_of_scope = body.out_of_scope
+    }
+    if (Object.keys(updates).length === 0) {
+      return NextResponse.json({ error: 'Nothing to update' }, { status: 400 })
+    }
+
+    const { data, error } = await supabase
+      .from('contacts')
+      .update(updates)
+      .in('id', ids)
+      .select('id')
+    if (error) throw error
+
+    return NextResponse.json({ updated: (data || []).length })
+  } catch (err) {
+    console.error('Contacts bulk POST error:', err)
+    return NextResponse.json({ error: 'Failed to bulk update' }, { status: 500 })
+  }
+}
+
+// Fields a curator may edit on a contact. Anything else in the body is ignored.
+const EDITABLE_FIELDS = ['first_name', 'last_name', 'signup_email', 'location', 'country', 'tags', 'tier', 'newsletter_status', 'sector', 'out_of_scope', 'organisation_name', 'seniority', 'role', 'industry', 'notes']
+function pickEditable(body) {
+  const out = {}
+  for (const k of EDITABLE_FIELDS) {
+    if (k in body) out[k] = k === 'sector' && body[k] === '' ? null : body[k]
+  }
+  return out
 }

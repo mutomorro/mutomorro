@@ -12,6 +12,9 @@ function client() {
   )
 }
 
+// Allowed enquiry dispositions (mirrors the DB check constraint).
+const STATUSES = new Set(['new', 'lead', 'responded', 'dismissed', 'spam'])
+
 export async function GET(request) {
   if (!request.cookies.get('admin_session')?.value) {
     return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
@@ -21,7 +24,7 @@ export async function GET(request) {
   try {
     const { data: subs, error } = await supabase
       .from('contact_submissions')
-      .select('id, name, email, organisation, service, message, source_page, created_at, responded, responded_at, notes')
+      .select('id, name, email, organisation, service, message, source_page, created_at, responded, responded_at, notes, status')
       .order('created_at', { ascending: false })
       .limit(500)
     if (error) throw error
@@ -59,11 +62,18 @@ export async function GET(request) {
       }
     })
 
+    const byStatus = { new: 0, lead: 0, responded: 0, dismissed: 0, spam: 0 }
+    for (const i of items) {
+      const s = i.status || (i.responded ? 'responded' : 'new')
+      if (s in byStatus) byStatus[s]++
+    }
+
     return NextResponse.json({
       items,
       counts: {
         total: items.length,
         unresponded: items.filter((i) => !i.responded).length,
+        byStatus,
       },
     })
   } catch (err) {
@@ -80,14 +90,24 @@ export async function PATCH(request) {
 
   try {
     const body = await request.json()
-    const { id, responded, notes } = body
+    const { id, responded, notes, status } = body
     if (!id) return NextResponse.json({ error: 'ID is required' }, { status: 400 })
 
     // Column allow-list — never spread the raw body into .update().
     const updates = {}
-    if (responded !== undefined) {
+    if (status !== undefined) {
+      if (!STATUSES.has(status)) {
+        return NextResponse.json({ error: 'Invalid status' }, { status: 400 })
+      }
+      updates.status = status
+      // Keep the legacy boolean in sync so other consumers stay correct.
+      updates.responded = status === 'responded'
+      updates.responded_at = status === 'responded' ? new Date().toISOString() : null
+    }
+    if (responded !== undefined && status === undefined) {
       updates.responded = !!responded
       updates.responded_at = responded ? new Date().toISOString() : null
+      updates.status = responded ? 'responded' : 'new'
     }
     if (notes !== undefined) updates.notes = notes
 
@@ -107,5 +127,49 @@ export async function PATCH(request) {
   } catch (err) {
     console.error('Enquiries PATCH error:', err)
     return NextResponse.json({ error: 'Failed to update enquiry' }, { status: 500 })
+  }
+}
+
+// Delete an enquiry. Optionally also delete the linked contact (matched by email)
+// for tests / spam — that cascades the contact's interactions + recipients.
+export async function DELETE(request) {
+  if (!request.cookies.get('admin_session')?.value) {
+    return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
+  }
+  const supabase = client()
+
+  try {
+    const { id, deleteContact } = await request.json()
+    if (!id) return NextResponse.json({ error: 'ID is required' }, { status: 400 })
+
+    // Look up the email before deleting the row, in case we also purge the contact.
+    let email = null
+    if (deleteContact) {
+      const { data: sub } = await supabase
+        .from('contact_submissions')
+        .select('email')
+        .eq('id', id)
+        .maybeSingle()
+      email = sub?.email || null
+    }
+
+    const { error } = await supabase.from('contact_submissions').delete().eq('id', id)
+    if (error) throw error
+
+    let contactDeleted = false
+    if (deleteContact && email) {
+      const { error: cErr, count } = await supabase
+        .from('contacts')
+        .delete({ count: 'exact' })
+        .ilike('signup_email', email)
+      // A handoff FK (23503) blocks the contact delete; the enquiry is already gone,
+      // so report partial success rather than failing the whole request.
+      if (!cErr) contactDeleted = (count || 0) > 0
+    }
+
+    return NextResponse.json({ ok: true, contactDeleted })
+  } catch (err) {
+    console.error('Enquiries DELETE error:', err)
+    return NextResponse.json({ error: 'Failed to delete enquiry' }, { status: 500 })
   }
 }

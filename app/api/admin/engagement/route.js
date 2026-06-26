@@ -6,7 +6,11 @@ import { createClient } from '@supabase/supabase-js'
 // computed server-side via get_engaged_contacts / get_engaged_organisations
 // (transparent weighted score; see the engagement-scoring migration).
 
-const PEOPLE_FILTERS = new Set(['all', 'recent', 'decision_makers', 'repeat', 'clickers', 'enquirers', 'uk', 'golden'])
+const PEOPLE_FILTERS = new Set([
+  'all', 'recent', 'decision_makers', 'repeat', 'clickers', 'enquirers', 'uk', 'golden', 'engaged',
+  // UK pool funnel drill-downs (deep-linked from the Overview hero boxes)
+  'uk_subscribed', 'uk_engaged', 'uk_target', 'uk_notsub', 'uk_target_audience', 'uk_optedout',
+])
 
 // Score weights — defaults reproduce the original scoring; the UI can override.
 const DEFAULT_WEIGHTS = { wClick: 8, wOpen: 1, wDownload: 1.5, wRecent30: 20, wRecent90: 10, wSignal: 15, wDm: 12, wOrg: 6, wUk: 18 }
@@ -114,6 +118,7 @@ function normalisePerson(r) {
     isUk: r.is_uk,
     country: r.country,
     industry: r.industry,
+    sector: r.sector,
     score: Math.round(Number(r.score) || 0),
   }
 }

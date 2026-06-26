@@ -77,6 +77,9 @@ export default function ContactsPage() {
   const [zb, setZb] = useState('')
   const [tag, setTag] = useState('')
   const [segment, setSegment] = useState('')
+  const [sector, setSector] = useState('')
+  const [scope, setScope] = useState('')
+  const [bulkSector, setBulkSector] = useState('')
   const [sort, setSort] = useState('-created_at')
   const [segments, setSegments] = useState(null)
   const [selected, setSelected] = useState(() => new Set())
@@ -99,6 +102,8 @@ export default function ContactsPage() {
       if (zb) params.set('zb', zb)
       if (tag) params.set('tag', tag)
       if (segment) params.set('segment', segment)
+      if (sector) params.set('sector', sector)
+      if (scope) params.set('scope', scope)
 
       const res = await fetch(`/api/admin/contacts?${params}`)
       if (!res.ok) throw new Error('Failed')
@@ -112,7 +117,7 @@ export default function ContactsPage() {
     } finally {
       setLoading(false)
     }
-  }, [page, search, tier, source, newsletter, zb, tag, segment, sort])
+  }, [page, search, tier, source, newsletter, zb, tag, segment, sector, scope, sort])
 
   useEffect(() => {
     fetchContacts()
@@ -125,6 +130,14 @@ export default function ContactsPage() {
       .catch((e) => console.error(e))
   }, [])
   useEffect(() => { loadSegments() }, [loadSegments])
+
+  // Honour a ?tag= deep-link (e.g. the Overview "housing associations" chip).
+  // Read after mount so SSR and the first client render agree (no hydration
+  // mismatch on the conditional Clear button); the input shows it via defaultValue.
+  useEffect(() => {
+    const t = new URLSearchParams(window.location.search).get('tag')
+    if (t) { setTag(t); setPage(1) }
+  }, [])
 
   // Toggle sort: same field flips direction, new field starts descending.
   function toggleSort(field) {
@@ -187,6 +200,27 @@ export default function ContactsPage() {
       setBulkTag(''); fetchContacts()
     } catch (e) {
       setBulkMsg({ ok: false, text: 'Tagging failed.' })
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  // Bulk sector / scope curation for the ticked contacts.
+  async function bulkCurate(payload, describe) {
+    if (selected.size === 0) return
+    setBusy(true); setBulkMsg(null)
+    try {
+      const res = await fetch('/api/admin/contacts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ids: [...selected], ...payload }),
+      })
+      if (!res.ok) throw new Error()
+      const d = await res.json()
+      setBulkMsg({ ok: true, text: `${describe} ${d.updated} contact${d.updated === 1 ? '' : 's'}.` })
+      setSelected(new Set()); fetchContacts()
+    } catch (e) {
+      setBulkMsg({ ok: false, text: 'Update failed.' })
     } finally {
       setBusy(false)
     }
@@ -258,6 +292,22 @@ export default function ContactsPage() {
           <button onClick={tagSelected} disabled={busy || !bulkTag.trim()} style={{ padding: '6px 12px', fontSize: '13px', background: theme.cardBg, color: theme.textSecondary, border: `1px solid ${theme.cardBorder}`, borderRadius: '6px', cursor: 'pointer', fontFamily: 'inherit' }}>
             Add tag
           </button>
+          <span style={{ width: '1px', height: '20px', background: theme.cardBorder }} />
+          <select
+            value={bulkSector}
+            onChange={(e) => { const v = e.target.value; setBulkSector(''); if (v) bulkCurate({ sector: v }, `Set sector on`) }}
+            disabled={busy}
+            style={{ padding: '6px 10px', fontSize: '13px', background: theme.inputBg, color: theme.textSecondary, border: `1px solid ${theme.cardBorder}`, borderRadius: '6px', fontFamily: 'inherit', cursor: 'pointer' }}
+          >
+            <option value="">Set sector…</option>
+            {SECTORS.map((s) => <option key={s} value={s}>{s}</option>)}
+          </select>
+          <button onClick={() => bulkCurate({ out_of_scope: true }, 'Scrubbed')} disabled={busy} style={{ padding: '6px 12px', fontSize: '13px', background: theme.cardBg, color: theme.warning, border: `1px solid ${theme.cardBorder}`, borderRadius: '6px', cursor: 'pointer', fontFamily: 'inherit' }}>
+            Out of scope
+          </button>
+          <button onClick={() => bulkCurate({ out_of_scope: false }, 'Restored')} disabled={busy} style={{ padding: '6px 12px', fontSize: '13px', background: theme.cardBg, color: theme.textSecondary, border: `1px solid ${theme.cardBorder}`, borderRadius: '6px', cursor: 'pointer', fontFamily: 'inherit' }}>
+            In scope
+          </button>
           <button onClick={() => setSelected(new Set())} style={{ background: 'none', border: 'none', color: theme.textMuted, fontSize: '13px', cursor: 'pointer', fontFamily: 'inherit' }}>Clear</button>
           {bulkMsg && <span style={{ fontSize: '13px', color: bulkMsg.ok ? theme.success : theme.danger, width: '100%' }}>{bulkMsg.text}</span>}
         </div>
@@ -296,7 +346,9 @@ export default function ContactsPage() {
         <input
           type="text"
           placeholder="Tag…"
-          defaultValue={tag}
+          // Read from the URL directly so a ?tag= deep-link shows in the box. React
+          // tolerates an input-value SSR/client diff (it skips defaultValue diffing).
+          defaultValue={typeof window !== 'undefined' ? (new URLSearchParams(window.location.search).get('tag') || '') : ''}
           onChange={(e) => { const v = e.target.value.trim(); clearTimeout(debounceRef.current); debounceRef.current = setTimeout(() => { setTag(v); setPage(1) }, 300) }}
           style={{
             width: '120px', padding: '6px 10px', background: theme.inputBg,
@@ -304,9 +356,17 @@ export default function ContactsPage() {
             color: theme.textPrimary, fontSize: '13px', fontFamily: 'inherit', outline: 'none',
           }}
         />
-        {(tier || newsletter || zb || source || tag) && (
+        <FilterSelect theme={theme} value={sector}
+          options={['', ...SECTORS, '(none)']}
+          labels={['All sectors', ...SECTORS, 'No sector']}
+          onChange={(v) => { setSector(v); setPage(1) }} />
+        <FilterSelect theme={theme} value={scope}
+          options={['', 'in', 'out']}
+          labels={['All scope', 'In scope', 'Out of scope']}
+          onChange={(v) => { setScope(v); setPage(1) }} />
+        {(tier || newsletter || zb || source || tag || sector || scope) && (
           <button
-            onClick={() => { setTier(''); setNewsletter(''); setZb(''); setSource(''); setTag(''); setPage(1) }}
+            onClick={() => { setTier(''); setNewsletter(''); setZb(''); setSource(''); setTag(''); setSector(''); setScope(''); setPage(1) }}
             style={{ background: 'none', border: 'none', color: theme.accent, fontSize: '12px', cursor: 'pointer', fontFamily: 'inherit', padding: '4px' }}
           >
             Clear
@@ -385,12 +445,18 @@ export default function ContactsPage() {
                 <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontSize: '13px' }}>
                   {c.signup_email || '-'}
                 </div>
-                <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontSize: '13px' }}>
-                  {c.organisation_name
-                    ? c.organisation_name
-                    : (() => { const d = domainFrom(c.signup_email); return d
-                        ? <span style={{ color: theme.textLabel, fontStyle: 'italic' }} title="From email domain — not yet enriched">{d}</span>
-                        : '-' })()}
+                <div style={{ minWidth: 0, fontSize: '13px' }}>
+                  <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', opacity: c.out_of_scope ? 0.5 : 1 }}>
+                    {c.organisation_name
+                      ? c.organisation_name
+                      : (() => { const d = domainFrom(c.signup_email); return d
+                          ? <span style={{ color: theme.textLabel, fontStyle: 'italic' }} title="From email domain — not yet enriched">{d}</span>
+                          : '-' })()}
+                  </div>
+                  <div style={{ fontSize: '11px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    <span style={{ color: c.sector ? theme.textMuted : theme.textLabel, fontStyle: c.sector ? 'normal' : 'italic' }}>{c.sector || 'no sector'}</span>
+                    {c.out_of_scope && <span style={{ color: theme.warning }}> · out of scope</span>}
+                  </div>
                 </div>
                 <div style={{ fontSize: '13px' }}>{c.tier || '-'}</div>
                 <div style={{ fontSize: '12px', color: theme.textMuted, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={c.latest_signal_detail || c.first_source || ''}>
@@ -420,6 +486,7 @@ export default function ContactsPage() {
                   loading={detailLoading}
                   contactId={c.id}
                   onUpdate={() => { loadDetail(c.id); fetchContacts() }}
+                  onDelete={() => { setSelectedId(null); setDetail(null); fetchContacts(); loadSegments() }}
                 />
               )}
             </div>
@@ -458,9 +525,21 @@ export default function ContactsPage() {
   )
 }
 
-function ContactDetail({ theme, detail, loading, contactId, onUpdate }) {
+// The curated sector taxonomy (built for the change-management ICP, not Apollo's
+// generic industries). Shared by the filter, bulk bar, and the detail panel.
+const SECTORS = [
+  'Housing association', 'NHS / health', 'Local government', 'Central government',
+  'Higher education', 'Schools', 'Charity / third sector', 'Emergency services',
+  'Utilities / infrastructure', 'Corporate / private',
+]
+
+function ContactDetail({ theme, detail, loading, contactId, onUpdate, onDelete }) {
   const [noteText, setNoteText] = useState('')
   const [tagText, setTagText] = useState('')
+  const [editing, setEditing] = useState(false)
+  const [form, setForm] = useState({})
+  const [confirmDel, setConfirmDel] = useState(false)
+  const [errMsg, setErrMsg] = useState(null)
   const [showInteractionForm, setShowInteractionForm] = useState(false)
   const [intType, setIntType] = useState('note')
   const [intSummary, setIntSummary] = useState('')
@@ -490,6 +569,51 @@ function ContactDetail({ theme, detail, loading, contactId, onUpdate }) {
     setTagText('')
     setSaving(false)
     onUpdate()
+  }
+
+  // Sector / scope curation (column allow-list enforced server-side).
+  async function patchContact(fields) {
+    setSaving(true)
+    await fetch('/api/admin/contacts', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: contactId, ...fields }),
+    })
+    setSaving(false)
+    onUpdate()
+  }
+
+  function startEdit() {
+    setErrMsg(null)
+    setForm({
+      first_name: contact.first_name || '', last_name: contact.last_name || '',
+      signup_email: contact.signup_email || '', organisation_name: contact.organisation_name || '',
+      role: contact.role || '', seniority: contact.seniority || '',
+      location: contact.location || '', country: contact.country || '',
+    })
+    setEditing(true)
+  }
+
+  async function saveEdits() {
+    setSaving(true); setErrMsg(null)
+    const res = await fetch('/api/admin/contacts', {
+      method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: contactId, ...form }),
+    })
+    setSaving(false)
+    if (!res.ok) { const d = await res.json().catch(() => ({})); setErrMsg(d.error || 'Save failed'); return }
+    setEditing(false); onUpdate()
+  }
+
+  async function removeContact() {
+    setSaving(true); setErrMsg(null)
+    const res = await fetch('/api/admin/contacts', {
+      method: 'DELETE', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: contactId }),
+    })
+    setSaving(false)
+    if (!res.ok) { const d = await res.json().catch(() => ({})); setErrMsg(d.error || 'Delete failed'); setConfirmDel(false); return }
+    onDelete()
   }
 
   async function addNote() {
@@ -567,27 +691,54 @@ function ContactDetail({ theme, detail, loading, contactId, onUpdate }) {
       <div className="admin-contact-detail-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
         {/* Left: Info + actions */}
         <div>
-          <h3 style={{ fontSize: '16px', fontWeight: 400, color: theme.textPrimary, marginBottom: '12px' }}>
-            {[contact.first_name, contact.last_name].filter(Boolean).join(' ')}
-          </h3>
-          <div style={{ fontSize: '13px', color: theme.textSecondary, display: 'flex', flexDirection: 'column', gap: '5px', marginBottom: '14px' }}>
-            {contact.signup_email && <InfoRow theme={theme} label="Email" value={contact.signup_email} />}
-            {(contact.organisation_name || contact.role) && (
-              <InfoRow theme={theme} label="Org" value={`${contact.organisation_name || '—'}${contact.role ? ` · ${contact.role}` : ''}`} />
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+            <h3 style={{ fontSize: '16px', fontWeight: 400, color: theme.textPrimary, margin: 0 }}>
+              {[contact.first_name, contact.last_name].filter(Boolean).join(' ') || '(no name)'}
+            </h3>
+            {!editing && (
+              <button onClick={startEdit} style={{ background: 'none', border: 'none', color: theme.accent, fontSize: '12px', cursor: 'pointer', fontFamily: 'inherit', flexShrink: 0 }}>Edit details</button>
             )}
-            {contact.seniority && <InfoRow theme={theme} label="Level" value={titleCaseWord(contact.seniority)} />}
-            {contact.industry && <InfoRow theme={theme} label="Industry" value={contact.industry} />}
-            {(contact.location || contact.country) && (
-              <InfoRow theme={theme} label="Location" value={[contact.location, contact.country].filter(Boolean).join(', ')} />
-            )}
-            <InfoRow theme={theme} label="Tier" value={contact.tier || '—'} />
-            <InfoRow theme={theme} label="Newsletter" value={contact.newsletter_status || 'never'} />
-            <InfoRow theme={theme} label="Engagement" value={`${contact.download_count || 0} downloads · ${contact.newsletter_opens || 0} opens · ${contact.newsletter_clicks || 0} clicks`} />
-            {contact.last_download_date && (
-              <InfoRow theme={theme} label="Last download" value={new Date(contact.last_download_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })} />
-            )}
-            <InfoRow theme={theme} label="Enriched" value={contact.enriched ? `Yes${contact.enrichment_source ? ` · ${contact.enrichment_source}` : ''}` : 'No'} />
           </div>
+          {editing ? (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginBottom: '14px' }}>
+              {[['first_name', 'First name'], ['last_name', 'Last name'], ['signup_email', 'Email'], ['organisation_name', 'Organisation'], ['role', 'Role'], ['location', 'Location'], ['country', 'Country']].map(([k, label]) => (
+                <label key={k} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px' }}>
+                  <span style={{ width: '80px', color: theme.textMuted, flexShrink: 0 }}>{label}</span>
+                  <input type="text" value={form[k] || ''} onChange={(e) => setForm((f) => ({ ...f, [k]: e.target.value }))} style={miniInputStyle} />
+                </label>
+              ))}
+              <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px' }}>
+                <span style={{ width: '80px', color: theme.textMuted, flexShrink: 0 }}>Level</span>
+                <select value={form.seniority || ''} onChange={(e) => setForm((f) => ({ ...f, seniority: e.target.value }))} style={{ ...miniInputStyle, cursor: 'pointer' }}>
+                  <option value="">—</option>
+                  {['entry', 'senior', 'manager', 'head', 'director', 'vp', 'c_suite', 'partner', 'founder', 'owner'].map((s) => <option key={s} value={s}>{titleCaseWord(s)}</option>)}
+                </select>
+              </label>
+              <div style={{ display: 'flex', gap: '6px', marginTop: '4px' }}>
+                <button onClick={saveEdits} disabled={saving} style={{ ...miniBtn, padding: '5px 14px', fontSize: '12px', background: theme.accent, color: '#fff' }}>{saving ? 'Saving…' : 'Save'}</button>
+                <button onClick={() => { setEditing(false); setErrMsg(null) }} style={{ ...miniBtn, padding: '5px 14px', fontSize: '12px', background: theme.cardBg, color: theme.textSecondary }}>Cancel</button>
+              </div>
+            </div>
+          ) : (
+            <div style={{ fontSize: '13px', color: theme.textSecondary, display: 'flex', flexDirection: 'column', gap: '5px', marginBottom: '14px' }}>
+              {contact.signup_email && <InfoRow theme={theme} label="Email" value={contact.signup_email} />}
+              {(contact.organisation_name || contact.role) && (
+                <InfoRow theme={theme} label="Org" value={`${contact.organisation_name || '—'}${contact.role ? ` · ${contact.role}` : ''}`} />
+              )}
+              {contact.seniority && <InfoRow theme={theme} label="Level" value={titleCaseWord(contact.seniority)} />}
+              {contact.industry && <InfoRow theme={theme} label="Industry" value={contact.industry} />}
+              {(contact.location || contact.country) && (
+                <InfoRow theme={theme} label="Location" value={[contact.location, contact.country].filter(Boolean).join(', ')} />
+              )}
+              <InfoRow theme={theme} label="Tier" value={contact.tier || '—'} />
+              <InfoRow theme={theme} label="Newsletter" value={contact.newsletter_status || 'never'} />
+              <InfoRow theme={theme} label="Engagement" value={`${contact.download_count || 0} downloads · ${contact.newsletter_opens || 0} opens · ${contact.newsletter_clicks || 0} clicks`} />
+              {contact.last_download_date && (
+                <InfoRow theme={theme} label="Last download" value={new Date(contact.last_download_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })} />
+              )}
+              <InfoRow theme={theme} label="Enriched" value={contact.enriched ? `Yes${contact.enrichment_source ? ` · ${contact.enrichment_source}` : ''}` : 'No'} />
+            </div>
+          )}
 
           {contact.downloaded_items?.length > 0 && (
             <div style={{ marginBottom: '14px' }}>
@@ -608,6 +759,17 @@ function ContactDetail({ theme, detail, loading, contactId, onUpdate }) {
               ))}
             </div>
           )}
+
+          {/* Sector + scope curation */}
+          <div style={{ display: 'flex', gap: '6px', alignItems: 'center', marginBottom: '8px' }}>
+            <select value={contact.sector || ''} onChange={(e) => patchContact({ sector: e.target.value })} disabled={saving} style={{ ...miniInputStyle, cursor: 'pointer' }} title="Sector">
+              <option value="">No sector</option>
+              {SECTORS.map((s) => <option key={s} value={s}>{s}</option>)}
+            </select>
+            <button onClick={() => patchContact({ out_of_scope: !contact.out_of_scope })} disabled={saving} style={{ ...miniBtn, color: contact.out_of_scope ? theme.warning : theme.accent, whiteSpace: 'nowrap', padding: '4px 8px', fontSize: '12px' }} title="Whether this contact counts in the buyer-insight pools">
+              {contact.out_of_scope ? 'Out of scope' : 'In scope'}
+            </button>
+          </div>
 
           {/* Quick actions */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
@@ -631,6 +793,21 @@ function ContactDetail({ theme, detail, loading, contactId, onUpdate }) {
                 <input type="text" value={intSummary} onChange={(e) => setIntSummary(e.target.value)} placeholder="Summary" style={miniInputStyle} />
                 <button onClick={logInteraction} disabled={saving || !intSummary.trim()} style={{ ...miniBtn, width: 'auto', fontSize: '12px', padding: '4px 10px' }}>Save</button>
               </div>
+            )}
+          </div>
+
+          {errMsg && <div style={{ fontSize: '12px', color: theme.danger, marginTop: '10px' }}>{errMsg}</div>}
+
+          {/* Delete (two-step) */}
+          <div style={{ marginTop: '14px', paddingTop: '12px', borderTop: `1px solid ${theme.rowBorder}` }}>
+            {confirmDel ? (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                <span style={{ fontSize: '12px', color: theme.danger }}>Delete permanently? Engagement history goes too.</span>
+                <button onClick={removeContact} disabled={saving} style={{ padding: '4px 12px', fontSize: '12px', background: theme.danger, color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontFamily: 'inherit' }}>{saving ? 'Deleting…' : 'Yes, delete'}</button>
+                <button onClick={() => setConfirmDel(false)} style={{ background: 'none', border: 'none', color: theme.textMuted, fontSize: '12px', cursor: 'pointer', fontFamily: 'inherit' }}>Cancel</button>
+              </div>
+            ) : (
+              <button onClick={() => { setConfirmDel(true); setErrMsg(null) }} style={{ background: 'none', border: 'none', color: theme.textMuted, fontSize: '12px', cursor: 'pointer', fontFamily: 'inherit', padding: 0 }}>Delete contact</button>
             )}
           </div>
         </div>

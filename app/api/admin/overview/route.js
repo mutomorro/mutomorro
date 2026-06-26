@@ -3,6 +3,18 @@ import { createClient } from '@supabase/supabase-js'
 import { queryPostHog, trendsQuery } from '../../../../lib/posthog-admin'
 import { getSequences } from '../../../../lib/apollo'
 
+// Scanner/bot 404 noise — mirrors /api/admin/redirects so the Overview inbox
+// counts the same "real" 404s that page surfaces.
+const BOT_404_PATTERNS = [
+  /^\/\.well-known/i,
+  /\/wp-(admin|login|content|includes)/i,
+  /\.(php|asp|aspx|env|git|sql|bak)(\/|$)/i,
+  /\/(xmlrpc|phpmyadmin|adminer|wlwmanifest)/i,
+  /\/(cgi-bin|vendor|\.vscode|\.idea)/i,
+  /captcha/i,
+]
+const isBot404 = (path) => BOT_404_PATTERNS.some((re) => re.test(path || ''))
+
 export async function GET(request) {
   const sessionCookie = request.cookies.get('admin_session')?.value
   if (!sessionCookie) {
@@ -50,6 +62,13 @@ export async function GET(request) {
       tenderUrgent,
       handoffsOpen,
       handoffsRecent,
+      poolStats,
+      enquiriesUnworked,
+      tenderActionQueue,
+      calendarOverdue,
+      handoffsStale,
+      missedUnresolved,
+      newsletterCfg,
     ] = await Promise.all([
       supabase.from('contacts').select('first_source').gte('created_at', weekAgoISO),
       supabase.from('contacts').select('id', { count: 'exact', head: true }).gte('created_at', twoWeeksAgoISO).lt('created_at', weekAgoISO),
@@ -69,6 +88,25 @@ export async function GET(request) {
       supabase.from('tenders').select('id', { count: 'exact', head: true }).gt('deadline', new Date().toISOString()).lt('deadline', new Date(Date.now() + 7 * 86400000).toISOString()),
       supabase.from('handoffs').select('id', { count: 'exact', head: true }).eq('status', 'open'),
       supabase.from('handoffs').select('id, title, source_project, target_project').eq('status', 'open').order('created_at', { ascending: false }).limit(3),
+      // --- Real-market pool + needs-attention inbox ---
+      supabase.rpc('get_overview_pool_stats'),
+      supabase.from('contact_submissions').select('id', { count: 'exact', head: true }).eq('status', 'new'),
+      // Tender action queue — the genuine signal (open, unrated, scored, live deadline),
+      // not the meaningless ~7,800 status='new' intake. Mirrors /admin/tenders.
+      supabase.from('tenders').select('id', { count: 'exact', head: true })
+        .eq('status', 'new').is('james_rating', null).gte('total_score', 40)
+        .or(`deadline.is.null,deadline.gte.${new Date().toISOString()}`),
+      // Overdue calendar — past, still open. Mirrors /admin/calendar.
+      supabase.from('calendar_items').select('id', { count: 'exact', head: true })
+        .lt('scheduled_date', new Date().toISOString().split('T')[0])
+        .not('scheduled_date', 'is', null)
+        .not('status', 'in', '("done","published","cancelled")'),
+      supabase.from('handoffs').select('id', { count: 'exact', head: true }).eq('status', 'open').lt('created_at', new Date(Date.now() - 14 * 86400000).toISOString()),
+      // Top unresolved 404s — hit-ranked; bot noise filtered in JS below. Cap of 500
+      // matches /api/admin/redirects so the two surfaces can't diverge (well under the
+      // 1,000-row PostgREST limit; ~13 unresolved today).
+      supabase.from('missed_redirects').select('path, hit_count').eq('resolved', false).order('hit_count', { ascending: false }).limit(500),
+      supabase.from('newsletter_config').select('enabled').limit(1).maybeSingle(),
     ])
 
     // Process contacts
@@ -164,7 +202,58 @@ export async function GET(request) {
       }
     }
 
+    // UK pool funnel — the two-arm model (reachable -> engaged -> target;
+    // not-subscribed -> target audience). One server-side aggregate row.
+    const ps = poolStats?.data?.[0] || null
+    const funnel = ps
+      ? {
+          total: Number(ps.total_contacts) || 0,
+          allSubscribers: Number(ps.all_subscribers) || 0,
+          ukTotal: Number(ps.uk_total) || 0,
+          // top arm (reachable): subscribed -> engaged -> target
+          subscribed: Number(ps.uk_subscribed) || 0,
+          engaged: Number(ps.uk_sub_engaged) || 0,
+          target: Number(ps.uk_target) || 0,
+          // bottom arm (acquire): not subscribed -> target audience (contactable)
+          notSubscribed: Number(ps.uk_notsub) || 0,
+          targetAudienceAll: Number(ps.ta_all) || 0,
+          targetAudience: Number(ps.ta_contactable) || 0,
+          targetAudienceWarm: Number(ps.ta_warm) || 0,
+          // retained, off-the-field figures (drillable)
+          optedOut: Number(ps.uk_optedout) || 0,
+          bounced: Number(ps.uk_bounced) || 0,
+          // enrichment coverage — every cut above is a floor, not a total
+          coverage: {
+            seniorityKnown: Number(ps.seniority_known) || 0,
+            locationKnown: Number(ps.location_known) || 0,
+            freeEmail: Number(ps.free_email) || 0,
+          },
+        }
+      : null
+
+    // Top "real" 404 (bot noise filtered) for the inbox row.
+    const real404s = (missedUnresolved.data || []).filter((r) => !isBot404(r.path))
+    const top404 = real404s[0] || null
+
+    // Needs-attention inbox — every actionable pile, each a one-click deep link.
+    const newsletterPaused = newsletterCfg?.data ? newsletterCfg.data.enabled === false : false
+    const needsAttention = {
+      enquiries: enquiriesUnworked.count || 0,
+      tenderQueue: tenderActionQueue.count || 0,
+      tendersHot: tenderHot.count || 0,
+      tendersClosing7: tenderUrgent.count || 0,
+      calendarOverdue: calendarOverdue.count || 0,
+      handoffsOpen: handoffsOpen.count || 0,
+      handoffsStale: handoffsStale.count || 0,
+      redirects: real404s.length,
+      topRedirect: top404 ? { path: top404.path, hits: top404.hit_count || 0 } : null,
+      newsletterPaused,
+    }
+
     return NextResponse.json({
+      funnel,
+      needsAttention,
+      generatedAt: new Date().toISOString(),
       contactsThisWeek: { total: totalContactsThisWeek, previousWeek: contactsPreviousWeek.count || 0, bySource: contactsBySource },
       signals: enrichedSignals,
       pipeline: { counts: pipelineCounts, activeTotal: pipelineTotal.count || 0 },
@@ -185,6 +274,7 @@ export async function GET(request) {
       tenders: {
         hot: tenderHot.count || 0,
         unreviewed: tenderUnreviewed.count || 0,
+        actionQueue: tenderActionQueue.count || 0,
         urgent: tenderUrgent.count || 0,
       },
     })

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
-import { bulkMatchByEmail, buildEnrichUpdate, isUsefulMatch } from '@/lib/apollo-enrich.mjs'
+import { bulkMatchByEmail, buildEnrichUpdate, isUsefulMatch, matchIsTrustworthy } from '@/lib/apollo-enrich.mjs'
 
 // Enrich selected contacts via Apollo (company / title / seniority / industry /
 // LinkedIn / location). Costs 1 Apollo credit per matched person — only ever
@@ -45,7 +45,8 @@ export async function POST(request) {
     let noMatch = 0
     for (const c of contacts || []) {
       const mapped = matchMap.get((c.signup_email || '').toLowerCase())
-      if (!isUsefulMatch(mapped)) { noMatch++; continue }
+      // Reject matches where Apollo's company doesn't match the email domain.
+      if (!isUsefulMatch(mapped) || !matchIsTrustworthy(c.signup_email, mapped)) { noMatch++; continue }
       const { error: upErr } = await supabase
         .from('contacts')
         .update(buildEnrichUpdate(mapped, nowIso))

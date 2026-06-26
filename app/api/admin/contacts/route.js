@@ -74,6 +74,9 @@ export async function GET(request) {
       query = query.gte('last_download_date', thirty)
     } else if (segment === 'enriched') {
       query = query.eq('enriched', true)
+    } else if (segment === 'uk') {
+      // country looks UK OR the email domain ends in .uk (mirrors is_uk_contact).
+      query = query.or('country.ilike.%united kingdom%,country.ilike.%northern ireland%,country.ilike.england,country.ilike.scotland,country.ilike.wales,country.ilike.uk,country.ilike.gb,country.ilike.great britain,signup_email.ilike.%.uk')
     }
 
     // Sort

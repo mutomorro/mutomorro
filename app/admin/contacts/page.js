@@ -45,7 +45,7 @@ function domainFrom(email) {
 }
 
 function Chip({ theme, label, count, active, onClick, tone }) {
-  const accent = tone === 'warn' ? theme.warning : theme.accent
+  const accent = tone === 'warn' ? theme.warning : tone === 'uk' ? '#3B82F6' : theme.accent
   return (
     <button
       onClick={onClick}
@@ -232,6 +232,7 @@ export default function ContactsPage() {
       {segments && (
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '16px' }}>
           <Chip theme={theme} active={segment === ''} onClick={() => pickSegment('')} label="All" count={segments.total} />
+          <Chip theme={theme} active={segment === 'uk'} onClick={() => pickSegment('uk')} label="UK" count={segments.uk} tone="uk" />
           <Chip theme={theme} active={segment === 'no_company'} onClick={() => pickSegment('no_company')} label="Needs company" count={segments.noCompany} tone="warn" />
           <Chip theme={theme} active={segment === 'decision_makers'} onClick={() => pickSegment('decision_makers')} label="Decision-makers" count={segments.decisionMakers} />
           <Chip theme={theme} active={segment === 'active_30d'} onClick={() => pickSegment('active_30d')} label="Active 30d" count={segments.active30d} />

@@ -26,6 +26,7 @@ export async function GET(request) {
       decisionMakers: Number(row.decision_makers) || 0,
       active30d: Number(row.active_30d) || 0,
       enriched: Number(row.enriched) || 0,
+      uk: Number(row.uk) || 0,
     })
   } catch (err) {
     console.error('Contacts segments error:', err)

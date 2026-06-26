@@ -4,7 +4,9 @@ import { useState, useEffect } from 'react'
 import { useAdminTheme } from '../../../lib/admin-theme-context'
 
 const PEOPLE_FILTERS = [
+  { value: 'golden', label: '★ Golden ticket' },
   { value: 'all', label: 'Most engaged' },
+  { value: 'uk', label: 'UK-based' },
   { value: 'recent', label: 'Recently active' },
   { value: 'decision_makers', label: 'Decision-makers' },
   { value: 'repeat', label: 'Repeat downloaders' },
@@ -12,12 +14,13 @@ const PEOPLE_FILTERS = [
   { value: 'enquirers', label: 'Enquired' },
 ]
 
-const DEFAULT_WEIGHTS = { wClick: 8, wOpen: 1, wDownload: 1.5, wRecent30: 20, wRecent90: 10, wSignal: 15, wDm: 12, wOrg: 6 }
+const DEFAULT_WEIGHTS = { wClick: 8, wOpen: 1, wDownload: 1.5, wRecent30: 20, wRecent90: 10, wSignal: 15, wDm: 12, wOrg: 6, wUk: 18 }
 const WEIGHT_FIELDS = [
+  { key: 'wUk', label: 'UK-based', max: 40, step: 1 },
+  { key: 'wDm', label: 'Decision-maker', max: 40, step: 1 },
   { key: 'wClick', label: 'Newsletter click', max: 20, step: 1 },
   { key: 'wSignal', label: 'Enquiry / high signal', max: 40, step: 1 },
   { key: 'wRecent30', label: 'Downloaded in 30 days', max: 40, step: 1 },
-  { key: 'wDm', label: 'Decision-maker', max: 40, step: 1 },
   { key: 'wRecent90', label: 'Downloaded in 90 days', max: 40, step: 1 },
   { key: 'wOrg', label: 'Work email', max: 20, step: 1 },
   { key: 'wOpen', label: 'Newsletter open', max: 10, step: 0.5 },
@@ -293,6 +296,7 @@ function WeightsPanel({ theme, weights, onChange, onReset, customised }) {
 
 function PersonRow({ theme, person, rank, selected, onToggle }) {
   const reasons = []
+  if (person.isUk) reasons.push({ label: 'UK', tone: 'uk' })
   if (person.isDecisionMaker) reasons.push({ label: person.seniority ? titleCase(person.seniority) : 'Decision-maker', tone: 'accent' })
   if (person.highSignals > 0) reasons.push({ label: person.highSignals > 1 ? `${person.highSignals} enquiries` : 'Enquired', tone: 'danger' })
   if (person.clicks > 0) reasons.push({ label: `${person.clicks} click${person.clicks === 1 ? '' : 's'}`, tone: 'accent' })
@@ -320,7 +324,8 @@ function PersonRow({ theme, person, rank, selected, onToggle }) {
         </div>
         <div style={{ fontSize: '12px', color: theme.textMuted, marginTop: '4px' }}>
           <a href={`mailto:${person.email}`} style={{ color: theme.textMuted, textDecoration: 'none' }}>{person.email}</a>
-          {person.tier ? ` · Tier ${person.tier}` : ''}
+          {person.industry ? ` · ${titleCase(person.industry)}` : ''}
+          {person.country && !person.isUk ? ` · ${person.country}` : ''}
         </div>
       </div>
       <div style={{ textAlign: 'right', flexShrink: 0 }}>
@@ -398,6 +403,7 @@ function OrgsTab({ theme }) {
               <div style={{ minWidth: 0 }}>
                 <div style={{ fontSize: '14px', color: theme.textPrimary, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                   {expanded === o.domain ? '▾ ' : '▸ '}{o.orgName || o.domain}
+                  {o.isUk && <span style={{ fontSize: '10px', color: '#3B82F6', background: '#3B82F622', padding: '1px 6px', borderRadius: '3px', marginLeft: '8px' }}>UK</span>}
                 </div>
                 <div style={{ fontSize: '11px', color: theme.textMuted }}>{o.domain}{o.active90d > 0 ? ` · ${o.active90d} active 90d` : ''}</div>
               </div>
@@ -442,6 +448,7 @@ function Reason({ theme, tone, children }) {
     accent: { bg: theme.accentBg, fg: theme.accent },
     success: { bg: theme.success + '22', fg: theme.success },
     danger: { bg: theme.danger + '22', fg: theme.danger },
+    uk: { bg: '#3B82F622', fg: '#3B82F6' },
     muted: { bg: theme.inputBg, fg: theme.textSecondary },
     faint: { bg: 'transparent', fg: theme.textLabel },
   }

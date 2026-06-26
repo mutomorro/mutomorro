@@ -6,11 +6,11 @@ import { createClient } from '@supabase/supabase-js'
 // computed server-side via get_engaged_contacts / get_engaged_organisations
 // (transparent weighted score; see the engagement-scoring migration).
 
-const PEOPLE_FILTERS = new Set(['all', 'recent', 'decision_makers', 'repeat', 'clickers', 'enquirers'])
+const PEOPLE_FILTERS = new Set(['all', 'recent', 'decision_makers', 'repeat', 'clickers', 'enquirers', 'uk', 'golden'])
 
 // Score weights — defaults reproduce the original scoring; the UI can override.
-const DEFAULT_WEIGHTS = { wClick: 8, wOpen: 1, wDownload: 1.5, wRecent30: 20, wRecent90: 10, wSignal: 15, wDm: 12, wOrg: 6 }
-const RPC_WEIGHT_KEY = { wClick: 'w_click', wOpen: 'w_open', wDownload: 'w_download', wRecent30: 'w_recent30', wRecent90: 'w_recent90', wSignal: 'w_signal', wDm: 'w_dm', wOrg: 'w_org' }
+const DEFAULT_WEIGHTS = { wClick: 8, wOpen: 1, wDownload: 1.5, wRecent30: 20, wRecent90: 10, wSignal: 15, wDm: 12, wOrg: 6, wUk: 18 }
+const RPC_WEIGHT_KEY = { wClick: 'w_click', wOpen: 'w_open', wDownload: 'w_download', wRecent30: 'w_recent30', wRecent90: 'w_recent90', wSignal: 'w_signal', wDm: 'w_dm', wOrg: 'w_org', wUk: 'w_uk' }
 
 function client() {
   return createClient(
@@ -111,6 +111,9 @@ function normalisePerson(r) {
     isDecisionMaker: r.is_decision_maker,
     active30d: r.active_30d,
     active90d: r.active_90d,
+    isUk: r.is_uk,
+    country: r.country,
+    industry: r.industry,
     score: Math.round(Number(r.score) || 0),
   }
 }
@@ -125,6 +128,7 @@ function normaliseOrg(r) {
     clicks: Number(r.clicks) || 0,
     decisionMakers: Number(r.decision_makers) || 0,
     active90d: Number(r.active_90d) || 0,
+    isUk: r.is_uk,
     score: Math.round(Number(r.score) || 0),
   }
 }

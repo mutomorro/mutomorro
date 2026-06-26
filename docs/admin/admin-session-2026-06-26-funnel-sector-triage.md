@@ -84,6 +84,16 @@ WHERE sector = 'Higher education' AND NOT is_decision_maker_seniority(seniority)
 4. **Enquiry bulk sweep** — per-card actions only for now; a multi-select bulk-dismiss/delete could speed clearing spam.
 5. Other roadmap bigger-bets unchanged (per-subscriber segments, first-party funnel, account layer).
 
+## Parked for a proper look (raised by James 26 Jun — deliberately NOT built)
+- **Enquiry "Lead" → Pipeline bridge.** Marking an enquiry `status='lead'` is currently JUST a
+  flag/filter in /admin/enquiries — it does **not** create or link anything in /admin/pipeline. The
+  contact + a high-intent signal already exist from the original submission, but there is no deal record.
+- **Pipeline (`organisations`) needs its own review FIRST.** James's pain: it **over-collects** (auto-adds
+  orgs he wouldn't class as leads) and there's **no way to remove / retire deals that were lost or have
+  gone quiet** (no lost / dormant / archived lifecycle). Decide the pipeline lifecycle — qualify-in vs
+  auto-add, won/lost/dormant states, archive — *before* wiring enquiries (or engaged contacts) into it.
+  Don't build the Lead→Pipeline promotion until this is sorted, or it amplifies the over-collection.
+
 ## Gotchas reconfirmed this session
 - The dev server (Turbopack) served **stale page compiles all session** — API routes recompile on hit, but
   page changes need a browser refresh. Verified via the API layer + lint throughout; do not assume the

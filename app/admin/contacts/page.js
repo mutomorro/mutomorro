@@ -39,6 +39,30 @@ function InfoRow({ theme, label, value }) {
   )
 }
 
+function domainFrom(email) {
+  if (!email || !email.includes('@')) return ''
+  return email.split('@').pop().trim().toLowerCase()
+}
+
+function Chip({ theme, label, count, active, onClick, tone }) {
+  const accent = tone === 'warn' ? theme.warning : theme.accent
+  return (
+    <button
+      onClick={onClick}
+      style={{
+        display: 'inline-flex', alignItems: 'center', gap: '7px', padding: '6px 12px', borderRadius: '20px',
+        fontSize: '13px', cursor: 'pointer', fontFamily: 'inherit',
+        background: active ? accent : theme.cardBg,
+        color: active ? '#fff' : theme.textSecondary,
+        border: `1px solid ${active ? accent : theme.cardBorder}`,
+      }}
+    >
+      <span>{label}</span>
+      <span style={{ fontSize: '12px', color: active ? 'rgba(255,255,255,0.85)' : theme.textMuted }}>{(count ?? 0).toLocaleString()}</span>
+    </button>
+  )
+}
+
 export default function ContactsPage() {
   const { theme } = useAdminTheme()
   const [contacts, setContacts] = useState([])
@@ -52,8 +76,13 @@ export default function ContactsPage() {
   const [newsletter, setNewsletter] = useState('')
   const [zb, setZb] = useState('')
   const [tag, setTag] = useState('')
+  const [segment, setSegment] = useState('')
   const [sort, setSort] = useState('-created_at')
-  const [stats, setStats] = useState(null)
+  const [segments, setSegments] = useState(null)
+  const [selected, setSelected] = useState(() => new Set())
+  const [busy, setBusy] = useState(false)
+  const [bulkTag, setBulkTag] = useState('')
+  const [bulkMsg, setBulkMsg] = useState(null)
   const [selectedId, setSelectedId] = useState(null)
   const [detail, setDetail] = useState(null)
   const [detailLoading, setDetailLoading] = useState(false)
@@ -69,6 +98,7 @@ export default function ContactsPage() {
       if (newsletter) params.set('newsletter', newsletter)
       if (zb) params.set('zb', zb)
       if (tag) params.set('tag', tag)
+      if (segment) params.set('segment', segment)
 
       const res = await fetch(`/api/admin/contacts?${params}`)
       if (!res.ok) throw new Error('Failed')
@@ -76,23 +106,25 @@ export default function ContactsPage() {
       setContacts(data.contacts)
       setTotal(data.total)
       setPages(data.pages)
+      setSelected(new Set())
     } catch (err) {
       console.error(err)
     } finally {
       setLoading(false)
     }
-  }, [page, search, tier, source, newsletter, zb, tag, sort])
+  }, [page, search, tier, source, newsletter, zb, tag, segment, sort])
 
   useEffect(() => {
     fetchContacts()
   }, [fetchContacts])
 
-  useEffect(() => {
-    fetch('/api/admin/contacts/stats')
+  const loadSegments = useCallback(() => {
+    fetch('/api/admin/contacts/segments')
       .then((r) => r.ok ? r.json() : Promise.reject())
-      .then(setStats)
+      .then(setSegments)
       .catch((e) => console.error(e))
   }, [])
+  useEffect(() => { loadSegments() }, [loadSegments])
 
   // Toggle sort: same field flips direction, new field starts descending.
   function toggleSort(field) {
@@ -105,12 +137,59 @@ export default function ContactsPage() {
     })
   }
 
-  // Click a KPI chip to filter, where the value maps to an existing filter.
-  function applyKpiFilter(dim, val) {
+  // Working-segment chip: toggle on/off.
+  function pickSegment(val) {
     setPage(1)
-    if (dim === 'tier') setTier(val === tier ? '' : val)
-    else if (dim === 'newsletter') setNewsletter(val === newsletter ? '' : val)
-    else if (dim === 'deliverability') setZb(val === zb ? '' : val)
+    setBulkMsg(null)
+    setSegment((cur) => (cur === val ? '' : val))
+  }
+
+  function toggleSelect(id) {
+    setSelected((prev) => { const n = new Set(prev); if (n.has(id)) n.delete(id); else n.add(id); return n })
+  }
+  function toggleSelectAll() {
+    setSelected((prev) => (prev.size === contacts.length && contacts.length > 0 ? new Set() : new Set(contacts.map((c) => c.id))))
+  }
+
+  async function enrichSelected() {
+    if (selected.size === 0) return
+    setBusy(true); setBulkMsg(null)
+    try {
+      const res = await fetch('/api/admin/contacts/enrich', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ids: [...selected] }),
+      })
+      if (!res.ok) throw new Error()
+      const d = await res.json()
+      setBulkMsg({ ok: true, text: `Enriched ${d.enriched} of ${d.attempted} (${d.noMatch} no match).` })
+      fetchContacts(); loadSegments()
+    } catch (e) {
+      setBulkMsg({ ok: false, text: 'Enrichment failed.' })
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  async function tagSelected() {
+    const t = bulkTag.trim()
+    if (!t || selected.size === 0) return
+    setBusy(true); setBulkMsg(null)
+    try {
+      const res = await fetch('/api/admin/engagement', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ids: [...selected], tag: t }),
+      })
+      if (!res.ok) throw new Error()
+      const d = await res.json()
+      setBulkMsg({ ok: true, text: `Tagged ${d.tagged} contact${d.tagged === 1 ? '' : 's'} “${t}”.` })
+      setBulkTag(''); fetchContacts()
+    } catch (e) {
+      setBulkMsg({ ok: false, text: 'Tagging failed.' })
+    } finally {
+      setBusy(false)
+    }
   }
 
   function handleSearch(value) {
@@ -149,13 +228,41 @@ export default function ContactsPage() {
         Contacts
       </h1>
 
-      {/* KPI strip — tier / newsletter funnel / deliverability (click a chip to filter) */}
-      {stats && (
-        <div className="admin-kpi-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', marginBottom: '20px' }}>
-          <KpiCard theme={theme} title="By tier" total={stats.total} rows={stats.tier} dim="tier" active={tier} onPick={applyKpiFilter} />
-          <KpiCard theme={theme} title="Newsletter funnel" total={stats.total} rows={stats.newsletter} dim="newsletter" active={newsletter} onPick={applyKpiFilter} />
-          <KpiCard theme={theme} title="Deliverability" total={stats.total} rows={stats.deliverability} dim="deliverability" active={zb} onPick={applyKpiFilter} />
+      {/* Working-filter chips — click to filter the list */}
+      {segments && (
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '16px' }}>
+          <Chip theme={theme} active={segment === ''} onClick={() => pickSegment('')} label="All" count={segments.total} />
+          <Chip theme={theme} active={segment === 'no_company'} onClick={() => pickSegment('no_company')} label="Needs company" count={segments.noCompany} tone="warn" />
+          <Chip theme={theme} active={segment === 'decision_makers'} onClick={() => pickSegment('decision_makers')} label="Decision-makers" count={segments.decisionMakers} />
+          <Chip theme={theme} active={segment === 'active_30d'} onClick={() => pickSegment('active_30d')} label="Active 30d" count={segments.active30d} />
+          <Chip theme={theme} active={segment === 'enriched'} onClick={() => pickSegment('enriched')} label="Enriched" count={segments.enriched} />
         </div>
+      )}
+
+      {/* Selection action bar — enrich / tag the ticked contacts */}
+      {selected.size > 0 && (
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap', padding: '12px 16px', marginBottom: '12px', background: theme.accentBg, border: `1px solid ${theme.accentBorder}`, borderRadius: '8px' }}>
+          <span style={{ fontSize: '13px', color: theme.textPrimary, fontWeight: 500 }}>{selected.size} selected</span>
+          <button onClick={enrichSelected} disabled={busy} style={{ padding: '6px 14px', fontSize: '13px', background: theme.accent, color: '#fff', border: 'none', borderRadius: '6px', cursor: busy ? 'default' : 'pointer', fontFamily: 'inherit', opacity: busy ? 0.6 : 1 }}>
+            {busy ? 'Working…' : 'Enrich via Apollo'}
+          </button>
+          <input
+            type="text"
+            value={bulkTag}
+            onChange={(e) => setBulkTag(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && tagSelected()}
+            placeholder="Tag…"
+            style={{ padding: '6px 10px', fontSize: '13px', background: theme.inputBg, border: `1px solid ${theme.cardBorder}`, color: theme.textPrimary, fontFamily: 'inherit', borderRadius: '4px', outline: 'none', width: '130px' }}
+          />
+          <button onClick={tagSelected} disabled={busy || !bulkTag.trim()} style={{ padding: '6px 12px', fontSize: '13px', background: theme.cardBg, color: theme.textSecondary, border: `1px solid ${theme.cardBorder}`, borderRadius: '6px', cursor: 'pointer', fontFamily: 'inherit' }}>
+            Add tag
+          </button>
+          <button onClick={() => setSelected(new Set())} style={{ background: 'none', border: 'none', color: theme.textMuted, fontSize: '13px', cursor: 'pointer', fontFamily: 'inherit' }}>Clear</button>
+          {bulkMsg && <span style={{ fontSize: '13px', color: bulkMsg.ok ? theme.success : theme.danger, width: '100%' }}>{bulkMsg.text}</span>}
+        </div>
+      )}
+      {bulkMsg && selected.size === 0 && (
+        <div style={{ fontSize: '13px', color: bulkMsg.ok ? theme.success : theme.danger, marginBottom: '12px' }}>{bulkMsg.text}</div>
       )}
 
       {/* Search */}
@@ -211,9 +318,10 @@ export default function ContactsPage() {
 
       {/* Table */}
       <div style={{ background: theme.cardBg, border: `1px solid ${theme.cardBorder}`, borderRadius: '10px', overflowX: 'auto' }}>
-        <div style={{ minWidth: '560px' }}>
+        <div style={{ minWidth: '600px' }}>
         {/* Header row */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1.4fr 1.2fr 0.5fr 0.8fr 0.6fr 0.6fr', padding: '10px 16px', borderBottom: `1px solid ${theme.headerBorder}`, fontSize: '11px', color: theme.textMuted, textTransform: 'uppercase', letterSpacing: '0.5px', gap: '8px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '34px 1.2fr 1.4fr 1.2fr 0.5fr 0.8fr 0.6fr 0.6fr', padding: '10px 16px', borderBottom: `1px solid ${theme.headerBorder}`, fontSize: '11px', color: theme.textMuted, textTransform: 'uppercase', letterSpacing: '0.5px', gap: '8px', alignItems: 'center' }}>
+          <input type="checkbox" checked={selected.size === contacts.length && contacts.length > 0} onChange={toggleSelectAll} style={{ cursor: 'pointer' }} />
           <SortTH theme={theme} label="Name" field="first_name" sort={sort} onSort={toggleSort} />
           <SortTH theme={theme} label="Email" field="signup_email" sort={sort} onSort={toggleSort} />
           <SortTH theme={theme} label="Organisation" field="organisation_name" sort={sort} onSort={toggleSort} />
@@ -241,21 +349,28 @@ export default function ContactsPage() {
                 onClick={() => loadDetail(c.id)}
                 style={{
                   display: 'grid',
-                  gridTemplateColumns: '1.2fr 1.4fr 1.2fr 0.5fr 0.8fr 0.6fr 0.6fr',
+                  gridTemplateColumns: '34px 1.2fr 1.4fr 1.2fr 0.5fr 0.8fr 0.6fr 0.6fr',
                   padding: '12px 16px',
                   borderBottom: `1px solid ${theme.rowBorder}`,
                   borderLeft: c.organisation_name ? `3px solid ${theme.accent}` : '3px solid transparent',
                   cursor: 'pointer',
-                  background: selectedId === c.id ? theme.accentBg : i % 2 === 0 ? 'transparent' : theme.sidebarHover,
+                  background: selected.has(c.id) ? theme.accentBg : selectedId === c.id ? theme.accentBg : i % 2 === 0 ? 'transparent' : theme.sidebarHover,
                   fontSize: '14px',
                   color: theme.textSecondary,
                   gap: '8px',
                   transition: 'background 0.1s',
                   alignItems: 'center',
                 }}
-                onMouseEnter={(e) => { if (selectedId !== c.id) e.currentTarget.style.background = theme.cardBgHover }}
-                onMouseLeave={(e) => { if (selectedId !== c.id) e.currentTarget.style.background = i % 2 === 0 ? 'transparent' : theme.sidebarHover }}
+                onMouseEnter={(e) => { if (selectedId !== c.id && !selected.has(c.id)) e.currentTarget.style.background = theme.cardBgHover }}
+                onMouseLeave={(e) => { if (selectedId !== c.id && !selected.has(c.id)) e.currentTarget.style.background = i % 2 === 0 ? 'transparent' : theme.sidebarHover }}
               >
+                <input
+                  type="checkbox"
+                  checked={selected.has(c.id)}
+                  onClick={(e) => e.stopPropagation()}
+                  onChange={() => toggleSelect(c.id)}
+                  style={{ cursor: 'pointer' }}
+                />
                 <div style={{ minWidth: 0 }}>
                   <div style={{ fontWeight: 400, color: theme.textPrimary, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     {[c.first_name, c.last_name].filter(Boolean).join(' ') || '-'}
@@ -270,7 +385,11 @@ export default function ContactsPage() {
                   {c.signup_email || '-'}
                 </div>
                 <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontSize: '13px' }}>
-                  {c.organisation_name || '-'}
+                  {c.organisation_name
+                    ? c.organisation_name
+                    : (() => { const d = domainFrom(c.signup_email); return d
+                        ? <span style={{ color: theme.textLabel, fontStyle: 'italic' }} title="From email domain — not yet enriched">{d}</span>
+                        : '-' })()}
                 </div>
                 <div style={{ fontSize: '13px' }}>{c.tier || '-'}</div>
                 <div style={{ fontSize: '12px', color: theme.textMuted, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={c.latest_signal_detail || c.first_source || ''}>
@@ -550,39 +669,6 @@ function ContactDetail({ theme, detail, loading, contactId, onUpdate }) {
             <p style={{ fontSize: '13px', color: theme.textLabel, fontStyle: 'italic' }}>No activity yet</p>
           )}
         </div>
-      </div>
-    </div>
-  )
-}
-
-function KpiCard({ theme, title, total, rows, dim, active, onPick }) {
-  const max = Math.max(1, ...rows.map((r) => r.count))
-  return (
-    <div style={{ background: theme.cardBg, border: `1px solid ${theme.cardBorder}`, borderRadius: '10px', padding: '16px 18px' }}>
-      <div style={{ fontSize: '11px', color: theme.textMuted, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '12px' }}>{title}</div>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
-        {rows.map((r) => {
-          const isActive = active === r.val
-          const pctv = total ? (r.count / total) * 100 : 0
-          return (
-            <button
-              key={r.val}
-              onClick={() => onPick(dim, r.val)}
-              title={`${r.count.toLocaleString()} · ${pctv.toFixed(0)}% — click to filter`}
-              style={{
-                display: 'grid', gridTemplateColumns: '92px 1fr 46px', alignItems: 'center', gap: '8px',
-                background: isActive ? theme.accentBg : 'transparent', border: 'none', borderRadius: '4px',
-                padding: '3px 4px', cursor: 'pointer', fontFamily: 'inherit', textAlign: 'left', width: '100%',
-              }}
-            >
-              <span style={{ fontSize: '12px', color: isActive ? theme.accent : theme.textSecondary, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{r.val}</span>
-              <span style={{ height: '6px', background: theme.inputBg, borderRadius: '3px', overflow: 'hidden' }}>
-                <span style={{ display: 'block', height: '100%', width: `${(r.count / max) * 100}%`, background: isActive ? theme.accent : 'rgba(155,81,224,0.45)', borderRadius: '3px' }} />
-              </span>
-              <span style={{ fontSize: '12px', color: theme.textMuted, textAlign: 'right' }}>{r.count.toLocaleString()}</span>
-            </button>
-          )
-        })}
       </div>
     </div>
   )

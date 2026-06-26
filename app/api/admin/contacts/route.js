@@ -19,6 +19,7 @@ export async function GET(request) {
   const newsletter = searchParams.get('newsletter') || ''
   const zb = searchParams.get('zb') || ''
   const tag = searchParams.get('tag') || ''
+  const segment = searchParams.get('segment') || ''
   const page = parseInt(searchParams.get('page') || '1', 10)
   const sort = searchParams.get('sort') || 'created_at'
   const perPage = 20
@@ -61,6 +62,18 @@ export async function GET(request) {
     }
     if (tag) {
       query = query.contains('tags', [tag])
+    }
+
+    // Working-segment filters (drive the header chips).
+    if (segment === 'no_company') {
+      query = query.is('organisation_name', null)
+    } else if (segment === 'decision_makers') {
+      query = query.in('seniority', ['director', 'c_suite', 'head', 'vp', 'founder', 'partner', 'owner'])
+    } else if (segment === 'active_30d') {
+      const thirty = new Date(Date.now() - 30 * 86400000).toISOString()
+      query = query.gte('last_download_date', thirty)
+    } else if (segment === 'enriched') {
+      query = query.eq('enriched', true)
     }
 
     // Sort

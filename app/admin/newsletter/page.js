@@ -35,6 +35,7 @@ export default function NewsletterPage() {
   const [config, setConfig] = useState(null)
   const [pool, setPool] = useState(null)
   const [reconcile, setReconcile] = useState(null)
+  const [listHealth, setListHealth] = useState(null)
 
   function loadConfig() {
     return fetch('/api/admin/newsletter-config')
@@ -57,6 +58,10 @@ export default function NewsletterPage() {
       .finally(() => setLoading(false))
     loadConfig()
     loadReconcile()
+    fetch('/api/admin/contacts/stats')
+      .then((r) => r.ok ? r.json() : Promise.reject())
+      .then(setListHealth)
+      .catch((e) => console.error(e))
   }, [])
 
   const subs = data?.subscribers || {}
@@ -124,6 +129,18 @@ export default function NewsletterPage() {
       {/* Send health: pool gauge + settings + dedup health */}
       {config && (
         <SendHealth theme={theme} config={config} pool={pool} onSaved={loadConfig} />
+      )}
+
+      {/* List health — newsletter funnel + deliverability (moved here from Contacts) */}
+      {listHealth && (
+        <div className="admin-breakdown-cols" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', marginBottom: '24px' }}>
+          <Section theme={theme} title="Newsletter funnel">
+            <HealthBars theme={theme} rows={listHealth.newsletter} total={listHealth.total} />
+          </Section>
+          <Section theme={theme} title="Deliverability">
+            <HealthBars theme={theme} rows={listHealth.deliverability} total={listHealth.total} />
+          </Section>
+        </div>
       )}
 
       {/* Last send summary */}
@@ -841,6 +858,26 @@ function btnSecondary(theme) {
     padding: '9px 18px', borderRadius: '6px', border: `1px solid ${theme.cardBorder}`, background: 'transparent',
     color: theme.textSecondary, fontSize: '13px', fontWeight: 400, cursor: 'pointer', fontFamily: 'inherit',
   }
+}
+
+function HealthBars({ theme, rows, total }) {
+  if (!rows || rows.length === 0) return <p style={emptyText(theme)}>No data</p>
+  const max = Math.max(1, ...rows.map((r) => r.count))
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+      {rows.map((r) => (
+        <div key={r.val} style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <span style={{ fontSize: '12px', color: theme.textSecondary, width: '120px', flexShrink: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{r.val}</span>
+          <div style={{ flex: 1, height: '14px', background: theme.inputBg, borderRadius: '2px', overflow: 'hidden' }}>
+            <div style={{ width: `${(r.count / max) * 100}%`, height: '100%', background: 'rgba(155,81,224,0.45)', borderRadius: '2px' }} />
+          </div>
+          <span style={{ fontSize: '12px', color: theme.textMuted, width: '52px', textAlign: 'right', flexShrink: 0 }}>
+            {(r.count || 0).toLocaleString()}
+          </span>
+        </div>
+      ))}
+    </div>
+  )
 }
 
 const emptyText = (theme) => ({ fontSize: '14px', color: theme.textMuted, fontStyle: 'italic' })

@@ -79,6 +79,22 @@ export default function PrivacyPage() {
           works exactly the same either way.
         </p>
 
+        <h2 className="heading-h2" style={{ marginBottom: '24px' }}>Session recording</h2>
+        <p style={{ marginBottom: '16px' }}>
+          When you accept cookies, we sometimes record how the site is used - mouse movement,
+          clicks, scrolling, and which pages you move between - so we can see what&apos;s working
+          and fix what isn&apos;t. Think of it like watching an anonymous screen recording of a visit.
+        </p>
+        <p style={{ marginBottom: '16px' }}>
+          We don&apos;t record what you type. Form fields, including your name and email, are hidden
+          automatically before anything is saved. The recording is tied to an anonymous visitor,
+          not to you personally.
+        </p>
+        <p style={{ marginBottom: '48px' }}>
+          This only happens if you accept cookies. If you decline, nothing is recorded, and the
+          site works exactly the same.
+        </p>
+
         <h2 className="heading-h2" style={{ marginBottom: '24px' }}>What we don&apos;t do</h2>
         <ul style={{ marginBottom: '48px', paddingLeft: '24px' }}>
           <li style={{ marginBottom: '8px' }}>We don&apos;t use Google Analytics</li>

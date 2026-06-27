@@ -11,9 +11,12 @@ export function pdfPathFor(serviceTitle) {
 // Two real CTAs everywhere: "Talk to us" (the goal page, /enquiry) and
 // "Download the overview" (the low-commitment, forwardable per-service PDF).
 // Newsletter lives in the footer, so it is no longer an inline CTA.
-export default function ServiceTripleCta({ prompt, serviceTitle, position }) {
+export default function ServiceTripleCta({ prompt, serviceTitle, serviceSlug, position }) {
   const posthog = usePostHog()
   const pdfPath = pdfPathFor(serviceTitle)
+  // Carry the service through to the enquiry form so contact_form_submitted is
+  // attributed to the originating service (not just the separate cta_click).
+  const enquiryHref = serviceSlug ? `/enquiry?service=${serviceSlug}` : '/enquiry'
 
   function track(action) {
     posthog?.capture('service_cta_click', { action, service: serviceTitle, position })
@@ -24,7 +27,7 @@ export default function ServiceTripleCta({ prompt, serviceTitle, position }) {
       {prompt && <p className="triple-cta__prompt">{prompt}</p>}
       <div className="triple-cta__buttons">
         <a
-          href="/enquiry"
+          href={enquiryHref}
           className="triple-cta__btn triple-cta__btn--primary"
           onClick={() => track('contact')}
         >
@@ -44,9 +47,10 @@ export default function ServiceTripleCta({ prompt, serviceTitle, position }) {
   )
 }
 
-export function ServiceTripleCtaDark({ serviceTitle, position }) {
+export function ServiceTripleCtaDark({ serviceTitle, serviceSlug, position }) {
   const posthog = usePostHog()
   const pdfPath = pdfPathFor(serviceTitle)
+  const enquiryHref = serviceSlug ? `/enquiry?service=${serviceSlug}` : '/enquiry'
 
   function track(action) {
     posthog?.capture('service_cta_click', { action, service: serviceTitle, position })
@@ -73,7 +77,7 @@ export function ServiceTripleCtaDark({ serviceTitle, position }) {
         </p>
         <div className="triple-cta__buttons triple-cta__buttons--dark">
           <a
-            href="/enquiry"
+            href={enquiryHref}
             className="triple-cta__btn triple-cta__btn--primary-dark"
             onClick={() => track('contact')}
           >

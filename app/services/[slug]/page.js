@@ -428,7 +428,7 @@ export default async function ServicePage({ params }) {
           <p className="cta-band__prompt">
             Recognise your situation? Let&rsquo;s talk about what this could look like for you.
           </p>
-          <ServiceTripleCta serviceTitle={service.title} position="after-proof" />
+          <ServiceTripleCta serviceTitle={service.title} serviceSlug={slug} position="after-proof" />
         </div>
       </section>
 
@@ -770,6 +770,7 @@ export default async function ServicePage({ params }) {
           ========================================== */}
       <ServiceTripleCtaDark
         serviceTitle={service.title}
+        serviceSlug={slug}
         position="bottom"
       />
     </main>

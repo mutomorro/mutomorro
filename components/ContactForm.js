@@ -44,7 +44,6 @@ export default function ContactForm({ service }) {
 
       posthog.capture('contact_form_submitted', {
         service_interest: service || undefined,
-        source_page: window.location.pathname,
       })
       identifyLead(formData.email, { lead_stage: 'enquiry', last_enquiry_service: service || undefined })
       setStatus('success')

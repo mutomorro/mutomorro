@@ -98,7 +98,6 @@ export default function ResourceDownloadForm({
       posthog.capture('resource_download', {
         resource_name: resourceTitle,
         organisation: formData.organisation || undefined,
-        source_page: window.location.pathname,
         gated: true,
       })
       identifyLead(formData.email, { lead_stage: 'resource_download', last_resource: resourceTitle })

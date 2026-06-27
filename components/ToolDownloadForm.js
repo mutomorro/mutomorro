@@ -124,7 +124,6 @@ export default function ToolDownloadForm({ toolTitle, toolSlug, pdfUrl, successC
 
       posthog.capture('tool_download', {
         tool_name: toolTitle,
-        source_page: window.location.pathname,
       })
       identifyLead(formData.email, { lead_stage: 'tool_download', last_tool: toolTitle })
       setStatus('success')

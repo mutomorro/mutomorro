@@ -62,7 +62,6 @@ export default function NewsletterSignup({ variant = 'inline' }) {
       if (!res.ok) throw new Error()
       const data = await res.json()
       posthog.capture('newsletter_signup', {
-        source_page: window.location.pathname,
         already_subscribed: !!data.alreadySubscribed,
       })
       identifyLead(formData.email, { lead_stage: 'newsletter' })

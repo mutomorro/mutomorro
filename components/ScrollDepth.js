@@ -32,7 +32,7 @@ export default function ScrollDepth() {
       if (!posthog?.__loaded) return
       if (firedRef.current.has(depth)) return
       firedRef.current.add(depth)
-      posthog.capture('scroll_depth', { depth, source_page: pathname, ...extra })
+      posthog.capture('scroll_depth', { depth, ...extra })
     }
 
     const check = () => {

@@ -1,11 +1,24 @@
 'use client'
 
 import { createContext, useContext, useState, useEffect } from 'react'
+import posthog from 'posthog-js'
 
 const ConsentContext = createContext(null)
 
 const COOKIE_NAME = 'mutomorro_consent'
 const COOKIE_DAYS = 365
+
+// Record the consent decision so we can measure the accept rate - the hard
+// ceiling on every returning-visitor / multi-session metric. Fired in 'memory'
+// mode for a fresh visitor (no persistent storage), so it's captured for accept
+// AND decline. For decline we fire here, synchronously, before TrackingScripts'
+// opt-out effect runs on the next render. No-op under the owner opt-out (init
+// skipped, so __loaded is false).
+function captureConsent(decision) {
+  if (posthog?.__loaded) {
+    posthog.capture('cookie_consent', { decision })
+  }
+}
 
 function getCookie(name) {
   if (typeof document === 'undefined') return null
@@ -36,10 +49,12 @@ export function ConsentProvider({ children }) {
 
   function acceptCookies() {
     setCookie(COOKIE_NAME, 'accepted', COOKIE_DAYS)
+    captureConsent('accepted')
     setConsentState('accepted')
   }
 
   function declineCookies() {
+    captureConsent('declined') // before TrackingScripts opt-out stops capture
     setCookie(COOKIE_NAME, 'declined', COOKIE_DAYS)
     setConsentState('declined')
   }

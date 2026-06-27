@@ -13,12 +13,17 @@ import Script from 'next/script'
 export default function TrackingScripts() {
   const { consentState } = useConsent()
 
-  // Upgrade or downgrade PostHog persistence based on consent
+  // Upgrade or downgrade PostHog persistence based on consent. Session
+  // recording follows the same gate: start it for a first-time accepter
+  // (init disabled it for the pre-consent part of the session), stop it on
+  // decline. Both are no-ops if the project-level Session Replay toggle is off.
   useEffect(() => {
     if (consentState === 'accepted') {
       posthog.opt_in_capturing()
       posthog.set_config({ persistence: 'localStorage+cookie' })
+      posthog.startSessionRecording()
     } else if (consentState === 'declined') {
+      posthog.stopSessionRecording()
       posthog.opt_out_capturing()
     }
   }, [consentState])

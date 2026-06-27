@@ -31,11 +31,22 @@ export function PostHogProvider({ children }) {
       capture_pageview: false,
       capture_pageleave: true,
       persistence: consented ? 'localStorage+cookie' : 'memory',
-      disable_session_recording: true,
-      disable_surveys: true,
-      autocapture: {
-        capture_dead_clicks: false,
+      // Session recording is privacy-sensitive, so it's gated on the SAME
+      // consent as persistent capture: recording only for visitors who have
+      // accepted. Fresh/cookieless and declined visitors never record.
+      // First-time accepters are started in-session by TrackingScripts.
+      // NB: also requires the project-level Session Replay toggle in PostHog
+      // to actually capture, and inputs are masked by default (below).
+      disable_session_recording: !consented,
+      session_recording: {
+        maskAllInputs: true,
       },
+      disable_surveys: true,
+      autocapture: true,
+      // capture_dead_clicks is a TOP-LEVEL option; nested under `autocapture`
+      // it was silently ignored, so dead clicks fired ~4k/week despite the
+      // intent to disable them.
+      capture_dead_clicks: false,
     })
   }, [])
 

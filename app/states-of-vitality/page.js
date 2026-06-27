@@ -3,7 +3,7 @@ import LogoStrip from '../../components/LogoStrip'
 import UseCaseCards from '../../components/states-of-vitality/UseCaseCards'
 import HeroReveal from '../../components/states-of-vitality/HeroReveal'
 import HeroScreenshotReveal from '../../components/states-of-vitality/HeroScreenshotReveal'
-import SovExploreCta from '../../components/states-of-vitality/SovExploreCta'
+import SovLink from '../../components/states-of-vitality/SovLink'
 
 // ============================================
 // SEO METADATA
@@ -63,7 +63,6 @@ const OPTIONAL_DELIVERABLES = [
   { title: 'Development and action plan', description: 'Where effort will create the greatest impact - sequenced, sized and ready to commission.' },
 ]
 
-const PRODUCT_SITE_URL = 'https://statesofvitality.com'
 
 // ============================================
 // SCREENSHOT COMPONENTS
@@ -148,7 +147,7 @@ export default function StatesOfVitalityPage() {
               States of Vitality is our managed organisational health diagnostic. It reads the key dimensions of how your organisation works - the whole picture, the story beneath the scores, and where to focus - so you can see clearly, and shape what comes next.
             </p>
             <div style={{ marginTop: '40px' }}>
-              <SovExploreCta align="left" />
+              <SovLink variant="button" location="hero" align="left" />
             </div>
           </HeroReveal>
 
@@ -534,7 +533,7 @@ export default function StatesOfVitalityPage() {
                 SHRM, <em>The State of Global Workplace Culture in 2024</em>
               </p>
             </div>
-            <SovExploreCta align="left" />
+            <SovLink variant="button" location="mid" align="left" />
           </div>
 
           {/* Dashboard screenshot - perspective float-in */}
@@ -752,14 +751,7 @@ export default function StatesOfVitalityPage() {
           }}>
             <p style={{ fontSize: '15px', fontWeight: 300, color: 'rgba(0,0,0,0.55)', margin: 0 }}>
               See the full product at{' '}
-              <a
-                href={PRODUCT_SITE_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="sov-product-link"
-              >
-                statesofvitality.com →
-              </a>
+              <SovLink variant="inline" location="inline-light" tone="light" />
             </p>
           </div>
 
@@ -819,18 +811,10 @@ export default function StatesOfVitalityPage() {
           }}>
             The full product - the one-minute film, the interactive dashboard, and an indicative quote - lives at statesofvitality.com.
           </p>
-          <SovExploreCta align="center" />
+          <SovLink variant="button" location="final" align="center" />
           <p style={{ margin: '24px 0 0', fontSize: '14px', color: 'rgba(255,255,255,0.45)' }}>
             More on the product at{' '}
-            <a
-              href={PRODUCT_SITE_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="sov-product-link sov-product-link--dark"
-              style={{ fontSize: '14px' }}
-            >
-              statesofvitality.com →
-            </a>
+            <SovLink variant="inline" location="inline-dark" tone="dark" />
           </p>
         </div>
       </section>

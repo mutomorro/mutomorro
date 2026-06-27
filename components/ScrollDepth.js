@@ -16,11 +16,20 @@ export default function ScrollDepth() {
 
   useEffect(() => {
     firedRef.current = new Set()
-    if (!posthog?.__loaded) return
 
     let ticking = false
+    let readyTimer = null
 
+    // Readiness is checked inside fire(), NOT as an early return on mount.
+    // On a fresh page load the PostHog provider's init() effect (an ancestor)
+    // runs AFTER this effect, so `__loaded` is still false here. The old early
+    // return meant scroll tracking silently never armed on any directly-loaded
+    // page (i.e. every Google landing on a commercial page) and only worked
+    // after an in-site navigation. Now: listeners attach immediately, capture
+    // is gated on readiness, and a threshold isn't marked fired until it
+    // actually sends - so the first real scroll after init still counts.
     const fire = (depth, extra) => {
+      if (!posthog?.__loaded) return
       if (firedRef.current.has(depth)) return
       firedRef.current.add(depth)
       posthog.capture('scroll_depth', { depth, source_page: pathname, ...extra })
@@ -47,10 +56,31 @@ export default function ScrollDepth() {
       }
     }
 
-    check() // initial (handles short pages and refresh-mid-page)
+    // The initial check (short pages / refresh-mid-page) must run once PostHog
+    // is ready, so poll briefly until `__loaded` flips, then check once. Capped
+    // so it can't spin forever when init is intentionally skipped (owner
+    // opt-out) - in that case fire() is a no-op anyway.
+    if (posthog?.__loaded) {
+      check()
+    } else {
+      let attempts = 0
+      readyTimer = setInterval(() => {
+        attempts += 1
+        if (posthog?.__loaded) {
+          clearInterval(readyTimer)
+          readyTimer = null
+          check()
+        } else if (attempts > 40) {
+          clearInterval(readyTimer)
+          readyTimer = null
+        }
+      }, 150)
+    }
+
     window.addEventListener('scroll', onScroll, { passive: true })
     window.addEventListener('resize', onScroll, { passive: true })
     return () => {
+      if (readyTimer) clearInterval(readyTimer)
       window.removeEventListener('scroll', onScroll)
       window.removeEventListener('resize', onScroll)
     }

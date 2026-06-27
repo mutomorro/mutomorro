@@ -2,7 +2,15 @@
 
 **Date:** 27 June 2026
 **Project:** mutomorro.com (PostHog 149097)
-**Status:** Built and committed to `main`. Two items need you before they're fully live (privacy copy, and re-pointing two saved insights). Runtime click-tests are listed per fix - they can only be done once this deploys.
+**Status:** Built and committed to `main`. **All eight items are now done** (see update block below). Runtime click-tests are listed per fix - they can only be done once this deploys.
+
+---
+
+## Update (later, 27 Jun) - both open items closed
+
+- **Session recording is live.** James turned on the project-level "Record user sessions" toggle (149097) and approved the privacy copy, which is now published (`e2135d9`). Recording is consent-gated and masks input; the disclosure went live with it. (Note: "Capture console logs" is also on in the project - fine for this site.)
+- **`source_page` retired** (`260ff66`). The two dependent insights were re-pointed to `$pathname` first and verified lossless (24/24 for `contact_form_submitted` over 180d), then `source_page` was removed from all 6 `posthog.capture` calls. Server-side `source_page` (enquiry email + admin DB) is unrelated and kept.
+- **Insights re-pointed:** B3 "Conversion scoreboard" (4718598) and B4 "Enquiry vs Contact" (4718826) now filter on `$pathname`. Note for context: all 24 enquiry submits in the last 180d were `/contact`; `/enquiry` is brand new (~22 Jun) so it reads 0 for now and should grow as the new flow + the `?service=` CTAs mature.
 
 ---
 

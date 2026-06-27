@@ -4,6 +4,7 @@ import { PortableText } from '@portabletext/react'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import ResourceDownloadForm from '../../../components/ResourceDownloadForm'
+import FreeDownload from '../../../components/FreeDownload'
 import CTA from '../../../components/CTA'
 import BackgroundPattern from '@/components/animations/BackgroundPattern'
 import { buildMetadata } from '../../../lib/seo'
@@ -175,6 +176,7 @@ export default async function ResourcePage({ params }) {
                 </div>
               ) : (
                 <FreeDownload
+                  resourceTitle={resource.title}
                   downloadUrl={resource.downloadUrl}
                   downloadFileName={resource.downloadFileName}
                   downloadButtonLabel={resource.downloadButtonLabel}
@@ -425,26 +427,3 @@ export default async function ResourcePage({ params }) {
   )
 }
 
-// ── Free (ungated) download block ──
-function FreeDownload({ downloadUrl, downloadFileName, downloadButtonLabel, resourceType }) {
-  const typeLabels = { primer: 'Primer', whitepaper: 'Whitepaper', guide: 'Guide' }
-  const typeLabel = typeLabels[resourceType] || 'Resource'
-  const buttonText = downloadButtonLabel || `Download the ${typeLabel.toLowerCase()}`
-  const href = downloadUrl + '?dl=' + (downloadFileName ? encodeURIComponent(downloadFileName) : '')
-
-  return (
-    <div className="resource-download-panel">
-      <span className="kicker resource-download-panel__kicker">Free download</span>
-      <p className="resource-download-panel__lead">
-        The full {typeLabel.toLowerCase()}, as a PDF - yours to keep. No sign-up, no email.
-      </p>
-      <a href={href} download className="btn-primary resource-download-panel__btn">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-        {buttonText}
-      </a>
-      <p className="resource-download-panel__meta">PDF · Free · No email required</p>
-    </div>
-  )
-}

@@ -9,7 +9,7 @@
 //   - ?fmt=avif | ?fmt=webp -> the invisible <picture> render skin
 // See lib/image-proxy.js for the resolver + rollout and docs/seo/ for the spec.
 
-import { parseSegment, resolveField, RESOLVE, titleToFilename, SANITY } from '@/lib/image-proxy'
+import { parseSegment, resolveField, RESOLVE, titleToFilename, descriptorToName, SANITY } from '@/lib/image-proxy'
 
 export const runtime = 'edge'
 
@@ -67,6 +67,7 @@ export async function GET(request, { params }) {
 
   // Resolve the doc {url, title} from one of two path shapes.
   let doc
+  let filenameBase = null // body: title-cased descriptor for the download filename
   try {
     if (segments.length === 2) {
       // Hero/overview: ['tool', 'process-mapping-overview'].
@@ -77,11 +78,15 @@ export async function GET(request, { params }) {
       if (!resolved) return new Response('Unknown image path', { status: 404 })
       doc = await resolveDoc(resolved.sanityType, resolved.field, parsed.slug)
     } else if (segments.length === 4 && segments[2] === 'body') {
-      // Body image: ['tool', 'process-mapping', 'body', '<_key>'].
-      const [typeSegment, slug, , key] = segments
+      // Body image: ['tool', '<slug>', 'body', '<descriptor>-<_key>']. The descriptor
+      // is cosmetic; the trailing hex `_key` is the resolution anchor (reorder-safe).
+      const [typeSegment, slug, , tail] = segments
+      const m = /^(?:(.*)-)?([0-9a-f]{8,})$/.exec(tail)
+      if (!m) return new Response('Unparseable image path', { status: 404 })
       const entry = RESOLVE[typeSegment]
       if (!entry?.bodyField) return new Response('Unknown image path', { status: 404 })
-      doc = await resolveBodyImage(entry.sanityType, entry.bodyField, slug, key)
+      filenameBase = descriptorToName(m[1])
+      doc = await resolveBodyImage(entry.sanityType, entry.bodyField, slug, m[2])
     } else {
       return new Response('Not found', { status: 404 })
     }
@@ -136,8 +141,11 @@ export async function GET(request, { params }) {
   headers.set('Content-Type', actualType)
   headers.set('Cache-Control', CACHE_CONTROL)
   // Rich, inline filename on every delivery, extension matched to the format
-  // actually served. `inline` (never `attachment`) keeps og/inline rendering intact.
-  const safe = titleToFilename(doc.title, ext).replace(/[^A-Za-z0-9._-]/g, '')
+  // actually served. Body images use their descriptor (e.g. Iceberg-Model-Events.png);
+  // heroes (and body with no alt) fall back to the doc title. `inline` (never
+  // `attachment`) keeps og/inline rendering intact.
+  const name = filenameBase ? `${filenameBase}.${ext}` : titleToFilename(doc.title, ext)
+  const safe = name.replace(/[^A-Za-z0-9._-]/g, '')
   headers.set('Content-Disposition', `inline; filename="${safe}"`)
   const len = imageRes.headers.get('Content-Length')
   if (len) headers.set('Content-Length', len)

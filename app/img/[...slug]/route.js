@@ -1,14 +1,15 @@
-// Stable image proxy — the route handler (Phase 1).
+// Stable image proxy — the route handler (Phase 1 heroes + Phase 2 body images).
 //
-// Serves /img/<type>/<slug>-<role> by resolving the CURRENT Sanity asset for that
-// slug+role and streaming its bytes from our own origin, so the public URL is
-// stable across re-uploads. Format is chosen by URL param (not Accept), so there
-// is no Vary/cache fragmentation:
+// Resolves the CURRENT Sanity asset and streams its bytes from our own origin, so
+// the public URL is stable across re-uploads. Two path shapes:
+//   - /img/<type>/<slug>-<role>      hero/overview (Phase 1)
+//   - /img/<type>/<slug>/body/<_key> in-body diagram, keyed by block _key (Phase 2)
+// Format is chosen by URL param (not Accept), so there is no Vary/cache fragmentation:
 //   - default (no fmt) -> true PNG   (the canonical save/share/Google/og delivery)
 //   - ?fmt=avif | ?fmt=webp -> the invisible <picture> render skin
 // See lib/image-proxy.js for the resolver + rollout and docs/seo/ for the spec.
 
-import { parseSegment, resolveField, titleToFilename, SANITY } from '@/lib/image-proxy'
+import { parseSegment, resolveField, RESOLVE, titleToFilename, SANITY } from '@/lib/image-proxy'
 
 export const runtime = 'edge'
 
@@ -43,24 +44,47 @@ async function resolveDoc(sanityType, field, slug) {
   return json?.result || null
 }
 
+async function resolveBodyImage(sanityType, bodyField, slug, key) {
+  // `bodyField` is a fixed allow-list value (lib/image-proxy.js); slug + key bound.
+  const query =
+    `*[_type == $t && slug.current == $s && !(_id in path("drafts.**"))][0]` +
+    `{ "url": ${bodyField}[_key == $k][0].asset->url, "title": coalesce(title, name, internalTitle, heading) }`
+  const url =
+    `https://${SANITY.projectId}.apicdn.sanity.io/v${SANITY.apiVersion}/data/query/${SANITY.dataset}` +
+    `?query=${encodeURIComponent(query)}` +
+    `&$t=${encodeURIComponent(JSON.stringify(sanityType))}` +
+    `&$s=${encodeURIComponent(JSON.stringify(slug))}` +
+    `&$k=${encodeURIComponent(JSON.stringify(key))}`
+  const res = await fetch(url, { next: { revalidate: 3600 } })
+  if (!res.ok) return null
+  const json = await res.json()
+  return json?.result || null
+}
+
 export async function GET(request, { params }) {
   const { slug: segments } = await params
+  if (!Array.isArray(segments)) return new Response('Not found', { status: 404 })
 
-  // Flattened path: [type, '<slug>-<role>'] e.g. ['tool', 'process-mapping-overview'].
-  if (!Array.isArray(segments) || segments.length !== 2) {
-    return new Response('Not found', { status: 404 })
-  }
-  const [typeSegment, segment] = segments
-
-  const parsed = parseSegment(segment)
-  if (!parsed) return new Response('Unparseable image path', { status: 404 })
-
-  const resolved = resolveField(typeSegment, parsed.role)
-  if (!resolved) return new Response('Unknown image path', { status: 404 })
-
+  // Resolve the doc {url, title} from one of two path shapes.
   let doc
   try {
-    doc = await resolveDoc(resolved.sanityType, resolved.field, parsed.slug)
+    if (segments.length === 2) {
+      // Hero/overview: ['tool', 'process-mapping-overview'].
+      const [typeSegment, segment] = segments
+      const parsed = parseSegment(segment)
+      if (!parsed) return new Response('Unparseable image path', { status: 404 })
+      const resolved = resolveField(typeSegment, parsed.role)
+      if (!resolved) return new Response('Unknown image path', { status: 404 })
+      doc = await resolveDoc(resolved.sanityType, resolved.field, parsed.slug)
+    } else if (segments.length === 4 && segments[2] === 'body') {
+      // Body image: ['tool', 'process-mapping', 'body', '<_key>'].
+      const [typeSegment, slug, , key] = segments
+      const entry = RESOLVE[typeSegment]
+      if (!entry?.bodyField) return new Response('Unknown image path', { status: 404 })
+      doc = await resolveBodyImage(entry.sanityType, entry.bodyField, slug, key)
+    } else {
+      return new Response('Not found', { status: 404 })
+    }
   } catch {
     return new Response('Upstream resolve error', { status: 502 })
   }

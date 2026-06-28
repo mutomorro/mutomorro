@@ -6,7 +6,7 @@ import CTA from '../../../components/CTA'
 import ToolFloatingBar from '../../../components/ToolFloatingBar'
 import Link from 'next/link'
 import { urlFor } from '../../../sanity/image'
-import { isProxyEnabled, canonicalPngUrl, ogImage, jsonLdImage, renderSrcSet, RENDER_WIDTHS } from '@/lib/image-proxy'
+import { isProxyEnabled, canonicalPngUrl, ogImage, jsonLdImage, renderSrcSet, bodyCanonicalUrl, bodyRenderSrcSet, RENDER_WIDTHS } from '@/lib/image-proxy'
 import RelatedContent from '../../../components/RelatedContent'
 import ContentTable from '../../../components/ContentTable'
 import ContentAccordion from '../../../components/ContentAccordion'
@@ -66,6 +66,7 @@ export default async function ToolPage({ params }) {
   // share / Google target). See lib/image-proxy.js + docs/seo/ delivery spec.
   const heroUseProxy = isProxyEnabled('tool', slug)
   const heroSizes = '(max-width: 768px) 100vw, 50vw'
+  const bodySizes = '(max-width: 768px) 100vw, 680px'
   const templateHref = `/tools/${slug}/template`
 
   const jsonLd = {
@@ -242,18 +243,39 @@ export default async function ToolPage({ params }) {
                 value={tool.body}
                 components={{
                   types: {
-                    image: ({ value }) => (
-                      <div className="img-mat" style={{ margin: '2.5rem 0' }}>
-                        <Image
-                          src={urlFor(value).width(900).url()}
-                          alt={value.alt || ''}
-                          width={900}
-                          height={506}
-                          sizes="(max-width: 768px) 100vw, 680px"
-                          style={{ width: '100%', height: 'auto', display: 'block' }}
-                        />
-                      </div>
-                    ),
+                    image: ({ value }) => {
+                      // Phase 2: when the tool is proxy-enabled and the block has a
+                      // _key, render the stable-URL <picture> (AVIF skin + canonical
+                      // PNG); otherwise the existing next/image + CDN render.
+                      const useBodyProxy = heroUseProxy && value?._key
+                      return (
+                        <div className="img-mat" style={{ margin: '2.5rem 0' }}>
+                          {useBodyProxy ? (
+                            <picture>
+                              <source type="image/avif" srcSet={bodyRenderSrcSet('tool', slug, value._key, RENDER_WIDTHS, 'avif')} sizes={bodySizes} />
+                              <source type="image/webp" srcSet={bodyRenderSrcSet('tool', slug, value._key, RENDER_WIDTHS, 'webp')} sizes={bodySizes} />
+                              <img
+                                src={bodyCanonicalUrl('tool', slug, value._key)}
+                                alt={value.alt || ''}
+                                width={900}
+                                height={506}
+                                loading="lazy"
+                                style={{ width: '100%', height: 'auto', display: 'block' }}
+                              />
+                            </picture>
+                          ) : (
+                            <Image
+                              src={urlFor(value).width(900).url()}
+                              alt={value.alt || ''}
+                              width={900}
+                              height={506}
+                              sizes="(max-width: 768px) 100vw, 680px"
+                              style={{ width: '100%', height: 'auto', display: 'block' }}
+                            />
+                          )}
+                        </div>
+                      )
+                    },
                     table: ({ value }) => <ContentTable value={value} />,
                     accordion: ({ value }) => <ContentAccordion value={value} />,
                     tabs: ({ value }) => <ContentTabs value={value} />,

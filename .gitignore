@@ -59,6 +59,7 @@ next-env.d.ts
 !/scripts/migrate-enquiry-primaries.mjs
 !/scripts/delete-enquiry-callouts.mjs
 !/scripts/test-paced-drain.js
+!/scripts/backfill-tender-scores.mjs
 !/scripts/migrations/
 !/scripts/migrations/**
 /wp-export/

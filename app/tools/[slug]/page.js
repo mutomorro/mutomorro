@@ -252,10 +252,10 @@ export default async function ToolPage({ params }) {
                         <div className="img-mat" style={{ margin: '2.5rem 0' }}>
                           {useBodyProxy ? (
                             <picture>
-                              <source type="image/avif" srcSet={bodyRenderSrcSet('tool', slug, value._key, RENDER_WIDTHS, 'avif')} sizes={bodySizes} />
-                              <source type="image/webp" srcSet={bodyRenderSrcSet('tool', slug, value._key, RENDER_WIDTHS, 'webp')} sizes={bodySizes} />
+                              <source type="image/avif" srcSet={bodyRenderSrcSet('tool', slug, value.alt, value._key, RENDER_WIDTHS, 'avif')} sizes={bodySizes} />
+                              <source type="image/webp" srcSet={bodyRenderSrcSet('tool', slug, value.alt, value._key, RENDER_WIDTHS, 'webp')} sizes={bodySizes} />
                               <img
-                                src={bodyCanonicalUrl('tool', slug, value._key)}
+                                src={bodyCanonicalUrl('tool', slug, value.alt, value._key)}
                                 alt={value.alt || ''}
                                 width={900}
                                 height={506}

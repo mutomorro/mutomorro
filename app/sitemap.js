@@ -60,7 +60,7 @@ export default async function sitemap() {
       _updatedAt,
       hasToolkit,
       "heroImageUrl": heroImage.asset->url,
-      "bodyImages": body[_type == "image"]{ "url": asset->url, "key": _key }
+      "bodyImages": body[_type == "image"]{ "url": asset->url, "key": _key, alt }
     }`),
     client.fetch(`*[_type == "article" && !(_id in path("drafts.**"))]{
       "slug": slug.current,
@@ -149,7 +149,7 @@ export default async function sitemap() {
       priority: 0.7,
       images: collectImages(
         sitemapImage('tool', t.slug, t.heroImageUrl),
-        (t.bodyImages || []).map(b => bodySitemapImage('tool', t.slug, b.key, b.url)),
+        (t.bodyImages || []).map(b => bodySitemapImage('tool', t.slug, b.alt, b.key, b.url)),
       ),
     })),
     ...tools.filter(t => t.hasToolkit).map(t => ({

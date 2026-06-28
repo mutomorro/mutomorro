@@ -13,6 +13,15 @@
 import { runPipeline } from '../../../../lib/tender-finder/pipeline.js'
 
 export async function GET(request) {
+  // Gate with CRON_SECRET, matching the /api/cron/tender-finder* routes. This
+  // endpoint runs the full pipeline (including paid Anthropic scoring), so it
+  // must not be reachable unauthenticated. For a local/dev trigger, pass the
+  // header: curl -H "Authorization: Bearer $CRON_SECRET" .../api/tender-finder/test
+  const authHeader = request.headers.get('authorization')
+  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+    return new Response('Unauthorised', { status: 401 })
+  }
+
   const { searchParams } = new URL(request.url)
   const dryRun = searchParams.get('dryRun') === 'true'
   const skipAi = searchParams.get('skipAi') === 'true'

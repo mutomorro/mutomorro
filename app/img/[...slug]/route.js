@@ -100,14 +100,19 @@ export async function GET(request, { params }) {
     return new Response('Upstream image error', { status: 502 })
   }
 
+  // Derive the served format from the UPSTREAM content-type, not the requested
+  // fmt: Sanity's auto=format may return webp where avif was asked, so keying the
+  // filename off the request would mislabel the bytes. This keeps it always honest.
+  const actualType = (imageRes.headers.get('Content-Type') || (fmt ? `image/${fmt}` : 'image/png'))
+    .split(';')[0].trim()
+  const EXT_BY_TYPE = { 'image/avif': 'avif', 'image/webp': 'webp', 'image/png': 'png', 'image/jpeg': 'jpg' }
+  const ext = EXT_BY_TYPE[actualType] || 'png'
+
   const headers = new Headers()
-  headers.set('Content-Type', imageRes.headers.get('Content-Type') || (fmt ? `image/${fmt}` : 'image/png'))
+  headers.set('Content-Type', actualType)
   headers.set('Cache-Control', CACHE_CONTROL)
-  // Rich, inline filename on every delivery, extension matched to the format served
-  // (png/avif/webp). A browser saves the displayed source, so the on-page AVIF saves
-  // as <Title>-Diagram.avif; the canonical PNG URL saves as <Title>-Diagram.png.
-  // `inline` (never `attachment`) keeps og/inline rendering intact.
-  const ext = fmt || 'png'
+  // Rich, inline filename on every delivery, extension matched to the format
+  // actually served. `inline` (never `attachment`) keeps og/inline rendering intact.
   const safe = titleToFilename(doc.title, ext).replace(/[^A-Za-z0-9._-]/g, '')
   headers.set('Content-Disposition', `inline; filename="${safe}"`)
   const len = imageRes.headers.get('Content-Length')

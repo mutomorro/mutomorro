@@ -6,6 +6,7 @@ import CTA from '../../../components/CTA'
 import ToolFloatingBar from '../../../components/ToolFloatingBar'
 import Link from 'next/link'
 import { urlFor } from '../../../sanity/image'
+import { isProxyEnabled, canonicalPngUrl, ogImage, jsonLdImage, renderSrcSet, RENDER_WIDTHS } from '@/lib/image-proxy'
 import RelatedContent from '../../../components/RelatedContent'
 import ContentTable from '../../../components/ContentTable'
 import ContentAccordion from '../../../components/ContentAccordion'
@@ -44,7 +45,7 @@ export async function generateMetadata({ params }) {
     title: tool.seoTitle || tool.title,
     description: tool.seoDescription || tool.shortSummary || '',
     path: `/tools/${slug}`,
-    image: tool.heroImageUrl,
+    image: tool.heroImageUrl ? ogImage('tool', slug, tool.heroImageUrl) : undefined,
     type: 'article',
     publishedTime: tool._createdAt,
     modifiedTime: tool._updatedAt,
@@ -60,6 +61,11 @@ export default async function ToolPage({ params }) {
   const sidebarCallouts = await getSidebarCallouts('tools', tool._id)
 
   const heroImageUrl = tool.heroImage ? urlFor(tool.heroImage).width(900).url() : null
+  // When the stable-URL proxy is enabled for this tool, the hero is a hand-rolled
+  // <picture>: AVIF/WebP skin for render, canonical PNG as the <img src> (save /
+  // share / Google target). See lib/image-proxy.js + docs/seo/ delivery spec.
+  const heroUseProxy = isProxyEnabled('tool', slug)
+  const heroSizes = '(max-width: 768px) 100vw, 50vw'
   const templateHref = `/tools/${slug}/template`
 
   const jsonLd = {
@@ -77,7 +83,7 @@ export default async function ToolPage({ params }) {
       url: 'https://mutomorro.com',
     },
     url: `https://mutomorro.com/tools/${tool.slug.current}`,
-    ...(heroImageUrl && { image: heroImageUrl }),
+    ...(heroImageUrl && { image: jsonLdImage('tool', slug, heroImageUrl) }),
     ...(tool._createdAt && { datePublished: tool._createdAt }),
     ...(tool._updatedAt && { dateModified: tool._updatedAt }),
   }
@@ -176,19 +182,35 @@ export default async function ToolPage({ params }) {
           {heroImageUrl && (
             <div className="content-hero-image-wrap">
               <div className="img-perspective" style={{ maxWidth: '100%' }}>
-                <Image
-                  src={heroImageUrl}
-                  alt={tool.heroImage?.alt || tool.title || ''}
-                  width={900}
-                  height={600}
-                  priority
-                  sizes="(max-width: 768px) 100vw, 50vw"
-                  style={{
-                    width: '100%',
-                    height: 'auto',
-                    display: 'block',
-                  }}
-                />
+                {heroUseProxy ? (
+                  <picture>
+                    <source type="image/avif" srcSet={renderSrcSet('tool', slug, RENDER_WIDTHS, 'avif')} sizes={heroSizes} />
+                    <source type="image/webp" srcSet={renderSrcSet('tool', slug, RENDER_WIDTHS, 'webp')} sizes={heroSizes} />
+                    <img
+                      src={canonicalPngUrl('tool', slug)}
+                      alt={tool.heroImage?.alt || tool.title || ''}
+                      width={900}
+                      height={636}
+                      loading="eager"
+                      fetchPriority="high"
+                      style={{ width: '100%', height: 'auto', display: 'block' }}
+                    />
+                  </picture>
+                ) : (
+                  <Image
+                    src={heroImageUrl}
+                    alt={tool.heroImage?.alt || tool.title || ''}
+                    width={900}
+                    height={600}
+                    priority
+                    sizes={heroSizes}
+                    style={{
+                      width: '100%',
+                      height: 'auto',
+                      display: 'block',
+                    }}
+                  />
+                )}
               </div>
             </div>
           )}

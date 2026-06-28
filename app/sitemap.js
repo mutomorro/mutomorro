@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js'
 import { client } from '../sanity/client'
+import { sitemapImage } from '@/lib/image-proxy'
 
 const BASE_URL = 'https://mutomorro.com'
 
@@ -146,7 +147,7 @@ export default async function sitemap() {
       lastModified: t._updatedAt,
       changeFrequency: 'monthly',
       priority: 0.7,
-      images: collectImages(t.heroImageUrl, t.bodyImages),
+      images: collectImages(sitemapImage('tool', t.slug, t.heroImageUrl), t.bodyImages),
     })),
     ...tools.filter(t => t.hasToolkit).map(t => ({
       url: `${BASE_URL}/tools/${t.slug}/template`,

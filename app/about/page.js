@@ -104,7 +104,7 @@ export default function About() {
             {/* Photo + bio card */}
             <div className="scroll-in delay-1">
               <Image
-                src="https://cdn.sanity.io/images/c6pg4t4h/production/ff6e02cb52c63ce401da07f4d81eb74fe0e1f1eb-1944x1944.jpg?w=640&h=720&fit=crop"
+                src="/brand/james-about.jpg"
                 alt="James Freeman-Gray"
                 width={640}
                 height={720}

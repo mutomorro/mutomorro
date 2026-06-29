@@ -11,7 +11,7 @@ export function buildWelcomeEmail({ firstName, unsubscribeUrl = '' }) {
     : ''
   const greeting = name ? `Hi ${name},` : 'Hi there,'
 
-  const photoUrl = 'https://cdn.sanity.io/images/c6pg4t4h/production/ff6e02cb52c63ce401da07f4d81eb74fe0e1f1eb-1944x1944.jpg?w=144&h=144&fit=crop'
+  const photoUrl = 'https://mutomorro.com/brand/james-square.jpg'
 
   return `<!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">

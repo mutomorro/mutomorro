@@ -540,7 +540,7 @@ export default function Nav() {
                 style={{
                   flex: '1',
                   backgroundColor: 'var(--dark)',
-                  backgroundImage: 'url("https://cdn.sanity.io/images/c6pg4t4h/production/b36b0ebf993e00a6c5e97d8d828e62f8067e321b-1536x1024.png?w=700&q=80&auto=format")',
+                  backgroundImage: 'url("/brand/nav-menu-bg.webp")',
                   backgroundSize: 'cover',
                   backgroundPosition: 'center',
                 }}
@@ -697,8 +697,8 @@ export default function Nav() {
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 1.5rem', marginBottom: '24px' }}>
               {[
-                { title: 'Tools & Toolkits', desc: 'The tool codex - walkthroughs & downloadable templates', href: '/tools', img: 'https://cdn.sanity.io/images/c6pg4t4h/production/ca8dd321a4c138e915bb64faa7dfede3d497f241-2800x1980.png?w=600&q=80&auto=format' },
-                { title: 'Thinking', desc: 'Articles, perspectives & ideas', href: '/articles', img: 'https://cdn.sanity.io/images/c6pg4t4h/production/a7de82f1809af5c51882d812594e627184011b7f-1672x941.png?w=600&q=80&auto=format' },
+                { title: 'Tools & Toolkits', desc: 'The tool codex - walkthroughs & downloadable templates', href: '/tools', img: '/brand/nav-tools.webp' },
+                { title: 'Thinking', desc: 'Articles, perspectives & ideas', href: '/articles', img: '/brand/nav-thinking.webp' },
               ].map((tile) => (
                 <Link
                   key={tile.href}
@@ -741,7 +741,7 @@ export default function Nav() {
               }}
             >
               <img
-                src="https://cdn.sanity.io/images/c6pg4t4h/production/a1183aad79022f1aa0200d6be7b3f0897223f157-2480x3508.png?w=160&auto=format&q=82&fit=max"
+                src="/brand/nav-portrait.webp"
                 alt=""
                 style={{ width: '68px', height: 'auto', borderRadius: '2px', flexShrink: 0, boxShadow: '0 2px 8px rgba(34,28,43,0.18)' }}
               />

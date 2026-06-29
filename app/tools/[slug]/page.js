@@ -244,18 +244,19 @@ export default async function ToolPage({ params }) {
                 components={{
                   types: {
                     image: ({ value }) => {
-                      // Phase 2: when the tool is proxy-enabled and the block has a
-                      // _key, render the stable-URL <picture> (AVIF skin + canonical
-                      // PNG); otherwise the existing next/image + CDN render.
-                      const useBodyProxy = heroUseProxy && value?._key
+                      // Stable-URL body render: prefer the clean, flat imageSlug
+                      // permalink; fall back to the legacy `_key` URL for any block not
+                      // yet backfilled, so no image regresses to a hashed CDN src.
+                      const useBodyProxy = heroUseProxy && (value?.imageSlug || value?._key)
+                      const id = { imageSlug: value?.imageSlug, alt: value?.alt, key: value?._key }
                       return (
                         <div className="img-mat" style={{ margin: '2.5rem 0' }}>
                           {useBodyProxy ? (
                             <picture>
-                              <source type="image/avif" srcSet={bodyRenderSrcSet('tool', slug, value.alt, value._key, RENDER_WIDTHS, 'avif')} sizes={bodySizes} />
-                              <source type="image/webp" srcSet={bodyRenderSrcSet('tool', slug, value.alt, value._key, RENDER_WIDTHS, 'webp')} sizes={bodySizes} />
+                              <source type="image/avif" srcSet={bodyRenderSrcSet('tool', slug, id, RENDER_WIDTHS, 'avif')} sizes={bodySizes} />
+                              <source type="image/webp" srcSet={bodyRenderSrcSet('tool', slug, id, RENDER_WIDTHS, 'webp')} sizes={bodySizes} />
                               <img
-                                src={bodyCanonicalUrl('tool', slug, value.alt, value._key)}
+                                src={bodyCanonicalUrl('tool', slug, id)}
                                 alt={value.alt || ''}
                                 width={900}
                                 height={506}

@@ -1,15 +1,17 @@
-// Stable image proxy — the route handler (Phase 1 heroes + Phase 2 body images).
+// Stable image proxy — the route handler (heroes + body images, flat house-pattern URLs).
 //
-// Resolves the CURRENT Sanity asset and streams its bytes from our own origin, so
-// the public URL is stable across re-uploads. Two path shapes:
-//   - /img/<type>/<slug>-<role>      hero/overview (Phase 1)
-//   - /img/<type>/<slug>/body/<_key> in-body diagram, keyed by block _key (Phase 2)
+// Resolves the CURRENT Sanity asset and streams its bytes from our own origin, so the
+// public URL is stable across re-uploads. Path shapes:
+//   - /img/<type>/<slug>-<role>          FLAT — hero (`overview`) AND body (`step-N-name`),
+//                                        body resolved by its permanent `imageSlug` field
+//   - /img/<type>/<slug>/body/<…-_key>   LEGACY (pre-29 Jun) — kept resolving; 301s to the
+//                                        flat URL once the block has an imageSlug
 // Format is chosen by URL param (not Accept), so there is no Vary/cache fragmentation:
 //   - default (no fmt) -> true PNG   (the canonical save/share/Google/og delivery)
 //   - ?fmt=avif | ?fmt=webp -> the invisible <picture> render skin
 // See lib/image-proxy.js for the resolver + rollout and docs/seo/ for the spec.
 
-import { parseSegment, resolveField, RESOLVE, titleToFilename, descriptorToName, SANITY } from '@/lib/image-proxy'
+import { parseSegment, resolveField, RESOLVE, titleToFilename, descriptorToName, imageSlugToName, bodyPathBySlug, SANITY } from '@/lib/image-proxy'
 
 export const runtime = 'edge'
 
@@ -44,11 +46,33 @@ async function resolveDoc(sanityType, field, slug) {
   return json?.result || null
 }
 
-async function resolveBodyImage(sanityType, bodyField, slug, key) {
-  // `bodyField` is a fixed allow-list value (lib/image-proxy.js); slug + key bound.
+// NEW (flat) body resolver: resolve a body image by its permanent `imageSlug`. Returns
+// { url, title } or null. `bodyField` is a fixed allow-list value; slug + imageSlug bound.
+async function resolveBodyImageBySlug(sanityType, bodyField, slug, imageSlug) {
   const query =
     `*[_type == $t && slug.current == $s && !(_id in path("drafts.**"))][0]` +
-    `{ "url": ${bodyField}[_key == $k][0].asset->url, "title": coalesce(title, name, internalTitle, heading) }`
+    `{ "url": ${bodyField}[imageSlug == $is][0].asset->url, "title": coalesce(title, name, internalTitle, heading) }`
+  const url =
+    `https://${SANITY.projectId}.apicdn.sanity.io/v${SANITY.apiVersion}/data/query/${SANITY.dataset}` +
+    `?query=${encodeURIComponent(query)}` +
+    `&$t=${encodeURIComponent(JSON.stringify(sanityType))}` +
+    `&$s=${encodeURIComponent(JSON.stringify(slug))}` +
+    `&$is=${encodeURIComponent(JSON.stringify(imageSlug))}`
+  const res = await fetch(url, { next: { revalidate: 3600 } })
+  if (!res.ok) return null
+  const json = await res.json()
+  return json?.result || null
+}
+
+// LEGACY (keyed) body resolver, used only by the `/body/<…-_key>` path. Resolves by the
+// block `_key` AND projects that block's `imageSlug` (if any), so the route can 301 a
+// legacy keyed URL onto its clean flat permalink in one round-trip.
+async function resolveBodyImageByKey(sanityType, bodyField, slug, key) {
+  const query =
+    `*[_type == $t && slug.current == $s && !(_id in path("drafts.**"))][0]{` +
+    ` "url": ${bodyField}[_key == $k][0].asset->url,` +
+    ` "imageSlug": ${bodyField}[_key == $k][0].imageSlug,` +
+    ` "title": coalesce(title, name, internalTitle, heading) }`
   const url =
     `https://${SANITY.projectId}.apicdn.sanity.io/v${SANITY.apiVersion}/data/query/${SANITY.dataset}` +
     `?query=${encodeURIComponent(query)}` +
@@ -70,23 +94,46 @@ export async function GET(request, { params }) {
   let filenameBase = null // body: title-cased descriptor for the download filename
   try {
     if (segments.length === 2) {
-      // Hero/overview: ['tool', 'process-mapping-overview'].
+      // FLAT path: ['tool', '<slug>-<role>']. Role is split off the END (parseSegment).
+      //   - a FIXED role (`overview`) resolves to a single image field (heroImage) — this
+      //     also serves the consolidated body master, whose render emits `<slug>-overview`.
+      //   - any other role (`step-N-name`) is a body image addressed by its `imageSlug`.
       const [typeSegment, segment] = segments
       const parsed = parseSegment(segment)
       if (!parsed) return new Response('Unparseable image path', { status: 404 })
       const resolved = resolveField(typeSegment, parsed.role)
-      if (!resolved) return new Response('Unknown image path', { status: 404 })
-      doc = await resolveDoc(resolved.sanityType, resolved.field, parsed.slug)
+      if (resolved) {
+        doc = await resolveDoc(resolved.sanityType, resolved.field, parsed.slug)
+      } else {
+        const entry = RESOLVE[typeSegment]
+        if (!entry?.bodyField) return new Response('Unknown image path', { status: 404 })
+        doc = await resolveBodyImageBySlug(entry.sanityType, entry.bodyField, parsed.slug, parsed.role)
+        // Download filename: `<Title>-<Image-Slug>` (e.g. Process-Mapping-Step-1-Assumed),
+        // unique per page (avoids every diagram saving as the same name).
+        const titleBase = (doc?.title || '').replace(/[^A-Za-z0-9]+/g, '-').replace(/^-+|-+$/g, '')
+        const slugName = imageSlugToName(parsed.role)
+        filenameBase = titleBase ? `${titleBase}-${slugName}` : slugName
+      }
     } else if (segments.length === 4 && segments[2] === 'body') {
-      // Body image: ['tool', '<slug>', 'body', '<descriptor>-<_key>']. The descriptor
-      // is cosmetic; the trailing hex `_key` is the resolution anchor (reorder-safe).
+      // LEGACY path (pre-29 Jun): ['tool', '<slug>', 'body', '<descriptor>-<_key>'] or
+      // bare '<_key>'. Resolve by `_key`; if the block now carries an `imageSlug`, 301 to
+      // the clean flat permalink so any nascent Google signal consolidates there.
       const [typeSegment, slug, , tail] = segments
       const m = /^(?:(.*)-)?([0-9a-f]{8,})$/.exec(tail)
       if (!m) return new Response('Unparseable image path', { status: 404 })
       const entry = RESOLVE[typeSegment]
       if (!entry?.bodyField) return new Response('Unknown image path', { status: 404 })
+      const keyed = await resolveBodyImageByKey(entry.sanityType, entry.bodyField, slug, m[2])
+      if (keyed?.imageSlug) {
+        const url = new URL(request.url)
+        const location = `${url.origin}${bodyPathBySlug(typeSegment, slug, keyed.imageSlug)}${url.search}`
+        // Build the 301 by hand so it carries Cache-Control (Response.redirect does not),
+        // and preserve ?fmt/?w/?h/?fit so an in-flight rendition lands on the right skin.
+        return new Response(null, { status: 301, headers: { Location: location, 'Cache-Control': CACHE_CONTROL } })
+      }
+      // Not yet backfilled — serve straight from the key (legacy descriptor filename).
       filenameBase = descriptorToName(m[1])
-      doc = await resolveBodyImage(entry.sanityType, entry.bodyField, slug, m[2])
+      doc = keyed ? { url: keyed.url, title: keyed.title } : null
     } else {
       return new Response('Not found', { status: 404 })
     }
@@ -140,10 +187,10 @@ export async function GET(request, { params }) {
   const headers = new Headers()
   headers.set('Content-Type', actualType)
   headers.set('Cache-Control', CACHE_CONTROL)
-  // Rich, inline filename on every delivery, extension matched to the format
-  // actually served. Body images use their descriptor (e.g. Iceberg-Model-Events.png);
-  // heroes (and body with no alt) fall back to the doc title. `inline` (never
-  // `attachment`) keeps og/inline rendering intact.
+  // Rich, inline filename on every delivery, extension matched to the format actually
+  // served. Clean body images use `<Title>-<Image-Slug>` (e.g. Process-Mapping-Step-1-
+  // Assumed.png); heroes (and legacy body with no slug) fall back to the doc title.
+  // `inline` (never `attachment`) keeps og/inline rendering intact.
   const name = filenameBase ? `${filenameBase}.${ext}` : titleToFilename(doc.title, ext)
   const safe = name.replace(/[^A-Za-z0-9._-]/g, '')
   headers.set('Content-Disposition', `inline; filename="${safe}"`)

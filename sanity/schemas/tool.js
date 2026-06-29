@@ -111,6 +111,21 @@ export default {
       title: 'Body',
       type: 'array',
       group: 'content',
+      // Within-page uniqueness for image URL slugs: two images on one page can't share an
+      // imageSlug (the stable URL must point at exactly one image). Checked at the array
+      // level so every sibling is visible deterministically.
+      validation: (Rule) =>
+        Rule.custom((blocks) => {
+          const seen = new Map()
+          for (const b of blocks || []) {
+            if (b?._type !== 'image' || !b?.imageSlug) continue
+            if (seen.has(b.imageSlug)) {
+              return `Two images share the URL slug "${b.imageSlug}" — each image needs a unique slug.`
+            }
+            seen.set(b.imageSlug, b._key)
+          }
+          return true
+        }),
       of: [
         { type: 'block' },
         { type: 'table' },
@@ -129,6 +144,26 @@ export default {
               name: 'caption',
               title: 'Caption',
               type: 'string',
+            },
+            {
+              // Permanent, house-pattern last segment of this image's stable URL:
+              // /img/tool/<page>-<image-slug>. SET ONCE, NEVER CHANGE — renaming it 404s
+              // the address Google indexed (same rule as "never delete-and-re-add a
+              // block"). Usually seeded by the backfill from the asset filename.
+              name: 'imageSlug',
+              title: 'Image URL slug (permanent)',
+              type: 'string',
+              description:
+                'Permanent URL slug for this image — “overview” (the main / hero diagram) or ' +
+                '“step-N-name” (e.g. step-1-political). Lowercase, hyphens, number first. ' +
+                'SET ONCE, NEVER CHANGE: this slug IS the public image URL.',
+              validation: (Rule) =>
+                Rule.custom((value) => {
+                  if (!value) return true // optional — empty falls back to the legacy keyed URL
+                  return /^(overview|step-\d+(-[a-z0-9]+)+)$/.test(value)
+                    ? true
+                    : 'Use “overview” or “step-N-name” (lowercase, hyphens, number first, e.g. step-1-political).'
+                }),
             },
           ],
         },

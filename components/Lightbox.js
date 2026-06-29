@@ -19,7 +19,21 @@ function sized(src, w) {
   }
 }
 
-export default function Lightbox({ src, alt, cover = true, sizes = '(max-width: 768px) 100vw, 700px' }) {
+export default function Lightbox({
+  src,
+  alt,
+  cover = true,
+  sizes = '(max-width: 768px) 100vw, 700px',
+  // Optional stable-URL proxy mode (case studies). When `proxySrc` is set, the thumbnail
+  // renders as a <picture> from these pre-built proxy URLs (the canonical PNG <img> is the
+  // stable Google target) instead of the CDN `src`, and the zoom view uses `proxyZoomSrc`.
+  // All absent → exact original CDN behaviour (so other callers, e.g. ApproachSlider, are
+  // untouched).
+  proxySrc,
+  proxyAvifSrcSet,
+  proxyWebpSrcSet,
+  proxyZoomSrc,
+}) {
   const [open, setOpen] = useState(false)
   const overlayRef = useRef(null)
 
@@ -47,24 +61,42 @@ export default function Lightbox({ src, alt, cover = true, sizes = '(max-width: 
     setOpen(false)
   }
 
+  const useProxy = !!proxySrc
+
   // Responsive thumbnail (retina-aware) and a high-res source for the zoom view.
   const thumbSrcSet = src && src.includes('cdn.sanity.io')
     ? `${sized(src, 800)} 800w, ${sized(src, 1200)} 1200w, ${sized(src, 1600)} 1600w`
     : undefined
-  const zoomSrc = sized(src, 2400)
+  const zoomSrc = useProxy ? proxyZoomSrc : sized(src, 2400)
+  const thumbStyle = { width: '100%', height: cover ? '100%' : 'auto', objectFit: cover ? 'cover' : undefined, display: 'block', cursor: 'zoom-in' }
 
   return (
     <>
-      <img
-        src={sized(src, 1000)}
-        srcSet={thumbSrcSet}
-        sizes={sizes}
-        alt={alt || ''}
-        onClick={handleOpen}
-        role="button"
-        tabIndex={0}
-        style={{ width: '100%', height: cover ? '100%' : 'auto', objectFit: cover ? 'cover' : undefined, display: 'block', cursor: 'zoom-in' }}
-      />
+      {useProxy ? (
+        <picture>
+          {proxyAvifSrcSet && <source type="image/avif" srcSet={proxyAvifSrcSet} sizes={sizes} />}
+          {proxyWebpSrcSet && <source type="image/webp" srcSet={proxyWebpSrcSet} sizes={sizes} />}
+          <img
+            src={proxySrc}
+            alt={alt || ''}
+            onClick={handleOpen}
+            role="button"
+            tabIndex={0}
+            style={thumbStyle}
+          />
+        </picture>
+      ) : (
+        <img
+          src={sized(src, 1000)}
+          srcSet={thumbSrcSet}
+          sizes={sizes}
+          alt={alt || ''}
+          onClick={handleOpen}
+          role="button"
+          tabIndex={0}
+          style={thumbStyle}
+        />
+      )}
 
       {open && createPortal(
         <div

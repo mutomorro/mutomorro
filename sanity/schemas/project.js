@@ -1,4 +1,5 @@
 // sanity/schemas/project.js
+import { freeformImageSlugField, uniqueImageSlugs } from './_imageSlug'
 
 const blockContent = {
   type: 'array',
@@ -212,9 +213,11 @@ export default {
               title: 'Caption',
               type: 'string',
             },
+            freeformImageSlugField,
           ],
         },
       ],
+      validation: (Rule) => uniqueImageSlugs(Rule),
     },
     {
       name: 'clientAndContext',

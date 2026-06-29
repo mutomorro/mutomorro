@@ -118,8 +118,11 @@ export async function GET(request, { params }) {
       // LEGACY path (pre-29 Jun): ['tool', '<slug>', 'body', '<descriptor>-<_key>'] or
       // bare '<_key>'. Resolve by `_key`; if the block now carries an `imageSlug`, 301 to
       // the clean flat permalink so any nascent Google signal consolidates there.
+      // The trailing token is the Portable-Text block `_key`: a Sanity randomKey is
+      // lowercase ALPHANUMERIC ([0-9a-z], e.g. `wccf00000j`), NOT hex — tool keys merely
+      // look hex; article/project keys don't, so a hex-only match would 404 their fallback.
       const [typeSegment, slug, , tail] = segments
-      const m = /^(?:(.*)-)?([0-9a-f]{8,})$/.exec(tail)
+      const m = /^(?:(.*)-)?([0-9a-z]{8,})$/.exec(tail)
       if (!m) return new Response('Unparseable image path', { status: 404 })
       const entry = RESOLVE[typeSegment]
       if (!entry?.bodyField) return new Response('Unknown image path', { status: 404 })

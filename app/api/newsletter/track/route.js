@@ -86,11 +86,18 @@ async function recordTracking(rid, url) {
   const click = clickRows?.[0]
   if (click?.counted) {
     await incrementSendCounter(supabase, click.send_id, 'total_clicked')
-    await supabase.from('signals').insert({
+    // The `signals` table has no `metadata` column — the clicked URL goes in
+    // `detail` (text), matching every other signal writer (e.g. template-download
+    // stores the tool name there). Always check the insert error: supabase-js
+    // resolves rather than rejects, so an unchecked error swallows the failure.
+    const { error: signalErr } = await supabase.from('signals').insert({
       contact_id: click.contact_id,
       type: 'newsletter-click',
       strength: 'medium',
-      metadata: { url },
+      detail: url,
     })
+    if (signalErr) {
+      console.error('track: signals insert(newsletter-click) failed:', signalErr.message || signalErr)
+    }
   }
 }

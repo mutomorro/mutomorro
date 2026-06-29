@@ -1,4 +1,5 @@
 import { defineField, defineType } from 'sanity'
+import { imageSlugField, uniqueImageSlugs } from './_imageSlug'
 
 export default defineType({
   name: 'article',
@@ -85,10 +86,11 @@ export default defineType({
               type: 'string',
               description: 'Describe the image for accessibility and SEO.',
             },
+            imageSlugField,
           ],
         },
       ],
-      validation: Rule => Rule.required(),
+      validation: (Rule) => [Rule.required(), uniqueImageSlugs(Rule)],
     }),
 
     // --- SEO fields ---

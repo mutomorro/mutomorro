@@ -1,13 +1,13 @@
 import { client, getTool } from '../../../sanity/client'
 import { notFound } from 'next/navigation'
-import Image from 'next/image'
 import { PortableText } from '@portabletext/react'
 import CTA from '../../../components/CTA'
 import ToolFloatingBar from '../../../components/ToolFloatingBar'
 import Link from 'next/link'
 import { urlFor } from '../../../sanity/image'
-import { isProxyEnabled, ogImage, jsonLdImage, bodyCanonicalUrl, bodyRenderSrcSet, RENDER_WIDTHS } from '@/lib/image-proxy'
+import { ogImage, jsonLdImage } from '@/lib/image-proxy'
 import ProxyHeroImage from '@/components/ProxyHeroImage'
+import ProxyBodyImage from '@/components/ProxyBodyImage'
 import RelatedContent from '../../../components/RelatedContent'
 import ContentTable from '../../../components/ContentTable'
 import ContentAccordion from '../../../components/ContentAccordion'
@@ -62,12 +62,7 @@ export default async function ToolPage({ params }) {
   const sidebarCallouts = await getSidebarCallouts('tools', tool._id)
 
   const heroImageUrl = tool.heroImage ? urlFor(tool.heroImage).width(900).url() : null
-  // When the stable-URL proxy is enabled for this tool, the hero is a hand-rolled
-  // <picture>: AVIF/WebP skin for render, canonical PNG as the <img src> (save /
-  // share / Google target). See lib/image-proxy.js + docs/seo/ delivery spec.
-  const heroUseProxy = isProxyEnabled('tool', slug)
   const heroSizes = '(max-width: 768px) 100vw, 50vw'
-  const bodySizes = '(max-width: 768px) 100vw, 680px'
   const templateHref = `/tools/${slug}/template`
 
   const jsonLd = {
@@ -226,40 +221,7 @@ export default async function ToolPage({ params }) {
                 value={tool.body}
                 components={{
                   types: {
-                    image: ({ value }) => {
-                      // Stable-URL body render: prefer the clean, flat imageSlug
-                      // permalink; fall back to the legacy `_key` URL for any block not
-                      // yet backfilled, so no image regresses to a hashed CDN src.
-                      const useBodyProxy = heroUseProxy && (value?.imageSlug || value?._key)
-                      const id = { imageSlug: value?.imageSlug, alt: value?.alt, key: value?._key }
-                      return (
-                        <div className="img-mat" style={{ margin: '2.5rem 0' }}>
-                          {useBodyProxy ? (
-                            <picture>
-                              <source type="image/avif" srcSet={bodyRenderSrcSet('tool', slug, id, RENDER_WIDTHS, 'avif')} sizes={bodySizes} />
-                              <source type="image/webp" srcSet={bodyRenderSrcSet('tool', slug, id, RENDER_WIDTHS, 'webp')} sizes={bodySizes} />
-                              <img
-                                src={bodyCanonicalUrl('tool', slug, id)}
-                                alt={value.alt || ''}
-                                width={900}
-                                height={506}
-                                loading="lazy"
-                                style={{ width: '100%', height: 'auto', display: 'block' }}
-                              />
-                            </picture>
-                          ) : (
-                            <Image
-                              src={urlFor(value).width(900).url()}
-                              alt={value.alt || ''}
-                              width={900}
-                              height={506}
-                              sizes="(max-width: 768px) 100vw, 680px"
-                              style={{ width: '100%', height: 'auto', display: 'block' }}
-                            />
-                          )}
-                        </div>
-                      )
-                    },
+                    image: ({ value }) => <ProxyBodyImage type="tool" slug={slug} value={value} />,
                     table: ({ value }) => <ContentTable value={value} />,
                     accordion: ({ value }) => <ContentAccordion value={value} />,
                     tabs: ({ value }) => <ContentTabs value={value} />,

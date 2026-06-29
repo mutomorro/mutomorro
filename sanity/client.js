@@ -422,6 +422,7 @@ export async function getService(slug) {
         stageOutcome,
         "stageImageUrl": stageImage.asset->url,
         "stageImageAlt": stageImage.alt,
+        imageSlug,
         stageLinkLabel,
         stageLinkUrl,
       },

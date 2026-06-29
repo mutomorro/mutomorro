@@ -64,6 +64,26 @@ async function resolveBodyImageBySlug(sanityType, bodyField, slug, imageSlug) {
   return json?.result || null
 }
 
+// STAGE resolver (service `stages[]` infographics). The imageSlug lives on the stage OBJECT,
+// so the projection reaches through `stages[imageSlug == $is][0].<stageImageField>.asset->url`
+// (not a top-level body[] block). `stagesField`/`stageImageField` are fixed allow-list values;
+// slug + imageSlug are bound params. Returns { url, title } or null.
+async function resolveStageImageBySlug(sanityType, stagesField, stageImageField, slug, imageSlug) {
+  const query =
+    `*[_type == $t && slug.current == $s && !(_id in path("drafts.**"))][0]` +
+    `{ "url": ${stagesField}[imageSlug == $is][0].${stageImageField}.asset->url, "title": coalesce(title, name, internalTitle, heading) }`
+  const url =
+    `https://${SANITY.projectId}.apicdn.sanity.io/v${SANITY.apiVersion}/data/query/${SANITY.dataset}` +
+    `?query=${encodeURIComponent(query)}` +
+    `&$t=${encodeURIComponent(JSON.stringify(sanityType))}` +
+    `&$s=${encodeURIComponent(JSON.stringify(slug))}` +
+    `&$is=${encodeURIComponent(JSON.stringify(imageSlug))}`
+  const res = await fetch(url, { next: { revalidate: 3600 } })
+  if (!res.ok) return null
+  const json = await res.json()
+  return json?.result || null
+}
+
 // LEGACY (keyed) body resolver, used only by the `/body/<…-_key>` path. Resolves by the
 // block `_key` AND projects that block's `imageSlug` (if any), so the route can 301 a
 // legacy keyed URL onto its clean flat permalink in one round-trip.
@@ -106,9 +126,17 @@ export async function GET(request, { params }) {
         doc = await resolveDoc(resolved.sanityType, resolved.field, parsed.slug)
       } else {
         const entry = RESOLVE[typeSegment]
-        if (!entry?.bodyField) return new Response('Unknown image path', { status: 404 })
-        doc = await resolveBodyImageBySlug(entry.sanityType, entry.bodyField, parsed.slug, parsed.role)
-        // Download filename: `<Title>-<Image-Slug>` (e.g. Process-Mapping-Step-1-Assumed),
+        // A `stage-N-name` role on a stages-bearing type (service) addresses a stage
+        // infographic by its imageSlug; any other non-fixed role addresses a body[] block.
+        // The two are mutually exclusive per type (service has stages, not a body array).
+        if (entry?.stagesField && entry?.stageImageField) {
+          doc = await resolveStageImageBySlug(entry.sanityType, entry.stagesField, entry.stageImageField, parsed.slug, parsed.role)
+        } else if (entry?.bodyField) {
+          doc = await resolveBodyImageBySlug(entry.sanityType, entry.bodyField, parsed.slug, parsed.role)
+        } else {
+          return new Response('Unknown image path', { status: 404 })
+        }
+        // Download filename: `<Title>-<Image-Slug>` (e.g. Culture-Change-Stage-1-Understand),
         // unique per page (avoids every diagram saving as the same name).
         const titleBase = (doc?.title || '').replace(/[^A-Za-z0-9]+/g, '-').replace(/^-+|-+$/g, '')
         const slugName = imageSlugToName(parsed.role)

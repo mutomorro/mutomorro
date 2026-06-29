@@ -3,6 +3,7 @@
 // See Sanity_Service_Schema_Specification.md for the full field-by-field rationale
 
 import { defineField, defineType } from 'sanity'
+import { stageImageSlugField, uniqueStageImageSlugs } from './_imageSlug'
 
 export default defineType({
   name: 'service',
@@ -667,6 +668,10 @@ export default defineType({
                 },
               ],
             }),
+            // Permanent stable-URL slug for the stage infographic (set-once permalink;
+            // backfilled as stage-N-name). Decoupled from stageTitle/order so renaming or
+            // reordering a stage never moves the image's public URL — see lib/image-proxy.js.
+            defineField(stageImageSlugField),
             defineField({
               name: 'stageLinkLabel',
               title: 'Stage Link Label (optional)',
@@ -688,7 +693,7 @@ export default defineType({
           },
         },
       ],
-      validation: (rule) => rule.required().length(4),
+      validation: (rule) => [rule.required().length(4), uniqueStageImageSlugs(rule)],
     }),
 
     // ===========================

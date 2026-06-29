@@ -126,9 +126,17 @@ export async function GET(request, { params }) {
       const keyed = await resolveBodyImageByKey(entry.sanityType, entry.bodyField, slug, m[2])
       if (keyed?.imageSlug) {
         const url = new URL(request.url)
-        const location = `${url.origin}${bodyPathBySlug(typeSegment, slug, keyed.imageSlug)}${url.search}`
-        // Build the 301 by hand so it carries Cache-Control (Response.redirect does not),
-        // and preserve ?fmt/?w/?h/?fit so an in-flight rendition lands on the right skin.
+        // Preserve only the real rendition params. Next.js puts the catch-all path into a
+        // `slug` query param on request.url, so copying the whole search string would point
+        // the 301 at a param-polluted URL and FRAGMENT the SEO signal — allow-list instead.
+        const keep = new URLSearchParams()
+        for (const k of ['fmt', 'w', 'h', 'fit']) {
+          const v = url.searchParams.get(k)
+          if (v != null) keep.set(k, v)
+        }
+        const qs = keep.toString()
+        const location = `${url.origin}${bodyPathBySlug(typeSegment, slug, keyed.imageSlug)}${qs ? `?${qs}` : ''}`
+        // Build the 301 by hand so it carries Cache-Control (Response.redirect does not).
         return new Response(null, { status: 301, headers: { Location: location, 'Cache-Control': CACHE_CONTROL } })
       }
       // Not yet backfilled — serve straight from the key (legacy descriptor filename).

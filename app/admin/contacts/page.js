@@ -13,23 +13,30 @@ const zbOptions = ['', 'valid', 'catch-all', 'unknown', 'unverified', 'invalid',
 const zbLabels = ['All deliverability', 'Valid', 'Catch-all', 'Unknown', 'Unverified', 'Invalid', 'Do not mail', 'Abuse']
 const interactionTypes = ['email-sent', 'email-received', 'meeting', 'note', 'call']
 
-// Commercial lenses shown as chips on the merged surface. Selecting one switches
-// to targeted mode (ranked by the engagement score, with "reasons" chips). The
-// Overview funnel deep-links in via ?preset= using the uk_* keys, shown as a pill.
-const LENS_PRESETS = [
-  { value: 'golden', label: '★ Golden' },
-  { value: 'engaged', label: 'Engaged' },
-  { value: 'uk_target', label: 'Target' },
-  { value: 'uk_target_audience', label: 'Target Audience' },
+// Commercial facets compose freely (AND) on one list. A "lens" is just a facet-set
+// applied as a clean starting point you then refine (populate-and-refine). The
+// Overview funnel deep-links in via ?preset= and maps to the same sets.
+const FACET_DEFAULTS = { uk: false, dm: false, engaged: false, enquired: false, sub: '', contactable: false, due: false }
+const LENSES = [
+  { key: 'golden', label: '★ Golden', set: { uk: true, dm: true, scope: 'in' } },
+  { key: 'engaged', label: 'Engaged', set: { uk: true, dm: true, engaged: true, scope: 'in' } },
+  { key: 'target', label: 'Target', set: { uk: true, dm: true, sub: 'subscribed', engaged: true, scope: 'in' } },
+  { key: 'target_audience', label: 'Target Audience', set: { uk: true, dm: true, sub: 'notsub', contactable: true, scope: 'in' } },
+  { key: 'due', label: 'Due a touch', set: { due: true } },
 ]
-const PRESET_LABELS = {
-  uk: 'UK pool', uk_subscribed: 'UK · subscribed', uk_engaged: 'UK · engaged',
-  uk_target: 'Target (warm + fit)', uk_notsub: 'UK · not subscribed',
-  uk_target_audience: 'Target Audience (fit, reachable)', uk_optedout: 'UK · opted-out',
-  golden: '★ Golden ticket', engaged: 'Engaged (warm)', recent: 'Recently active',
-  decision_makers: 'Decision-makers', repeat: 'Repeat downloaders',
-  clickers: 'Clicked a link', enquirers: 'Enquired',
+const PRESET_TO_FACETS = {
+  uk: { uk: true, scope: 'in' },
+  uk_subscribed: { uk: true, sub: 'subscribed', scope: 'in' },
+  uk_engaged: { uk: true, sub: 'subscribed', engaged: true, scope: 'in' },
+  uk_target: { uk: true, dm: true, sub: 'subscribed', engaged: true, scope: 'in' },
+  uk_notsub: { uk: true, sub: 'notsub', scope: 'in' },
+  uk_target_audience: { uk: true, dm: true, sub: 'notsub', contactable: true, scope: 'in' },
+  uk_optedout: { uk: true, sub: 'optedout', scope: 'in' },
+  golden: { uk: true, dm: true, scope: 'in' },
+  engaged: { uk: true, dm: true, engaged: true, scope: 'in' },
 }
+const SUB_OPTIONS = ['', 'subscribed', 'notsub', 'optedout']
+const SUB_LABELS = ['Any subscription', 'Subscribed', 'Not subscribed', 'Opted-out']
 
 function relativeTime(dateStr) {
   if (!dateStr) return '-'
@@ -62,24 +69,6 @@ function domainFrom(email) {
   return email.split('@').pop().trim().toLowerCase()
 }
 
-function Chip({ theme, label, count, active, onClick, tone }) {
-  const accent = tone === 'warn' ? theme.warning : tone === 'uk' ? '#3B82F6' : theme.accent
-  return (
-    <button
-      onClick={onClick}
-      style={{
-        display: 'inline-flex', alignItems: 'center', gap: '7px', padding: '6px 12px', borderRadius: '20px',
-        fontSize: '13px', cursor: 'pointer', fontFamily: 'inherit',
-        background: active ? accent : theme.cardBg,
-        color: active ? '#fff' : theme.textSecondary,
-        border: `1px solid ${active ? accent : theme.cardBorder}`,
-      }}
-    >
-      <span>{label}</span>
-      <span style={{ fontSize: '12px', color: active ? 'rgba(255,255,255,0.85)' : theme.textMuted }}>{(count ?? 0).toLocaleString()}</span>
-    </button>
-  )
-}
 
 export default function ContactsPage() {
   const { theme } = useAdminTheme()
@@ -94,14 +83,11 @@ export default function ContactsPage() {
   const [newsletter, setNewsletter] = useState('')
   const [zb, setZb] = useState('')
   const [tag, setTag] = useState('')
-  const [segment, setSegment] = useState('')
   const [sector, setSector] = useState('')
   const [scope, setScope] = useState('')
-  const [preset, setPreset] = useState('')
-  const [targeted, setTargeted] = useState(false)
+  const [facets, setFacets] = useState(FACET_DEFAULTS)
   const [bulkSector, setBulkSector] = useState('')
-  const [sort, setSort] = useState('-created_at')
-  const [segments, setSegments] = useState(null)
+  const [sort, setSort] = useState('-engagement_score')
   const [selected, setSelected] = useState(() => new Set())
   const [busy, setBusy] = useState(false)
   const [bulkTag, setBulkTag] = useState('')
@@ -121,10 +107,16 @@ export default function ContactsPage() {
       if (newsletter) params.set('newsletter', newsletter)
       if (zb) params.set('zb', zb)
       if (tag) params.set('tag', tag)
-      if (segment) params.set('segment', segment)
       if (sector) params.set('sector', sector)
       if (scope) params.set('scope', scope)
-      if (preset) params.set('preset', preset)
+      // Commercial facets (compose with the above).
+      if (facets.uk) params.set('uk', '1')
+      if (facets.dm) params.set('dm', '1')
+      if (facets.engaged) params.set('engaged', '1')
+      if (facets.enquired) params.set('enquired', '1')
+      if (facets.sub) params.set('sub', facets.sub)
+      if (facets.contactable) params.set('contactable', '1')
+      if (facets.due) params.set('due', '1')
 
       const res = await fetch(`/api/admin/contacts?${params}`)
       if (!res.ok) throw new Error('Failed')
@@ -132,36 +124,32 @@ export default function ContactsPage() {
       setContacts(data.contacts)
       setTotal(data.total)
       setPages(data.pages)
-      setTargeted((data.mode || 'browse') === 'targeted')
       setSelected(new Set())
     } catch (err) {
       console.error(err)
     } finally {
       setLoading(false)
     }
-  }, [page, search, tier, source, newsletter, zb, tag, segment, sector, scope, preset, sort])
+  }, [page, search, tier, source, newsletter, zb, tag, sector, scope, facets, sort])
 
   useEffect(() => {
     fetchContacts()
   }, [fetchContacts])
 
-  const loadSegments = useCallback(() => {
-    fetch('/api/admin/contacts/segments')
-      .then((r) => r.ok ? r.json() : Promise.reject())
-      .then(setSegments)
-      .catch((e) => console.error(e))
-  }, [])
-  useEffect(() => { loadSegments() }, [loadSegments])
-
-  // Honour a ?tag= deep-link (e.g. the Overview "housing associations" chip).
-  // Read after mount so SSR and the first client render agree (no hydration
-  // mismatch on the conditional Clear button); the input shows it via defaultValue.
+  // Honour deep-links: ?tag= (e.g. the Overview housing chip) and ?preset= (the
+  // Overview funnel boxes → a lens facet-set). Read after mount so SSR/first client
+  // render agree (inputs show via defaultValue).
   useEffect(() => {
     const sp = new URLSearchParams(window.location.search)
     const t = sp.get('tag')
     if (t) { setTag(t); setPage(1) }
-    const p = sp.get('preset')
-    if (p) { setPreset(p); setPage(1) }
+    const pr = sp.get('preset')
+    const set = pr && PRESET_TO_FACETS[pr]
+    if (set) {
+      setFacets({ ...FACET_DEFAULTS, uk: !!set.uk, dm: !!set.dm, engaged: !!set.engaged, enquired: !!set.enquired, sub: set.sub || '', contactable: !!set.contactable, due: !!set.due })
+      setScope(set.scope || '')
+      setPage(1)
+    }
   }, [])
 
   // Toggle sort: same field flips direction, new field starts descending.
@@ -175,21 +163,27 @@ export default function ContactsPage() {
     })
   }
 
-  // Working-segment chip: toggle on/off. Mutually exclusive with a commercial lens.
-  function pickSegment(val) {
+  // Set one facet (the building blocks; they stack/AND on one list).
+  function setFacet(key, val) {
     setPage(1)
     setBulkMsg(null)
-    setPreset('')
-    setSegment((cur) => (cur === val ? '' : val))
+    setFacets((f) => ({ ...f, [key]: val }))
   }
 
-  // Commercial-lens chip: toggle on/off. Switches to targeted (ranked) mode and
-  // is mutually exclusive with the working segment.
-  function pickPreset(val) {
+  // Apply a lens = a clean facet-set you then refine (populate-and-refine).
+  function applyLens(set) {
     setPage(1)
     setBulkMsg(null)
-    setSegment('')
-    setPreset((cur) => (cur === val ? '' : val))
+    setFacets({ ...FACET_DEFAULTS, uk: !!set.uk, dm: !!set.dm, engaged: !!set.engaged, enquired: !!set.enquired, sub: set.sub || '', contactable: !!set.contactable, due: !!set.due })
+    setSearch(''); setTier(''); setSource(''); setNewsletter(''); setZb(''); setTag(''); setSector(''); setScope(set.scope || '')
+  }
+
+  // Clear every facet + filter back to the full list.
+  function clearAll() {
+    setPage(1)
+    setBulkMsg(null)
+    setFacets(FACET_DEFAULTS)
+    setSearch(''); setTier(''); setSource(''); setNewsletter(''); setZb(''); setTag(''); setSector(''); setScope('')
   }
 
   function toggleSelect(id) {
@@ -211,7 +205,7 @@ export default function ContactsPage() {
       if (!res.ok) throw new Error()
       const d = await res.json()
       setBulkMsg({ ok: true, text: `Enriched ${d.enriched} of ${d.attempted} (${d.noMatch} no match).` })
-      fetchContacts(); loadSegments()
+      fetchContacts()
     } catch (e) {
       setBulkMsg({ ok: false, text: 'Enrichment failed.' })
     } finally {
@@ -291,38 +285,37 @@ export default function ContactsPage() {
     }
   }
 
+  const anyFilterActive = facets.uk || facets.dm || facets.engaged || facets.enquired || facets.contactable || facets.due
+    || !!facets.sub || !!search || !!tier || !!source || !!newsletter || !!zb || !!tag || !!sector || !!scope
+
   return (
     <div>
       <h1 style={{ fontSize: '28px', fontWeight: 400, color: theme.textPrimary, letterSpacing: '-0.02em', marginBottom: '24px' }}>
         Contacts
       </h1>
 
-      {/* Commercial lens — switches the list to targeted (ranked-by-score) mode */}
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '12px', alignItems: 'center' }}>
-        <span style={{ fontSize: '12px', color: theme.textMuted, textTransform: 'uppercase', letterSpacing: '0.5px', marginRight: '2px' }}>Lens</span>
-        {LENS_PRESETS.map((p) => (
-          <button key={p.value} onClick={() => pickPreset(p.value)} style={lensChip(theme, preset === p.value)}>{p.label}</button>
+      {/* Lenses — apply a facet-set you can then refine */}
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '10px', alignItems: 'center' }}>
+        <span style={{ fontSize: '12px', color: theme.textMuted, textTransform: 'uppercase', letterSpacing: '0.5px', marginRight: '2px' }}>Lenses</span>
+        {LENSES.map((l) => (
+          <button key={l.key} onClick={() => applyLens(l.set)} style={lensChip(theme, false)}>{l.label}</button>
         ))}
-        {preset && !LENS_PRESETS.some((p) => p.value === preset) && (
-          <span style={lensChip(theme, true)}>{PRESET_LABELS[preset] || preset}</span>
-        )}
-        {preset && (
-          <button onClick={() => { setPreset(''); setPage(1) }} style={{ background: 'none', border: 'none', color: theme.accent, fontSize: '12px', cursor: 'pointer', fontFamily: 'inherit' }}>✕ clear lens</button>
-        )}
-        {preset && <span style={{ fontSize: '12px', color: theme.textMuted, marginLeft: 'auto' }}>{total.toLocaleString()} ranked by score</span>}
+        <span style={{ fontSize: '12px', color: theme.textMuted, marginLeft: 'auto' }}>
+          {total.toLocaleString()} {anyFilterActive ? (total === 1 ? 'match' : 'matches') : (total === 1 ? 'contact' : 'contacts')}
+          {anyFilterActive && <button onClick={clearAll} style={{ background: 'none', border: 'none', color: theme.accent, fontSize: '12px', cursor: 'pointer', fontFamily: 'inherit', marginLeft: '10px' }}>Clear all</button>}
+        </span>
       </div>
 
-      {/* Working-filter chips — click to filter the list (browse mode only) */}
-      {!preset && segments && (
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '16px' }}>
-          <Chip theme={theme} active={segment === ''} onClick={() => pickSegment('')} label="All" count={segments.total} />
-          <Chip theme={theme} active={segment === 'uk'} onClick={() => pickSegment('uk')} label="UK" count={segments.uk} tone="uk" />
-          <Chip theme={theme} active={segment === 'no_company'} onClick={() => pickSegment('no_company')} label="Needs company" count={segments.noCompany} tone="warn" />
-          <Chip theme={theme} active={segment === 'decision_makers'} onClick={() => pickSegment('decision_makers')} label="Decision-makers" count={segments.decisionMakers} />
-          <Chip theme={theme} active={segment === 'active_30d'} onClick={() => pickSegment('active_30d')} label="Active 30d" count={segments.active30d} />
-          <Chip theme={theme} active={segment === 'enriched'} onClick={() => pickSegment('enriched')} label="Enriched" count={segments.enriched} />
-        </div>
-      )}
+      {/* Facets — stack freely (AND) on the one list */}
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '12px', alignItems: 'center' }}>
+        <FacetToggle theme={theme} label="UK" active={facets.uk} onClick={() => setFacet('uk', !facets.uk)} tone="uk" />
+        <FacetToggle theme={theme} label="Fit (mgr+)" active={facets.dm} onClick={() => setFacet('dm', !facets.dm)} />
+        <FacetToggle theme={theme} label="Engaged" active={facets.engaged} onClick={() => setFacet('engaged', !facets.engaged)} />
+        <FacetToggle theme={theme} label="Enquired" active={facets.enquired} onClick={() => setFacet('enquired', !facets.enquired)} />
+        <FacetToggle theme={theme} label="Due a touch" active={facets.due} onClick={() => setFacet('due', !facets.due)} tone="warn" />
+        {facets.contactable && <FacetToggle theme={theme} label="Contactable" active onClick={() => setFacet('contactable', false)} />}
+        <FilterSelect theme={theme} value={facets.sub} options={SUB_OPTIONS} labels={SUB_LABELS} onChange={(v) => setFacet('sub', v)} />
+      </div>
 
       {/* Selection action bar — enrich / tag the ticked contacts */}
       {selected.size > 0 && (
@@ -366,8 +359,7 @@ export default function ContactsPage() {
         <div style={{ fontSize: '13px', color: bulkMsg.ok ? theme.success : theme.danger, marginBottom: '12px' }}>{bulkMsg.text}</div>
       )}
 
-      {/* Search (browse mode only) */}
-      {!preset && (
+      {/* Search */}
       <input
         type="text"
         placeholder="Search by name, email, or organisation..."
@@ -387,10 +379,8 @@ export default function ContactsPage() {
           boxSizing: 'border-box',
         }}
       />
-      )}
 
-      {/* Filters (browse mode only) */}
-      {!preset && (
+      {/* Filters — additional refinements (stack with the facets above) */}
       <div style={{ display: 'flex', gap: '10px', marginBottom: '16px', flexWrap: 'wrap', alignItems: 'center' }}>
         <FilterSelect theme={theme} value={tier} options={tierOptions} labels={tierLabels} onChange={(v) => { setTier(v); setPage(1) }} />
         <FilterSelect theme={theme} value={newsletter} options={newsletterOptions} labels={newsletterLabels} onChange={(v) => { setNewsletter(v); setPage(1) }} />
@@ -422,14 +412,10 @@ export default function ContactsPage() {
             onClick={() => { setTier(''); setNewsletter(''); setZb(''); setSource(''); setTag(''); setSector(''); setScope(''); setPage(1) }}
             style={{ background: 'none', border: 'none', color: theme.accent, fontSize: '12px', cursor: 'pointer', fontFamily: 'inherit', padding: '4px' }}
           >
-            Clear
+            Clear filters
           </button>
         )}
-        <span style={{ fontSize: '13px', color: theme.textMuted, marginLeft: 'auto' }}>
-          {total.toLocaleString()} contact{total !== 1 ? 's' : ''}
-        </span>
       </div>
-      )}
 
       {/* Table */}
       <div style={{ background: theme.cardBg, border: `1px solid ${theme.cardBorder}`, borderRadius: '10px', overflowX: 'auto' }}>
@@ -459,9 +445,7 @@ export default function ContactsPage() {
             No contacts found
           </div>
         ) : (
-          // Targeted mode is fully loaded client-side (<=500 rows), so column
-          // sorting is applied in JS — keeps the sort headers live under a lens.
-          (targeted ? sortRows(contacts, sort) : contacts).map((c, i) => (
+          contacts.map((c, i) => (
             <div key={c.id}>
               <div
                 onClick={() => loadDetail(c.id)}
@@ -498,7 +482,7 @@ export default function ContactsPage() {
                       {c.role || ''}{c.role && c.seniority ? ' · ' : ''}{c.seniority ? titleCaseWord(c.seniority) : ''}
                     </div>
                   )}
-                  {targeted && reasonsFor(c).length > 0 && (
+                  {reasonsFor(c).length > 0 && (
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', marginTop: '4px' }}>
                       {reasonsFor(c).map((r, i) => (
                         <span key={i} style={{ fontSize: '10px', padding: '1px 6px', borderRadius: '3px', background: theme.accentBg, color: theme.accent, whiteSpace: 'nowrap' }}>{r}</span>
@@ -537,7 +521,7 @@ export default function ContactsPage() {
                     background: c.newsletter_status === 'active' ? theme.accentBg : theme.cardBg,
                     color: c.newsletter_status === 'active' ? theme.accent : theme.textMuted,
                   }}>
-                    {targeted ? '—' : (c.newsletter_status || 'never')}
+                    {c.newsletter_status || 'never'}
                   </span>
                 </div>
                 <div style={{ fontSize: '12px', color: theme.textMuted }}>
@@ -553,7 +537,7 @@ export default function ContactsPage() {
                   loading={detailLoading}
                   contactId={c.id}
                   onUpdate={() => { loadDetail(c.id); fetchContacts() }}
-                  onDelete={() => { setSelectedId(null); setDetail(null); fetchContacts(); loadSegments() }}
+                  onDelete={() => { setSelectedId(null); setDetail(null); fetchContacts() }}
                 />
               )}
             </div>
@@ -861,6 +845,21 @@ function ContactDetail({ theme, detail, loading, contactId, onUpdate, onDelete }
                 <button onClick={logInteraction} disabled={saving || !intSummary.trim()} style={{ ...miniBtn, width: 'auto', fontSize: '12px', padding: '4px 10px' }}>Save</button>
               </div>
             )}
+
+            {/* Next nudge — the nurture follow-up date (drives the "Due a touch" facet) */}
+            <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+              <span style={{ fontSize: '12px', color: theme.textMuted, whiteSpace: 'nowrap' }}>Next nudge</span>
+              <input
+                type="date"
+                value={contact.next_nudge_date || ''}
+                onChange={(e) => patchContact({ next_nudge_date: e.target.value || null })}
+                disabled={saving}
+                style={{ ...miniInputStyle, cursor: 'pointer' }}
+              />
+              {contact.next_nudge_date && (
+                <button onClick={() => patchContact({ next_nudge_date: null })} disabled={saving} style={{ background: 'none', border: 'none', color: theme.textMuted, fontSize: '12px', cursor: 'pointer', fontFamily: 'inherit' }}>clear</button>
+              )}
+            </div>
           </div>
 
           {errMsg && <div style={{ fontSize: '12px', color: theme.danger, marginTop: '10px' }}>{errMsg}</div>}
@@ -957,27 +956,20 @@ function FilterSelect({ theme, value, options, labels, onChange }) {
   )
 }
 
-// Client-side sort for targeted mode (the ranked set is fully loaded, <=500 rows).
-// Mirrors the server sort keys so the column headers behave the same in both modes.
-function sortRows(rows, sort) {
-  const asc = sort.startsWith('+')
-  const field = sort.replace(/^[+-]/, '') || 'created_at'
-  const dir = asc ? 1 : -1
-  const val = (c) => {
-    if (field === 'engagement_score') return c.engagement_score == null ? -Infinity : Number(c.engagement_score)
-    if (field === 'first_name') return `${c.first_name || ''} ${c.last_name || ''}`.trim().toLowerCase()
-    if (field === 'created_at') return c.created_at ? new Date(c.created_at).getTime() : 0
-    return (c[field] ?? '').toString().toLowerCase()
-  }
-  return [...rows].sort((a, b) => {
-    const av = val(a), bv = val(b)
-    if (av < bv) return -dir
-    if (av > bv) return dir
-    return 0
-  })
+// Facet toggle pill (no count — facets compose, they don't partition the list).
+function FacetToggle({ theme, label, active, onClick, tone }) {
+  const accent = tone === 'warn' ? theme.warning : tone === 'uk' ? '#3B82F6' : theme.accent
+  return (
+    <button onClick={onClick} style={{
+      padding: '6px 12px', borderRadius: '20px', fontSize: '13px', cursor: 'pointer', fontFamily: 'inherit',
+      background: active ? accent : theme.cardBg,
+      color: active ? '#fff' : theme.textSecondary,
+      border: `1px solid ${active ? accent : theme.cardBorder}`,
+    }}>{active ? `✓ ${label}` : label}</button>
+  )
 }
 
-// Pill style for the commercial-lens chips.
+// Pill style for the lens buttons.
 function lensChip(theme, active) {
   return {
     padding: '6px 12px', fontSize: '13px', cursor: 'pointer', fontFamily: 'inherit', borderRadius: '20px',
@@ -987,17 +979,31 @@ function lensChip(theme, active) {
   }
 }
 
-// "Why this row scores" chips, shown in targeted mode (fields come from
-// get_engaged_contacts). Mirrors the Engagement page's reason logic.
+// Manager-and-above (mirrors is_decision_maker_seniority).
+const DM_SET = new Set(['manager', 'director', 'head', 'vp', 'c_suite', 'founder', 'partner', 'owner'])
+function isUkClient(c) {
+  const country = (c.country || '').trim().toLowerCase()
+  if (country) {
+    if (country.includes('united kingdom') || country.includes('northern ireland')) return true
+    if (['uk', 'gb', 'great britain', 'britain', 'england', 'scotland', 'wales'].includes(country)) return true
+  }
+  const domain = (c.signup_email || '').split('@').pop() || ''
+  return /\.uk$/.test(domain.toLowerCase())
+}
+
+// "Why this row scores" chips — computed from the row's own columns, shown on every
+// row (each row carries country, seniority, high_signals_count, clicks, downloads).
 function reasonsFor(c) {
   const r = []
-  if (c.is_uk) r.push('UK')
-  if (c.is_decision_maker) r.push(c.seniority ? titleCaseWord(c.seniority) : 'Decision-maker')
-  if (c.high_signals > 0) r.push(c.high_signals > 1 ? `${c.high_signals} enquiries` : 'Enquired')
-  if (c.newsletter_clicks > 0) r.push(`${c.newsletter_clicks} click${c.newsletter_clicks === 1 ? '' : 's'}`)
-  if (c.active_30d) r.push('Active 30d')
-  else if (c.active_90d) r.push('Active 90d')
-  if (c.download_count >= 3) r.push(`${c.download_count} downloads`)
+  if (isUkClient(c)) r.push('UK')
+  if (c.seniority && DM_SET.has(c.seniority)) r.push(titleCaseWord(c.seniority))
+  const hs = Number(c.high_signals_count) || 0
+  if (hs > 0) r.push(hs > 1 ? `${hs} enquiries` : 'Enquired')
+  if ((c.newsletter_clicks || 0) > 0) r.push(`${c.newsletter_clicks} click${c.newsletter_clicks === 1 ? '' : 's'}`)
+  const days = c.last_download_date ? (Date.now() - new Date(c.last_download_date).getTime()) / 86400000 : Infinity
+  if (days <= 30) r.push('Active 30d')
+  else if (days <= 90) r.push('Active 90d')
+  if ((c.download_count || 0) >= 3) r.push(`${c.download_count} downloads`)
   return r
 }
 

@@ -1,13 +1,19 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 
-// Commercial lenses + Overview funnel drill-downs. When one is active the
-// Contacts surface switches to "targeted mode" and ranks via get_engaged_contacts
-// (same set the Engagement page used). 'all' is browse-mode and is NOT listed here.
-const ENGAGEMENT_PRESETS = new Set([
-  'recent', 'decision_makers', 'repeat', 'clickers', 'enquirers', 'uk', 'golden', 'engaged',
-  'uk_subscribed', 'uk_engaged', 'uk_target', 'uk_notsub', 'uk_target_audience', 'uk_optedout',
-])
+// One composable query. The commercial facets below are the building-blocks; a
+// "lens" (Target, Golden, …) is just a facet-set the UI applies. Each facet mirrors
+// the predicate the Overview funnel / get_engaged_contacts use, so counts agree.
+
+// Manager-and-above = "fit" (mirrors is_decision_maker_seniority).
+const DM_SENIORITY = ['manager', 'director', 'head', 'vp', 'c_suite', 'founder', 'partner', 'owner']
+// UK predicate as a PostgREST or-group (mirrors is_uk_contact, incl. 'britain').
+const UK_OR = 'country.ilike.%united kingdom%,country.ilike.%northern ireland%,country.ilike.uk,country.ilike.gb,country.ilike.great britain,country.ilike.britain,country.ilike.england,country.ilike.scotland,country.ilike.wales,signup_email.ilike.%.uk'
+// Newsletter-status sets (NULL counts as "never subscribed", so notsub/contactable
+// each OR in is.null — avoids NOT IN excluding the large null-status population).
+const NS_SUBSCRIBED = ['active', 'confirmed']
+const NS_NOT_SUBSCRIBED = ['pending_confirmation', 'opted-in-not-added', 'never', 'unsubscribed', 'bounced']
+const NS_CONTACTABLE = ['active', 'confirmed', 'pending_confirmation', 'opted-in-not-added', 'never']
 
 export async function GET(request) {
   const sessionCookie = request.cookies.get('admin_session')?.value
@@ -21,71 +27,40 @@ export async function GET(request) {
   )
 
   const { searchParams } = new URL(request.url)
-  const search = searchParams.get('search') || ''
-  const tier = searchParams.get('tier') || ''
-  const source = searchParams.get('source') || ''
-  const newsletter = searchParams.get('newsletter') || ''
-  const zb = searchParams.get('zb') || ''
-  const tag = searchParams.get('tag') || ''
-  const segment = searchParams.get('segment') || ''
-  const sector = searchParams.get('sector') || ''
-  const scope = searchParams.get('scope') || ''
-  const preset = searchParams.get('preset') || ''
+  const p = (k) => searchParams.get(k) || ''
+  const search = p('search')
+  const tier = p('tier')
+  const source = p('source')
+  const newsletter = p('newsletter')
+  const zb = p('zb')
+  const tag = p('tag')
+  const segment = p('segment')
+  const sector = p('sector')
+  const scope = p('scope')
+  // Commercial facets (compose with the above; lenses are facet-sets the UI applies).
+  const uk = p('uk') === '1'
+  const dm = p('dm') === '1'
+  const engaged = p('engaged') === '1'
+  const enquired = p('enquired') === '1'
+  const sub = p('sub')                 // subscribed | notsub | optedout
+  const contactable = p('contactable') === '1'
+  const due = p('due') === '1'
+  const scoreMin = p('score_min')
+  const scoreMax = p('score_max')
   const page = parseInt(searchParams.get('page') || '1', 10)
-  const sort = searchParams.get('sort') || 'created_at'
+  const sort = searchParams.get('sort') || '-engagement_score'
   const perPage = 20
   const offset = (page - 1) * perPage
 
   try {
-    // ── Targeted mode ──────────────────────────────────────────────
-    // A commercial preset (the Engagement lenses + the Overview funnel
-    // drill-downs) delegates to get_engaged_contacts, which ranks by the
-    // weighted score and returns the "reasons" fields the chips need. These
-    // sets are small (tens), so no pagination. Browse-mode raw filters do not
-    // apply here by design — it is a different data path on the same surface.
-    if (ENGAGEMENT_PRESETS.has(preset)) {
-      // 500 is the RPC's hard cap. Covers every funnel box except Total UK
-      // (~552), which shows the top 500 by score — the lowest-scoring ~50 (UK and
-      // nothing else) are trimmed. Fine for an action surface; revisit in the
-      // Phase 5 UX pass if the big top-of-funnel boxes want a full browse view.
-      const { data, error } = await supabase.rpc('get_engaged_contacts', { p_limit: 500, p_filter: preset })
-      if (error) throw error
-      const rows = (data || []).map((r) => ({
-        id: r.id,
-        first_name: r.first_name,
-        last_name: r.last_name,
-        signup_email: r.signup_email,
-        organisation_name: r.organisation_name,
-        role: r.role,
-        seniority: r.seniority,
-        industry: r.industry,
-        sector: r.sector,
-        out_of_scope: false,
-        tier: r.tier,
-        newsletter_status: null,
-        newsletter_opens: r.newsletter_opens,
-        newsletter_clicks: r.newsletter_clicks,
-        last_download_date: r.last_download_date,
-        download_count: r.download_count,
-        first_source: null,
-        created_at: null,
-        engagement_score: r.score,
-        // reasons (drive the targeted-mode chips)
-        high_signals: Number(r.high_signals) || 0,
-        is_decision_maker: r.is_decision_maker,
-        active_30d: r.active_30d,
-        active_90d: r.active_90d,
-        is_uk: r.is_uk,
-        is_org_email: r.is_org_email,
-        latest_signal_detail: null,
-        latest_signal_type: null,
-      }))
-      return NextResponse.json({ contacts: rows, total: rows.length, page: 1, pages: 1, mode: 'targeted', preset })
-    }
+    const ninetyDaysAgo = new Date(Date.now() - 90 * 86400000).toISOString()
+    const todayStr = new Date().toISOString().slice(0, 10)
 
     let query = supabase
       .from('contacts')
-      .select('id, first_name, last_name, signup_email, organisation_name, role, seniority, industry, sector, out_of_scope, enriched, tier, newsletter_status, newsletter_opens, newsletter_clicks, last_download_date, sources, first_source, tags, download_count, engagement_score, created_at', { count: 'exact' })
+      .select('id, first_name, last_name, signup_email, organisation_name, role, seniority, industry, sector, out_of_scope, enriched, tier, newsletter_status, newsletter_opens, newsletter_clicks, last_download_date, sources, first_source, tags, download_count, engagement_score, high_signals_count, country, created_at', { count: 'exact' })
+      // The owner's own rows are never prospects (mirrors the funnel exclusion).
+      .not('signup_email', 'ilike', '%@mutomorro.com')
 
     // Search
     if (search) {
@@ -143,9 +118,21 @@ export async function GET(request) {
     } else if (segment === 'enriched') {
       query = query.eq('enriched', true)
     } else if (segment === 'uk') {
-      // country looks UK OR the email domain ends in .uk (mirrors is_uk_contact).
-      query = query.or('country.ilike.%united kingdom%,country.ilike.%northern ireland%,country.ilike.england,country.ilike.scotland,country.ilike.wales,country.ilike.uk,country.ilike.gb,country.ilike.great britain,signup_email.ilike.%.uk')
+      query = query.or(UK_OR)
     }
+
+    // ── Commercial facets (lens building-blocks; all AND-composed) ──
+    if (uk) query = query.or(UK_OR)
+    if (dm) query = query.in('seniority', DM_SENIORITY)
+    if (sub === 'subscribed') query = query.in('newsletter_status', NS_SUBSCRIBED)
+    else if (sub === 'notsub') query = query.or(`newsletter_status.is.null,newsletter_status.in.(${NS_NOT_SUBSCRIBED.join(',')})`)
+    else if (sub === 'optedout') query = query.eq('newsletter_status', 'unsubscribed')
+    if (contactable) query = query.or(`newsletter_status.is.null,newsletter_status.in.(${NS_CONTACTABLE.join(',')})`)
+    if (engaged) query = query.or(`newsletter_clicks.gt.0,last_download_date.gte.${ninetyDaysAgo},high_signals_count.gt.0`)
+    if (enquired) query = query.gt('high_signals_count', 0)
+    if (due) query = query.lte('next_nudge_date', todayStr)
+    if (scoreMin !== '' && Number.isFinite(Number(scoreMin))) query = query.gte('engagement_score', Number(scoreMin))
+    if (scoreMax !== '' && Number.isFinite(Number(scoreMax))) query = query.lte('engagement_score', Number(scoreMax))
 
     // Sort
     const ascending = sort.startsWith('+')
@@ -332,7 +319,7 @@ export async function POST(request) {
 }
 
 // Fields a curator may edit on a contact. Anything else in the body is ignored.
-const EDITABLE_FIELDS = ['first_name', 'last_name', 'signup_email', 'location', 'country', 'tags', 'tier', 'newsletter_status', 'sector', 'out_of_scope', 'organisation_name', 'seniority', 'role', 'industry', 'notes']
+const EDITABLE_FIELDS = ['first_name', 'last_name', 'signup_email', 'location', 'country', 'tags', 'tier', 'newsletter_status', 'sector', 'out_of_scope', 'organisation_name', 'seniority', 'role', 'industry', 'notes', 'next_nudge_date']
 function pickEditable(body) {
   const out = {}
   for (const k of EDITABLE_FIELDS) {

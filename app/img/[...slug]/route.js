@@ -115,36 +115,57 @@ export async function GET(request, { params }) {
         filenameBase = titleBase ? `${titleBase}-${slugName}` : slugName
       }
     } else if (segments.length === 4 && segments[2] === 'body') {
-      // LEGACY path (pre-29 Jun): ['tool', '<slug>', 'body', '<descriptor>-<_key>'] or
-      // bare '<_key>'. Resolve by `_key`; if the block now carries an `imageSlug`, 301 to
-      // the clean flat permalink so any nascent Google signal consolidates there.
-      // The trailing token is the Portable-Text block `_key`: a Sanity randomKey is
-      // lowercase ALPHANUMERIC ([0-9a-z], e.g. `wccf00000j`), NOT hex — tool keys merely
-      // look hex; article/project keys don't, so a hex-only match would 404 their fallback.
+      // The `/body/` path serves two shapes, told apart by the type's `bodyStyle`:
+      //   - NESTED CANONICAL (free-form types, e.g. project): ['project','<slug>','body',
+      //     '<imageSlug>'] — the descriptive imageSlug is its OWN segment (no `_key`), so it
+      //     resolves directly by imageSlug. This IS the canonical form: serve, never 301.
+      //   - LEGACY KEYED (any type, pre-29 Jun): ['tool','<slug>','body','<descriptor>-<_key>']
+      //     or bare '<_key>'. Resolve by `_key`; if the block now carries an `imageSlug`, 301
+      //     to its clean permalink so any nascent Google signal consolidates there. The
+      //     trailing token is the Portable-Text block `_key`: a Sanity randomKey is lowercase
+      //     ALPHANUMERIC ([0-9a-z], e.g. `wccf00000j`), NOT hex — tool keys merely look hex;
+      //     article/project keys don't, so a hex-only match would 404 their fallback.
       const [typeSegment, slug, , tail] = segments
-      const m = /^(?:(.*)-)?([0-9a-z]{8,})$/.exec(tail)
-      if (!m) return new Response('Unparseable image path', { status: 404 })
       const entry = RESOLVE[typeSegment]
       if (!entry?.bodyField) return new Response('Unknown image path', { status: 404 })
-      const keyed = await resolveBodyImageByKey(entry.sanityType, entry.bodyField, slug, m[2])
-      if (keyed?.imageSlug) {
-        const url = new URL(request.url)
-        // Preserve only the real rendition params. Next.js puts the catch-all path into a
-        // `slug` query param on request.url, so copying the whole search string would point
-        // the 301 at a param-polluted URL and FRAGMENT the SEO signal — allow-list instead.
-        const keep = new URLSearchParams()
-        for (const k of ['fmt', 'w', 'h', 'fit']) {
-          const v = url.searchParams.get(k)
-          if (v != null) keep.set(k, v)
+
+      // NESTED canonical: resolve the free-form imageSlug directly. Only nested-style types
+      // mint this shape, and a legacy keyed tail (`…-<10-char key>`) never equals a real
+      // imageSlug, so a miss here falls through cleanly to the keyed path below.
+      if (entry.bodyStyle === 'nested') {
+        const bySlug = await resolveBodyImageBySlug(entry.sanityType, entry.bodyField, slug, tail)
+        if (bySlug?.url) {
+          doc = bySlug
+          const titleBase = (doc.title || '').replace(/[^A-Za-z0-9]+/g, '-').replace(/^-+|-+$/g, '')
+          const slugName = imageSlugToName(tail)
+          filenameBase = titleBase ? `${titleBase}-${slugName}` : slugName
         }
-        const qs = keep.toString()
-        const location = `${url.origin}${bodyPathBySlug(typeSegment, slug, keyed.imageSlug)}${qs ? `?${qs}` : ''}`
-        // Build the 301 by hand so it carries Cache-Control (Response.redirect does not).
-        return new Response(null, { status: 301, headers: { Location: location, 'Cache-Control': CACHE_CONTROL } })
       }
-      // Not yet backfilled — serve straight from the key (legacy descriptor filename).
-      filenameBase = descriptorToName(m[1])
-      doc = keyed ? { url: keyed.url, title: keyed.title } : null
+
+      // LEGACY keyed fallback (also every flat type's pre-backfill / CDN-stale URL).
+      if (!doc) {
+        const m = /^(?:(.*)-)?([0-9a-z]{8,})$/.exec(tail)
+        if (!m) return new Response('Unparseable image path', { status: 404 })
+        const keyed = await resolveBodyImageByKey(entry.sanityType, entry.bodyField, slug, m[2])
+        if (keyed?.imageSlug) {
+          const url = new URL(request.url)
+          // Preserve only the real rendition params. Next.js puts the catch-all path into a
+          // `slug` query param on request.url, so copying the whole search string would point
+          // the 301 at a param-polluted URL and FRAGMENT the SEO signal — allow-list instead.
+          const keep = new URLSearchParams()
+          for (const k of ['fmt', 'w', 'h', 'fit']) {
+            const v = url.searchParams.get(k)
+            if (v != null) keep.set(k, v)
+          }
+          const qs = keep.toString()
+          const location = `${url.origin}${bodyPathBySlug(typeSegment, slug, keyed.imageSlug)}${qs ? `?${qs}` : ''}`
+          // Build the 301 by hand so it carries Cache-Control (Response.redirect does not).
+          return new Response(null, { status: 301, headers: { Location: location, 'Cache-Control': CACHE_CONTROL } })
+        }
+        // Not yet backfilled — serve straight from the key (legacy descriptor filename).
+        filenameBase = descriptorToName(m[1])
+        doc = keyed ? { url: keyed.url, title: keyed.title } : null
+      }
     } else {
       return new Response('Not found', { status: 404 })
     }

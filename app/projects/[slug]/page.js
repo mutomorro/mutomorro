@@ -2,12 +2,13 @@ import { notFound } from 'next/navigation'
 import { buildMetadata } from '@/lib/seo'
 import { getProject } from '../../../sanity/client'
 import { client } from '../../../sanity/client'
-import Image from 'next/image'
 import Link from 'next/link'
 import CTA from '../../../components/CTA'
 import { PortableText } from '@portabletext/react'
 import { urlFor } from '../../../sanity/image'
 import Lightbox from '../../../components/Lightbox'
+import ProxyHeroImage from '@/components/ProxyHeroImage'
+import { ogImage, isProxyEnabled, bodyCanonicalUrl, bodyRenderSrcSet, RENDER_WIDTHS } from '@/lib/image-proxy'
 import ContentTable from '../../../components/ContentTable'
 import ContentAccordion from '../../../components/ContentAccordion'
 import ContentTabs from '../../../components/ContentTabs'
@@ -43,7 +44,7 @@ export async function generateMetadata({ params }) {
     title: project.seoTitle || project.title,
     description: project.seoDescription || project.shortSummary || '',
     path: `/projects/${slug}`,
-    image: project.heroImageUrl,
+    image: project.heroImageUrl ? ogImage('project', slug, project.heroImageUrl) : undefined,
     type: 'article',
   })
 }
@@ -129,13 +130,31 @@ export default async function CaseStudy({ params }) {
   // Portable Text components. The heading-anchor index must be built from the
   // same array that is rendered AND fed to the ToC, so we use a small factory
   // and instantiate it per source (the new body, and the legacy combined body).
-  const makeComponents = (headingSource) => ({
+  const makeComponents = (headingSource, proxyBody = false) => ({
     types: {
-      image: ({ value }) => (
-        <div className="img-mat" style={{ margin: '2.5rem 0' }}>
-          <Lightbox src={urlFor(value).url()} alt={value.alt || ''} cover={false} />
-        </div>
-      ),
+      image: ({ value }) => {
+        // Stable-URL proxy: when enabled for this case study AND the block is addressable,
+        // feed the Lightbox the proxy <picture> URLs (stable PNG <img> + AVIF/WebP srcset)
+        // so a re-upload never resets the image's Google ranking. Gated to the `body`
+        // instance only — the legacy named-field arrays carry their OWN _keys (not in
+        // `body`), so proxying them would resolve-miss and 404. Falls back to the plain
+        // CDN Lightbox otherwise (unchanged behaviour).
+        const proxyOn = proxyBody && isProxyEnabled('project', slug) && (value?.imageSlug || value?._key)
+        const id = { imageSlug: value?.imageSlug, alt: value?.alt, key: value?._key }
+        const proxyProps = proxyOn
+          ? {
+              proxySrc: bodyCanonicalUrl('project', slug, id),
+              proxyAvifSrcSet: bodyRenderSrcSet('project', slug, id, RENDER_WIDTHS, 'avif'),
+              proxyWebpSrcSet: bodyRenderSrcSet('project', slug, id, RENDER_WIDTHS, 'webp'),
+              proxyZoomSrc: `${bodyCanonicalUrl('project', slug, id)}?w=2000`,
+            }
+          : {}
+        return (
+          <div className="img-mat" style={{ margin: '2.5rem 0' }}>
+            <Lightbox src={urlFor(value).url()} alt={value.alt || ''} cover={false} {...proxyProps} />
+          </div>
+        )
+      },
       table: ({ value }) => <ContentTable value={value} />,
       accordion: ({ value }) => <ContentAccordion value={value} />,
       tabs: ({ value }) => <ContentTabs value={value} />,
@@ -158,7 +177,7 @@ export default async function CaseStudy({ params }) {
   })
 
   const portableTextComponents = makeComponents(combinedBody)
-  const bodyComponents = makeComponents(hasBody ? project.body : [])
+  const bodyComponents = makeComponents(hasBody ? project.body : [], true)
   const tocSource = hasBody ? project.body : combinedBody
 
   return (
@@ -210,18 +229,15 @@ export default async function CaseStudy({ params }) {
           {heroImageUrl && (
             <div className="content-hero-image-wrap">
               <div className="img-perspective" style={{ maxWidth: '100%' }}>
-                <Image
-                  src={heroImageUrl}
+                <ProxyHeroImage
+                  type="project"
+                  slug={slug}
                   alt={project.heroImage?.alt || project.title || ''}
+                  fallbackSrc={heroImageUrl}
                   width={900}
                   height={600}
-                  priority
                   sizes="(max-width: 768px) 100vw, 50vw"
-                  style={{
-                    width: '100%',
-                    height: 'auto',
-                    display: 'block',
-                  }}
+                  priority
                 />
               </div>
             </div>

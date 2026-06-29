@@ -31,6 +31,30 @@ export const imageSlugField = {
     }),
 }
 
+// FREE-FORM variant — for types whose body images are unique descriptive diagrams rather
+// than a controlled role set (case studies). The slug is any lowercase kebab phrase (derived
+// from the alt text, e.g. `five-dimensions-of-organisational-design`); the route resolves it
+// from the NESTED path `/img/<type>/<slug>/body/<imageSlug>`, so a hyphen-rich slug is safe.
+// Still SET ONCE and unique-per-page (the URL must point at exactly one image).
+export const FREEFORM_IMAGE_SLUG_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
+
+export const freeformImageSlugField = {
+  name: 'imageSlug',
+  title: 'Image URL slug (permanent)',
+  type: 'string',
+  description:
+    'Permanent URL slug describing this image, derived from its alt text (e.g. ' +
+    '“five-dimensions-of-organisational-design”). Lowercase, hyphens, no spaces. ' +
+    'SET ONCE, NEVER CHANGE: this slug IS the public image URL.',
+  validation: (Rule) =>
+    Rule.custom((value) => {
+      if (!value) return true
+      return FREEFORM_IMAGE_SLUG_RE.test(value)
+        ? true
+        : 'Lowercase letters, numbers and single hyphens only — no spaces or leading/trailing hyphens.'
+    }),
+}
+
 // Within-page uniqueness for image URL slugs — two images on one page can't share an
 // imageSlug (the stable URL must point at exactly one image). Checked at the array level
 // so every sibling is visible deterministically.

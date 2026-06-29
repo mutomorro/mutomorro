@@ -12,15 +12,6 @@ const typeColours = {
   content: '#3B82F6',
 }
 
-// Pipeline statuses in order
-const pipelineStatuses = [
-  { key: 'new', label: 'New', colour: 'rgba(155,81,224,0.2)' },
-  { key: 'researching', label: 'Researching', colour: 'rgba(155,81,224,0.35)' },
-  { key: 'contacted', label: 'Contacted', colour: 'rgba(155,81,224,0.5)' },
-  { key: 'in-conversation', label: 'In conversation', colour: 'rgba(155,81,224,0.7)' },
-  { key: 'opportunity', label: 'Opportunity', colour: '#9B51E0' },
-]
-
 function relativeTime(dateStr) {
   const now = new Date()
   const date = new Date(dateStr)
@@ -182,7 +173,6 @@ export default function AdminOverview() {
           value={loading ? null : data?.funnel?.allSubscribers ?? data?.newsletterSubscribers ?? 0}
           subtitle={!loading && data?.newsletterNewThisWeek > 0 ? `+${data.newsletterNewThisWeek} this week` : 'active subscribers'}
         />
-        <MetricCard theme={theme} label="Pipeline (active)" value={loading ? null : data?.pipeline?.activeTotal ?? 0} />
       </div>
 
       {/* Two-column layout */}
@@ -331,68 +321,6 @@ export default function AdminOverview() {
             </div>
           )}
 
-          {/* Pipeline bar */}
-          <div style={cardStyle}>
-            <h2 style={cardHeading}>Organisation pipeline</h2>
-            {loading ? (
-              <Skeleton theme={theme} height={32} />
-            ) : (() => {
-              const counts = data?.pipeline?.counts || {}
-              const total = Object.values(counts).reduce((a, b) => a + b, 0)
-              if (total === 0) return <p style={emptyText}>No organisations yet</p>
-              return (
-                <div>
-                  {/* Stacked bar */}
-                  <div style={{
-                    display: 'flex',
-                    height: '28px',
-                    borderRadius: '4px',
-                    overflow: 'hidden',
-                    marginBottom: '12px',
-                  }}>
-                    {pipelineStatuses.map((s) => {
-                      const count = counts[s.key] || 0
-                      if (count === 0) return null
-                      const pct = (count / total) * 100
-                      return (
-                        <div
-                          key={s.key}
-                          title={`${s.label}: ${count}`}
-                          style={{
-                            width: `${pct}%`,
-                            background: s.colour,
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            fontSize: '11px',
-                            fontWeight: 400,
-                            color: '#fff',
-                            minWidth: count > 0 ? '24px' : 0,
-                          }}
-                        >
-                          {count}
-                        </div>
-                      )
-                    })}
-                  </div>
-                  {/* Labels */}
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px' }}>
-                    {pipelineStatuses.map((s) => {
-                      const count = counts[s.key] || 0
-                      if (count === 0) return null
-                      return (
-                        <div key={s.key} style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                          <div style={{ width: '8px', height: '8px', borderRadius: '2px', background: s.colour }} />
-                          <span style={{ fontSize: '12px', color: theme.textMuted }}>{s.label}</span>
-                        </div>
-                      )
-                    })}
-                  </div>
-                </div>
-              )
-            })()}
-          </div>
-
           {/* Outreach summary */}
           {!loading && data?.outreach && (
             <div style={cardStyle}>
@@ -513,7 +441,7 @@ function UkPoolFunnel({ theme, loading, funnel, cardStyle }) {
   }
 
   const f = funnel
-  const base = '/admin/engagement?tab=people&filter='
+  const base = '/admin/contacts?preset='
   const cov = f.coverage || {}
   const pct = (n) => (f.total > 0 ? Math.round((n / f.total) * 100) : 0)
 

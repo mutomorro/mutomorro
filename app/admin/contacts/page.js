@@ -13,6 +13,24 @@ const zbOptions = ['', 'valid', 'catch-all', 'unknown', 'unverified', 'invalid',
 const zbLabels = ['All deliverability', 'Valid', 'Catch-all', 'Unknown', 'Unverified', 'Invalid', 'Do not mail', 'Abuse']
 const interactionTypes = ['email-sent', 'email-received', 'meeting', 'note', 'call']
 
+// Commercial lenses shown as chips on the merged surface. Selecting one switches
+// to targeted mode (ranked by the engagement score, with "reasons" chips). The
+// Overview funnel deep-links in via ?preset= using the uk_* keys, shown as a pill.
+const LENS_PRESETS = [
+  { value: 'golden', label: '★ Golden' },
+  { value: 'engaged', label: 'Engaged' },
+  { value: 'uk_target', label: 'Target' },
+  { value: 'uk_target_audience', label: 'Target Audience' },
+]
+const PRESET_LABELS = {
+  uk: 'UK pool', uk_subscribed: 'UK · subscribed', uk_engaged: 'UK · engaged',
+  uk_target: 'Target (warm + fit)', uk_notsub: 'UK · not subscribed',
+  uk_target_audience: 'Target Audience (fit, reachable)', uk_optedout: 'UK · opted-out',
+  golden: '★ Golden ticket', engaged: 'Engaged (warm)', recent: 'Recently active',
+  decision_makers: 'Decision-makers', repeat: 'Repeat downloaders',
+  clickers: 'Clicked a link', enquirers: 'Enquired',
+}
+
 function relativeTime(dateStr) {
   if (!dateStr) return '-'
   const now = new Date()
@@ -79,6 +97,8 @@ export default function ContactsPage() {
   const [segment, setSegment] = useState('')
   const [sector, setSector] = useState('')
   const [scope, setScope] = useState('')
+  const [preset, setPreset] = useState('')
+  const [targeted, setTargeted] = useState(false)
   const [bulkSector, setBulkSector] = useState('')
   const [sort, setSort] = useState('-created_at')
   const [segments, setSegments] = useState(null)
@@ -104,6 +124,7 @@ export default function ContactsPage() {
       if (segment) params.set('segment', segment)
       if (sector) params.set('sector', sector)
       if (scope) params.set('scope', scope)
+      if (preset) params.set('preset', preset)
 
       const res = await fetch(`/api/admin/contacts?${params}`)
       if (!res.ok) throw new Error('Failed')
@@ -111,13 +132,14 @@ export default function ContactsPage() {
       setContacts(data.contacts)
       setTotal(data.total)
       setPages(data.pages)
+      setTargeted((data.mode || 'browse') === 'targeted')
       setSelected(new Set())
     } catch (err) {
       console.error(err)
     } finally {
       setLoading(false)
     }
-  }, [page, search, tier, source, newsletter, zb, tag, segment, sector, scope, sort])
+  }, [page, search, tier, source, newsletter, zb, tag, segment, sector, scope, preset, sort])
 
   useEffect(() => {
     fetchContacts()
@@ -135,8 +157,11 @@ export default function ContactsPage() {
   // Read after mount so SSR and the first client render agree (no hydration
   // mismatch on the conditional Clear button); the input shows it via defaultValue.
   useEffect(() => {
-    const t = new URLSearchParams(window.location.search).get('tag')
+    const sp = new URLSearchParams(window.location.search)
+    const t = sp.get('tag')
     if (t) { setTag(t); setPage(1) }
+    const p = sp.get('preset')
+    if (p) { setPreset(p); setPage(1) }
   }, [])
 
   // Toggle sort: same field flips direction, new field starts descending.
@@ -150,11 +175,21 @@ export default function ContactsPage() {
     })
   }
 
-  // Working-segment chip: toggle on/off.
+  // Working-segment chip: toggle on/off. Mutually exclusive with a commercial lens.
   function pickSegment(val) {
     setPage(1)
     setBulkMsg(null)
+    setPreset('')
     setSegment((cur) => (cur === val ? '' : val))
+  }
+
+  // Commercial-lens chip: toggle on/off. Switches to targeted (ranked) mode and
+  // is mutually exclusive with the working segment.
+  function pickPreset(val) {
+    setPage(1)
+    setBulkMsg(null)
+    setSegment('')
+    setPreset((cur) => (cur === val ? '' : val))
   }
 
   function toggleSelect(id) {
@@ -262,8 +297,23 @@ export default function ContactsPage() {
         Contacts
       </h1>
 
-      {/* Working-filter chips — click to filter the list */}
-      {segments && (
+      {/* Commercial lens — switches the list to targeted (ranked-by-score) mode */}
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '12px', alignItems: 'center' }}>
+        <span style={{ fontSize: '12px', color: theme.textMuted, textTransform: 'uppercase', letterSpacing: '0.5px', marginRight: '2px' }}>Lens</span>
+        {LENS_PRESETS.map((p) => (
+          <button key={p.value} onClick={() => pickPreset(p.value)} style={lensChip(theme, preset === p.value)}>{p.label}</button>
+        ))}
+        {preset && !LENS_PRESETS.some((p) => p.value === preset) && (
+          <span style={lensChip(theme, true)}>{PRESET_LABELS[preset] || preset}</span>
+        )}
+        {preset && (
+          <button onClick={() => { setPreset(''); setPage(1) }} style={{ background: 'none', border: 'none', color: theme.accent, fontSize: '12px', cursor: 'pointer', fontFamily: 'inherit' }}>✕ clear lens</button>
+        )}
+        {preset && <span style={{ fontSize: '12px', color: theme.textMuted, marginLeft: 'auto' }}>{total.toLocaleString()} ranked by score</span>}
+      </div>
+
+      {/* Working-filter chips — click to filter the list (browse mode only) */}
+      {!preset && segments && (
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '16px' }}>
           <Chip theme={theme} active={segment === ''} onClick={() => pickSegment('')} label="All" count={segments.total} />
           <Chip theme={theme} active={segment === 'uk'} onClick={() => pickSegment('uk')} label="UK" count={segments.uk} tone="uk" />
@@ -316,7 +366,8 @@ export default function ContactsPage() {
         <div style={{ fontSize: '13px', color: bulkMsg.ok ? theme.success : theme.danger, marginBottom: '12px' }}>{bulkMsg.text}</div>
       )}
 
-      {/* Search */}
+      {/* Search (browse mode only) */}
+      {!preset && (
       <input
         type="text"
         placeholder="Search by name, email, or organisation..."
@@ -336,8 +387,10 @@ export default function ContactsPage() {
           boxSizing: 'border-box',
         }}
       />
+      )}
 
-      {/* Filters */}
+      {/* Filters (browse mode only) */}
+      {!preset && (
       <div style={{ display: 'flex', gap: '10px', marginBottom: '16px', flexWrap: 'wrap', alignItems: 'center' }}>
         <FilterSelect theme={theme} value={tier} options={tierOptions} labels={tierLabels} onChange={(v) => { setTier(v); setPage(1) }} />
         <FilterSelect theme={theme} value={newsletter} options={newsletterOptions} labels={newsletterLabels} onChange={(v) => { setNewsletter(v); setPage(1) }} />
@@ -376,17 +429,19 @@ export default function ContactsPage() {
           {total.toLocaleString()} contact{total !== 1 ? 's' : ''}
         </span>
       </div>
+      )}
 
       {/* Table */}
       <div style={{ background: theme.cardBg, border: `1px solid ${theme.cardBorder}`, borderRadius: '10px', overflowX: 'auto' }}>
         <div style={{ minWidth: '600px' }}>
         {/* Header row */}
-        <div style={{ display: 'grid', gridTemplateColumns: '34px 1.2fr 1.4fr 1.2fr 0.5fr 0.8fr 0.6fr 0.6fr', padding: '10px 16px', borderBottom: `1px solid ${theme.headerBorder}`, fontSize: '11px', color: theme.textMuted, textTransform: 'uppercase', letterSpacing: '0.5px', gap: '8px', alignItems: 'center' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '34px 1.2fr 1.4fr 1.2fr 0.5fr 0.55fr 0.8fr 0.6fr 0.6fr', padding: '10px 16px', borderBottom: `1px solid ${theme.headerBorder}`, fontSize: '11px', color: theme.textMuted, textTransform: 'uppercase', letterSpacing: '0.5px', gap: '8px', alignItems: 'center' }}>
           <input type="checkbox" checked={selected.size === contacts.length && contacts.length > 0} onChange={toggleSelectAll} style={{ cursor: 'pointer' }} />
           <SortTH theme={theme} label="Name" field="first_name" sort={sort} onSort={toggleSort} />
           <SortTH theme={theme} label="Email" field="signup_email" sort={sort} onSort={toggleSort} />
           <SortTH theme={theme} label="Organisation" field="organisation_name" sort={sort} onSort={toggleSort} />
           <SortTH theme={theme} label="Tier" field="tier" sort={sort} onSort={toggleSort} />
+          <SortTH theme={theme} label="Score" field="engagement_score" sort={sort} onSort={toggleSort} />
           <div>Source</div>
           <div>NL</div>
           <SortTH theme={theme} label="Date" field="created_at" sort={sort} onSort={toggleSort} />
@@ -404,13 +459,15 @@ export default function ContactsPage() {
             No contacts found
           </div>
         ) : (
-          contacts.map((c, i) => (
+          // Targeted mode is fully loaded client-side (<=500 rows), so column
+          // sorting is applied in JS — keeps the sort headers live under a lens.
+          (targeted ? sortRows(contacts, sort) : contacts).map((c, i) => (
             <div key={c.id}>
               <div
                 onClick={() => loadDetail(c.id)}
                 style={{
                   display: 'grid',
-                  gridTemplateColumns: '34px 1.2fr 1.4fr 1.2fr 0.5fr 0.8fr 0.6fr 0.6fr',
+                  gridTemplateColumns: '34px 1.2fr 1.4fr 1.2fr 0.5fr 0.55fr 0.8fr 0.6fr 0.6fr',
                   padding: '12px 16px',
                   borderBottom: `1px solid ${theme.rowBorder}`,
                   borderLeft: c.organisation_name ? `3px solid ${theme.accent}` : '3px solid transparent',
@@ -441,6 +498,13 @@ export default function ContactsPage() {
                       {c.role || ''}{c.role && c.seniority ? ' · ' : ''}{c.seniority ? titleCaseWord(c.seniority) : ''}
                     </div>
                   )}
+                  {targeted && reasonsFor(c).length > 0 && (
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', marginTop: '4px' }}>
+                      {reasonsFor(c).map((r, i) => (
+                        <span key={i} style={{ fontSize: '10px', padding: '1px 6px', borderRadius: '3px', background: theme.accentBg, color: theme.accent, whiteSpace: 'nowrap' }}>{r}</span>
+                      ))}
+                    </div>
+                  )}
                 </div>
                 <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontSize: '13px' }}>
                   {c.signup_email || '-'}
@@ -459,6 +523,9 @@ export default function ContactsPage() {
                   </div>
                 </div>
                 <div style={{ fontSize: '13px' }}>{c.tier || '-'}</div>
+                <div style={{ fontSize: '13px', fontWeight: 500, color: c.engagement_score != null ? theme.accent : theme.textLabel }}>
+                  {c.engagement_score != null ? Math.round(Number(c.engagement_score)) : '-'}
+                </div>
                 <div style={{ fontSize: '12px', color: theme.textMuted, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={c.latest_signal_detail || c.first_source || ''}>
                   {c.latest_signal_detail || (c.first_source || '-').replace('template-', '').replace('newsletter-', 'NL ')}
                 </div>
@@ -470,7 +537,7 @@ export default function ContactsPage() {
                     background: c.newsletter_status === 'active' ? theme.accentBg : theme.cardBg,
                     color: c.newsletter_status === 'active' ? theme.accent : theme.textMuted,
                   }}>
-                    {c.newsletter_status || 'never'}
+                    {targeted ? '—' : (c.newsletter_status || 'never')}
                   </span>
                 </div>
                 <div style={{ fontSize: '12px', color: theme.textMuted }}>
@@ -888,6 +955,50 @@ function FilterSelect({ theme, value, options, labels, onChange }) {
       ))}
     </select>
   )
+}
+
+// Client-side sort for targeted mode (the ranked set is fully loaded, <=500 rows).
+// Mirrors the server sort keys so the column headers behave the same in both modes.
+function sortRows(rows, sort) {
+  const asc = sort.startsWith('+')
+  const field = sort.replace(/^[+-]/, '') || 'created_at'
+  const dir = asc ? 1 : -1
+  const val = (c) => {
+    if (field === 'engagement_score') return c.engagement_score == null ? -Infinity : Number(c.engagement_score)
+    if (field === 'first_name') return `${c.first_name || ''} ${c.last_name || ''}`.trim().toLowerCase()
+    if (field === 'created_at') return c.created_at ? new Date(c.created_at).getTime() : 0
+    return (c[field] ?? '').toString().toLowerCase()
+  }
+  return [...rows].sort((a, b) => {
+    const av = val(a), bv = val(b)
+    if (av < bv) return -dir
+    if (av > bv) return dir
+    return 0
+  })
+}
+
+// Pill style for the commercial-lens chips.
+function lensChip(theme, active) {
+  return {
+    padding: '6px 12px', fontSize: '13px', cursor: 'pointer', fontFamily: 'inherit', borderRadius: '20px',
+    background: active ? theme.accent : theme.cardBg,
+    color: active ? '#fff' : theme.textSecondary,
+    border: `1px solid ${active ? theme.accent : theme.cardBorder}`,
+  }
+}
+
+// "Why this row scores" chips, shown in targeted mode (fields come from
+// get_engaged_contacts). Mirrors the Engagement page's reason logic.
+function reasonsFor(c) {
+  const r = []
+  if (c.is_uk) r.push('UK')
+  if (c.is_decision_maker) r.push(c.seniority ? titleCaseWord(c.seniority) : 'Decision-maker')
+  if (c.high_signals > 0) r.push(c.high_signals > 1 ? `${c.high_signals} enquiries` : 'Enquired')
+  if (c.newsletter_clicks > 0) r.push(`${c.newsletter_clicks} click${c.newsletter_clicks === 1 ? '' : 's'}`)
+  if (c.active_30d) r.push('Active 30d')
+  else if (c.active_90d) r.push('Active 90d')
+  if (c.download_count >= 3) r.push(`${c.download_count} downloads`)
+  return r
 }
 
 function getPageBtnStyle(theme) {

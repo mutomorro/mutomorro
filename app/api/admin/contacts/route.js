@@ -1,6 +1,14 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 
+// Commercial lenses + Overview funnel drill-downs. When one is active the
+// Contacts surface switches to "targeted mode" and ranks via get_engaged_contacts
+// (same set the Engagement page used). 'all' is browse-mode and is NOT listed here.
+const ENGAGEMENT_PRESETS = new Set([
+  'recent', 'decision_makers', 'repeat', 'clickers', 'enquirers', 'uk', 'golden', 'engaged',
+  'uk_subscribed', 'uk_engaged', 'uk_target', 'uk_notsub', 'uk_target_audience', 'uk_optedout',
+])
+
 export async function GET(request) {
   const sessionCookie = request.cookies.get('admin_session')?.value
   if (!sessionCookie) {
@@ -22,15 +30,62 @@ export async function GET(request) {
   const segment = searchParams.get('segment') || ''
   const sector = searchParams.get('sector') || ''
   const scope = searchParams.get('scope') || ''
+  const preset = searchParams.get('preset') || ''
   const page = parseInt(searchParams.get('page') || '1', 10)
   const sort = searchParams.get('sort') || 'created_at'
   const perPage = 20
   const offset = (page - 1) * perPage
 
   try {
+    // ── Targeted mode ──────────────────────────────────────────────
+    // A commercial preset (the Engagement lenses + the Overview funnel
+    // drill-downs) delegates to get_engaged_contacts, which ranks by the
+    // weighted score and returns the "reasons" fields the chips need. These
+    // sets are small (tens), so no pagination. Browse-mode raw filters do not
+    // apply here by design — it is a different data path on the same surface.
+    if (ENGAGEMENT_PRESETS.has(preset)) {
+      // 500 is the RPC's hard cap. Covers every funnel box except Total UK
+      // (~552), which shows the top 500 by score — the lowest-scoring ~50 (UK and
+      // nothing else) are trimmed. Fine for an action surface; revisit in the
+      // Phase 5 UX pass if the big top-of-funnel boxes want a full browse view.
+      const { data, error } = await supabase.rpc('get_engaged_contacts', { p_limit: 500, p_filter: preset })
+      if (error) throw error
+      const rows = (data || []).map((r) => ({
+        id: r.id,
+        first_name: r.first_name,
+        last_name: r.last_name,
+        signup_email: r.signup_email,
+        organisation_name: r.organisation_name,
+        role: r.role,
+        seniority: r.seniority,
+        industry: r.industry,
+        sector: r.sector,
+        out_of_scope: false,
+        tier: r.tier,
+        newsletter_status: null,
+        newsletter_opens: r.newsletter_opens,
+        newsletter_clicks: r.newsletter_clicks,
+        last_download_date: r.last_download_date,
+        download_count: r.download_count,
+        first_source: null,
+        created_at: null,
+        engagement_score: r.score,
+        // reasons (drive the targeted-mode chips)
+        high_signals: Number(r.high_signals) || 0,
+        is_decision_maker: r.is_decision_maker,
+        active_30d: r.active_30d,
+        active_90d: r.active_90d,
+        is_uk: r.is_uk,
+        is_org_email: r.is_org_email,
+        latest_signal_detail: null,
+        latest_signal_type: null,
+      }))
+      return NextResponse.json({ contacts: rows, total: rows.length, page: 1, pages: 1, mode: 'targeted', preset })
+    }
+
     let query = supabase
       .from('contacts')
-      .select('id, first_name, last_name, signup_email, organisation_name, role, seniority, industry, sector, out_of_scope, enriched, tier, newsletter_status, newsletter_opens, newsletter_clicks, last_download_date, sources, first_source, tags, download_count, created_at', { count: 'exact' })
+      .select('id, first_name, last_name, signup_email, organisation_name, role, seniority, industry, sector, out_of_scope, enriched, tier, newsletter_status, newsletter_opens, newsletter_clicks, last_download_date, sources, first_source, tags, download_count, engagement_score, created_at', { count: 'exact' })
 
     // Search
     if (search) {
@@ -95,7 +150,13 @@ export async function GET(request) {
     // Sort
     const ascending = sort.startsWith('+')
     const sortField = sort.replace(/^[+-]/, '') || 'created_at'
-    query = query.order(sortField, { ascending })
+    if (sortField === 'engagement_score') {
+      // Keep unscored rows (rare — backfilled daily) out of the top of a DESC
+      // sort, and add a stable tiebreak so pages don't drift.
+      query = query.order('engagement_score', { ascending, nullsFirst: false }).order('id', { ascending: true })
+    } else {
+      query = query.order(sortField, { ascending })
+    }
 
     // Pagination
     query = query.range(offset, offset + perPage - 1)

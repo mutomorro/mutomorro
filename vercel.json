@@ -29,6 +29,10 @@
       "schedule": "0 3 * * *"
     },
     {
+      "path": "/api/cron/refresh-engagement-scores",
+      "schedule": "45 3 * * *"
+    },
+    {
       "path": "/api/cron/newsletter-drain",
       "schedule": "* * * * *"
     }

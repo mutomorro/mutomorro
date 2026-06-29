@@ -7,9 +7,7 @@ import { AdminThemeProvider, useAdminTheme } from '../../lib/admin-theme-context
 const navItems = [
   { label: 'Overview', href: '/admin' },
   { label: 'Contacts', href: '/admin/contacts' },
-  { label: 'Engagement', href: '/admin/engagement' },
   { label: 'Enquiries', href: '/admin/enquiries' },
-  { label: 'Pipeline', href: '/admin/pipeline' },
   { label: 'Newsletter', href: '/admin/newsletter' },
   { label: 'Outreach', href: '/admin/outreach' },
   { label: 'Calendar', href: '/admin/calendar' },

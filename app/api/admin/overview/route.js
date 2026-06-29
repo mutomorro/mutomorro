@@ -47,11 +47,9 @@ export async function GET(request) {
       contactsThisWeek,
       contactsPreviousWeek,
       recentSignals,
-      pipelineSnapshot,
       newsletterCount,
       newsletterCountPrevWeek,
       calendarThisWeek,
-      pipelineTotal,
       lastNewsletter,
       phVisitors,
       phPageviews,
@@ -73,11 +71,9 @@ export async function GET(request) {
       supabase.from('contacts').select('first_source').gte('created_at', weekAgoISO),
       supabase.from('contacts').select('id', { count: 'exact', head: true }).gte('created_at', twoWeeksAgoISO).lt('created_at', weekAgoISO),
       supabase.from('signals').select('id, type, detail, strength, date, contact_id').gte('date', weekAgoISO).order('date', { ascending: false }).limit(20),
-      supabase.from('organisations').select('status'),
       supabase.from('contacts').select('id', { count: 'exact', head: true }).in('newsletter_status', ['active', 'confirmed']),
       supabase.from('contacts').select('id', { count: 'exact', head: true }).in('newsletter_status', ['active', 'confirmed']).gte('newsletter_consent_date', weekAgoISO),
       supabase.from('calendar_items').select('*').or(`scheduled_date.gte.${mondayStr},due_date.gte.${mondayStr}`).or(`scheduled_date.lte.${sundayStr},due_date.lte.${sundayStr}`).order('scheduled_date', { ascending: true }),
-      supabase.from('organisations').select('id', { count: 'exact', head: true }).neq('status', 'new'),
       supabase.from('newsletter_sends').select('id, issue_key, subject, total_recipients, total_sent, total_delivered, total_opened, total_clicked, total_bounced, created_at').neq('status', 'draft').order('created_at', { ascending: false }).limit(1).maybeSingle(),
       queryPostHog(trendsQuery({ math: 'dau', dateRange: '-7d', interval: 'day' })).catch(() => null),
       queryPostHog(trendsQuery({ math: 'total', dateRange: '-7d', interval: 'day' })).catch(() => null),
@@ -149,14 +145,7 @@ export async function GET(request) {
         })
     }
 
-    // Pipeline
-    const pipelineCounts = {}
-    if (pipelineSnapshot.data) {
-      pipelineSnapshot.data.forEach((o) => {
-        const status = o.status || 'new'
-        pipelineCounts[status] = (pipelineCounts[status] || 0) + 1
-      })
-    }
+    // (Organisation pipeline retired 29 Jun — deals live in Baserow.)
 
     // Analytics from PostHog - keep same response shape as before
     let analytics = null
@@ -256,7 +245,6 @@ export async function GET(request) {
       generatedAt: new Date().toISOString(),
       contactsThisWeek: { total: totalContactsThisWeek, previousWeek: contactsPreviousWeek.count || 0, bySource: contactsBySource },
       signals: enrichedSignals,
-      pipeline: { counts: pipelineCounts, activeTotal: pipelineTotal.count || 0 },
       newsletterSubscribers: newsletterCount.count || 0,
       newsletterNewThisWeek: newsletterCountPrevWeek.count || 0,
       calendar: calendarThisWeek.data || [],

@@ -55,6 +55,13 @@ export async function POST(request) {
       else enriched++
     }
 
+    // Re-score the contacts we just touched — enrichment changes seniority /
+    // org-email / etc., which feed the engagement_score. Service-role only.
+    if (enriched > 0) {
+      const { error: scoreErr } = await supabase.rpc('refresh_engagement_scores', { p_ids: ids })
+      if (scoreErr) console.error('Enrich: re-score failed', scoreErr)
+    }
+
     return NextResponse.json({ attempted: (contacts || []).length, enriched, noMatch })
   } catch (err) {
     console.error('Contacts enrich error:', err)

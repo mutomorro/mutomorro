@@ -457,6 +457,7 @@ export default async function ServicePage({ params }) {
         <div style={{ maxWidth: '1350px', margin: '0 auto' }}>
           {service.stages?.length > 0 && (
             <ApproachSlider
+              serviceSlug={slug}
               approachIntro={service.approachIntro}
               stages={service.stages}
               approachKicker="Our approach"

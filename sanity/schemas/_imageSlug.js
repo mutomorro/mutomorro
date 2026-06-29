@@ -31,6 +31,17 @@ export const imageSlugField = {
     }),
 }
 
+// STAGE variant — for the service `stages[]` array, where the imageSlug lives on the stage
+// OBJECT (not an `image` block) and names the stage's infographic. Same controlled validation
+// as imageSlugField (IMAGE_SLUG_RE already accepts `stage-N-name`); only the editor guidance
+// differs. Spread into a stage member's `fields`; pair with `uniqueStageImageSlugs` on the array.
+export const stageImageSlugField = {
+  ...imageSlugField,
+  description:
+    'Permanent URL slug for this stage’s infographic — “stage-N-name” (e.g. stage-1-understand). ' +
+    'Lowercase, hyphens. SET ONCE, NEVER CHANGE: this slug IS the public image URL.',
+}
+
 // FREE-FORM variant — for types whose body images are unique descriptive diagrams rather
 // than a controlled role set (case studies). The slug is any lowercase kebab phrase (derived
 // from the alt text, e.g. `five-dimensions-of-organisational-design`); the route resolves it
@@ -67,6 +78,23 @@ export function uniqueImageSlugs(Rule) {
         return `Two images share the URL slug "${b.imageSlug}" — each image needs a unique slug.`
       }
       seen.set(b.imageSlug, b._key)
+    }
+    return true
+  })
+}
+
+// Within-page uniqueness for STAGE image slugs. The imageSlug lives on the stage OBJECT
+// (not an `image` block), so this sibling checks stage members rather than `_type == 'image'`
+// ones. Attach to the service `stages` array (alongside its existing required/length rules).
+export function uniqueStageImageSlugs(Rule) {
+  return Rule.custom((stages) => {
+    const seen = new Map()
+    for (const s of stages || []) {
+      if (!s?.imageSlug) continue
+      if (seen.has(s.imageSlug)) {
+        return `Two stages share the image URL slug "${s.imageSlug}" — each stage image needs a unique slug.`
+      }
+      seen.set(s.imageSlug, s._key)
     }
     return true
   })

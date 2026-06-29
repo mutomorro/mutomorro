@@ -1,5 +1,6 @@
 import { PortableText } from '@portabletext/react'
 import Lightbox from '../Lightbox'
+import { isProxyEnabled, bodyCanonicalUrl, bodyRenderSrcSet, RENDER_WIDTHS } from '@/lib/image-proxy'
 
 // Vertical Approach flow (Wave 2 - replaced the tabbed slider).
 // Every stage renders into the server HTML, visible and in order, so there
@@ -10,12 +11,17 @@ import Lightbox from '../Lightbox'
 const STAGE_COLOURS = ['#80388F', '#9B51E0', '#FF4279', '#E08F00']
 
 export default function ApproachSlider({
+  serviceSlug,
   approachIntro,
   stages = [],
   approachKicker = 'Our approach',
   approachIntroHeadline = 'How we work',
   principles = [],
 }) {
+  // Stable-URL proxy is on per-service (ENABLED_TYPES has 'service'); a stage renders through
+  // the proxy only once it also has a backfilled imageSlug, so pre-backfill stages fall back to
+  // the plain CDN Lightbox unchanged. Resolved once here and threaded down to each stage.
+  const proxyService = !!serviceSlug && isProxyEnabled('service', serviceSlug)
   return (
     <div className="approach-flow">
       <div className="approach-flow__intro">
@@ -39,6 +45,8 @@ export default function ApproachSlider({
             stage={stage}
             index={i}
             colour={STAGE_COLOURS[i] || STAGE_COLOURS[STAGE_COLOURS.length - 1]}
+            serviceSlug={serviceSlug}
+            proxyService={proxyService}
           />
         ))}
       </div>
@@ -60,9 +68,26 @@ export default function ApproachSlider({
   )
 }
 
-function ApproachStage({ stage, index, colour }) {
+function ApproachStage({ stage, index, colour, serviceSlug, proxyService }) {
   if (!stage) return null
   const number = stage.stageNumber || String(index + 1).padStart(2, '0')
+
+  // Feed the Lightbox stable proxy <picture> URLs when this stage has a backfilled imageSlug
+  // (the canonical PNG <img> is the stable Google target). All proxy props absent → exact
+  // original CDN Lightbox behaviour. Same flat builders as a tool's step-N body image.
+  const proxyOn = proxyService && !!stage.imageSlug
+  const proxyProps = proxyOn
+    ? (() => {
+        const id = { imageSlug: stage.imageSlug }
+        const canonical = bodyCanonicalUrl('service', serviceSlug, id)
+        return {
+          proxySrc: canonical,
+          proxyAvifSrcSet: bodyRenderSrcSet('service', serviceSlug, id, RENDER_WIDTHS, 'avif'),
+          proxyWebpSrcSet: bodyRenderSrcSet('service', serviceSlug, id, RENDER_WIDTHS, 'webp'),
+          proxyZoomSrc: `${canonical}?w=2000`,
+        }
+      })()
+    : {}
   return (
     <section className="approach-stage" style={{ '--stage-colour': colour }}>
       <div className="approach-stage__head">
@@ -83,7 +108,7 @@ function ApproachStage({ stage, index, colour }) {
         </div>
         {stage.stageImageUrl && (
           <div className="approach-stage__image img-lift">
-            <Lightbox src={stage.stageImageUrl} alt={stage.stageImageAlt || stage.stageHeading} />
+            <Lightbox src={stage.stageImageUrl} alt={stage.stageImageAlt || stage.stageHeading} {...proxyProps} />
           </div>
         )}
       </div>

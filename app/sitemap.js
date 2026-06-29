@@ -1,6 +1,6 @@
 import { createClient } from '@supabase/supabase-js'
 import { client } from '../sanity/client'
-import { sitemapImage, bodySitemapImage, roleSitemapImage } from '@/lib/image-proxy'
+import { sitemapImage, bodySitemapImage, roleSitemapImage, stageImageProxyUrl } from '@/lib/image-proxy'
 
 const BASE_URL = 'https://mutomorro.com'
 
@@ -53,7 +53,7 @@ export default async function sitemap() {
       _updatedAt,
       "propositionImageUrl": propositionImage.asset->url,
       "perspectiveImageUrl": perspectiveImage.asset->url,
-      "stageImages": stages[].stageImage.asset->url
+      "stageImages": stages[]{ "url": stageImage.asset->url, imageSlug }
     }`),
     client.fetch(`*[_type == "tool" && !(_id in path("drafts.**"))]{
       "slug": slug.current,
@@ -138,7 +138,11 @@ export default async function sitemap() {
       lastModified: s._updatedAt,
       changeFrequency: 'monthly',
       priority: 0.9,
-      images: collectImages(roleSitemapImage('service', s.slug, 'proposition', s.propositionImageUrl), s.perspectiveImageUrl, s.stageImages),
+      images: collectImages(
+        roleSitemapImage('service', s.slug, 'proposition', s.propositionImageUrl),
+        s.perspectiveImageUrl,
+        (s.stageImages || []).map(st => stageImageProxyUrl('service', s.slug, st.imageSlug, st.url, { absolute: true })),
+      ),
     })),
     ...tools.map(t => ({
       url: `${BASE_URL}/tools/${t.slug}`,

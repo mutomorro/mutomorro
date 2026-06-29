@@ -66,7 +66,7 @@ export default async function sitemap() {
       "slug": slug.current,
       _updatedAt,
       "heroImageUrl": heroImage.asset->url,
-      "bodyImages": body[_type == "image"].asset->url
+      "bodyImages": body[_type == "image"]{ "url": asset->url, "key": _key, imageSlug, alt }
     }`),
     client.fetch(`*[_type == "project" && !(_id in path("drafts.**"))]{
       "slug": slug.current,
@@ -166,7 +166,10 @@ export default async function sitemap() {
       lastModified: a._updatedAt,
       changeFrequency: 'monthly',
       priority: 0.6,
-      images: collectImages(a.heroImageUrl, a.bodyImages),
+      images: collectImages(
+        sitemapImage('article', a.slug, a.heroImageUrl),
+        (a.bodyImages || []).map(b => bodySitemapImage('article', a.slug, { imageSlug: b.imageSlug, alt: b.alt, key: b.key }, b.url)),
+      ),
     })),
     ...projects.map(p => ({
       url: `${BASE_URL}/projects/${p.slug}`,

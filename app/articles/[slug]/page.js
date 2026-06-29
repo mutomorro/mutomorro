@@ -1,8 +1,10 @@
 import { notFound } from 'next/navigation'
 import { buildMetadata } from '@/lib/seo'
+import { ogImage } from '@/lib/image-proxy'
+import ProxyHeroImage from '@/components/ProxyHeroImage'
+import ProxyBodyImage from '@/components/ProxyBodyImage'
 import { getArticle } from '../../../sanity/client'
 import { client } from '../../../sanity/client'
-import Image from 'next/image'
 import { PortableText } from '@portabletext/react'
 import Link from 'next/link'
 import CTA from '../../../components/CTA'
@@ -43,7 +45,7 @@ export async function generateMetadata({ params }) {
     title: article.seoTitle || article.title,
     description: article.seoDescription || article.shortSummary || article.subtitle || '',
     path: `/articles/${slug}`,
-    image: article.heroImageUrl,
+    image: article.heroImageUrl ? ogImage('article', slug, article.heroImageUrl) : undefined,
     type: 'article',
     publishedTime: article._createdAt,
     modifiedTime: article._updatedAt,
@@ -167,18 +169,15 @@ export default async function ArticlePage({ params }) {
             {heroImageUrl && (
               <div className="content-hero-image-wrap">
                 <div className="img-perspective" style={{ maxWidth: '100%' }}>
-                  <Image
-                    src={heroImageUrl}
+                  <ProxyHeroImage
+                    type="article"
+                    slug={slug}
                     alt={article.heroImage?.alt || article.title || ''}
+                    fallbackSrc={heroImageUrl}
                     width={900}
                     height={600}
-                    priority
                     sizes="(max-width: 768px) 100vw, 50vw"
-                    style={{
-                      width: '100%',
-                      height: 'auto',
-                      display: 'block',
-                    }}
+                    priority
                   />
                 </div>
               </div>
@@ -211,18 +210,7 @@ export default async function ArticlePage({ params }) {
               value={article.body}
               components={{
                 types: {
-                  image: ({ value }) => (
-                    <div className="img-mat" style={{ margin: '2.5rem 0' }}>
-                      <Image
-                        src={urlFor(value).width(900).url()}
-                        alt={value.alt || ''}
-                        width={900}
-                        height={506}
-                        sizes="(max-width: 768px) 100vw, 680px"
-                        style={{ width: '100%', height: 'auto', display: 'block' }}
-                      />
-                    </div>
-                  ),
+                  image: ({ value }) => <ProxyBodyImage type="article" slug={slug} value={value} />,
                   table: ({ value }) => <ContentTable value={value} />,
                   accordion: ({ value }) => <ContentAccordion value={value} />,
                   tabs: ({ value }) => <ContentTabs value={value} />,

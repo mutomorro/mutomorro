@@ -1,6 +1,6 @@
 import { createClient } from '@supabase/supabase-js'
 import { client } from '../sanity/client'
-import { sitemapImage, bodySitemapImage } from '@/lib/image-proxy'
+import { sitemapImage, bodySitemapImage, roleSitemapImage } from '@/lib/image-proxy'
 
 const BASE_URL = 'https://mutomorro.com'
 
@@ -84,7 +84,7 @@ export default async function sitemap() {
       "heroImageUrl": heroImage.asset->url,
       "bodyImages": body[_type == "image"].asset->url
     }`),
-    client.fetch(`*[_type == "capabilityService" && !(_id in path("drafts.**"))]{ "slug": slug.current, _updatedAt }`),
+    client.fetch(`*[_type == "capabilityService" && !(_id in path("drafts.**"))]{ "slug": slug.current, _updatedAt, "heroImageUrl": heroImage.asset->url }`),
     client.fetch(`*[_type == "dimension" && !(_id in path("drafts.**"))]{
       "slug": slug.current,
       _updatedAt,
@@ -107,11 +107,13 @@ export default async function sitemap() {
     }`),
     client.fetch(`*[_type == "sectorLandingPage" && !(_id in path("drafts.**"))]{
       "slug": slug.current,
-      _updatedAt
+      _updatedAt,
+      "seoImageUrl": seoImage.asset->url
     }`),
     client.fetch(`*[_type == "resource" && !(_id in path("drafts.**"))]{
       "slug": slug.current,
-      _updatedAt
+      _updatedAt,
+      "previewImageUrl": previewImage.asset->url
     }`),
   ])
 
@@ -140,7 +142,7 @@ export default async function sitemap() {
       lastModified: s._updatedAt,
       changeFrequency: 'monthly',
       priority: 0.9,
-      images: collectImages(s.propositionImageUrl, s.perspectiveImageUrl, s.stageImages),
+      images: collectImages(roleSitemapImage('service', s.slug, 'proposition', s.propositionImageUrl), s.perspectiveImageUrl, s.stageImages),
     })),
     ...tools.map(t => ({
       url: `${BASE_URL}/tools/${t.slug}`,
@@ -157,7 +159,7 @@ export default async function sitemap() {
       lastModified: t._updatedAt,
       changeFrequency: 'monthly',
       priority: 0.6,
-      images: collectImages(t.heroImageUrl),
+      images: collectImages(sitemapImage('tool', t.slug, t.heroImageUrl)),
     })),
     ...articles.map(a => ({
       url: `${BASE_URL}/articles/${a.slug}`,
@@ -185,13 +187,14 @@ export default async function sitemap() {
       lastModified: c._updatedAt,
       changeFrequency: 'monthly',
       priority: 0.6,
-      images: collectImages(c.heroImageUrl, c.bodyImages),
+      images: collectImages(sitemapImage('training', c.slug, c.heroImageUrl), c.bodyImages),
     })),
     ...capabilities.map(c => ({
       url: `${BASE_URL}/develop/${c.slug}`,
       lastModified: c._updatedAt,
       changeFrequency: 'monthly',
       priority: 0.7,
+      images: collectImages(sitemapImage('develop', c.slug, c.heroImageUrl)),
     })),
     ...dimensions.map(d => ({
       url: `${BASE_URL}/emergent-framework/${d.slug}`,
@@ -226,12 +229,14 @@ export default async function sitemap() {
       lastModified: s._updatedAt,
       changeFrequency: 'monthly',
       priority: 0.7,
+      images: collectImages(sitemapImage('sectors', s.slug, s.seoImageUrl)),
     })),
     ...resources.map(r => ({
       url: `${BASE_URL}/resources/${r.slug}`,
       lastModified: r._updatedAt,
       changeFrequency: 'monthly',
       priority: 0.7,
+      images: collectImages(sitemapImage('resources', r.slug, r.previewImageUrl)),
     })),
     ...(publicNewsletters || []).map(n => ({
       url: `${BASE_URL}/newsletter/${n.issue_key}`,

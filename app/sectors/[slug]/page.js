@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { buildMetadata } from '@/lib/seo'
+import { ogImage } from '@/lib/image-proxy'
 import Image from 'next/image'
 import { PortableText } from '@portabletext/react'
 import { notFound } from 'next/navigation'
@@ -32,7 +33,7 @@ export async function generateMetadata({ params }) {
     title: page.seoTitle || page.heroHeading || '',
     description: page.seoDescription || page.heroSubheading || '',
     path: `/sectors/${slug}`,
-    image: page.seoImageUrl,
+    image: page.seoImageUrl ? ogImage('sectors', slug, page.seoImageUrl) : undefined,
   })
 }
 

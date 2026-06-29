@@ -1,5 +1,4 @@
 import { client, getResource } from '../../../sanity/client'
-import Image from 'next/image'
 import { PortableText } from '@portabletext/react'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
@@ -8,6 +7,8 @@ import FreeDownload from '../../../components/FreeDownload'
 import CTA from '../../../components/CTA'
 import BackgroundPattern from '@/components/animations/BackgroundPattern'
 import { buildMetadata } from '../../../lib/seo'
+import { jsonLdImage } from '@/lib/image-proxy'
+import ProxyHeroImage from '@/components/ProxyHeroImage'
 
 export const revalidate = 3600
 
@@ -31,7 +32,8 @@ export async function generateMetadata({ params }) {
     title: resource.seoTitle || resource.title,
     description: resource.seoDescription || '',
     path: `/resources/${slug}`,
-    image: resource.previewImageUrl,
+    // Uncropped canonical (not the 1200x630 og-crop) — the preview is a portrait cover.
+    image: resource.previewImageUrl ? jsonLdImage('resources', slug, resource.previewImageUrl) : undefined,
     type: 'article',
   })
 }
@@ -65,7 +67,7 @@ export default async function ResourcePage({ params }) {
       url: 'https://mutomorro.com',
     },
     url: `https://mutomorro.com/resources/${slug}`,
-    ...(resource.previewImageUrl && { image: resource.previewImageUrl }),
+    ...(resource.previewImageUrl && { image: jsonLdImage('resources', slug, resource.previewImageUrl) }),
     learningResourceType: typeLabel,
   }
 
@@ -144,14 +146,15 @@ export default async function ResourcePage({ params }) {
                   maxWidth: '352px',
                   overflow: 'hidden',
                 }}>
-                  <Image
-                    src={resource.previewImageUrl}
+                  <ProxyHeroImage
+                    type="resources"
+                    slug={slug}
                     alt={resource.previewImageAlt || `Preview of ${resource.title}`}
+                    fallbackSrc={resource.previewImageUrl}
                     width={352}
                     height={500}
-                    priority
                     sizes="(max-width: 768px) 100vw, 352px"
-                    style={{ width: '100%', height: 'auto', display: 'block' }}
+                    priority
                   />
                 </div>
               </div>

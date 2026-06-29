@@ -6,7 +6,8 @@ import CTA from '../../../components/CTA'
 import ToolFloatingBar from '../../../components/ToolFloatingBar'
 import Link from 'next/link'
 import { urlFor } from '../../../sanity/image'
-import { isProxyEnabled, canonicalPngUrl, ogImage, jsonLdImage, renderSrcSet, bodyCanonicalUrl, bodyRenderSrcSet, RENDER_WIDTHS } from '@/lib/image-proxy'
+import { isProxyEnabled, ogImage, jsonLdImage, bodyCanonicalUrl, bodyRenderSrcSet, RENDER_WIDTHS } from '@/lib/image-proxy'
+import ProxyHeroImage from '@/components/ProxyHeroImage'
 import RelatedContent from '../../../components/RelatedContent'
 import ContentTable from '../../../components/ContentTable'
 import ContentAccordion from '../../../components/ContentAccordion'
@@ -183,35 +184,17 @@ export default async function ToolPage({ params }) {
           {heroImageUrl && (
             <div className="content-hero-image-wrap">
               <div className="img-perspective" style={{ maxWidth: '100%' }}>
-                {heroUseProxy ? (
-                  <picture>
-                    <source type="image/avif" srcSet={renderSrcSet('tool', slug, RENDER_WIDTHS, 'avif')} sizes={heroSizes} />
-                    <source type="image/webp" srcSet={renderSrcSet('tool', slug, RENDER_WIDTHS, 'webp')} sizes={heroSizes} />
-                    <img
-                      src={canonicalPngUrl('tool', slug)}
-                      alt={tool.heroImage?.alt || tool.title || ''}
-                      width={900}
-                      height={636}
-                      loading="eager"
-                      fetchPriority="high"
-                      style={{ width: '100%', height: 'auto', display: 'block' }}
-                    />
-                  </picture>
-                ) : (
-                  <Image
-                    src={heroImageUrl}
-                    alt={tool.heroImage?.alt || tool.title || ''}
-                    width={900}
-                    height={600}
-                    priority
-                    sizes={heroSizes}
-                    style={{
-                      width: '100%',
-                      height: 'auto',
-                      display: 'block',
-                    }}
-                  />
-                )}
+                <ProxyHeroImage
+                  type="tool"
+                  slug={slug}
+                  alt={tool.heroImage?.alt || tool.title || ''}
+                  fallbackSrc={heroImageUrl}
+                  width={900}
+                  height={636}
+                  fallbackHeight={600}
+                  sizes={heroSizes}
+                  priority
+                />
               </div>
             </div>
           )}

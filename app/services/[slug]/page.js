@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { buildMetadata } from '@/lib/seo'
+import { ogImage } from '@/lib/image-proxy'
 import Image from 'next/image'
 import { client, getService } from '../../../sanity/client'
 import { PortableText } from '@portabletext/react'
@@ -89,7 +90,7 @@ export async function generateMetadata({ params }) {
     title: service.seoTitle || service.heroHeading,
     description: service.seoDescription || service.heroTagline || '',
     path: `/services/${slug}`,
-    image: service.heroImageUrl || service.ogImageUrl,
+    image: service.heroImageUrl ? ogImage('service', slug, service.heroImageUrl) : service.ogImageUrl,
     type: 'article',
   })
 }

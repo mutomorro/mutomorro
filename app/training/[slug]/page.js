@@ -1,5 +1,7 @@
 import { client, getCourse, getSidebarCallouts } from '../../../sanity/client'
 import { buildMetadata } from '@/lib/seo'
+import { ogImage, jsonLdImage } from '@/lib/image-proxy'
+import ProxyHeroImage from '@/components/ProxyHeroImage'
 import { notFound } from 'next/navigation'
 import Image from 'next/image'
 import { PortableText } from '@portabletext/react'
@@ -57,7 +59,7 @@ export async function generateMetadata({ params }) {
     title: course.seoTitle || course.title,
     description: course.seoDescription || course.shortSummary || '',
     path: `/training/${slug}`,
-    image: course.heroImageUrl,
+    image: course.heroImageUrl ? ogImage('training', slug, course.heroImageUrl) : undefined,
     type: 'article',
     publishedTime: course._createdAt,
     modifiedTime: course._updatedAt,
@@ -97,7 +99,7 @@ export default async function TrainingPage({ params }) {
       url: 'https://mutomorro.com',
     },
     url: `https://mutomorro.com/training/${course.slug.current}`,
-    ...(heroImageUrl && { image: heroImageUrl }),
+    ...(heroImageUrl && { image: jsonLdImage('training', slug, heroImageUrl) }),
     ...(course._createdAt && { datePublished: course._createdAt }),
     ...(course._updatedAt && { dateModified: course._updatedAt }),
   }
@@ -159,14 +161,15 @@ export default async function TrainingPage({ params }) {
           {heroImageUrl && (
             <div className="content-hero-image-wrap">
               <div className="img-perspective" style={{ maxWidth: '100%' }}>
-                <Image
-                  src={heroImageUrl}
+                <ProxyHeroImage
+                  type="training"
+                  slug={slug}
                   alt={course.heroImage?.alt || course.title || ''}
+                  fallbackSrc={heroImageUrl}
                   width={900}
                   height={600}
-                  priority
                   sizes="(max-width: 768px) 100vw, 50vw"
-                  style={{ width: '100%', height: 'auto', display: 'block' }}
+                  priority
                 />
               </div>
             </div>

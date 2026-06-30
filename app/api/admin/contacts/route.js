@@ -45,6 +45,8 @@ export async function GET(request) {
   const sub = p('sub')                 // subscribed | notsub | optedout
   const contactable = p('contactable') === '1'
   const due = p('due') === '1'
+  const hot = p('hot') === '1'
+  const unworked = p('unworked') === '1'
   const scoreMin = p('score_min')
   const scoreMax = p('score_max')
   const page = parseInt(searchParams.get('page') || '1', 10)
@@ -131,6 +133,8 @@ export async function GET(request) {
     if (engaged) query = query.or(`newsletter_clicks.gt.0,last_download_date.gte.${ninetyDaysAgo},high_signals_count.gt.0`)
     if (enquired) query = query.gt('high_signals_count', 0)
     if (due) query = query.lte('next_nudge_date', todayStr)
+    if (hot) query = query.gte('last_high_signal_date', ninetyDaysAgo)  // recent high-intent signal
+    if (unworked) query = query.is('last_interaction_date', null)        // no interaction logged
     if (scoreMin !== '' && Number.isFinite(Number(scoreMin))) query = query.gte('engagement_score', Number(scoreMin))
     if (scoreMax !== '' && Number.isFinite(Number(scoreMax))) query = query.lte('engagement_score', Number(scoreMax))
 

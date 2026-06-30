@@ -16,8 +16,9 @@ const interactionTypes = ['email-sent', 'email-received', 'meeting', 'note', 'ca
 // Commercial facets compose freely (AND) on one list. A "lens" is just a facet-set
 // applied as a clean starting point you then refine (populate-and-refine). The
 // Overview funnel deep-links in via ?preset= and maps to the same sets.
-const FACET_DEFAULTS = { uk: false, dm: false, engaged: false, enquired: false, sub: '', contactable: false, due: false }
+const FACET_DEFAULTS = { uk: false, dm: false, engaged: false, enquired: false, sub: '', contactable: false, due: false, hot: false, unworked: false }
 const LENSES = [
+  { key: 'hot', label: 'Hot leads', set: { hot: true, unworked: true } },
   { key: 'golden', label: '★ Golden', set: { uk: true, dm: true, scope: 'in' } },
   { key: 'engaged', label: 'Engaged', set: { uk: true, dm: true, engaged: true, scope: 'in' } },
   { key: 'target', label: 'Target', set: { uk: true, dm: true, sub: 'subscribed', engaged: true, scope: 'in' } },
@@ -119,6 +120,8 @@ export default function ContactsPage() {
       if (facets.sub) params.set('sub', facets.sub)
       if (facets.contactable) params.set('contactable', '1')
       if (facets.due) params.set('due', '1')
+      if (facets.hot) params.set('hot', '1')
+      if (facets.unworked) params.set('unworked', '1')
 
       const res = await fetch(`/api/admin/contacts?${params}`)
       if (!res.ok) throw new Error('Failed')
@@ -148,7 +151,7 @@ export default function ContactsPage() {
     const pr = sp.get('preset')
     const set = pr && PRESET_TO_FACETS[pr]
     if (set) {
-      setFacets({ ...FACET_DEFAULTS, uk: !!set.uk, dm: !!set.dm, engaged: !!set.engaged, enquired: !!set.enquired, sub: set.sub || '', contactable: !!set.contactable, due: !!set.due })
+      setFacets({ ...FACET_DEFAULTS, uk: !!set.uk, dm: !!set.dm, engaged: !!set.engaged, enquired: !!set.enquired, sub: set.sub || '', contactable: !!set.contactable, due: !!set.due, hot: !!set.hot, unworked: !!set.unworked })
       setScope(set.scope || '')
       setPage(1)
     }
@@ -176,7 +179,7 @@ export default function ContactsPage() {
   function applyLens(set) {
     setPage(1)
     setBulkMsg(null)
-    setFacets({ ...FACET_DEFAULTS, uk: !!set.uk, dm: !!set.dm, engaged: !!set.engaged, enquired: !!set.enquired, sub: set.sub || '', contactable: !!set.contactable, due: !!set.due })
+    setFacets({ ...FACET_DEFAULTS, uk: !!set.uk, dm: !!set.dm, engaged: !!set.engaged, enquired: !!set.enquired, sub: set.sub || '', contactable: !!set.contactable, due: !!set.due, hot: !!set.hot, unworked: !!set.unworked })
     setSearch(''); setSearchInput(''); setTier(''); setSource(''); setNewsletter(''); setZb(''); setTag(''); setTagInput(''); setSector(''); setScope(set.scope || '')
   }
 
@@ -296,6 +299,8 @@ export default function ContactsPage() {
   if (facets.dm) activeFilters.push({ key: 'dm', label: 'Fit (mgr+)', clear: () => setFacet('dm', false) })
   if (facets.engaged) activeFilters.push({ key: 'engaged', label: 'Engaged', clear: () => setFacet('engaged', false) })
   if (facets.enquired) activeFilters.push({ key: 'enquired', label: 'Enquired', clear: () => setFacet('enquired', false) })
+  if (facets.hot) activeFilters.push({ key: 'hot', label: 'Hot (recent intent)', clear: () => setFacet('hot', false) })
+  if (facets.unworked) activeFilters.push({ key: 'unworked', label: 'Unworked', clear: () => setFacet('unworked', false) })
   if (facets.due) activeFilters.push({ key: 'due', label: 'Due a touch', clear: () => setFacet('due', false) })
   if (facets.contactable) activeFilters.push({ key: 'contactable', label: 'Contactable', clear: () => setFacet('contactable', false) })
   if (facets.sub) activeFilters.push({ key: 'sub', label: lbl(SUB_OPTIONS, SUB_LABELS, facets.sub), clear: () => setFacet('sub', '') })
@@ -332,6 +337,8 @@ export default function ContactsPage() {
         <FacetToggle theme={theme} label="Fit (mgr+)" active={facets.dm} onClick={() => setFacet('dm', !facets.dm)} />
         <FacetToggle theme={theme} label="Engaged" active={facets.engaged} onClick={() => setFacet('engaged', !facets.engaged)} />
         <FacetToggle theme={theme} label="Enquired" active={facets.enquired} onClick={() => setFacet('enquired', !facets.enquired)} />
+        <FacetToggle theme={theme} label="Hot" active={facets.hot} onClick={() => setFacet('hot', !facets.hot)} tone="warn" />
+        <FacetToggle theme={theme} label="Unworked" active={facets.unworked} onClick={() => setFacet('unworked', !facets.unworked)} />
         <FacetToggle theme={theme} label="Due a touch" active={facets.due} onClick={() => setFacet('due', !facets.due)} tone="warn" />
         {facets.contactable && <FacetToggle theme={theme} label="Contactable" active onClick={() => setFacet('contactable', false)} />}
         <FilterSelect theme={theme} value={facets.sub} options={SUB_OPTIONS} labels={SUB_LABELS} onChange={(v) => setFacet('sub', v)} />

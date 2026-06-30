@@ -7,7 +7,7 @@ stage that follows the cohesive rebuild (`admin-cohesive-surface-spec-2026-06-29
 
 ---
 
-## UC-1 — A high-intent non-subscriber is invisible  ·  HIGH  ·  open
+## UC-1 — A high-intent non-subscriber is invisible  ·  HIGH  ·  steps 1-2 SHIPPED (fit-from-role + Hot/Unworked); step 3 (signal backfill) open
 **Felt need:** "A fit Director downloads a real product PDF but doesn't subscribe - I only find her
 if I happen to remember her."
 **Evidence:** Vicki Carruthers (Director of People, Home Group, housing, UK), score 45.5.
@@ -51,7 +51,7 @@ signals (`pdf_download`→resource-download, `quote_request`→inbound-enquiry),
 assessment completions (`respondents`/`scored_responses`) as even-higher-intent signals.
 > Sequence after UC-1 so the leads land into a corrected scoring model. Its own piece of work.
 
-## UC-4 — A search came back empty because a leftover filter was silently on  ·  HIGH  ·  open
+## UC-4 — A search came back empty because a leftover filter was silently on  ·  HIGH  ·  SHIPPED (main 664c34a, live)
 **Felt need:** "I searched jphillips@juilliard.edu and got nothing."
 **Evidence (Supabase API logs):** every query carried `sector=eq.Housing association` (set earlier
 while working housing); jphillips is Corporate/private → excluded. User error + a UX that didn't

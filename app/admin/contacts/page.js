@@ -85,6 +85,8 @@ export default function ContactsPage() {
   const [tag, setTag] = useState('')
   const [sector, setSector] = useState('')
   const [scope, setScope] = useState('')
+  const [searchInput, setSearchInput] = useState('')
+  const [tagInput, setTagInput] = useState('')
   const [facets, setFacets] = useState(FACET_DEFAULTS)
   const [bulkSector, setBulkSector] = useState('')
   const [sort, setSort] = useState('-engagement_score')
@@ -142,7 +144,7 @@ export default function ContactsPage() {
   useEffect(() => {
     const sp = new URLSearchParams(window.location.search)
     const t = sp.get('tag')
-    if (t) { setTag(t); setPage(1) }
+    if (t) { setTag(t); setTagInput(t); setPage(1) }
     const pr = sp.get('preset')
     const set = pr && PRESET_TO_FACETS[pr]
     if (set) {
@@ -175,7 +177,7 @@ export default function ContactsPage() {
     setPage(1)
     setBulkMsg(null)
     setFacets({ ...FACET_DEFAULTS, uk: !!set.uk, dm: !!set.dm, engaged: !!set.engaged, enquired: !!set.enquired, sub: set.sub || '', contactable: !!set.contactable, due: !!set.due })
-    setSearch(''); setTier(''); setSource(''); setNewsletter(''); setZb(''); setTag(''); setSector(''); setScope(set.scope || '')
+    setSearch(''); setSearchInput(''); setTier(''); setSource(''); setNewsletter(''); setZb(''); setTag(''); setTagInput(''); setSector(''); setScope(set.scope || '')
   }
 
   // Clear every facet + filter back to the full list.
@@ -183,7 +185,7 @@ export default function ContactsPage() {
     setPage(1)
     setBulkMsg(null)
     setFacets(FACET_DEFAULTS)
-    setSearch(''); setTier(''); setSource(''); setNewsletter(''); setZb(''); setTag(''); setSector(''); setScope('')
+    setSearch(''); setSearchInput(''); setTier(''); setSource(''); setNewsletter(''); setZb(''); setTag(''); setTagInput(''); setSector(''); setScope('')
   }
 
   function toggleSelect(id) {
@@ -262,6 +264,7 @@ export default function ContactsPage() {
 
   function handleSearchInput(e) {
     const value = e.target.value
+    setSearchInput(value)
     clearTimeout(debounceRef.current)
     debounceRef.current = setTimeout(() => handleSearch(value), 300)
   }
@@ -285,8 +288,25 @@ export default function ContactsPage() {
     }
   }
 
-  const anyFilterActive = facets.uk || facets.dm || facets.engaged || facets.enquired || facets.contactable || facets.due
-    || !!facets.sub || !!search || !!tier || !!source || !!newsletter || !!zb || !!tag || !!sector || !!scope
+  // Active-filter pills — every constraint currently narrowing the list, each removable.
+  const lbl = (opts, labels, v) => labels[opts.indexOf(v)] || v
+  const activeFilters = []
+  if (search) activeFilters.push({ key: 'search', label: `Search: "${search}"`, clear: () => { setSearch(''); setSearchInput('') } })
+  if (facets.uk) activeFilters.push({ key: 'uk', label: 'UK', clear: () => setFacet('uk', false) })
+  if (facets.dm) activeFilters.push({ key: 'dm', label: 'Fit (mgr+)', clear: () => setFacet('dm', false) })
+  if (facets.engaged) activeFilters.push({ key: 'engaged', label: 'Engaged', clear: () => setFacet('engaged', false) })
+  if (facets.enquired) activeFilters.push({ key: 'enquired', label: 'Enquired', clear: () => setFacet('enquired', false) })
+  if (facets.due) activeFilters.push({ key: 'due', label: 'Due a touch', clear: () => setFacet('due', false) })
+  if (facets.contactable) activeFilters.push({ key: 'contactable', label: 'Contactable', clear: () => setFacet('contactable', false) })
+  if (facets.sub) activeFilters.push({ key: 'sub', label: lbl(SUB_OPTIONS, SUB_LABELS, facets.sub), clear: () => setFacet('sub', '') })
+  if (tier) activeFilters.push({ key: 'tier', label: `Tier: ${lbl(tierOptions, tierLabels, tier)}`, clear: () => { setTier(''); setPage(1) } })
+  if (newsletter) activeFilters.push({ key: 'newsletter', label: lbl(newsletterOptions, newsletterLabels, newsletter), clear: () => { setNewsletter(''); setPage(1) } })
+  if (zb) activeFilters.push({ key: 'zb', label: lbl(zbOptions, zbLabels, zb), clear: () => { setZb(''); setPage(1) } })
+  if (source) activeFilters.push({ key: 'source', label: lbl(sourceOptions, sourceLabels, source), clear: () => { setSource(''); setPage(1) } })
+  if (sector) activeFilters.push({ key: 'sector', label: `Sector: ${sector === '(none)' ? 'No sector' : sector}`, clear: () => { setSector(''); setPage(1) } })
+  if (scope) activeFilters.push({ key: 'scope', label: scope === 'in' ? 'In scope' : 'Out of scope', clear: () => { setScope(''); setPage(1) } })
+  if (tag) activeFilters.push({ key: 'tag', label: `Tag: ${tag}`, clear: () => { setTag(''); setTagInput(''); setPage(1) } })
+  const anyFilterActive = activeFilters.length > 0
 
   return (
     <div>
@@ -316,6 +336,19 @@ export default function ContactsPage() {
         {facets.contactable && <FacetToggle theme={theme} label="Contactable" active onClick={() => setFacet('contactable', false)} />}
         <FilterSelect theme={theme} value={facets.sub} options={SUB_OPTIONS} labels={SUB_LABELS} onChange={(v) => setFacet('sub', v)} />
       </div>
+
+      {/* Active filters — every constraint narrowing the list right now, each removable */}
+      {activeFilters.length > 0 && (
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', alignItems: 'center', marginBottom: '12px', padding: '8px 12px', background: theme.accentBg, border: `1px solid ${theme.accentBorder}`, borderRadius: '8px' }}>
+          <span style={{ fontSize: '11px', color: theme.textMuted, textTransform: 'uppercase', letterSpacing: '0.5px', marginRight: '2px' }}>Filtering by</span>
+          {activeFilters.map((f) => (
+            <button key={f.key} onClick={f.clear} title="Remove this filter" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '3px 10px', borderRadius: '20px', fontSize: '12px', cursor: 'pointer', fontFamily: 'inherit', background: theme.cardBg, color: theme.textSecondary, border: `1px solid ${theme.cardBorder}` }}>
+              {f.label} <span style={{ color: theme.textLabel }}>✕</span>
+            </button>
+          ))}
+          <button onClick={clearAll} style={{ background: 'none', border: 'none', color: theme.accent, fontSize: '12px', cursor: 'pointer', fontFamily: 'inherit', marginLeft: '4px' }}>Clear all</button>
+        </div>
+      )}
 
       {/* Selection action bar — enrich / tag the ticked contacts */}
       {selected.size > 0 && (
@@ -363,7 +396,7 @@ export default function ContactsPage() {
       <input
         type="text"
         placeholder="Search by name, email, or organisation..."
-        defaultValue={search}
+        value={searchInput}
         onChange={handleSearchInput}
         style={{
           width: '100%',
@@ -389,10 +422,8 @@ export default function ContactsPage() {
         <input
           type="text"
           placeholder="Tag…"
-          // Read from the URL directly so a ?tag= deep-link shows in the box. React
-          // tolerates an input-value SSR/client diff (it skips defaultValue diffing).
-          defaultValue={typeof window !== 'undefined' ? (new URLSearchParams(window.location.search).get('tag') || '') : ''}
-          onChange={(e) => { const v = e.target.value.trim(); clearTimeout(debounceRef.current); debounceRef.current = setTimeout(() => { setTag(v); setPage(1) }, 300) }}
+          value={tagInput}
+          onChange={(e) => { const v = e.target.value; setTagInput(v); const t = v.trim(); clearTimeout(debounceRef.current); debounceRef.current = setTimeout(() => { setTag(t); setPage(1) }, 300) }}
           style={{
             width: '120px', padding: '6px 10px', background: theme.inputBg,
             border: `1px solid ${tag ? theme.accentBorder : theme.cardBorder}`, borderRadius: '0',
@@ -407,14 +438,6 @@ export default function ContactsPage() {
           options={['', 'in', 'out']}
           labels={['All scope', 'In scope', 'Out of scope']}
           onChange={(v) => { setScope(v); setPage(1) }} />
-        {(tier || newsletter || zb || source || tag || sector || scope) && (
-          <button
-            onClick={() => { setTier(''); setNewsletter(''); setZb(''); setSource(''); setTag(''); setSector(''); setScope(''); setPage(1) }}
-            style={{ background: 'none', border: 'none', color: theme.accent, fontSize: '12px', cursor: 'pointer', fontFamily: 'inherit', padding: '4px' }}
-          >
-            Clear filters
-          </button>
-        )}
       </div>
 
       {/* Table */}
@@ -441,8 +464,14 @@ export default function ContactsPage() {
             </div>
           ))
         ) : contacts.length === 0 ? (
-          <div style={{ padding: '40px 16px', textAlign: 'center', color: theme.textLabel, fontSize: '14px', fontStyle: 'italic' }}>
-            No contacts found
+          <div style={{ padding: '40px 16px', textAlign: 'center', fontSize: '14px' }}>
+            <div style={{ color: theme.textLabel, fontStyle: 'italic' }}>No contacts match</div>
+            {activeFilters.length > 0 && (
+              <div style={{ marginTop: '10px', fontSize: '13px', color: theme.textSecondary }}>
+                {activeFilters.length} filter{activeFilters.length === 1 ? '' : 's'} active — they may be hiding results.{' '}
+                <button onClick={clearAll} style={{ background: 'none', border: 'none', color: theme.accent, fontSize: '13px', cursor: 'pointer', fontFamily: 'inherit', textDecoration: 'underline', padding: 0 }}>Clear all</button>
+              </div>
+            )}
           </div>
         ) : (
           contacts.map((c, i) => (
